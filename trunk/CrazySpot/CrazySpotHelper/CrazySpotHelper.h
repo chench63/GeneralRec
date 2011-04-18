@@ -1,5 +1,5 @@
 
-// CrazySpot.h : main header file for the PROJECT_NAME application
+// CrazySpotHelper.h : main header file for the PROJECT_NAME application
 //
 
 #pragma once
@@ -11,14 +11,14 @@
 #include "resource.h"		// main symbols
 
 
-// CCrazySpotApp:
-// See CrazySpot.cpp for the implementation of this class
+// CCrazySpotHelperApp:
+// See CrazySpotHelper.cpp for the implementation of this class
 //
 
-class CCrazySpotApp : public CWinApp
+class CCrazySpotHelperApp : public CWinApp
 {
 public:
-	CCrazySpotApp();
+	CCrazySpotHelperApp();
 
 // Overrides
 public:
@@ -29,4 +29,4 @@ public:
 	DECLARE_MESSAGE_MAP()
 };
 
-extern CCrazySpotApp theApp;
+extern CCrazySpotHelperApp theApp;

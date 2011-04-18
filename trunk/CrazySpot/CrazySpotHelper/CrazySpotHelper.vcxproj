@@ -11,8 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{7C704246-4B37-43C0-AC33-6175E67760DA}</ProjectGuid>
-    <RootNamespace>CrazySpot</RootNamespace>
+    <ProjectGuid>{DC2180FE-9681-4E3D-B65F-114361BEB241}</ProjectGuid>
+    <RootNamespace>CrazySpotHelper</RootNamespace>
     <Keyword>MFCProj</Keyword>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -95,33 +95,35 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
-    <None Include="res\CrazySpot.ico" />
-    <None Include="res\CrazySpot.rc2" />
+    <None Include="res\CrazySpotHelper.ico" />
+    <None Include="res\CrazySpotHelper.rc2" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CrazySpot.h" />
-    <ClInclude Include="CrazySpotDlg.h" />
+    <ClInclude Include="CrazySpotHelper.h" />
+    <ClInclude Include="CrazySpotHelperDlg.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="TranDlg.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CrazySpot.cpp" />
-    <ClCompile Include="CrazySpotDlg.cpp" />
+    <ClCompile Include="CrazySpotHelper.cpp" />
+    <ClCompile Include="CrazySpotHelperDlg.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TranDlg.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="CrazySpot.rc" />
+    <ResourceCompile Include="CrazySpotHelper.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties RESOURCE_FILE="CrazySpot.rc" />
+      <UserProperties RESOURCE_FILE="CrazySpotHelper.rc" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

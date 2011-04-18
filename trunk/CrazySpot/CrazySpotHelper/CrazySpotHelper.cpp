@@ -1,26 +1,26 @@
 
-// CrazySpot.cpp : Defines the class behaviors for the application.
+// CrazySpotHelper.cpp : Defines the class behaviors for the application.
 //
 
 #include "stdafx.h"
-#include "CrazySpot.h"
-#include "CrazySpotDlg.h"
+#include "CrazySpotHelper.h"
+#include "CrazySpotHelperDlg.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
 
 
-// CCrazySpotApp
+// CCrazySpotHelperApp
 
-BEGIN_MESSAGE_MAP(CCrazySpotApp, CWinApp)
+BEGIN_MESSAGE_MAP(CCrazySpotHelperApp, CWinApp)
 	ON_COMMAND(ID_HELP, &CWinApp::OnHelp)
 END_MESSAGE_MAP()
 
 
-// CCrazySpotApp construction
+// CCrazySpotHelperApp construction
 
-CCrazySpotApp::CCrazySpotApp()
+CCrazySpotHelperApp::CCrazySpotHelperApp()
 {
 	// support Restart Manager
 	m_dwRestartManagerSupportFlags = AFX_RESTART_MANAGER_SUPPORT_RESTART;
@@ -30,14 +30,14 @@ CCrazySpotApp::CCrazySpotApp()
 }
 
 
-// The one and only CCrazySpotApp object
+// The one and only CCrazySpotHelperApp object
 
-CCrazySpotApp theApp;
+CCrazySpotHelperApp theApp;
 
 
-// CCrazySpotApp initialization
+// CCrazySpotHelperApp initialization
 
-BOOL CCrazySpotApp::InitInstance()
+BOOL CCrazySpotHelperApp::InitInstance()
 {
 	// InitCommonControlsEx() is required on Windows XP if an application
 	// manifest specifies use of ComCtl32.dll version 6 or later to enable
@@ -67,7 +67,7 @@ BOOL CCrazySpotApp::InitInstance()
 	// such as the name of your company or organization
 	SetRegistryKey(_T("Local AppWizard-Generated Applications"));
 
-	CCrazySpotDlg dlg;
+	CCrazySpotHelperDlg dlg;
 	m_pMainWnd = &dlg;
 	INT_PTR nResponse = dlg.DoModal();
 	if (nResponse == IDOK)

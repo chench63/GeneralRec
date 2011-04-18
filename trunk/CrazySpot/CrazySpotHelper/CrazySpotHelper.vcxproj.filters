@@ -16,18 +16,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
-    <None Include="res\CrazySpot.rc2">
+    <None Include="res\CrazySpotHelper.rc2">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="res\CrazySpot.ico">
+    <None Include="res\CrazySpotHelper.ico">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CrazySpot.h">
+    <ClInclude Include="CrazySpotHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="CrazySpotDlg.h">
+    <ClInclude Include="CrazySpotHelperDlg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="stdafx.h">
@@ -39,20 +39,26 @@
     <ClInclude Include="Resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TranDlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="CrazySpot.cpp">
+    <ClCompile Include="CrazySpotHelper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="CrazySpotDlg.cpp">
+    <ClCompile Include="CrazySpotHelperDlg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TranDlg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="CrazySpot.rc">
+    <ResourceCompile Include="CrazySpotHelper.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
