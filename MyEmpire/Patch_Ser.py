@@ -8,7 +8,6 @@ from time import ctime
 import os
 import threading
 from Queue import Queue
-from time import ctime
 
 HOST = ''
 PORT = 21566
