@@ -3,21 +3,36 @@
 from sys import argv
 from os import makedirs, unlink, sep
 from os.path import dirname, exists, isdir, splitext
-from string import replace, find, lower
+from string import replace, find, lower, rfind
 from htmllib import HTMLParser
 from urllib import urlretrieve
 from urlparse import urlparse, urljoin
 from formatter import DumbWriter, AbstractFormatter
 from cStringIO import StringIO
 
+
+from Patch_Filter import typeFilter, nameFilter
+from Patch_PageRanking import PageRanking, BACKUPPERMINUTE, SAVAANDQUIT
+
+
+BASEPATH = '/home/ppia/CrawlerWebInfo/'
+
+
 class Retriever(object):
 	def __init__(self,url):
 		self.url = url
 		self.file = self.filename(url)
 
-	def filename(self, url, deffile='index.htm'):
+	def filename(self, url, deffile='index.html'):
 		parsedurl = urlparse(url, 'http:', 0)
-		path = parsedurl[1] + parsedurl[2]
+
+
+		if not nameFilter(url):
+			path = BASEPATH + parsedurl[1] + parsedurl[2]
+		else:
+			indexPot = rfind(parsedurl[2],'.')			
+			path = BASEPATH + parsedurl[1] +parsedurl[2][:indexPot]+'_'+parsedurl.query+parsedurl[2][indexPot:]
+
 		ext = splitext(path)
 		if ext[1] == '':
 			if path[-1] == '/':
@@ -51,6 +66,7 @@ class Crawler(object):
 	count = 0
 	def __init__(self, url):
 		self.q = [url]
+		self.pageRanking = PageRanking(url)
 		self.seen = []
 		self.dom = urlparse(url)[1]
 
@@ -58,7 +74,6 @@ class Crawler(object):
 		r =  Retriever(url)
 		retval =  r.download()
 
-#		print 'The test: ', retval
 
 		if retval[0] == '*':
 			print retval, '...Skipping parse'
@@ -68,29 +83,34 @@ class Crawler(object):
 		print 'URL: ', url
 		print 'FILE: ', retval[0]
 		self.seen.append(url)
+
 	
 		links = r.parseAndGetLinks()
 		for eachlink in links:
 			if eachlink[:4] != 'http' and \
-				find(eachlink, '://') == -1:
+			find(eachlink, '://') == -1 :
 				eachlink = urljoin(url, eachlink)
-				print '* ', eachlink 
-
-			if find( lower(eachlink), 'mailto:') != -1:
-				print '...discarded, mailto link'
+			
+			if not typeFilter(eachlink):
 				continue
 	
-			if eachlink not in self.seen:
-				if find(eachlink, self.dom) == -1:
-					print '...discarded, not in domain'
+#			print '*',eachlink		
+
+
+			if eachlink not in self.seen :
+				if eachlink not in self.q  and \
+				find(eachlink,self.dom ) != -1:
+					self.q.append(eachlink)
+					self.pageRanking.addNewUrlInQue(eachlink)
+#					print 'New add to Q'
 				else:
-					if eachlink not in self.q:
-						self.q.append(eachlink)
-						print 'New add to Q'
-					else:
-						print '...discarded, already in Q'
+#					print '...discarded, already in Q'
+					self.pageRanking.oneGoal(eachlink)
 			else:
-				print '...discarded, already processed'
+#				print '...discarded, already processed'
+				self.pageRanking.oneGoal(eachlink)
+
+
 
 	def go(self):
 		while self.q:
@@ -108,7 +128,9 @@ def main():
 
 	if not url: return 
 	robot = Crawler(url)
+	BACKUPPERMINUTE(robot.pageRanking)
 	robot.go()
+	SAVAANDQUIT(robot.pageRanking)
 
 if __name__ == '__main__':
 	main()
