@@ -1,0 +1,46 @@
+				MoonliSearch V1.0.0
+  In this version, I have to say i just finish the back-end, i mean MoonliSearch could do the seach without the GUI, so it's ugly. But I will complete this module, when i make the decision whether MoonliSearch is a client or WebService.
+
+
+How to Start the MoonliSearch:
+1.Config the MoonliSearch:
+
+At first, i Must declare the $HOME  means where you put the MoonliSearch
+
+	(1)cd() to the MoonliSearch Home Direction, and find the 'moonliSearch.conf':
+	
+	BasePath: Where the Crawler/WebRobot will download the Page 
+	FILENAME: Please put it as "./Posting/lib/webRankInfo"
+		(In some point, the way i set the Var is not fit)
+	
+	(2)run the 'LoadConfig.py':
+		python LoadConfig.py
+
+2.Let the WebRobot Works:
+	1)cd() to ./WebRobot
+		cd ./WebRobot
+	2)Run the WebRobot
+		python WebRobot
+	3)Right Now, the crawler is started! You just need to input you URL
+
+
+3.Posting EveryKeyWord:
+	1)Build up your own KeyWord Lib($HOME/Posting/lib/Keyword.lib):
+		
+	2)Run the Posting_Main($HOME/Posting/)
+		python Posting_Main.py
+
+
+4.If
+
+
+
+
+
+
+
+
+
+
+
+

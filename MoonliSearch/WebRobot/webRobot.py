@@ -15,7 +15,7 @@ from Patch_Filter import typeFilter, nameFilter
 from Patch_PageRanking import PageRanking, BACKUPPERMINUTE, SAVEANDQUIT
 
 
-BASEPATH = '/home/ppia/CrawlerWebInfo/'
+BASEPATH = '/home/ppia/CrawlerWebInfo/http:'
 
 
 class Retriever(object):
