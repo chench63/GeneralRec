@@ -6,6 +6,11 @@ from time import sleep,ctime
 import threading
 import copy
 
+
+FILENAME = 'FILENAME =/home/ppia/glocal/MoonliSearch/Posting/lib/webRankInfo'
+
+
+
 def BackUpPro(pageRanking,i):
 	driver = dataText()
 	OWN = 1
@@ -32,13 +37,13 @@ def SAVEANDQUIT(pageRanking):
 	driver.store()
 
 
-FILENAME = '/home/ppia/CrawlerWebInfo/webRankInfo'
+
 
 class dataInter(object):
 	def load(self):
-		print 'Nothing'
+		pass
 	def store(self):
-		print 'Nothing'
+		pass
 
 
 class dataText(dataInter):

@@ -3,9 +3,11 @@
 import string
 import os
 import os.path
+import copy
 
 from LibOper import LoadLib
 from Patch_PageRanking import dataText
+from time import sleep,ctime
 
 
 class Posting(object):
@@ -13,43 +15,65 @@ class Posting(object):
 		ll = LoadLib()
 		dt = dataText()
 		dt.load()
+
 		self.pageRanking =  dt.rank
-		self.key = ll.getKey()
 		self.posting = []
-
 		self.pageRankingIndex  = []
-		self.buildIndex()
+		self.key = ll.getKey()
+
+		self.__buildEn()
 
 
-	def buildIndex(self):
+	def __buildEn(self):   #Initialize the Essential member Var
 		for each in self.pageRanking:	
 			self.pageRankingIndex.append(each[1]);
 
+		for each in self.key:
+			postingEle = [ each[0],[] ]
+			self.posting.append(postingEle)
+
  
-	#Binary Search
+	#Vectory Search
 	def find(self,key):
-		pass
+		keyIndex = self.key.index(key)
+		return copy.deepcopy( self.posting[keyIndex][1:] )   #return the url List
 
 	def readPath(self,path):
-		for root,dirnames,filenames in os.walk(path):	
+		for root,dirnames,filenames in os.walk(path):
+				print '\n\n\nEnter Root:%s' %root	
 				for eachfile in filenames:
 					filepath = os.path.join(root,eachfile)
-					self.readFile(filepath)
+					self.__readFile(filepath)
+			#		print 'read...%s' %eachfile
 
-	def readFile(self,fileName):
+	def __readFile(self,fileName):
 		fi = open(fileName,'r')
 		for eachline in fi.readlines():
-			pass
+			self.__matchLine(eachline,fileName)
 
-	def matchLine(self,eachline,fileName):
+	def __matchLine(self,eachline,fileName):
+		keyIndex = 0
 		for eachKey in self.key:
-			if eachKey in eachline:
-				url=self.parUrl(fileName)	
+			if eachKey[0] in eachline:
+				try:
+					print fileName
+					url=self.parUrl(fileName)
+					rankIndex = self.pageRankingIndex.index(url)
+					pageScore = self.pageRanking[rankIndex][0]
+
+					keyEle = [pageScore,url,eachline[:-1]]
+					
+				except (ValueError):
+					keyEle = [-1,url,eachline[:-1]]
+				
+				print '****Add New Posing %s\n%s' %(eachKey[0] , url)		
+				self.posting[keyIndex][1].append(keyEle)
+			keyIndex += 1	
 
 
 	def parUrl(self,fileName):
 		ext = os.path.splitext(fileName) 
-		urlIndex = ext[0].find('www.')
+		urlIndex = ext[0].find('http:') + len('http:')
 		urlOri = ext[0][urlIndex:]	#remove the extends And the BasePath
 
 		indexQuery = urlOri.rfind('?') 
