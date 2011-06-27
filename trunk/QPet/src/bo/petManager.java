@@ -3,8 +3,8 @@ package bo;
 import service.impl.*;
 import service.*;
 import vo.*;
-
-public class petManager {
+ 
+public class petManager { 
 	public IUsrFrontInfoService usrFrontInfoService;
 	public IPetService petService;
 	public IMatrixService matrixService;

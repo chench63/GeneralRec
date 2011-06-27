@@ -22,7 +22,6 @@ public class UsrFrontInfoDAO extends HibernateDaoSupport implements
 	private static final Log log = LogFactory.getLog(ServicePetDAO.class);
 	
 	
-	@Override
 	public Usrfrontinfo findByUsr(User usr) {
 		log.debug("Get Usrfrontinfo id:"+usr.getUsrId());
 		List<Usrfrontinfo> res;

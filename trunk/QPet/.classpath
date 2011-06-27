@@ -28,7 +28,6 @@
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/commons-validator.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/ehcache-1.1.jar"/>
-	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/freemarker-2.3.16.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/hibernate3.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/jaas.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/javassist-3.7.ga.jar"/>
@@ -47,12 +46,11 @@
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/xerces-2.6.2.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/xml-apis.jar"/>
 	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/xwork-core-2.2.1.1.jar"/>
-	<classpathentry kind="lib" path="F:/glocal/QPet/WebRoot/WEB-INF/lib/freemarker-2.3.16.jar"/>
-	<classpathentry kind="lib" path="F:/glocal/QPet/WebRoot/WEB-INF/lib/flex-messaging-common.jar"/>
-	<classpathentry kind="lib" path="F:/glocal/QPet/WebRoot/WEB-INF/lib/flex-messaging-core.jar"/>
-	<classpathentry kind="lib" path="F:/glocal/QPet/WebRoot/WEB-INF/lib/flex-messaging-opt.jar"/>
-	<classpathentry kind="lib" path="F:/glocal/QPet/WebRoot/WEB-INF/lib/flex-messaging-proxy.jar"/>
-	<classpathentry kind="lib" path="F:/glocal/QPet/WebRoot/WEB-INF/lib/flex-messaging-remoting.jar"/>
-	<classpathentry kind="lib" path="F:/glocal/QPet/WebRoot/WEB-INF/lib/flex-rds-server.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/flex-messaging-common.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/flex-messaging-core.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/flex-messaging-opt.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/flex-messaging-proxy.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/flex-messaging-remoting.jar"/>
+	<classpathentry kind="lib" path="WebRoot/WEB-INF/lib/flex-rds-server.jar"/>
 	<classpathentry kind="output" path="WebRoot/WEB-INF/classes"/>
 </classpath>

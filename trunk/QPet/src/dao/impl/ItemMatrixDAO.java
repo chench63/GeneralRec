@@ -21,7 +21,7 @@ public class ItemMatrixDAO extends HibernateDaoSupport implements
 		IItemMatrixDAO {
 
 	private static final Log log = LogFactory.getLog(Itemmatrix.class);
-	
+	 
 	@Override
 	public Itemmatrix findById(Integer id) {
 		log.debug("Get Usrfrontinfo id:");
