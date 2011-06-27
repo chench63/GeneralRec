@@ -36,6 +36,17 @@ public class ServiceItemDAO extends HibernateDaoSupport implements
 			return null;
 		}
 	}
-	
+
+
+	public void saveServiceItem(Serviceitem instance) {
+		log.debug("Save ServiceItem");
+		try {
+			getHibernateTemplate().save(instance);
+			log.debug("Save successful");
+		} catch (RuntimeException re) {
+			log.error("Save failed", re);
+		}
+		
+	}
 	
 }

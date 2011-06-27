@@ -8,7 +8,7 @@
     <class name="vo.Itemlib" table="itemlib" catalog="qpet">
         <id name="itemId" type="java.lang.Integer">
             <column name="itemId" />
-            <generator class="native" />
+            <generator class="increment" />
         </id>
         <property name="imgUrl" type="java.lang.String">
             <column name="imgUrl" />

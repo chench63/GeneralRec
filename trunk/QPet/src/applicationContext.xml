@@ -70,6 +70,11 @@
 			<ref bean="sessionFactory" />
 		</property>
 	</bean>
+	<bean id="ItemlibDAO" class="dao.impl.ItemlibDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
 	
 	
 	
@@ -80,11 +85,20 @@
 		<property name="itemMatrixDAO">
 			<ref bean="ItemMatrixDAO" />
 		</property>
+		<property name="matrixDAO">
+			<ref bean="MatrixDAO" />
+		</property>
 		<property name="usrFrontInfoDAO">
 			<ref bean="UsrFrontInfoDAO" />
 		</property>
 	</bean>
 	<bean id="ItemLibService" class="service.impl.ItemLibService">
+		<property name="itemlibDAO">
+			<ref bean="ItemlibDAO" />
+		</property>
+		<property name="serviceItemDAO">
+			<ref bean="ServiceItemDAO" />
+		</property>
 	</bean>
 	<bean id="PetService" class="service.impl.PetService">
 		<property name="servicePetDAO">
@@ -102,6 +116,7 @@
 			<ref bean="UsrFrontInfoDAO" />
 		</property>
 	</bean>
+	
 	
 	
 	
