@@ -8,7 +8,7 @@
     <class name="vo.Usrfrontinfo" table="usrfrontinfo" catalog="qpet">
         <id name="frontId" type="java.lang.Integer">
             <column name="frontId" />
-            <generator class="native" />
+            <generator class="increment" />
         </id>
         <many-to-one name="servicepet" class="vo.Servicepet" fetch="select">
             <column name="servicePetId" />

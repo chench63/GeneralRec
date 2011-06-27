@@ -8,7 +8,7 @@
     <class name="vo.Petlib" table="petlib" catalog="qpet">
         <id name="petId" type="java.lang.Integer">
             <column name="petId" />
-            <generator class="native" />
+            <generator class="increment" />
         </id>
         <property name="srcUrl" type="java.lang.String">
             <column name="srcUrl" />

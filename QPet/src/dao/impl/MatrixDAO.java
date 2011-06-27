@@ -51,7 +51,6 @@ public class MatrixDAO extends HibernateDaoSupport implements IMatrixDAO {
 	}
 	
 	
-	@Override
 	public void saveMatrix(Matrix instance) {
 		log.debug("saving Servicepet instance");
 		try {
@@ -59,6 +58,7 @@ public class MatrixDAO extends HibernateDaoSupport implements IMatrixDAO {
 			log.debug("save successful");
 		} catch (RuntimeException re) {
 			log.error("save failed", re);
+			re.printStackTrace();
 			throw re;
 		}
 	}

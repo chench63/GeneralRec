@@ -7,6 +7,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import vo.Itemmatrix;
+import vo.Matrix;
 import vo.User;
 import dao.impl.UsrFrontInfoDAO;
 import vo.Usrfrontinfo;
@@ -50,7 +51,23 @@ public class TestMatrixService extends TestCase {
 
 	@Test
 	public void testSaveMatrix() {
+		ApplicationContext ctx=new ClassPathXmlApplicationContext("applicationContext.xml");
+		UsrFrontInfoDAO dao = (UsrFrontInfoDAO) ctx.getBean("UsrFrontInfoDAO");
 		
+		
+		User user= new User();
+		user.setUsrId(1);				
+		Usrfrontinfo info= dao.findByUsr(user);
+		IMatrixService ms = (MatrixService) ctx.getBean("MatrixService");
+		
+		Matrix instance = new Matrix();
+		int score = 10;
+		//Itemmatrix itemmatrix = new Itemmatrix();
+		instance.setUser(info.getUser());
+		instance.setScore(score);
+		instance.setItemmatrix(info.getItemmatrix());
+		ms.saveMatrix(instance);
+		System.out.println("******************SaveMatrix********************");
 	}
 
 }
