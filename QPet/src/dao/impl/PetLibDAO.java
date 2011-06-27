@@ -13,7 +13,6 @@ public class PetLibDAO extends HibernateDaoSupport implements IPetLibDAO {
 	private static final Log log = LogFactory.getLog(ServicePetDAO.class);
 	
 	
-	@Override
 	public Petlib findById(Integer id) {
 		log.debug("Get Usrfrontinfo id:");
 		try {

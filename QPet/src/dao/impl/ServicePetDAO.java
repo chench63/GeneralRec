@@ -50,7 +50,7 @@ public class ServicePetDAO extends HibernateDaoSupport implements
 			throw re;
 		}
 	}
-
+ 
 	public Servicepet findById(Integer id) {
 		log.debug("Get Usrfrontinfo id:");
 		try {

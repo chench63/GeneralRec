@@ -20,8 +20,7 @@ import dao.IMatrixDAO;
 
 public class MatrixDAO extends HibernateDaoSupport implements IMatrixDAO {
 	private static final Log log = LogFactory.getLog(ServicePetDAO.class);
-	
-	@Override
+	 
 	public List findByUsr(User usr) {
 		log.debug("Get Usrfrontinfo id:"+usr.getUsrId());
 		try {

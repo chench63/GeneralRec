@@ -5,6 +5,6 @@ import vo.User;
 import vo.Serviceitem;
 
 public interface IServiceItemDAO {
-	public Itemlib findByUsr(User usr);
+	public Itemlib findByUsr(User usr); 
 	public void saveServiceItem(Serviceitem instance);
 }

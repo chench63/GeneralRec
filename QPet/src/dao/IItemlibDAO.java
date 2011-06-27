@@ -1,5 +1,5 @@
 package dao;
-
+ 
 import vo.Itemlib;
 
 public interface IItemlibDAO {

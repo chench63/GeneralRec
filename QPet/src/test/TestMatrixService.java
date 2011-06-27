@@ -14,7 +14,7 @@ import vo.Usrfrontinfo;
 
 import service.IMatrixService;
 import service.impl.MatrixService;
-
+ 
 
 public class TestMatrixService extends TestCase {
 	
@@ -66,7 +66,9 @@ public class TestMatrixService extends TestCase {
 		instance.setUser(info.getUser());
 		instance.setScore(score);
 		instance.setItemmatrix(info.getItemmatrix());
-		ms.saveMatrix(instance);
+		
+		
+		ms.saveMatrix(instance);  
 		System.out.println("******************SaveMatrix********************");
 	}
 

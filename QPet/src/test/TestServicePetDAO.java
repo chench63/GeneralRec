@@ -12,7 +12,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import vo.User;
 import vo.Servicepet;
 import dao.impl.ServicePetDAO;
-
+ 
 public class TestServicePetDAO {
 
 	@Test

@@ -8,7 +8,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import vo.*;
 import dao.impl.UsrFrontInfoDAO;
-
+ 
 public class TestUsrFrontInfoDAO extends TestCase {
 	
 	public void testFindByUsr() {
