@@ -121,6 +121,11 @@
 			<ref bean="UsrFrontInfoDAO" />
 		</property>
 	</bean>
+	<bean id="UserService" class="service.impl.UserService">
+		<property name="userDAO">
+			<ref bean="UserDAO" />
+		</property>
+	</bean>
 	
 	
 	
@@ -137,6 +142,9 @@
 		</property>
 		<property name="itemLibService">
 			<ref bean="ItemLibService" />
+		</property>
+		<property name="userService">
+			<ref bean="UserService" />
 		</property>
 	</bean>
 	

@@ -21,7 +21,7 @@ public class TestMatrixDAO {
 		MatrixDAO dao = (MatrixDAO) ctx.getBean("MatrixDAO");
 		
 		int usrId = 1;
-		for(;usrId<20;usrId++){
+		for(;usrId<5;usrId++){
 			
 			User usr = new User(usrId);
 			List<Matrix> mList= dao.findByUsr(usr);

@@ -11,6 +11,15 @@ public class petManager {
 	public IItemLibService itemLibService;
 	public IUserService userService;
 		
+	
+	public IUserService getUserService() {
+		return userService;
+	}
+
+	public void setUserService(IUserService userService) {
+		this.userService = userService;
+	}
+
 	public IUsrFrontInfoService getUsrFrontInfoService() {
 		return usrFrontInfoService;
 	}
@@ -56,9 +65,11 @@ public class petManager {
 	 * 	1) usrtoken
 	 * */
 	
-	public void Register(User usr){
+	public Usrfrontinfo Register(User instance){
 		//Save Table User Info
-		userService.saveOrUpdateUser(usr);
+		userService.saveOrUpdateUser(instance);
+		int usrId = instance.getUsrId();
+		User usr = new User(usrId);
 		
 		//Save Table ServicePet Info
 		Servicepet sp = new Servicepet();
@@ -70,10 +81,15 @@ public class petManager {
 		sp.setExp(exp);
 		sp.setLevel(level);
 		sp.setPetlib(pl);
+		sp.setUser(usr);
 		petService.saveOrUpdateServicePet(sp);
 		
 		//Save Table UsrFrontInfo Info
-		int usrId = usr.getUsrId();
+		
+		
+		System.out.println("Message From petManager  usrId: "+usrId);
+		
+		
 		int servicePetId = petService.findByUser( new User(usrId) );
 		int itemId = 0 ;
 		Usrfrontinfo newUser=  new Usrfrontinfo();
@@ -82,7 +98,8 @@ public class petManager {
 		newUser.setServicePetId(servicePetId);
 		newUser.setUsrId(usrId);
 		
-		this.usrFrontInfoService.saveOrUpdate(newUser);
+		usrFrontInfoService.saveOrUpdate(newUser);
+		return newUser;
 	}
 	
 	
