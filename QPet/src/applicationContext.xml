@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+ 
+<beans
+	xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<bean id="dataSource"
+		class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName"
+			value="com.mysql.jdbc.Driver">
+		</property>
+		<property name="url" value="jdbc:mysql://localhost:3306/qpet"></property>
+		<property name="username" value="root"></property>
+		<property name="password" value="1"></property>
+		<property name="maxActive" value="100000"></property>
+		<property name="maxIdle" value="100000"></property>
+	</bean>
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">
+					org.hibernate.dialect.MySQLDialect
+				</prop>
+			</props>
+		</property>
+		<property name="mappingResources">
+			<list>
+				<value>vo/Usrfrontinfo.hbm.xml</value>
+				<value>vo/Servicepet.hbm.xml</value>
+				<value>vo/Petlib.hbm.xml</value>
+				<value>vo/Serviceitem.hbm.xml</value>
+				<value>vo/Matrix.hbm.xml</value>
+				<value>vo/Itemlib.hbm.xml</value>
+				<value>vo/User.hbm.xml</value>
+				<value>vo/Itemmatrix.hbm.xml</value></list>
+		</property></bean>
+	
+	
+	<bean id="ServicePetDAO" class="dao.impl.ServicePetDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="UsrFrontInfoDAO" class="dao.impl.UsrFrontInfoDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="ItemMatrixDAO" class="dao.impl.ItemMatrixDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="MatrixDAO" class="dao.impl.MatrixDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="ServiceItemDAO" class="dao.impl.ServiceItemDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="PetLibDAO" class="dao.impl.PetLibDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="ItemlibDAO" class="dao.impl.ItemlibDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="UserDAO" class="dao.impl.UserDAO">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	
+	
+	
+	
+	
+	
+	<bean id="MatrixService" class="service.impl.MatrixService">
+		<property name="itemMatrixDAO">
+			<ref bean="ItemMatrixDAO" />
+		</property>
+		<property name="matrixDAO">
+			<ref bean="MatrixDAO" />
+		</property>
+		<property name="usrFrontInfoDAO">
+			<ref bean="UsrFrontInfoDAO" />
+		</property>
+	</bean>
+	<bean id="ItemLibService" class="service.impl.ItemLibService">
+		<property name="itemlibDAO">
+			<ref bean="ItemlibDAO" />
+		</property>
+		<property name="serviceItemDAO">
+			<ref bean="ServiceItemDAO" />
+		</property>
+	</bean>
+	<bean id="PetService" class="service.impl.PetService">
+		<property name="servicePetDAO">
+			<ref bean="ServicePetDAO" />
+		</property>
+		<property name="usrFrontInfoDAO">
+			<ref bean="UsrFrontInfoDAO" />
+		</property>
+		<property name="petLibDAO">
+			<ref bean="PetLibDAO" />
+		</property>
+	</bean>
+	<bean id="UsrFrontInfoService" class="service.impl.UsrFrontInfoService">
+		<property name="usrFrontInfoDAO">
+			<ref bean="UsrFrontInfoDAO" />
+		</property>
+	</bean>
+	<bean id="UserService" class="service.impl.UserService">
+		<property name="userDAO">
+			<ref bean="UserDAO" />
+		</property>
+	</bean>
+	
+	
+	
+	
+	<bean id="petManager" class="bo.petManager">
+		<property name="petService">
+			<ref bean="PetService" />
+		</property>
+		<property name="usrFrontInfoService">
+			<ref bean="UsrFrontInfoService" />
+		</property>
+		<property name="matrixService">
+			<ref bean="MatrixService" />
+		</property>
+		<property name="itemLibService">
+			<ref bean="ItemLibService" />
+		</property>
+		<property name="userService">
+			<ref bean="UserService" />
+		</property>
+	</bean>
+	
+	<bean id="ItemManager" class="cfa.ItemManager">
+		<property name="iMatrixDAO">
+			<ref bean="MatrixDAO" />
+		</property>
+		<property name="iServiceItemDAO">
+			<ref bean="ServiceItemDAO" />
+		</property>
+		<property name="iUserDAO">
+			<ref bean="UserDAO" />
+		</property>
+	</bean>
+	
+	
+	
+	
+	
+	
+</beans>
