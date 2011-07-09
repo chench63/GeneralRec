@@ -8,4 +8,5 @@ import vo.Usrfrontinfo;
 public interface IItemLibService {
 		public Itemlib getItemByUsr(Usrfrontinfo info);
 		public void saveItem(Itemlib item,User usr);
+		public boolean checkExist( Itemlib item );
 }

@@ -54,10 +54,27 @@ public class UserDAO extends HibernateDaoSupport
 	public void saveUser(User usr) {
 		log.debug("Save User");
 		try {
-			getHibernateTemplate().saveOrUpdate(usr);
-			log.debug("Save successful");
+			getHibernateTemplate().save(usr);
 		} catch (RuntimeException re) {
-			log.error("Save failed", re);
+			System.out.println(re.toString());
+			log.error("Get failed", re); 
+		}
+	}
+	
+	public boolean checkExist(User usr){
+		try {
+			String hql = " from User user  " +
+					"where user.usrToken = ?  ";
+			
+			Query query = this.getSession().createQuery(hql);
+			query.setParameter(0, usr.getUsrToken());
+			log.debug("Get successful");
+			
+			return query.list().size() != 0 ;
+		} catch (RuntimeException re) {
+			System.out.println(re.toString());
+			log.error("Get failed", re); 
+			return false;
 		}
 	}
 	

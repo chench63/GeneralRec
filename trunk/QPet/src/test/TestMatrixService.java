@@ -75,7 +75,7 @@ public class TestMatrixService extends TestCase {
 		
 		
 		ms.saveMatrix(instance);  
-		System.out.println("******************SaveMatrix********************");
+		System.out.println("\n******************SaveMatrix********************");
 	}
 
 }

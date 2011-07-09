@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
+import vo.Itemmatrix;
 import vo.Matrix;
 import vo.User;
 
@@ -66,12 +67,20 @@ public class TestMatrixDAO {
 		for(int i = 0; i < mList.size();i++){
 			System.out.println("User "+(i+1)+"  Id:"+mList.get(i).getUser().getUsrId());
 		}
-		
-		
 	}
 
 	
-	
+	@Test
+	public void testGetItemmatrixByUser() {
+		ApplicationContext ctx=new ClassPathXmlApplicationContext("applicationContext.xml");
+		MatrixDAO dao = (MatrixDAO) ctx.getBean("MatrixDAO");
+		System.out.println("\n\n\n************************testGetFilterItem***************************");
+		
+		User usr =  new User(1);
+		Itemmatrix item= dao.getItemmatrixByUser(usr);
+		
+		System.out.println(item.getContext());
+	}
 	
 	
 	

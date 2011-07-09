@@ -47,4 +47,23 @@ public class ItemMatrixDAO extends HibernateDaoSupport implements
 
 	}
 
+	public int getMaxId() {
+		log.debug("getMaxId");
+		try {
+			String hql = "select max(matrix.matrixId) " +
+					"from Matrix matrix ";
+			Query query = this.getSession().createQuery(hql);
+			List instance = query.list();
+			log.debug("Get successful");
+			return (Integer)instance.get(0);
+		} catch (RuntimeException re) {
+			System.out.println(re.toString());
+			log.error("Get failed", re);
+			return -1;
+		}
+		
+	}
+
+	
+	
 }

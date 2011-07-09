@@ -29,6 +29,12 @@ public class User implements java.io.Serializable {
 	public User(int id) {
 		usrId =id;
 	}
+	
+	public User(String token, String uext1, String uext2){
+		this.usrToken = token;
+		this.uext1 = uext1;
+		this.uext2 = uext2;
+	}
 
 	/** full constructor */
 	public User(String usrToken, String uext1, String uext2, Set matrixes,

@@ -61,6 +61,22 @@ public class TestPetService extends TestCase {
 		//assertEquals((Integer)1,spet.getUser().getUsrId());
 	}
 
+	
+	public void testGetInitPetId() {
+		ApplicationContext ctx=new ClassPathXmlApplicationContext("applicationContext.xml");
+		
+		UsrFrontInfoDAO dao = (UsrFrontInfoDAO) ctx.getBean("UsrFrontInfoDAO");	
+		User user= new User();
+		user.setUsrId(1);				
+		Usrfrontinfo info=dao.findByUsr(user);		
+
+		IPetService ps = (PetService) ctx.getBean("PetService");
+		
+		System.out.println("\n\n******************testGetInitPetId*****************");
+		System.out.println(ps.getInitPetId());
+	}
+	
+	
 	/*
 	@Test
 	public void testUpdateServicePet() {
