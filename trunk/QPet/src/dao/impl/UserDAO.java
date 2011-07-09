@@ -42,6 +42,11 @@ public class UserDAO extends HibernateDaoSupport
 					"from User usr ";
 			Query query = this.getSession().createQuery(hql);
 			List instance = query.list();
+			
+			
+			this.getSession().flush();
+			
+			
 			log.debug("Get successful");
 			return (Integer)instance.get(0);
 		} catch (RuntimeException re) {

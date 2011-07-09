@@ -40,12 +40,15 @@ public class TestUserDAO {
 	@Test
 	public void testGetMaxId() {
 		ApplicationContext ctx=new ClassPathXmlApplicationContext("applicationContext.xml");
-		UserDAO dao = (UserDAO) ctx.getBean("UserDAO");
+		
 		
 		System.out.println("\n\n************************testGetMaxId************************");
 		
-		for(int i=0;i<5;i++)
+		for(int i=0;i<10;i++){
+			UserDAO dao = (UserDAO) ctx.getBean("UserDAO");
 			System.out.println(i+":  "+dao.getMaxId());
+			dao = null;
+		}
 	}
 
 	@Test

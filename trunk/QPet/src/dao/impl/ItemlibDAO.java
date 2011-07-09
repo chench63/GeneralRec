@@ -16,6 +16,7 @@ public class ItemlibDAO  extends HibernateDaoSupport implements IItemlibDAO{
 		log.debug("saving Servicepet instance");
 		try {
 			getHibernateTemplate().save(itemlib);
+			
 			log.debug("save successful");
 		} catch (RuntimeException re) {
 			log.error("save failed", re);

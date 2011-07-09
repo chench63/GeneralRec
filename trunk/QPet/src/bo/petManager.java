@@ -97,6 +97,7 @@ public class petManager {
 		newUser.setServiceItemId(itemId);
 		newUser.setServicePetId(servicePetId);
 		newUser.setUsrId(usrId);
+		newUser.setItemId(itemId);
 		
 		usrFrontInfoService.saveOrUpdate(newUser);
 		return newUser;
