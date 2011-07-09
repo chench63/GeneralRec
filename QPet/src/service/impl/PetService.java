@@ -75,8 +75,14 @@ public class PetService implements IPetService{
 	}
 
 	public int findByUser(User usr) {
-		Servicepet sp= (Servicepet)servicePetDAO.findByUser(usr).get(0);
-		return sp.getUser().getUsrId();
+		try{
+			Servicepet sp= (Servicepet)servicePetDAO.findByUser(usr).get(0);
+			return sp.getUser().getUsrId();
+		}catch(Exception e){
+			e.printStackTrace();
+			return -1;
+		}
+		
 	}
 	
 	

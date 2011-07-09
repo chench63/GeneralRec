@@ -15,12 +15,33 @@ import vo.Itemlib;
 import vo.Itemmatrix;
 import vo.Petlib;
 import vo.Servicepet;
+import vo.User;
 import vo.Usrfrontinfo;
 
 import bo.petManager;
  
-public class TestpetManager {
+public class TestPetManager {
 
+	@Test
+	public void testRegister() {
+		ApplicationContext ctx=new ClassPathXmlApplicationContext("applicationContext.xml");
+		petManager pet = (petManager) ctx.getBean("petManager");
+		
+		String token = "TEST_PLEASE_DONT_READ";
+		User usr = new User();
+		usr.setUsrToken(token);
+		
+		Usrfrontinfo info= pet.Register(usr);
+		
+		System.out.println("\n************************Register**********");
+		System.out.println("FrontId: "+info.getFrontId());
+		System.out.println("ItemId: "+info.getItemId());
+		System.out.println("ServicepetId: "+info.getServicePetId());
+		System.out.println("usrId: "+info.getUsrId());
+		System.out.println("ServiceItemId: "+info.getServiceItemId());
+	}
+	
+	
 	@Test
 	public void testGetInstance() {
 		ApplicationContext ctx=new ClassPathXmlApplicationContext("applicationContext.xml");
@@ -31,6 +52,8 @@ public class TestpetManager {
 		"BWQRB65SD9QB7OSM0S90XA030EJRC1O0E5C4S8S1HK853GYUX32L";
 		
 		Usrfrontinfo info = pet.GetInstance(token);
+		
+		System.out.println("\n************************GetInstance**********");
 		System.out.println("UsrId: "+info.getUsrId());
 		//assertEquals(info.getUser().getUsrToken(),token);
 		

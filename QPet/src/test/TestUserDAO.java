@@ -42,7 +42,7 @@ public class TestUserDAO {
 		
 		System.out.println("\n\n************************testGetMaxId************************");
 		
-		for(int i=0;i<100;i++)
+		for(int i=0;i<5;i++)
 			System.out.println(i+":  "+dao.getMaxId());
 	}
 
