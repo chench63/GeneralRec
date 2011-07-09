@@ -27,7 +27,8 @@ public class TestMatrixService extends TestCase {
 		User user= new User();
 		user.setUsrId(1);				
 		Usrfrontinfo info= dao.findByUsr(user);
-//		int iBase = 0;//info.getItemmatrix().getItemId();
+//		int iBase = 0;
+//		info.getItemmatrix().getItemId();
 		
 		IMatrixService ms = (MatrixService) ctx.getBean("MatrixService");
 		Itemmatrix im= ms.getMatrixItemByUserInfo(info);
