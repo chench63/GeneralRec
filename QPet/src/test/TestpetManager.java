@@ -22,24 +22,24 @@ import bo.petManager;
  
 public class TestPetManager {
 
-	@Test
-	public void testRegister() {
-		ApplicationContext ctx=new ClassPathXmlApplicationContext("applicationContext.xml");
-		petManager pet = (petManager) ctx.getBean("petManager");
-		
-		String token = "TEST_PLEASE_DONT_READ";
-		User usr = new User();
-		usr.setUsrToken(token);
-		
-		Usrfrontinfo info= pet.Register(usr);
-		
-		System.out.println("\n************************Register**********");
-		System.out.println("FrontId: "+info.getFrontId());
-		System.out.println("ItemId: "+info.getItemId());
-		System.out.println("ServicepetId: "+info.getServicePetId());
-		System.out.println("usrId: "+info.getUsrId());
-		System.out.println("ServiceItemId: "+info.getServiceItemId());
-	}
+//	@Test
+//	public void testRegister() {
+//		ApplicationContext ctx=new ClassPathXmlApplicationContext("applicationContext.xml");
+//		petManager pet = (petManager) ctx.getBean("petManager");
+//		
+//		String token = "TEST_PLEASE_DONT_READ";
+//		User usr = new User();
+//		usr.setUsrToken(token);
+//		
+//		Usrfrontinfo info= pet.Register(usr);
+//		
+//		System.out.println("\n************************Register**********");
+//		System.out.println("FrontId: "+info.getFrontId());
+//		System.out.println("ItemId: "+info.getItemId());
+//		System.out.println("ServicepetId: "+info.getServicePetId());
+//		System.out.println("usrId: "+info.getUsrId());
+//		System.out.println("ServiceItemId: "+info.getServiceItemId());
+//	}
 	
 	
 	@Test

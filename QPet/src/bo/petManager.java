@@ -65,9 +65,9 @@ public class petManager {
 	 * 	1) usrtoken
 	 * */
 	
-	public Usrfrontinfo Register(User instance){
+	private Usrfrontinfo Register(User instance){
 		//Save Table User Info
-		userService.saveOrUpdateUser(instance);
+		userService.save(instance);
 		int usrId = instance.getUsrId();
 		User usr = new User(usrId);
 		
@@ -108,9 +108,13 @@ public class petManager {
 	 * 	You can treat as a handle.
 	 * */
 	public Usrfrontinfo GetInstance(String token){
+		
 		User usr= new User();
 		usr.setUsrToken(token);
-		return usrFrontInfoService.GetInstanceByUsr(usr);
+		if ( userService.checkExist(usr))
+			return usrFrontInfoService.GetInstanceByUsr(usr);
+		else
+			return this.Register(usr);
 	}
 	/*
 	 * Get common information of a Pet
@@ -172,10 +176,15 @@ public class petManager {
 	/*
 	 * Store a Item that user inputs.
 	 * */
-	public void AppendInterestingItem(Itemlib item, Usrfrontinfo info){
+	public boolean AppendInterestingItem(Itemlib item, Usrfrontinfo info){
 		User usr= new User();
+		
 		usr.setUsrId(info.getUsrId());
-		itemLibService.saveItem(item, usr);
+		if (itemLibService.checkExist(item))
+			return false;
+		else
+			itemLibService.saveItem(item, usr);
+		return true;
 	}
 	
 }

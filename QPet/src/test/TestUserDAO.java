@@ -29,6 +29,8 @@ public class TestUserDAO {
 				"OWVA31IRH2F9USBWQRB65SD9QB7OSM0S90XA030EJ" +
 				"RC1O0E5C4S8S1HK853GYUX32L";
 		
+//		System.out.println(usr.getUsrToken());
+		
 		assertEquals(usr.getUsrToken(),token);
 		
 		System.out.println("************************testFindById************************");
@@ -46,9 +48,30 @@ public class TestUserDAO {
 			System.out.println(i+":  "+dao.getMaxId());
 	}
 
-//	@Test
-//	public void testSaveUser() {
-//		fail("Not yet implemented");
-//	}
+	@Test
+	public void testSaveUser() {
+		ApplicationContext ctx=new ClassPathXmlApplicationContext("applicationContext.xml");
+		UserDAO dao = (UserDAO) ctx.getBean("UserDAO");
+		
+		String token = "TEST";
+		User usr =  new User();
+		usr.setUsrToken(token);
+		
+		System.out.println("\n\n************************testSaveUser************************");
+		System.out.println(dao.checkExist(usr));
+	}
 
+	@Test
+	public void testCheckExist() {
+		ApplicationContext ctx=new ClassPathXmlApplicationContext("applicationContext.xml");
+		UserDAO dao = (UserDAO) ctx.getBean("UserDAO");
+		
+		String token = "TEST";
+		User usr =  new User();
+		usr.setUsrToken(token);
+		
+		System.out.println("\n\n************************testSaveUser************************");
+		System.out.println(dao.checkExist(usr));
+	}
+	
 }

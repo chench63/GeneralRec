@@ -9,6 +9,7 @@ import dao.IMatrixDAO;
 import service.IMatrixService;
 import vo.Itemmatrix;
 import vo.Matrix;
+import vo.User;
 import vo.Usrfrontinfo;
  
 public class MatrixService implements IMatrixService{
@@ -45,25 +46,14 @@ public class MatrixService implements IMatrixService{
 	/*
 	 * Service Method
 	 * */
-	public Itemmatrix getMatrixItemByUserInfo(Usrfrontinfo usr){
-		int itemId = usr.getItemId();
-		System.out.println(itemId);
-		Itemmatrix item= itemMatrixDAO.findById(itemId);
-		//Itemmatrix item= itemMatrixDAO.findById(usr.getUser().getUsrId());
+	public Itemmatrix getMatrixItemByUserInfo(Usrfrontinfo usr){	
+		Itemmatrix item=  matrixDAO.getItemmatrixByUser( new User(usr.getUsrId()) );
 		
-		
-		Itemmatrix nextItem= new Itemmatrix();
-		nextItem.setItemId (
-				(item.getItemId()+1)%31
-				);
-		
-		usr.setItemId(nextItem.getItemId());
-		usrFrontInfoDAO.updateUsrFrontInfo(usr);
-		
-		if (item.getItemId() == 0)
+		if (item == null)
 			return null;
-		else
-			return item;
+		
+		usr.setItemId(item.getItemId());
+		return item;
 	}
 	
 	public void saveMatrix(Matrix instance){

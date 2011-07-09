@@ -31,7 +31,9 @@ public class TestItemLibService extends TestCase {
 		User usr = new User();
 		usr.setUsrId(1);
 		
-		itemSer.saveItem(item, usr);
+		if (!itemSer.checkExist(item))
+			itemSer.saveItem(item, usr);
+		
 		System.out.println("**********SaveItem******");
 	}
 

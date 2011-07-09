@@ -67,11 +67,7 @@ public class PetService implements IPetService{
 	public int getInitPetId(){
 		Random random = new Random(System. currentTimeMillis());
 		int id= petLibDAO.getMaxId();
-		int idT;
-		while (
-				( idT = random.nextInt(id) ) != 0
-				);
-		return idT;
+		return random.nextInt(id)+1;
 	}
 
 	public int findByUser(User usr) {

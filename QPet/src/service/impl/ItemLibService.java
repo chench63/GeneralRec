@@ -41,4 +41,8 @@ public class ItemLibService implements IItemLibService {
 		instance.setUser(usr);
 		serviceItemDAO.saveServiceItem(instance);
 	}
+	
+	public boolean checkExist( Itemlib item ){
+		return itemlibDAO.checkExist(item);
+	}
 }

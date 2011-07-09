@@ -12,6 +12,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 import org.springframework.transaction.annotation.Transactional;
 
+import vo.Itemmatrix;
 import vo.Matrix;
 import vo.User;
 import vo.Usrfrontinfo;
@@ -58,7 +59,6 @@ public class MatrixDAO extends HibernateDaoSupport implements IMatrixDAO {
 		}
 	}
 	
-	
 	public void saveMatrix(Matrix instance) {
 		log.debug("saving Servicepet instance");
 		try {
@@ -70,8 +70,6 @@ public class MatrixDAO extends HibernateDaoSupport implements IMatrixDAO {
 			throw re;
 		}
 	}
-
-
 	
 	public List<Matrix> getFilterUserSet( User lUser, User hUser ) {
 		log.debug("getFilterItem");
@@ -101,6 +99,28 @@ public class MatrixDAO extends HibernateDaoSupport implements IMatrixDAO {
 		}
 	}
 	
-	
-
+	public Itemmatrix getItemmatrixByUser(User usr){
+		try {
+			String hql = "select item  " +
+					"from Itemmatrix item  "+
+					"where item.itemId not IN (  "+
+					"select matrix.itemmatrix.itemId from Matrix matrix "+
+					"where matrix.user.usrId = ? " +
+					"	)";
+			
+			Query query = this.getSession().createQuery(hql);
+			query.setParameter(0, usr.getUsrId());
+			List<Itemmatrix> instance = query.list();
+			
+			log.debug("Get successful");
+			if ( instance.size() > 0 )
+				return instance.get(0);
+			else
+				return null;
+		} catch (RuntimeException re) {
+			log.error("Get failed", re);
+			re.printStackTrace();
+			return null;
+		}
+	}
 }

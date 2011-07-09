@@ -2,6 +2,7 @@ package dao.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.hibernate.Query;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 import vo.Itemlib;
@@ -21,7 +22,26 @@ public class ItemlibDAO  extends HibernateDaoSupport implements IItemlibDAO{
 			re.printStackTrace();
 			throw re;
 		}
-		
+	}
+	
+	
+	public boolean checkExist(Itemlib itemlib){
+		try {
+			String hql = " from Itemlib lib  " +
+					"where lib.imgUrl = ? or lib.context = ? or" +
+					"  lib.webUrl = ?  ";
+			
+			Query query = this.getSession().createQuery(hql);
+			query.setParameter(0, itemlib.getImgUrl());
+			query.setParameter(1,itemlib.getContext());
+			query.setParameter(2,itemlib.getWebUrl());
+			
+			return query.list().size() != 0 ;
+		} catch (RuntimeException re) {
+			System.out.println(re.toString());
+			log.error("Get failed", re); 
+			return false;
+		}
 	}
 	
 }

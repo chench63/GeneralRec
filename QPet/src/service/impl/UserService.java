@@ -17,11 +17,14 @@ public class UserService implements IUserService {
 		this.userDAO = userDAO;
 	}
 
-
-
-
-	public void saveOrUpdateUser(User usr) {
+	public void save(User usr) {
 		userDAO.saveUser(usr);
 	}
+
+	public boolean checkExist(User usr) {
+		return userDAO.checkExist(usr);
+	}
+	
+	
 
 }
