@@ -17,13 +17,13 @@ import dao.impl.UserDAO;
 import cfa.Entity;
 
 public class ItemManager {
-	private int populationNum = 100;  /*The population Num in a field*/
-	private int CUId = 10;				  /*The current UserId Default: 0 */
-	private int UIdMax = 100;				  /*The max UserId*/
+//	private int populationNum = 100;  /*The population Num in a field*/
+	private int CUId = 0;			  /*The current UserId Default: 0 */
+	private int UIdMax;				  /*The max UserId*/
 	private int fieldNum = 10;		  /*The Number of people's flavor*/
-	private int CfNum =1;
+	private int CfNum =1;			  /*The current field Id Default: 0 */
 	private int IIdMax = 0;           /*the max itemId of ItemMatrix*/
-	private int step = 1;
+	private int step = 10000;
 	
 	public IMatrixDAO iMatrixDAO;
 	public IServiceItemDAO iServiceItemDAO;
@@ -118,6 +118,7 @@ public class ItemManager {
 			Matrix tmp = new Matrix();
 			itemMatrix.setItemId(i);
 			tmp.setItemmatrix(itemMatrix);
+			tmp.setUser(usr);
 			tmp.setScore(0);
 			rList.add(tmp);
 		}
@@ -165,9 +166,6 @@ public class ItemManager {
 	
 	private boolean stop(){
 		CUId += step;
-		
-		System.out.println("Stop...");
-		
 		
 		if ( CUId >= UIdMax )
 			return false;
