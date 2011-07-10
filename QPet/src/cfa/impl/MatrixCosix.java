@@ -17,20 +17,21 @@ public class MatrixCosix implements ICalculator {
 	
 	public List<Double> calculating(List row) {
 		Entity base = (Entity) row.get(1);
-		
 		List<Double> instance = new ArrayList<Double>();
 		
 		for (Iterator<Entity> iter= row.iterator();iter.hasNext();){
 			Entity eachEnt= (Entity)iter.next();
-			
 			double res;
 			try{
 				res=vectorMul(base, eachEnt) / vectorMode(base,eachEnt);
+				
+				System.out.println("vectorMul: "+vectorMul(base, eachEnt)+
+						"   vectorMode: "+vectorMode(base,eachEnt));
 			}
 			catch(Exception e){
+				e.printStackTrace();
 				res = 0.0;
 			}
-			
 			instance.add((Double) res);
 		}
 		
@@ -51,6 +52,8 @@ public class MatrixCosix implements ICalculator {
 	public double vectorMode(Entity base, Entity each){
 		List<Matrix> bList = base.getRow();
 		List<Matrix> eList = each.getRow();
+		
+//		System.out.println(eList.size());
 		
 		double bTmp = 0.0;
 		double eTmp = 0.0;
