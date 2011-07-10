@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import vo.Itemmatrix;
 import vo.Matrix;
 import vo.User;
+import dao.IItemMatrixDAO;
 import dao.IMatrixDAO;
 import dao.IServiceItemDAO;
 import dao.IUserDAO;
@@ -20,11 +22,13 @@ public class ItemManager {
 	private int UIdMax = 100;				  /*The max UserId*/
 	private int fieldNum = 10;		  /*The Number of people's flavor*/
 	private int CfNum =1;
+	private int IIdMax = 0;           /*the max itemId of ItemMatrix*/
 	private int step = 1;
 	
 	public IMatrixDAO iMatrixDAO;
 	public IServiceItemDAO iServiceItemDAO;
 	public IUserDAO iUserDAO;
+	public IItemMatrixDAO iItemMatrixDAO;
 	
 	public ItemManager(){
 //		iMatrixDAO = new MatrixDAO();
@@ -39,6 +43,14 @@ public class ItemManager {
 
 	public void setiMatrixDAO(IMatrixDAO iMatrixDAO) {
 		this.iMatrixDAO = iMatrixDAO;
+	}
+
+	public IItemMatrixDAO getiItemMatrixDAO() {
+		return iItemMatrixDAO;
+	}
+
+	public void setiItemMatrixDAO(IItemMatrixDAO iItemMatrixDAO) {
+		this.iItemMatrixDAO = iItemMatrixDAO;
 	}
 
 	public IServiceItemDAO getiServiceItemDAO() {
@@ -95,12 +107,33 @@ public class ItemManager {
 		
 	}
 	
-	private Entity getEntity(User usr){
+	public Entity getEntity(User usr){
 		Entity res = new Entity();
+		
+		List<Matrix> mList = iMatrixDAO.findByUsr(usr);
+		List<Matrix> rList = new ArrayList<Matrix>() ;
+		
+		for(int i=0;i <= IIdMax;i++){
+			Itemmatrix itemMatrix = new Itemmatrix();
+			Matrix tmp = new Matrix();
+			itemMatrix.setItemId(i);
+			tmp.setItemmatrix(itemMatrix);
+			tmp.setScore(0);
+			rList.add(tmp);
+		}
+		
+		//Format the Matrix, make them as the same as the Table MatrixItem
+		
+		for(Iterator<Matrix> iter=mList.iterator();iter.hasNext();){
+			Matrix each = iter.next();
+			int index = each.getItemmatrix().getItemId();	
+			rList.set(index, each);
+		}
+		
 		res.setRow( 
-				iMatrixDAO.findByUsr(usr)
+				rList
 				);
-		System.out.println("********Loop");
+//		System.out.println("********Loop");
 		return res;
 	}
 	
@@ -145,5 +178,8 @@ public class ItemManager {
 	
 	public void init(){
 		UIdMax = iUserDAO.getMaxId();
+		IIdMax = iItemMatrixDAO.getMaxId();
+		
+		System.out.println("ItemManager.init() ....UIdMax: "+UIdMax+"    IIdMax: "+IIdMax);
 	}
 }
