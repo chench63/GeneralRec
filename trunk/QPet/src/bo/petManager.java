@@ -75,19 +75,22 @@ public class petManager {
 			//Save Table ServicePet Info
 			Servicepet sp = new Servicepet();
 			Petlib pl = new Petlib();
-			int petId = petService.getInitPetId();
-			pl.setPetId(petId);
+			int petId = petService.getInitPetId();	
 			int exp = 0;
 			int level = 0;
+			
+			pl.setPetId(petId);
 			sp.setExp(exp);
 			sp.setLevel(level);
 			sp.setPetlib(pl);
 			sp.setUser(usr);
+			
 			petService.saveOrUpdateServicePet(sp);
 		
 			//Save Table UsrFrontInfo Info
 //			System.out.println("Message From petManager  usrId: "+usrId);
 			int servicePetId = petService.findByUser( new User(usrId) );
+			
 			int itemId = 0 ;
 			Usrfrontinfo newUser=  new Usrfrontinfo();
 			newUser.setServiceItemId(itemId);
