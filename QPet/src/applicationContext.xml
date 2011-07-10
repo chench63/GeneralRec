@@ -160,6 +160,9 @@
 		<property name="iUserDAO">
 			<ref bean="UserDAO" />
 		</property>
+		<property name="iItemMatrixDAO">
+			<ref bean="ItemMatrixDAO" />
+		</property>
 	</bean>
 	
 	

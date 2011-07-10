@@ -2,6 +2,9 @@ package cfa;
 
 import java.util.List;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import cfa.ItemManager;
 import cfa.ICalculator;
 import cfa.IComparison;
@@ -13,9 +16,13 @@ public class Main {
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		ApplicationContext ctx=new ClassPathXmlApplicationContext("applicationContext.xml");
+		
+		
+		
 		ICalculator iCalculator = new MatrixCosix();
 		IComparison iComparison = new CosixEva();
-		ItemManager itemManager = new ItemManager();
+		ItemManager itemManager = (ItemManager) ctx.getBean("ItemManager");
 		
 		List<Entity> uList = itemManager.getList();
 		if (uList != null){
@@ -26,8 +33,11 @@ public class Main {
 			
 			
 			List<Double> res= iCalculator.calculating(uList);
-			iComparison.evaluating(uList, res);
-			itemManager.saveList(uList);
+			
+			
+			
+//			iComparison.evaluating(uList, res);
+//			itemManager.saveList(uList);
 		}
 		
 	}
