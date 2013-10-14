@@ -24,10 +24,5 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/chenkh/workspace/ExtLib/thep-0.2.jar" sourcepath="C:/Users/chenkh/workspace/ExtLib/thep-0.2-javadoc.zip">
-		<attributes>
-			<attribute name="javadoc_location" value="file:/C:/Users/chenkh/workspace/ExtLib/doc/"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
