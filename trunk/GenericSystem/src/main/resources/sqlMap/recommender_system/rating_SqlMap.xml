@@ -41,12 +41,12 @@
     where movieId in (#itemI:INTEGER#, #itemJ:INTEGER#) AND (time >= #first:TIMESTAMP#) AND (time < #second:TIMESTAMP#)
     ]]>
 	</select>
-	<select id="excute_select_general" resultMap="abatorgenerated_RatingResult"
+	<select id="excute_select_general_rating" resultMap="abatorgenerated_RatingResult"
 		parameterClass="java.util.HashMap">
     <![CDATA[
     select id, usrId, movieId, rating, time
     from rating
-    where movieId >= #start:INTEGER# AND movieId < #end:"INTEGER"#) AND (time >= #first:TIMESTAMP#) AND (time < #second:TIMESTAMP#)
+    where (movieId >= #start:INTEGER# AND movieId < #end:"INTEGER"#) AND (time >= #first:TIMESTAMP#) AND (time < #second:TIMESTAMP#)
     ]]>
 	</select>
 	<select id="excute_select_missing_rating" resultMap="abatorgenerated_RatingResult"
