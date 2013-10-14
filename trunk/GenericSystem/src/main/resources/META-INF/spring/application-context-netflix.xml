@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.2.xsd
+		http://www.springframework.org/schema/util
+		http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+	<!-- Database -->
+	<bean id="datasource" class="edu.tongji.orm.NetflixDataSource">
+		<property name="lazy" value="true" />
+		<property name="indexOfMoviesFront" value="1" />
+		<property name="countOfMovieFiles" value="17770" />
+		<property name="ratingDAO" ref="ratingDAO" />
+		<property name="stopper" ref="stopper" />
+		<property name="itemI" value="5317" />
+		<property name="itemJ" value="15124" />
+		<property name="sourceEntity">
+			<util:map key-type="edu.tongji.parser.TemplateType">
+				<entry key="NETFLIX_RATING_TEMPLATE"
+					value="src/main/resources/dataset/netflix/training_set/mv_" />
+			</util:map>
+		</property>
+	</bean>
+
+	<!-- Entity Manager -->
+	<bean id="RecommendationEngine" class="edu.tongji.engine.FastAccRecommendationEngine">
+		<property name="dataSource" ref="datasource" />
+		<property name="processor" ref="fastRecommendationProcessor" />
+		<property name="processorContext" ref="recommendationContext" />
+		<property name="contextEnvelope" ref="contextEnvelope" />
+	</bean>
+	<bean id="recommendationContext" class="edu.tongji.context.AccRecommendationContext">
+		<property name="itemI" value="5317" />
+		<property name="itemJ" value="15124" />
+	</bean>
+	<bean id="recommendationProcessor" class="edu.tongji.processor.AccRecommendationProcessor">
+		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl"></property>
+		<property name="stopper" ref="stopper"></property>
+	</bean>
+	<bean id="fastRecommendationProcessor" class="edu.tongji.processor.FastAccRecommendationProcessor">
+		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl"></property>
+		<property name="stopper" ref="stopper"></property>
+		<property name="similarityFunction" ref="correlationBasedSimularityFunction"></property>
+	</bean>
+	<bean id="contextEnvelope" class="edu.tongji.context.ContextEnvelope">
+		<property name="samplingExpr">
+			<util:map key-type="edu.tongji.orm.SerializableBeanType">
+				<entry key="RATING_BEAN" value="FROM RATING" />
+			</util:map>
+		</property>
+	</bean>
+
+
+	<!-- Function Set -->
+	<bean id="cosineSimularityFunction" class="edu.tongji.function.CosineSimularityFunction" />
+	<bean id="correlationBasedSimularityFunction" class="edu.tongji.function.CorrelationBasedSimularityFunction" />
+	<bean id="adjustedCosineSimularityFunction" class="edu.tongji.function.AdjustedCosineSimularityFunction" />
+
+
+	<!-- Stopper -->
+	<bean id="stopper" class="edu.tongji.stopper.TimestampStopper">
+		<property name="scrachLine" value="2005-12-31 00:00:00" />
+		<property name="deadLine" value="2005-12-31 00:00:00" />
+		<property name="stepDay" value="1" />
+	</bean>
+
+
+	<!-- ******************************************** 配置DB数据源 ************************************************ -->
+	<!-- 1.配置数据源 -->
+	<bean id="dataSourceOfDB" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url"
+			value="jdbc:mysql://127.0.0.1:3306/recommendersystem_netflix" />
+		<property name="username" value="chench" />
+		<property name="password" value="123456" />
+	</bean>
+
+	<!-- 2.配置ibatis配置文件 -->
+	<bean id="sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+		<property name="dataSource">
+			<ref local="dataSourceOfDB" />
+		</property>
+		<property name="configLocation">
+			<value>classpath:META-INF/ibatis/ibatisConfig.xml</value>
+		</property>
+	</bean>
+	<bean id="sqlMapClientTemplate" class="org.springframework.orm.ibatis.SqlMapClientTemplate">
+		<property name="sqlMapClient" ref="sqlMapClient" />
+	</bean>
+
+	<!-- 3.配置相对应的DAO -->
+	<bean id="movieDAO" class="edu.tongji.dao.MovieDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient" />
+	</bean>
+
+	<bean id="userDAO" class="edu.tongji.dao.UserDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient" />
+	</bean>
+
+	<bean id="ratingDAO" class="edu.tongji.dao.RatingDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient" />
+	</bean>
+
+	<bean id="valueOfItemsDAOImpl" class="edu.tongji.dao.ValueOfItemsDAOImpl">
+		<property name="sqlMapClient" ref="sqlMapClient" />
+	</bean>
+
+</beans>
