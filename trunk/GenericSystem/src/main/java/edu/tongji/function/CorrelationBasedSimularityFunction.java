@@ -44,7 +44,7 @@ public class CorrelationBasedSimularityFunction implements Function {
             throw new OwnedException(FunctionErrorCode.EMPTY_LIST);
         }
 
-        LoggerUtil.debug(logger, "CorrelationBasedSimularityFunction 开始处理...\n");
+        LoggerUtil.debug(logger, "CorrelationBasedSimularityFunction 开始处理...");
 
         return numeratorValue(oper1, oper2) / denominatorValue(oper1, oper2);
     }
