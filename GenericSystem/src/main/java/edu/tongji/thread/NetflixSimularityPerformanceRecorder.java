@@ -7,12 +7,16 @@ package edu.tongji.thread;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.util.StopWatch;
 
 import edu.tongji.cache.SimularityStreamCache;
 import edu.tongji.context.ProcessorContextHelper;
 import edu.tongji.function.Function;
+import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.model.Rating;
+import edu.tongji.util.ExceptionUtil;
+import edu.tongji.util.LoggerUtil;
 
 /**
  * 
@@ -21,12 +25,20 @@ import edu.tongji.model.Rating;
  */
 public class NetflixSimularityPerformanceRecorder implements Runnable {
 
-    private int      iStart;
+    /** movieId开始值*/
+    private int                 iStart;
 
-    private int      iEnd;
+    /** movieId结束值*/
+    private int                 iEnd;
+
+    /** 初始线程，后续会join*/
+    private Thread              triger;
 
     /** 相似度计算函数*/
-    private Function similarityFunction;
+    private Function            similarityFunction;
+
+    /** logger */
+    private final static Logger logger = Logger.getLogger(LoggerDefineConstant.SERVICE_NORMAL);
 
     /** 
      * @see java.lang.Runnable#run()
@@ -34,10 +46,17 @@ public class NetflixSimularityPerformanceRecorder implements Runnable {
     @Override
     public void run() {
 
+        try {
+            triger.join();
+        } catch (InterruptedException e) {
+            ExceptionUtil.caught(e, "NetflixSimularityPerformanceRecorder 线程等待join异常");
+        }
+
+        LoggerUtil.debug(logger, "NetflixSimularityPerformanceRecorder 开始执行计算");
         StopWatch stopWatch = new StopWatch();
         for (int i = iStart; i < iEnd; i++) {
             List<Rating> ratingOfI = SimularityStreamCache.get(String.valueOf(i));
-            for (int j = 0; j < i; j++) {
+            for (int j = 1; j < i; j++) {
                 List<Rating> ratingOfJ = SimularityStreamCache.get(String.valueOf(j));
                 List<Integer> valuesOfI = new ArrayList<Integer>();
                 List<Integer> valuesOfJ = new ArrayList<Integer>();
@@ -58,6 +77,15 @@ public class NetflixSimularityPerformanceRecorder implements Runnable {
             }
         }
 
+    }
+
+    /**
+     * Setter method for property <tt>triger</tt>.
+     * 
+     * @param triger value to be assigned to property triger
+     */
+    public void setTriger(Thread triger) {
+        this.triger = triger;
     }
 
     /**

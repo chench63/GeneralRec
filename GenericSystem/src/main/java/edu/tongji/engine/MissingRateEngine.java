@@ -7,11 +7,6 @@ package edu.tongji.engine;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.ConfigurableApplicationContext;
-
 import edu.tongji.dao.RatingDAO;
 import edu.tongji.dao.ValueOfItemsDAO;
 import edu.tongji.thread.NetflixRatingDBReader;
@@ -23,16 +18,13 @@ import edu.tongji.util.ExceptionUtil;
  * @author chenkh
  * @version $Id: MissingRateEngine.java, v 0.1 2013-10-8 下午3:30:45 chenkh Exp $
  */
-public class MissingRateEngine implements Engine, ApplicationContextAware {
-
-    /** Spring 上下文环境 */
-    private ConfigurableApplicationContext applicationContext;
+public class MissingRateEngine extends RecommendationMultiThreadEngine {
 
     /** Reader数量 */
-    private int                            numOfReader;
+    private int numOfReader;
 
     /** Writer数量 */
-    private int                            numOfWriter;
+    private int numOfWriter;
 
     /** 
      * @see edu.tongji.engine.Engine#excute()
@@ -79,14 +71,6 @@ public class MissingRateEngine implements Engine, ApplicationContextAware {
         writer.setValueOfItemsDAO((ValueOfItemsDAO) applicationContext
             .getBean("valueOfItemsDAOImpl"));
         return writer;
-    }
-
-    /** 
-     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
-     */
-    @Override
-    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = (ConfigurableApplicationContext) applicationContext;
     }
 
     /**
