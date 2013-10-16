@@ -42,9 +42,9 @@ public class RecommendationProcessor implements Processor {
      */
     @Override
     public void process(ProcessorContext processorContext) {
-        List<Integer> ratingsValusOfItemI = ((RecommendationContext) processorContext)
+        List<Number> ratingsValusOfItemI = ((RecommendationContext) processorContext)
             .getRatingsValusOfItemI();
-        List<Integer> ratingsValusOfItemJ = ((RecommendationContext) processorContext)
+        List<Number> ratingsValusOfItemJ = ((RecommendationContext) processorContext)
             .getRatingsValusOfItemJ();
 
         //计算相似度的值

@@ -57,8 +57,8 @@ public class FastAccRecommendationProcessor implements Processor {
         List<Rating> newCustomersOfItemJ = ((AccRecommendationContext) processorContext)
             .getNewCustomersOfItemJ();
 
-        List<Integer> ratingsValusOfItemI = new ArrayList<Integer>();
-        List<Integer> ratingsValusOfItemJ = new ArrayList<Integer>();
+        List<Number> ratingsValusOfItemI = new ArrayList<Number>();
+        List<Number> ratingsValusOfItemJ = new ArrayList<Number>();
         ProcessorContextHelper.forgeRatingValues(newCustomersOfItemI, newCustomersOfItemJ,
             ratingsValusOfItemI, ratingsValusOfItemJ);
 

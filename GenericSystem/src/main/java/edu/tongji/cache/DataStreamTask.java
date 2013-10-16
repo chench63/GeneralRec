@@ -4,6 +4,8 @@
  */
 package edu.tongji.cache;
 
+import edu.tongji.configure.ConfigurationConstant;
+
 /**
  * 
  * @author chenkh
@@ -12,10 +14,10 @@ package edu.tongji.cache;
 public class DataStreamTask {
 
     /** 主任务参数i, 分配任务式使用*/
-    public static int I = 2;
+    public static int I = ConfigurationConstant.I;
 
     /** 协任务参数j, 分配任务式使用*/
-    public static int J = 1;
+    public static int J = ConfigurationConstant.J;
 
     /** 当前任务i */
     public int        i;

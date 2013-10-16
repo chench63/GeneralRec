@@ -14,6 +14,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.log4j.Logger;
 
+import edu.tongji.configure.ConfigurationConstant;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.util.LoggerUtil;
 
@@ -27,23 +28,14 @@ import edu.tongji.util.LoggerUtil;
 public final class DataStreamCache extends Observable {
 
     /** 数据缓存, 此处不使用Stack, 自行实现线程安全 */
-    private static List<DataStreamHolder> stack            = new ArrayList<DataStreamHolder>();
+    private static List<DataStreamHolder> stack  = new ArrayList<DataStreamHolder>();
 
     /** 读写锁 */
-    private static final ReadWriteLock    lock             = new ReentrantReadWriteLock();
+    private static final ReadWriteLock    lock   = new ReentrantReadWriteLock();
 
     /** logger */
-    private final static Logger           logger           = Logger
-                                                               .getLogger(LoggerDefineConstant.SERVICE_CACHE);
-
-    /**  最大缓存容量 */
-    private final static int              MAX_CACHE_SIZE   = 10000;
-
-    /**  单任务最大容量 */
-    private final static int              SINGLE_TASK_SIZE = 10;
-
-    /**  任务容量 */
-    private final static int              TASK_SIZE        = 3001;
+    private final static Logger           logger = Logger
+                                                     .getLogger(LoggerDefineConstant.SERVICE_CACHE);
 
     /**
      * 禁用构造函数
@@ -61,11 +53,12 @@ public final class DataStreamCache extends Observable {
 
         int I = DataStreamTask.I;
         int J = DataStreamTask.J;
-        int endJ = (J + SINGLE_TASK_SIZE < I) ? (J + SINGLE_TASK_SIZE) : I;
+        int endJ = (J + ConfigurationConstant.SINGLE_TASK_SIZE < I) ? (J + ConfigurationConstant.SINGLE_TASK_SIZE)
+            : I;
         DataStreamTask task = new DataStreamTask(I, J, endJ);
 
         //判断任务是否结束
-        if (I == TASK_SIZE) {
+        if (I == ConfigurationConstant.TASK_SIZE) {
             LoggerUtil.info(logger, "DataStreamCache  任务结束.");
             return null;
         }
@@ -155,6 +148,6 @@ public final class DataStreamCache extends Observable {
      * @return
      */
     public static boolean willOverflow() {
-        return stack.size() >= MAX_CACHE_SIZE;
+        return stack.size() >= ConfigurationConstant.MAX_CACHE_SIZE;
     }
 }
