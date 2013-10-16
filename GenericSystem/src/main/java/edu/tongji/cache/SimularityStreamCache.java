@@ -133,6 +133,33 @@ public final class SimularityStreamCache extends Observable {
     }
 
     /**
+     * 添加新的评分记录
+     * 
+     * @param ratings
+     */
+    public static void puts(List<Rating> ratings) {
+        //读写保护，加写锁
+        Lock writeLock = lock.writeLock();
+        writeLock.lock();
+
+        try {
+            for (Rating rating : ratings) {
+                String movieId = String.valueOf(rating.getMovieId());
+                List<Rating> ratingsOfContext = ratingContext.get(movieId);
+
+                if (ratingsOfContext == null) {
+                    ratingsOfContext = new ArrayList<Rating>();
+                }
+                Collections.synchronizedCollection(ratingsOfContext).add(rating);
+                ratingContext.put(movieId, ratingsOfContext);
+            }
+        } finally {
+            writeLock.unlock();
+            LoggerUtil.info(logger, "缓存加载数据完毕，加载量：" + ratings.size());
+        }
+    }
+
+    /**
      * 此处直接得到List以后，其实后续的List的[读写操作]不是线程安全的。
      * 
      * @param movieId
