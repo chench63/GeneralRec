@@ -19,6 +19,9 @@
 		<property name="recorder">
 			<list>
 				<ref bean="NetflixSimularityPerformanceRecorder"></ref>
+				<ref bean="NetflixSimularityPerformanceRecorder"></ref>
+				<ref bean="NetflixSimularityPerformanceRecorder"></ref>
+				<ref bean="NetflixSimularityPerformanceRecorder"></ref>
 			</list>
 		</property>
 	</bean>
@@ -27,16 +30,13 @@
 	<!-- ******************************************** 多线程部分************************************************ -->
 	<bean id="NetflixSimularityPerformanceRecorder" class="edu.tongji.thread.NetflixSimularityPerformanceRecorder"
 		scope="prototype">
-		<property name="iStart" value="1" />
-		<property name="iEnd" value="4" />
-		<property name="triger" ref="NetflixSimularityPerformanceDBReader" />
 		<property name="similarityFunction" ref="correlationBasedSimularityFunction" />
 	</bean>
 
 	<bean id="NetflixSimularityPerformanceDBReader" class="edu.tongji.thread.NetflixSimularityPerformanceDBReader">
 		<property name="ratingDAO" ref="ratingDAO" />
 		<property name="movieStart" value="1" />
-		<property name="movieEnd" value="4" />
+		<property name="movieEnd" value="100" />
 		<property name="scrachTimeLine" value="2000-12-31 00:00:00" />
 		<property name="endTimeLine" value="2005-12-31 00:00:00" />
 	</bean>
