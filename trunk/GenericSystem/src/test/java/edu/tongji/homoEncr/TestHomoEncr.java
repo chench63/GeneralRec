@@ -54,4 +54,23 @@ public class TestHomoEncr {
 
     }
 
+    @Test
+    public void test2() throws Exception {
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
+        /* instantiating two plaintext msgs*/
+        BigInteger m1 = new BigInteger("1");
+        BigInteger m2 = new BigInteger("10000000000");
+        /* encryption*/
+        BigInteger em1 = PaillierUtil.Encryptions(m1);
+        BigInteger em2 = PaillierUtil.Encryptions(m2);
+        /* printout decrypted text */
+        System.out.println(PaillierUtil.Decryptions(em1).toString());
+        System.out.println(PaillierUtil.Decryptions(em2).toString());
+
+        stopWatch.stop();
+        System.out.println(stopWatch.getLastTaskTimeMillis());
+
+    }
+
 }
