@@ -36,7 +36,7 @@
 	<bean id="NetflixSimularityPerformanceDBReader" class="edu.tongji.thread.NetflixSimularityPerformanceDBReader">
 		<property name="ratingDAO" ref="ratingDAO" />
 		<property name="movieStart" value="1" />
-		<property name="movieEnd" value="100" />
+		<property name="movieEnd" value="177" />
 		<property name="scrachTimeLine" value="2000-12-31 00:00:00" />
 		<property name="endTimeLine" value="2005-12-31 00:00:00" />
 	</bean>

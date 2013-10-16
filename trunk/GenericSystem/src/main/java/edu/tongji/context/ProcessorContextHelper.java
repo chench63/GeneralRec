@@ -33,8 +33,8 @@ public final class ProcessorContextHelper {
      * @param ratingsValusOfItemJ
      */
     public static void forgeRatingValues(List<Rating> ratingsOfItemI, List<Rating> ratingsOfItemJ,
-                                         List<Integer> ratingsValusOfItemI,
-                                         List<Integer> ratingsValusOfItemJ) {
+                                         List<Number> ratingsValusOfItemI,
+                                         List<Number> ratingsValusOfItemJ) {
         doForgeRatingValues(ratingsOfItemI, ratingsOfItemJ, ratingsValusOfItemI,
             ratingsValusOfItemJ, true);
     }
@@ -50,8 +50,10 @@ public final class ProcessorContextHelper {
      */
     public static void doForgeRatingValues(List<Rating> ratingsOfItemI,
                                            List<Rating> ratingsOfItemJ,
-                                           List<Integer> ratingsValusOfItemI,
-                                           List<Integer> ratingsValusOfItemJ, boolean isCountSingles) {
+                                           List<Number> ratingsValusOfItemI,
+                                           List<Number> ratingsValusOfItemJ,
+                                           boolean isCountSingles) {
+        //优化代码效率，使搜索复杂度为O(1)，但是提高了内存使用率
         Map<String, Integer> usrIdOfItemJ = new HashMap<String, Integer>();
         for (int i = 0; i < ratingsOfItemJ.size(); i++) {
             usrIdOfItemJ.put(ratingsOfItemJ.get(i).getUsrId(), i);
@@ -67,7 +69,7 @@ public final class ProcessorContextHelper {
             indexOfRatingsJ = usrIdOfItemJ.get(rating.getUsrId());
 
             if (indexOfRatingsJ != null && indexOfRatingsJ > -1) {
-                ratingsValusOfItemI.add(rating.getRating());
+                ratingsValusOfItemI.add( (Integer) rating.getRating());
                 ratingsValusOfItemJ.add(ratingsOfItemJ.get(indexOfRatingsJ).getRating());
                 ratingsOfItemJ.remove(indexOfRatingsJ);
             } else if (isCountSingles) {

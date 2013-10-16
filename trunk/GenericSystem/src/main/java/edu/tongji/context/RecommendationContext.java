@@ -45,10 +45,10 @@ public class RecommendationContext implements ProcessorContext {
     private String              itemJ;
 
     /** itemI所有用户的评分向量*/
-    private final List<Integer> ratingsValusOfItemI = new ArrayList<Integer>();
+    private final List<Number> ratingsValusOfItemI = new ArrayList<Number>();
 
     /** itemJ所有用户的评分向量*/
-    private final List<Integer> ratingsValusOfItemJ = new ArrayList<Integer>();
+    private final List<Number> ratingsValusOfItemJ = new ArrayList<Number>();
 
     /**
      * 构造函数
@@ -186,7 +186,7 @@ public class RecommendationContext implements ProcessorContext {
      * 
      * @return property value of ratingsValusOfItemI
      */
-    public List<Integer> getRatingsValusOfItemI() {
+    public List<Number> getRatingsValusOfItemI() {
         return ratingsValusOfItemI;
     }
 
@@ -195,7 +195,7 @@ public class RecommendationContext implements ProcessorContext {
      * 
      * @return property value of ratingsValusOfItemJ
      */
-    public List<Integer> getRatingsValusOfItemJ() {
+    public List<Number> getRatingsValusOfItemJ() {
         return ratingsValusOfItemJ;
     }
 

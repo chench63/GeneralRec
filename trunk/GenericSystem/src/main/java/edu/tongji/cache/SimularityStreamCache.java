@@ -16,6 +16,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.log4j.Logger;
 
+import edu.tongji.configure.ConfigurationConstant;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.model.Rating;
 import edu.tongji.util.LoggerUtil;
@@ -28,22 +29,16 @@ import edu.tongji.util.LoggerUtil;
 public final class SimularityStreamCache extends Observable {
 
     /** 读写锁 */
-    private static final ReadWriteLock             lock             = new ReentrantReadWriteLock();
+    private static final ReadWriteLock             lock          = new ReentrantReadWriteLock();
 
     /** logger */
-    private final static Logger                    logger           = Logger
-                                                                        .getLogger(LoggerDefineConstant.SERVICE_CACHE);
+    private final static Logger                    logger        = Logger
+                                                                     .getLogger(LoggerDefineConstant.SERVICE_CACHE);
     /** 本地数据缓存*/
-    private final static Map<String, List<Rating>> ratingContext    = new HashMap<String, List<Rating>>();
+    private final static Map<String, List<Rating>> ratingContext = new HashMap<String, List<Rating>>();
 
     /** 运行时间*/
-    private static long                            runtimes         = 0;
-
-    /**  单任务最大容量 */
-    private final static int                       SINGLE_TASK_SIZE = 1000;
-
-    /**  任务容量 */
-    private final static int                       TASK_SIZE        = 50;
+    private static long                            runtimes      = 0;
 
     /**
      * NetflixRatingRecorder任务
@@ -53,11 +48,12 @@ public final class SimularityStreamCache extends Observable {
     public static synchronized DataStreamTask task() {
         int I = DataStreamTask.I;
         int J = DataStreamTask.J;
-        int endJ = (J + SINGLE_TASK_SIZE < I) ? (J + SINGLE_TASK_SIZE) : I;
+        int endJ = (J + ConfigurationConstant.SINGLE_TASK_SIZE < I) ? (J + ConfigurationConstant.SINGLE_TASK_SIZE)
+            : I;
         DataStreamTask task = new DataStreamTask(I, J, endJ);
 
         //判断任务是否结束
-        if (I == TASK_SIZE) {
+        if (I == ConfigurationConstant.TASK_SIZE) {
             LoggerUtil.info(logger, "DataStreamCache  任务结束.");
             return null;
         }

@@ -55,8 +55,8 @@ public class NetflixSimularityPerformanceRecorder implements Runnable {
 
                 List<Rating> ratingOfI = SimularityStreamCache.get(String.valueOf(i));
                 List<Rating> ratingOfJ = SimularityStreamCache.get(String.valueOf(j));
-                List<Integer> valuesOfI = new ArrayList<Integer>();
-                List<Integer> valuesOfJ = new ArrayList<Integer>();
+                List<Number> valuesOfI = new ArrayList<Number>();
+                List<Number> valuesOfJ = new ArrayList<Number>();
                 ProcessorContextHelper.doForgeRatingValues(ratingOfI, ratingOfJ, valuesOfI,
                     valuesOfJ, false);
 
