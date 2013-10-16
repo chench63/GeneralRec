@@ -39,13 +39,13 @@ public class NetflixSimlarityPerformanceMultiThreadEngine extends Recommendation
         
         reader.start();
         LoggerUtil.info(logger, "Reader线程启动完毕.");
-        
-        ExecutorService exec = Executors.newCachedThreadPool();
         try {
             reader.join();
         } catch (InterruptedException e) {
             ExceptionUtil.caught(e, "NetflixSimularityPerformanceRecorder 线程等待join异常");
         }
+
+        ExecutorService exec = Executors.newCachedThreadPool();
         for (Runnable runnable : recorder) {
             exec.execute(runnable);
         }

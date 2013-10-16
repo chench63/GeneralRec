@@ -4,7 +4,9 @@
  */
 package edu.tongji.context;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import edu.tongji.model.Rating;
 
@@ -50,15 +52,21 @@ public final class ProcessorContextHelper {
                                            List<Rating> ratingsOfItemJ,
                                            List<Integer> ratingsValusOfItemI,
                                            List<Integer> ratingsValusOfItemJ, boolean isCountSingles) {
+        Map<String, Integer> usrIdOfItemJ = new HashMap<String, Integer>();
+        for (int i = 0; i < ratingsOfItemJ.size(); i++) {
+            usrIdOfItemJ.put(ratingsOfItemJ.get(i).getUsrId(), i);
+        }
+
         //扫描ratingsOfItemI所有元素，用户给item打过分则填入真实值，否则补零修正
         Rating rating = null;
-        int indexOfRatingsJ = -1;
+        Integer indexOfRatingsJ = -1;
         for (int i = 0, j = ratingsOfItemI.size(); i < j; i++) {
             rating = ratingsOfItemI.get(i);
             //重写了Raing的equal方法，usrId相同即返回true
-            indexOfRatingsJ = ratingsOfItemJ.indexOf(rating);
+            //            indexOfRatingsJ = ratingsOfItemJ.indexOf(rating);
+            indexOfRatingsJ = usrIdOfItemJ.get(rating.getUsrId());
 
-            if (indexOfRatingsJ > -1) {
+            if (indexOfRatingsJ != null && indexOfRatingsJ > -1) {
                 ratingsValusOfItemI.add(rating.getRating());
                 ratingsValusOfItemJ.add(ratingsOfItemJ.get(indexOfRatingsJ).getRating());
                 ratingsOfItemJ.remove(indexOfRatingsJ);

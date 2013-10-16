@@ -12,7 +12,7 @@ package edu.tongji.cache;
 public class DataStreamTask {
 
     /** 主任务参数i, 分配任务式使用*/
-    public static int I = 3000;
+    public static int I = 2;
 
     /** 协任务参数j, 分配任务式使用*/
     public static int J = 1;
