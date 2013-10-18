@@ -5,8 +5,10 @@
 package edu.tongji.model;
 
 import java.io.Serializable;
+import java.math.BigInteger;
 import java.sql.Timestamp;
 
+import edu.tongji.util.PaillierUtil;
 import edu.tongji.util.StringUtil;
 
 /**
@@ -33,6 +35,15 @@ public class Rating implements Serializable {
 
     /** 评分时间 **/
     private Timestamp         time;
+
+    /**
+     * 获得同态加密算法，评分的密文数据
+     * 
+     * @return
+     */
+    public BigInteger getChiperText() {
+        return PaillierUtil.encryptions(BigInteger.valueOf(this.rating));
+    }
 
     /**
      * Getter method for property <tt>usrId</tt>.

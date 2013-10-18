@@ -10,6 +10,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import edu.tongji.cache.SimularityStreamCache;
+import edu.tongji.configure.ConfigurationConstant;
 import edu.tongji.dao.RatingDAO;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.model.Rating;
@@ -28,18 +29,6 @@ public class NetflixSimularityPerformanceDBReader extends Thread {
     /** DAO */
     private RatingDAO           ratingDAO;
 
-    /** 开始movieId号*/
-    private int                 movieStart;
-
-    /** 结束movieId号*/
-    private int                 movieEnd;
-
-    /** 开始时间轴*/
-    private String              scrachTimeLine;
-
-    /** 截止时间轴*/
-    private String              endTimeLine;
-
     /** logger */
     private final static Logger logger                       = Logger
                                                                  .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
@@ -53,10 +42,10 @@ public class NetflixSimularityPerformanceDBReader extends Thread {
         //Parameters：
         //  [movieStart, movieEnd), [scrachTimeLine, endTimeLine)
         List<String> param = new ArrayList<String>();
-        param.add(String.valueOf(this.movieStart));
-        param.add(String.valueOf(this.movieEnd));
-        param.add(scrachTimeLine);
-        param.add(endTimeLine);
+        param.add(String.valueOf(ConfigurationConstant.movieStart));
+        param.add(String.valueOf(ConfigurationConstant.movieEnd));
+        param.add(ConfigurationConstant.scrachTimeLine);
+        param.add(ConfigurationConstant.endTimeLine);
 
         //DB读取所需要的数据，加载至缓存
         List<Rating> resultSet = ratingDAO.select(EXCUTE_SELECT_GENERAL_RATING, param);
@@ -81,78 +70,6 @@ public class NetflixSimularityPerformanceDBReader extends Thread {
      */
     public void setRatingDAO(RatingDAO ratingDAO) {
         this.ratingDAO = ratingDAO;
-    }
-
-    /**
-     * Getter method for property <tt>movieStart</tt>.
-     * 
-     * @return property value of movieStart
-     */
-    public int getMovieStart() {
-        return movieStart;
-    }
-
-    /**
-     * Setter method for property <tt>movieStart</tt>.
-     * 
-     * @param movieStart value to be assigned to property movieStart
-     */
-    public void setMovieStart(int movieStart) {
-        this.movieStart = movieStart;
-    }
-
-    /**
-     * Getter method for property <tt>movieEnd</tt>.
-     * 
-     * @return property value of movieEnd
-     */
-    public int getMovieEnd() {
-        return movieEnd;
-    }
-
-    /**
-     * Setter method for property <tt>movieEnd</tt>.
-     * 
-     * @param movieEnd value to be assigned to property movieEnd
-     */
-    public void setMovieEnd(int movieEnd) {
-        this.movieEnd = movieEnd;
-    }
-
-    /**
-     * Getter method for property <tt>scrachTimeLine</tt>.
-     * 
-     * @return property value of scrachTimeLine
-     */
-    public String getScrachTimeLine() {
-        return scrachTimeLine;
-    }
-
-    /**
-     * Setter method for property <tt>scrachTimeLine</tt>.
-     * 
-     * @param scrachTimeLine value to be assigned to property scrachTimeLine
-     */
-    public void setScrachTimeLine(String scrachTimeLine) {
-        this.scrachTimeLine = scrachTimeLine;
-    }
-
-    /**
-     * Getter method for property <tt>endTimeLine</tt>.
-     * 
-     * @return property value of endTimeLine
-     */
-    public String getEndTimeLine() {
-        return endTimeLine;
-    }
-
-    /**
-     * Setter method for property <tt>endTimeLine</tt>.
-     * 
-     * @param endTimeLine value to be assigned to property endTimeLine
-     */
-    public void setEndTimeLine(String endTimeLine) {
-        this.endTimeLine = endTimeLine;
     }
 
 }

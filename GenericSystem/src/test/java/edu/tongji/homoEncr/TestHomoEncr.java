@@ -59,14 +59,16 @@ public class TestHomoEncr {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
         /* instantiating two plaintext msgs*/
-        BigInteger m1 = new BigInteger("1");
-        BigInteger m2 = new BigInteger("10000000000");
+        BigInteger m1 = new BigInteger("2");
+        BigInteger m2 = new BigInteger("10");
         /* encryption*/
-        BigInteger em1 = PaillierUtil.Encryptions(m1);
-        BigInteger em2 = PaillierUtil.Encryptions(m2);
+        BigInteger em1 = PaillierUtil.encryptions(m1);
+        BigInteger em2 = PaillierUtil.encryptions(m2);
         /* printout decrypted text */
-        System.out.println(PaillierUtil.Decryptions(em1).toString());
-        System.out.println(PaillierUtil.Decryptions(em2).toString());
+        BigInteger sum = PaillierUtil.add(em1, em2);
+        BigInteger multiply = PaillierUtil.multiply(em1, BigInteger.valueOf(2));
+        System.out.println(PaillierUtil.decryptions(sum).toString());
+        System.out.println(PaillierUtil.decryptions(multiply).toString());
 
         stopWatch.stop();
         System.out.println(stopWatch.getLastTaskTimeMillis());

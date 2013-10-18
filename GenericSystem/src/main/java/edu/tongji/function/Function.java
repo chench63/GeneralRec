@@ -34,4 +34,13 @@ public interface Function {
      * @return
      */
     public Number calculate(List<? extends Number> oper1, List<? extends Number> oper2);
+    
+    /**
+     * 计算函数值
+     * 
+     * @param oper1
+     * @param oper2
+     * @return
+     */
+    public Number calculate(List<? extends Number> oper1, List<? extends Number> oper2, List<? extends Number> opers);
 }
