@@ -23,9 +23,9 @@ import edu.tongji.util.LoggerUtil;
 /**
  * 
  * @author chenkh
- * @version $Id: NetflixSimularityPerformanceRecorder.java, v 0.1 2013-10-12 下午2:51:12 chenkh Exp $
+ * @version $Id: NetflixSimularityPerformancePaillierRecorder.java, v 0.1 2013-10-18 下午2:41:08 chenkh Exp $
  */
-public class NetflixSimularityPerformanceRecorder implements Runnable {
+public class NetflixSimularityPerformancePaillierRecorder implements Runnable {
 
     /** 相似度计算函数*/
     private Function            similarityFunction;
@@ -51,7 +51,6 @@ public class NetflixSimularityPerformanceRecorder implements Runnable {
             //=============================
             //性能测试开始
             //=============================
-
             for (int j = jStart; j < jEnd; j++) {
                 //记录点1
                 stopWatch.start();
@@ -66,7 +65,7 @@ public class NetflixSimularityPerformanceRecorder implements Runnable {
                 List<Number> numeratorOfSim = new ArrayList<Number>();
                 List<Number> denominatroOfSimAboutI = new ArrayList<Number>();
                 List<Number> denominatroOfSimAboutJ = new ArrayList<Number>();
-                PaillierProcessorContextHelper.forgeDataAsPearson(valuesOfI, valuesOfJ,
+                PaillierProcessorContextHelper.forgePaillierDataAsPearson(valuesOfI, valuesOfJ,
                     numeratorOfSim, denominatroOfSimAboutI, denominatroOfSimAboutJ);
 
                 //记录点2
@@ -105,5 +104,4 @@ public class NetflixSimularityPerformanceRecorder implements Runnable {
     public void setSimilarityFunction(Function similarityFunction) {
         this.similarityFunction = similarityFunction;
     }
-
 }

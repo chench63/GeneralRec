@@ -24,6 +24,15 @@ public class CorrelationBasedSimularityFunction implements Function {
     private static final Logger logger = Logger.getLogger(LoggerDefineConstant.SERVICE_NORMAL);
 
     /** 
+     * @see edu.tongji.function.Function#calculate(java.util.List, java.util.List, java.util.List)
+     */
+    @Override
+    public Number calculate(List<? extends Number> oper1, List<? extends Number> oper2,
+                            List<? extends Number> opers) {
+        throw new OwnedException(FunctionErrorCode.NOT_SUPPORT_LISTS);
+    }
+    
+    /** 
      * @see edu.tongji.function.Function#calculate(java.lang.Number, java.lang.Number)
      */
     @Override
@@ -92,5 +101,7 @@ public class CorrelationBasedSimularityFunction implements Function {
     public String toString() {
         return "CorrelationBasedSimularityFunction";
     }
+
+
 
 }

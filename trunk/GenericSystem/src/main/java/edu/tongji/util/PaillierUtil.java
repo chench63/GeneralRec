@@ -101,7 +101,7 @@ public final class PaillierUtil {
      * @param m plaintext as a BigInteger
      * @return ciphertext as a BigInteger
      */
-    public static BigInteger Encryptions(BigInteger m) {
+    public static BigInteger encryptions(BigInteger m) {
         return singleton.Encryption(m);
     }
 
@@ -110,8 +110,30 @@ public final class PaillierUtil {
      * @param c ciphertext as a BigInteger
      * @return plaintext as a BigInteger
      */
-    public static BigInteger Decryptions(BigInteger c) {
+    public static BigInteger decryptions(BigInteger c) {
         return singleton.Decryption(c);
+    }
+
+    /**
+     * Addition Operator
+     * 
+     * @param orig          密文形式.cipherText
+     * @param addtion       密文形式.cipherText
+     * @return
+     */
+    public static BigInteger add(BigInteger orig, BigInteger addition) {
+        return orig.multiply(addition).mod(singleton.nsquare);
+    }
+
+    /**
+     * Multiply Operator
+     * 
+     * @param orig         密文形式.cipherText 
+     * @param addtion      明文形式.plaintext
+     * @return
+     */
+    public static BigInteger multiply(BigInteger orig, BigInteger muitiplier) {
+        return orig.modPow(muitiplier, singleton.nsquare);
     }
 
     /**

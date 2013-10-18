@@ -147,4 +147,24 @@ public final class FunctionHelper {
         return sum;
     }
 
+    /**
+     * 对向量oper做减法线性变换；
+     *  List:oper - List:dispersion
+     * 
+     * @param oper
+     * @param dispersion
+     * @return
+     */
+    public static List<Number> tranformAsSubtact(List<Number> oper, Number dispersion){
+        
+        for(int i = 0, j = oper.size(); i< j; i++){
+            Number number = oper.get(i);
+            number = number.doubleValue() - dispersion.doubleValue();
+            oper.set(i, number);
+        }
+        
+        return (List<Number>) oper;
+    }
+    
+    
 }

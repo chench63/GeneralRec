@@ -17,12 +17,15 @@ public enum FunctionErrorCode implements ErrorCode {
     /** 计算函数不支持列表List<T>为入参*/
     NOT_SUPPORT_LIST("计算函数不支持列表List<T>为入参", "FUNC01002"),
 
+    /** 计算函数不支持列表Lists<T>为入参*/
+    NOT_SUPPORT_LISTS("计算函数不支持列表List<T>为入参", "FUNC01003"),
+
     /** 非法参数 */
     ILLEGAL_PARAMETER("非法参数", "FUNC02001"),
-    
+
     /** 出现零值 */
     ZERO_OCCURS("零错误", "FUNC02002"),
-    
+
     /** 空列表 */
     EMPTY_LIST("List为空，Item-based情况下，该Item从未被评价过", "FUNC02003");
 

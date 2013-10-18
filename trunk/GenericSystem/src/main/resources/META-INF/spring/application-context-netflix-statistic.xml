@@ -30,15 +30,17 @@
 	<!-- ******************************************** 多线程部分************************************************ -->
 	<bean id="NetflixSimularityPerformanceRecorder" class="edu.tongji.thread.NetflixSimularityPerformanceRecorder"
 		scope="prototype">
-		<property name="similarityFunction" ref="correlationBasedSimularityFunction" />
+		<property name="similarityFunction" ref="AccCorrelationBasedSimularityFunction" />
 	</bean>
+	
+	<bean id="NetflixSimularityPerformancePaillierRecorder" class="edu.tongji.thread.NetflixSimularityPerformancePaillierRecorder"
+		scope="prototype">
+		<property name="similarityFunction" ref="HomoCorrelationBasedSimularityFunction" />
+	</bean>
+	
 
 	<bean id="NetflixSimularityPerformanceDBReader" class="edu.tongji.thread.NetflixSimularityPerformanceDBReader">
 		<property name="ratingDAO" ref="ratingDAO" />
-		<property name="movieStart" value="1" />
-		<property name="movieEnd" value="177" />
-		<property name="scrachTimeLine" value="2000-12-31 00:00:00" />
-		<property name="endTimeLine" value="2005-12-31 00:00:00" />
 	</bean>
 
 
@@ -47,6 +49,9 @@
 	<bean id="cosineSimularityFunction" class="edu.tongji.function.CosineSimularityFunction" />
 	<bean id="correlationBasedSimularityFunction" class="edu.tongji.function.CorrelationBasedSimularityFunction" />
 	<bean id="adjustedCosineSimularityFunction" class="edu.tongji.function.AdjustedCosineSimularityFunction" />
+	<bean id="HomoCorrelationBasedSimularityFunction" class="edu.tongji.function.HomoCorrelationBasedSimularityFunction" />
+	<bean id="AccCorrelationBasedSimularityFunction" class="edu.tongji.function.AccCorrelationBasedSimularityFunction" />
+
 
 
 	<!-- ******************************************** 配置DB数据源 ************************************************ -->
