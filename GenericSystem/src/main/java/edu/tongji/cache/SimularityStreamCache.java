@@ -66,7 +66,7 @@ public final class SimularityStreamCache extends Observable {
             DataStreamTask.J = endJ;
         }
 
-        LoggerUtil.info(logger, "释放任务: " + task);
+        LoggerUtil.debug(logger, "释放任务: " + task);
         return task;
     }
 

@@ -27,10 +27,10 @@ public final class PaillierProcessorContextHelper {
      * @param denominatroOfSimAboutJ
      */
     public static void forgePaillierDataAsPearson(List<Number> ratingsValusOfItemI,
-                                          List<Number> ratingsValusOfItemJ,
-                                          List<Number> numeratorOfSim,
-                                          List<Number> denominatroOfSimAboutI,
-                                          List<Number> denominatroOfSimAboutJ) {
+                                                  List<Number> ratingsValusOfItemJ,
+                                                  List<Number> numeratorOfSim,
+                                                  List<Number> denominatroOfSimAboutI,
+                                                  List<Number> denominatroOfSimAboutJ) {
         //求平均值
         Number avgOfItemI = FunctionHelper.averageValue(ratingsValusOfItemI);
         Number avgOfItemJ = FunctionHelper.averageValue(ratingsValusOfItemJ);
@@ -44,29 +44,28 @@ public final class PaillierProcessorContextHelper {
 
         int size = ratingsValusOfItemI.size();
         for (int i = 0; i < size; i++) {
-            //分子加密
-            Number numerator = ratingsValusOfItemI.get(i).doubleValue()
-                               * ratingsValusOfItemJ.get(i).doubleValue();
+            //分子加密 , 保证运算进度，*1000
+            Number numerator = ratingsValusOfItemI.get(i).doubleValue() * 1000
+                               * ratingsValusOfItemJ.get(i).doubleValue() * 1000;
             BigInteger numChiper = PaillierUtil
                 .encryptions(BigInteger.valueOf(numerator.intValue()));
             numeratorOfSim.add(numChiper);
 
             //I部分分母加密
-            Number denomiOfI = Math.pow(ratingsValusOfItemI.get(i).doubleValue(), 2.0);
+            Number denomiOfI = Math.pow(ratingsValusOfItemI.get(i).doubleValue() * 1000, 2.0);
             BigInteger denomiChiperOfI = PaillierUtil.encryptions(BigInteger.valueOf(denomiOfI
                 .intValue()));
             denominatroOfSimAboutI.add(denomiChiperOfI);
 
             //J部分分母加密
-            Number denomiOfJ = Math.pow(ratingsValusOfItemJ.get(i).doubleValue(), 2.0);
+            Number denomiOfJ = Math.pow(ratingsValusOfItemJ.get(i).doubleValue() * 1000, 2.0);
             BigInteger denomiChiperOfJ = PaillierUtil.encryptions(BigInteger.valueOf(denomiOfJ
                 .intValue()));
             denominatroOfSimAboutJ.add(denomiChiperOfJ);
         }
 
     }
-    
-    
+
     /**
      * 生成常规pearson相似度所需要的数据串
      * 
