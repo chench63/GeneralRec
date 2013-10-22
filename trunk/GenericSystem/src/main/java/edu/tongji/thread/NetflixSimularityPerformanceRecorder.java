@@ -10,6 +10,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.util.StopWatch;
 
+import edu.tongji.cache.CacheHolder;
 import edu.tongji.cache.CacheTask;
 import edu.tongji.cache.SimularityStreamCache;
 import edu.tongji.context.PaillierProcessorContextHelper;
@@ -42,7 +43,7 @@ public class NetflixSimularityPerformanceRecorder implements Runnable {
         LoggerUtil.debug(logger, "NetflixSimularityPerformanceRecorder 开始执行计算");
 
         CacheTask task = null;
-        StopWatch stopWatch = new StopWatch();
+        
         while ((task = SimularityStreamCache.task()) != null) {
             int i = task.i;
             int jStart = task.jStart;
@@ -51,7 +52,7 @@ public class NetflixSimularityPerformanceRecorder implements Runnable {
             //=============================
             //性能测试开始
             //=============================
-
+            StopWatch stopWatch = new StopWatch();
             for (int j = jStart; j < jEnd; j++) {
                 List<Rating> ratingOfI = SimularityStreamCache.get(String.valueOf(i));
                 List<Rating> ratingOfJ = SimularityStreamCache.get(String.valueOf(j));
@@ -79,10 +80,13 @@ public class NetflixSimularityPerformanceRecorder implements Runnable {
             //=============================
             //性能测试结束
             //=============================
+            CacheHolder cacheHolder = new CacheHolder();
+            cacheHolder.put("ELAPS", stopWatch.getTotalTimeMillis());
+            cacheHolder.put("MOVIE_ID", i);
+            SimularityStreamCache.update(cacheHolder);
 
         }
 
-        SimularityStreamCache.update(stopWatch.getTotalTimeMillis());
     }
 
     /**

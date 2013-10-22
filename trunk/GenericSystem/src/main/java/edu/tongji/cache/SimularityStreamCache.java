@@ -29,16 +29,19 @@ import edu.tongji.util.LoggerUtil;
 public final class SimularityStreamCache extends Observable {
 
     /** 读写锁 */
-    private static final ReadWriteLock             lock          = new ReentrantReadWriteLock();
+    private static final ReadWriteLock             lock           = new ReentrantReadWriteLock();
 
     /** logger */
-    private final static Logger                    logger        = Logger
-                                                                     .getLogger(LoggerDefineConstant.SERVICE_CACHE);
+    private final static Logger                    logger         = Logger
+                                                                      .getLogger(LoggerDefineConstant.SERVICE_CACHE);
     /** 本地数据缓存*/
-    private final static Map<String, List<Rating>> ratingContext = new HashMap<String, List<Rating>>();
+    private final static Map<String, List<Rating>> ratingContext  = new HashMap<String, List<Rating>>();
 
     /** 运行时间*/
-    private static long                            runtimes      = 0;
+    private final static CacheStopWatch            catchStopWatch = new CacheStopWatch();
+
+    /** 运行时间*/
+    private static long                            runtimes       = 0;
 
     /**
      * NetflixRatingRecorder任务
@@ -54,7 +57,7 @@ public final class SimularityStreamCache extends Observable {
 
         //判断任务是否结束
         if (I == ConfigurationConstant.TASK_SIZE) {
-            LoggerUtil.info(logger, "DataStreamCache  任务结束.");
+            LoggerUtil.debug(logger, "SimularityStreamCache  任务结束.");
             return null;
         }
 
@@ -78,6 +81,16 @@ public final class SimularityStreamCache extends Observable {
     public static synchronized void update(long laps) {
         runtimes += laps;
         LoggerUtil.info(logger, "运行时间: " + runtimes);
+    }
+
+    /**
+     * 累计计算运行时间
+     * 
+     * @param laps
+     */
+    public static synchronized void update(CacheHolder cacheHolder) {
+        catchStopWatch.put(cacheHolder);
+        catchStopWatch.check();
     }
 
     /**
