@@ -4,24 +4,33 @@
  */
 package edu.tongji.cache;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
+ * 数据流缓存所用的数据bean
  * 
+ * @deprecated
  * @author chenkh
  * @version $Id: DataStreamHolder.java, v 0.1 2013-10-8 下午12:03:52 chenkh Exp $
  */
+
 public class DataStreamHolder {
 
     /** itemI号 */
-    private int itemI;
+    private int                       itemI;
 
     /** itemJ号*/
-    private int itemJ;
+    private int                       itemJ;
 
     /** rating总数*/
-    private int numToalRating;
+    private int                       numToalRating;
 
     /** 丢失rating总数*/
-    private int numMissingRating;
+    private int                       numMissingRating;
+
+    /** 属性集合*/
+    private final Map<String, Object> properties = new HashMap<String, Object>();
 
     /**
      * @param itemI
@@ -34,6 +43,26 @@ public class DataStreamHolder {
         this.itemJ = itemJ;
         this.numToalRating = numToalRating;
         this.numMissingRating = numMissingRating;
+    }
+
+    /**
+     * 添加属性
+     * 
+     * @param key
+     * @param value
+     */
+    public void put(String key, Object value) {
+        properties.put(key, value);
+    }
+
+    /**
+     * 获取属性
+     * 
+     * @param key
+     * @return
+     */
+    public Object get(String key) {
+        return properties.get(key);
     }
 
     /**
