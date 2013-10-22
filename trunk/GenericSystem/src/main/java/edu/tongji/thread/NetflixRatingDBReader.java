@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 
 import edu.tongji.cache.DataStreamCache;
 import edu.tongji.cache.DataStreamHolder;
-import edu.tongji.cache.DataStreamTask;
+import edu.tongji.cache.CacheTask;
 import edu.tongji.dao.RatingDAO;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.util.ExceptionUtil;
@@ -42,7 +42,7 @@ public class NetflixRatingDBReader implements Runnable {
      */
     @Override
     public void run() {
-        DataStreamTask task = DataStreamCache.task();
+        CacheTask task = DataStreamCache.task();
 
         do {
             LoggerUtil.info(logger, "NetflixRatingDBReader 获得任务: " + task);

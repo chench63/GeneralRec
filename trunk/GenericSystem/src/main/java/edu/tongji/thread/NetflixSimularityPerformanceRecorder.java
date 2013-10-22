@@ -10,7 +10,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.util.StopWatch;
 
-import edu.tongji.cache.DataStreamTask;
+import edu.tongji.cache.CacheTask;
 import edu.tongji.cache.SimularityStreamCache;
 import edu.tongji.context.PaillierProcessorContextHelper;
 import edu.tongji.context.ProcessorContextHelper;
@@ -41,7 +41,7 @@ public class NetflixSimularityPerformanceRecorder implements Runnable {
 
         LoggerUtil.debug(logger, "NetflixSimularityPerformanceRecorder 开始执行计算");
 
-        DataStreamTask task = null;
+        CacheTask task = null;
         StopWatch stopWatch = new StopWatch();
         while ((task = SimularityStreamCache.task()) != null) {
             int i = task.i;
