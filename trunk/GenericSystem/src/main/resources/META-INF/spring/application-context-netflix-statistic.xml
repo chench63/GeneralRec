@@ -18,7 +18,10 @@
 		<property name="reader" ref="NetflixSimularityPerformanceDBReader" />
 		<property name="recorder">
 			<list>
-				<ref bean="NetflixSimularityPerformancePaillierRecorder"></ref>
+				<ref bean="NetflixSimularityPerformanceRecorder"></ref>
+				<ref bean="NetflixSimularityPerformanceRecorder"></ref>
+				<ref bean="NetflixSimularityPerformanceRecorder"></ref>
+				<ref bean="NetflixSimularityPerformanceRecorder"></ref>
 			</list>
 		</property>
 	</bean>

@@ -53,15 +53,12 @@ public class NetflixSimularityPerformanceRecorder implements Runnable {
             //=============================
 
             for (int j = jStart; j < jEnd; j++) {
-                //记录点1
-//                stopWatch.start();
                 List<Rating> ratingOfI = SimularityStreamCache.get(String.valueOf(i));
                 List<Rating> ratingOfJ = SimularityStreamCache.get(String.valueOf(j));
                 List<Number> valuesOfI = new ArrayList<Number>();
                 List<Number> valuesOfJ = new ArrayList<Number>();
                 ProcessorContextHelper.doForgeRatingValues(ratingOfI, ratingOfJ, valuesOfI,
                     valuesOfJ, false);
-//                stopWatch.stop();
 
                 List<Number> numeratorOfSim = new ArrayList<Number>();
                 List<Number> denominatroOfSimAboutI = new ArrayList<Number>();
@@ -69,7 +66,7 @@ public class NetflixSimularityPerformanceRecorder implements Runnable {
                 PaillierProcessorContextHelper.forgeDataAsPearson(valuesOfI, valuesOfJ,
                     numeratorOfSim, denominatroOfSimAboutI, denominatroOfSimAboutJ);
 
-                //记录点2
+                //记录点
                 stopWatch.start();
                 try {
                     similarityFunction.calculate(numeratorOfSim, denominatroOfSimAboutI,
