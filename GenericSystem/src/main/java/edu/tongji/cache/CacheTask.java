@@ -11,7 +11,7 @@ import edu.tongji.configure.ConfigurationConstant;
  * @author chenkh
  * @version $Id: DataStreamTask.java, v 0.1 2013-10-8 下午1:21:11 chenkh Exp $
  */
-public class DataStreamTask {
+public class CacheTask {
 
     /** 主任务参数i, 分配任务式使用*/
     public static int I = ConfigurationConstant.I;
@@ -35,7 +35,7 @@ public class DataStreamTask {
      * @param jStart
      * @param jEnd
      */
-    public DataStreamTask(int i, int jStart, int jEnd) {
+    public CacheTask(int i, int jStart, int jEnd) {
         this.i = i;
         this.jStart = jStart;
         this.jEnd = jEnd;

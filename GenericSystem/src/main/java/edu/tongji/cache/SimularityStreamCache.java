@@ -45,12 +45,12 @@ public final class SimularityStreamCache extends Observable {
      * 
      * @return
      */
-    public static synchronized DataStreamTask task() {
-        int I = DataStreamTask.I;
-        int J = DataStreamTask.J;
+    public static synchronized CacheTask task() {
+        int I = CacheTask.I;
+        int J = CacheTask.J;
         int endJ = (J + ConfigurationConstant.SINGLE_TASK_SIZE < I) ? (J + ConfigurationConstant.SINGLE_TASK_SIZE)
             : I;
-        DataStreamTask task = new DataStreamTask(I, J, endJ);
+        CacheTask task = new CacheTask(I, J, endJ);
 
         //判断任务是否结束
         if (I == ConfigurationConstant.TASK_SIZE) {
@@ -60,10 +60,10 @@ public final class SimularityStreamCache extends Observable {
 
         //更新任务
         if (I == endJ) {
-            DataStreamTask.I++;
-            DataStreamTask.J = 1;
+            CacheTask.I++;
+            CacheTask.J = 1;
         } else {
-            DataStreamTask.J = endJ;
+            CacheTask.J = endJ;
         }
 
         LoggerUtil.debug(logger, "释放任务: " + task);
