@@ -47,7 +47,7 @@ public class HomoCorrelationBasedSimularityFunction implements Function {
         BigInteger denominatorOfJ = sum(opers);
 
         //下算式只为估计运行效率
-        return numerator.intValue()
+        return numerator.doubleValue()
                / Math.sqrt(denominatorOfI.doubleValue() * denominatorOfJ.doubleValue());
     }
 
@@ -58,8 +58,12 @@ public class HomoCorrelationBasedSimularityFunction implements Function {
      * @return
      */
     private BigInteger sum(List<? extends Number> oper) {
-        BigInteger sum = (BigInteger) oper.get(0);
-        for (int i = 1, j = oper.size(); i < j; i++) {
+        BigInteger sum = BigInteger.ZERO;
+        for (int i = 0, j = oper.size(); i < j; i++) {
+            if (i == 0) {
+                sum = (BigInteger) oper.get(i);
+            }
+
             sum = PaillierUtil.add(sum, (BigInteger) oper.get(i));
         }
         return sum;

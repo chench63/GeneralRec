@@ -41,17 +41,27 @@ public class NetflixSimularityPerformanceDBReader extends Thread {
 
         //Parameters：
         //  [movieStart, movieEnd), [scrachTimeLine, endTimeLine)
-        List<String> param = new ArrayList<String>();
-        param.add(String.valueOf(ConfigurationConstant.movieStart));
-        param.add(String.valueOf(ConfigurationConstant.movieEnd));
-        param.add(ConfigurationConstant.scrachTimeLine);
-        param.add(ConfigurationConstant.endTimeLine);
 
-        //DB读取所需要的数据，加载至缓存
-        List<Rating> resultSet = ratingDAO.select(EXCUTE_SELECT_GENERAL_RATING, param);
-        SimularityStreamCache.put(resultSet);
+        int movieStart = ConfigurationConstant.movieStart;
+        int movieEnd = 177;
+        final int step = 177;
+        while (movieEnd <= ConfigurationConstant.movieEnd) {
+            List<String> param = new ArrayList<String>();
+            param.add(String.valueOf(movieStart));
+            param.add(String.valueOf(movieEnd));
+            param.add(ConfigurationConstant.scrachTimeLine);
+            param.add(ConfigurationConstant.endTimeLine);
+
+            //DB读取所需要的数据，加载至缓存
+            List<Rating> resultSet = ratingDAO.select(EXCUTE_SELECT_GENERAL_RATING, param);
+            SimularityStreamCache.put(resultSet);
+
+            //更新任务参数
+            movieStart = movieEnd;
+            movieEnd = movieEnd + step;
+        }
         LoggerUtil.debug(logger, "NetflixSimularityPerformanceDBReader 加载缓存结束");
-        
+
     }
 
     /**

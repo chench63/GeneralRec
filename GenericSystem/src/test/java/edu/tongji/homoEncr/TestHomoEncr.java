@@ -5,10 +5,16 @@
 package edu.tongji.homoEncr;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
+import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.springframework.util.StopWatch;
 
+import edu.tongji.log4j.LoggerDefineConstant;
+import edu.tongji.util.LoggerUtil;
 import edu.tongji.util.PaillierUtil;
 
 /**
@@ -18,7 +24,9 @@ import edu.tongji.util.PaillierUtil;
  */
 public class TestHomoEncr {
 
-    @Test
+    private static final Logger logger = Logger.getLogger(LoggerDefineConstant.SERVICE_TEST);
+
+    //    @Test
     public void test() throws Exception {
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
@@ -56,22 +64,34 @@ public class TestHomoEncr {
 
     @Test
     public void test2() throws Exception {
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
         /* instantiating two plaintext msgs*/
-        BigInteger m1 = new BigInteger("2");
-        BigInteger m2 = new BigInteger("10");
+        BigInteger m1 = new BigInteger("2568000");
+        List<BigInteger> additions = new ArrayList<BigInteger>();
+
         /* encryption*/
         BigInteger em1 = PaillierUtil.encryptions(m1);
-        BigInteger em2 = PaillierUtil.encryptions(m2);
-        /* printout decrypted text */
-        BigInteger sum = PaillierUtil.add(em1, em2);
-        BigInteger multiply = PaillierUtil.multiply(em1, BigInteger.valueOf(2));
-        System.out.println(PaillierUtil.decryptions(sum).toString());
-        System.out.println(PaillierUtil.decryptions(multiply).toString());
+        //every 10 numbers as a column have the same complexity
+        Random ran = new Random();
+        ran.setSeed(System.currentTimeMillis());
+        for (int i = 0; i < 1000; i++) {
+            int addition = Double.valueOf(ran.nextDouble() * Math.pow(2, i / 10 + 1)).intValue();
+            additions.add(PaillierUtil.encryptions(BigInteger.valueOf(addition)));
+        }
 
-        stopWatch.stop();
-        System.out.println(stopWatch.getLastTaskTimeMillis());
+        int arrays = 10;
+        StopWatch stopWatch = new StopWatch();
+        for (int i = 0; i < arrays; i++) {
+            stopWatch.start();
+            for (int j = 0; j < 10000; j++) {
+                for (int k = 0; k < 10; k++) {
+                    PaillierUtil.add(em1, additions.get( 990 + k));
+                }
+            }
+            stopWatch.stop();
+            LoggerUtil.info(logger,
+                "Array: " + i + "  elapse: " + stopWatch.getLastTaskTimeMillis());
+        }
+        LoggerUtil.info(logger, "Avg: " + stopWatch.getTotalTimeMillis() / (arrays * 1.0));
 
     }
 
