@@ -94,5 +94,19 @@ public class TestHomoEncr {
         LoggerUtil.info(logger, "Avg: " + stopWatch.getTotalTimeMillis() / (arrays * 1.0));
 
     }
+    
+    
+//    @Test
+//    public void test3(){
+//        StopWatch stopWatch = new StopWatch();
+//        stopWatch.start();
+//        int sum = 5;
+//        for(int i = 0; i < 10000; i++){
+//            sum += 5;
+//        }
+//        stopWatch.stop();
+//        System.out.println(stopWatch.getLastTaskTimeMillis());
+//    } 
+    
 
 }

@@ -26,10 +26,10 @@ public final class ConfigurationConstant {
     public final static int    SINGLE_TASK_SIZE = 1000;
 
     /**  主任务参数最大值 $Cache*/
-    public final static int    TASK_SIZE        = 50;
+    public final static int    TASK_SIZE        = 885;
 
     /**  子任务容量 $CacheStopWatch : 使用分组，必须保证，分组数 >= 2*/
-    public final static int    SUB_TASK_SIZE    = 25;
+    public final static int    SUB_TASK_SIZE    = 177;
 
     /**  主任务参数i, 分配任务式使用 $CacheTask*/
     public final static int    I                = 2;
@@ -41,7 +41,7 @@ public final class ConfigurationConstant {
     public final static int    movieStart       = 1;
 
     /** DB捞取数据：结束movieId号*/
-    public final static int    movieEnd         = 177;
+    public final static int    movieEnd         = 885;
 
     /** DB捞取数据：开始时间轴*/
     public final static String scrachTimeLine   = "2000-12-31 00:00:00";
