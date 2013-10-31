@@ -58,8 +58,8 @@ public class NetflixSimularityPerformancePaillierRecorder implements Runnable {
                 List<Rating> ratingOfJ = SimularityStreamCache.get(String.valueOf(j));
                 List<Number> valuesOfI = new ArrayList<Number>();
                 List<Number> valuesOfJ = new ArrayList<Number>();
-                ProcessorContextHelper.doForgeRatingValues(ratingOfI, ratingOfJ, valuesOfI,
-                    valuesOfJ, false);
+                ProcessorContextHelper.forgeSymmetryRatingValues(ratingOfI, ratingOfJ, valuesOfI,
+                    valuesOfJ);
 
                 List<Number> numeratorOfSim = new ArrayList<Number>();
                 List<Number> denominatroOfSimAboutI = new ArrayList<Number>();

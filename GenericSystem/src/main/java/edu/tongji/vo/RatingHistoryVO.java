@@ -17,6 +17,7 @@ import edu.tongji.model.Rating;
  */
 public class RatingHistoryVO {
 
+    /** rating实体上下文 */
     private final Map<String, Rating> ratingEntities = new HashMap<String, Rating>();
 
     /**

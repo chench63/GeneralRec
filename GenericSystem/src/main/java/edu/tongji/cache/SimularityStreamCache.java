@@ -19,7 +19,10 @@ import org.apache.log4j.Logger;
 import edu.tongji.configure.ConfigurationConstant;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.model.Rating;
+import edu.tongji.util.BeanUtil;
 import edu.tongji.util.LoggerUtil;
+import edu.tongji.util.RandomUtil;
+import edu.tongji.vo.RatingVO;
 
 /**
  * 
@@ -146,11 +149,11 @@ public final class SimularityStreamCache extends Observable {
     }
 
     /**
-     * 添加新的评分记录
+     * 添加新的评分记录,同时使用高斯噪声处理源数据，已保护用户隐私。
      * 
      * @param ratings
      */
-    public static void puts(List<Rating> ratings) {
+    public static void putAndDisguise(List<Rating> ratings) {
         //读写保护，加写锁
         Lock writeLock = lock.writeLock();
         writeLock.lock();
@@ -163,7 +166,13 @@ public final class SimularityStreamCache extends Observable {
                 if (ratingsOfContext == null) {
                     ratingsOfContext = new ArrayList<Rating>();
                 }
-                Collections.synchronizedCollection(ratingsOfContext).add(rating);
+
+                //破坏数据，加入高斯噪声
+                double disguisedValue = rating.getRating() - RandomUtil.nextGaussian(0.67);
+                RatingVO ratingVO = BeanUtil.toBean(rating);
+                ratingVO.put("DISGUISED_VALUE", disguisedValue);
+                Collections.synchronizedCollection(ratingsOfContext).add(ratingVO);
+                //载入缓存
                 ratingContext.put(movieId, ratingsOfContext);
             }
         } finally {

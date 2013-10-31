@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
 import edu.tongji.cache.DataStreamHolder;
 import edu.tongji.model.Rating;
 import edu.tongji.model.ValueOfItems;
+import edu.tongji.vo.RatingVO;
 
 /**
  * 
@@ -26,6 +27,12 @@ public final class BeanUtil {
     /** Timestamp生成规格 */
     private final static String TIMESTAMP_CREATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
+    /**
+     * 转化DataStreamHolder为ValueOfItems
+     * 
+     * @param task
+     * @return
+     */
     public static ValueOfItems toBean(DataStreamHolder task) {
         ValueOfItems bean = new ValueOfItems();
         bean.setItemI(String.valueOf(task.getItemI()));
@@ -36,6 +43,13 @@ public final class BeanUtil {
         return bean;
     }
 
+    /**
+     * 转化string数字为Rating对象
+     * 
+     * @param elements
+     * @return
+     * @throws ParseException
+     */
     public static Rating toBean(String[] elements) throws ParseException {
         Rating rating = new Rating();
         rating.setMovieId(Integer.valueOf(elements[0]));
@@ -43,6 +57,22 @@ public final class BeanUtil {
         rating.setRating(Integer.valueOf(elements[2]));
         rating.setTime(parserTimestamp(elements[3]));
         return rating;
+    }
+
+    /**
+     * 转化Rating数字为RatingVO对象，日后使用反射扩展功能。
+     * 
+     * @param elements
+     * @return
+     * @throws ParseException
+     */
+    public static RatingVO toBean(Rating rating) {
+        RatingVO ratingVO = new RatingVO();
+        ratingVO.setMovieId(rating.getMovieId());
+        ratingVO.setUsrId(rating.getUsrId());
+        ratingVO.setRating(rating.getRating());
+        ratingVO.setTime(rating.getTime());
+        return ratingVO;
     }
 
     /**
