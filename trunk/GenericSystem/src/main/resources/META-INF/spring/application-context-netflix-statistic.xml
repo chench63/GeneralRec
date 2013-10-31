@@ -31,13 +31,16 @@
 	<bean id="NetflixSimularityPerformanceRecorder" class="edu.tongji.thread.NetflixSimularityPerformanceRecorder"
 		scope="prototype">
 		<property name="similarityFunction" ref="AccCorrelationBasedSimularityFunction" />
+		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl" />
 	</bean>
-	
-	<bean id="NetflixSimularityPerformancePaillierRecorder" class="edu.tongji.thread.NetflixSimularityPerformancePaillierRecorder"
+
+	<bean id="NetflixSimularityPerformancePaillierRecorder"
+		class="edu.tongji.thread.NetflixSimularityPerformancePaillierRecorder"
 		scope="prototype">
 		<property name="similarityFunction" ref="HomoCorrelationBasedSimularityFunction" />
+		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl" />
 	</bean>
-	
+
 
 	<bean id="NetflixSimularityPerformanceDBReader" class="edu.tongji.thread.NetflixSimularityPerformanceDBReader">
 		<property name="ratingDAO" ref="ratingDAO" />
@@ -49,8 +52,10 @@
 	<bean id="cosineSimularityFunction" class="edu.tongji.function.CosineSimularityFunction" />
 	<bean id="correlationBasedSimularityFunction" class="edu.tongji.function.CorrelationBasedSimularityFunction" />
 	<bean id="adjustedCosineSimularityFunction" class="edu.tongji.function.AdjustedCosineSimularityFunction" />
-	<bean id="HomoCorrelationBasedSimularityFunction" class="edu.tongji.function.HomoCorrelationBasedSimularityFunction" />
-	<bean id="AccCorrelationBasedSimularityFunction" class="edu.tongji.function.AccCorrelationBasedSimularityFunction" />
+	<bean id="HomoCorrelationBasedSimularityFunction"
+		class="edu.tongji.function.HomoCorrelationBasedSimularityFunction" />
+	<bean id="AccCorrelationBasedSimularityFunction"
+		class="edu.tongji.function.AccCorrelationBasedSimularityFunction" />
 
 
 

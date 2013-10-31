@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 
 import edu.tongji.cache.SimularityStreamCache;
 import edu.tongji.configure.ConfigurationConstant;
+import edu.tongji.configure.ThreadConfigurationConstant;
 import edu.tongji.dao.RatingDAO;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.model.Rating;
@@ -54,7 +55,12 @@ public class NetflixSimularityPerformanceDBReader extends Thread {
 
             //DB读取所需要的数据，加载至缓存
             List<Rating> resultSet = ratingDAO.select(EXCUTE_SELECT_GENERAL_RATING, param);
-            SimularityStreamCache.put(resultSet);
+
+            if (ThreadConfigurationConstant.IS_PERTURBATION) {
+                SimularityStreamCache.putAndDisguise(resultSet);
+            } else {
+                SimularityStreamCache.put(resultSet);
+            }
 
             //更新任务参数
             movieStart = movieEnd;

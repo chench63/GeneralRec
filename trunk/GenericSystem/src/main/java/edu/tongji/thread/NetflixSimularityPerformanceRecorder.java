@@ -4,6 +4,7 @@
  */
 package edu.tongji.thread;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,11 +14,14 @@ import org.springframework.util.StopWatch;
 import edu.tongji.cache.CacheHolder;
 import edu.tongji.cache.CacheTask;
 import edu.tongji.cache.SimularityStreamCache;
+import edu.tongji.configure.ThreadConfigurationConstant;
 import edu.tongji.context.PaillierProcessorContextHelper;
 import edu.tongji.context.ProcessorContextHelper;
+import edu.tongji.dao.ValueOfItemsDAO;
 import edu.tongji.function.Function;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.model.Rating;
+import edu.tongji.model.ValueOfItems;
 import edu.tongji.util.ExceptionUtil;
 import edu.tongji.util.LoggerUtil;
 
@@ -31,8 +35,15 @@ public class NetflixSimularityPerformanceRecorder implements Runnable {
     /** 相似度计算函数*/
     private Function            similarityFunction;
 
+    /** 相似度DAO */
+    private ValueOfItemsDAO     valueOfItemsDAO;
+
+    /**  相似度名 */
+    private final static String SIMULARITY_FUNCTION = "RandomizePerturbation_CorrelationBasedSimularityFunction";
+
     /** logger */
-    private final static Logger logger = Logger.getLogger(LoggerDefineConstant.SERVICE_NORMAL);
+    private final static Logger logger              = Logger
+                                                        .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
 
     /** 
      * @see java.lang.Runnable#run()
@@ -43,7 +54,7 @@ public class NetflixSimularityPerformanceRecorder implements Runnable {
         LoggerUtil.debug(logger, "NetflixSimularityPerformanceRecorder 开始执行计算");
 
         CacheTask task = null;
-        
+
         while ((task = SimularityStreamCache.task()) != null) {
             int i = task.i;
             int jStart = task.jStart;
@@ -58,8 +69,14 @@ public class NetflixSimularityPerformanceRecorder implements Runnable {
                 List<Rating> ratingOfJ = SimularityStreamCache.get(String.valueOf(j));
                 List<Number> valuesOfI = new ArrayList<Number>();
                 List<Number> valuesOfJ = new ArrayList<Number>();
-                ProcessorContextHelper.doForgeRatingValues(ratingOfI, ratingOfJ, valuesOfI,
-                    valuesOfJ, false);
+                if (ThreadConfigurationConstant.IS_PERTURBATION) {
+                    //随机扰动对应的数据处理类
+                    ProcessorContextHelper.forgeRandomizedPerturbationRatingValues(ratingOfI,
+                        ratingOfJ, valuesOfI, valuesOfJ, false);
+                } else {
+                    ProcessorContextHelper.forgeSymmetryRatingValues(ratingOfI, ratingOfJ,
+                        valuesOfI, valuesOfJ);
+                }
 
                 List<Number> numeratorOfSim = new ArrayList<Number>();
                 List<Number> denominatroOfSimAboutI = new ArrayList<Number>();
@@ -70,8 +87,10 @@ public class NetflixSimularityPerformanceRecorder implements Runnable {
                 //记录点
                 stopWatch.start();
                 try {
-                    similarityFunction.calculate(numeratorOfSim, denominatroOfSimAboutI,
-                        denominatroOfSimAboutJ);
+                    Number sim = similarityFunction.calculate(numeratorOfSim,
+                        denominatroOfSimAboutI, denominatroOfSimAboutJ);
+                    LoggerUtil.debug(logger, "I: " + i + " J: " + j + " sim: " + sim.doubleValue());
+//                    persistence(i, j, sim.doubleValue());
                 } catch (Exception e) {
                     ExceptionUtil.caught(e, "i: " + i + " j: " + j);
                 }
@@ -87,6 +106,16 @@ public class NetflixSimularityPerformanceRecorder implements Runnable {
 
         }
 
+    }
+
+    private void persistence(int i, int j, double sim) {
+        ValueOfItems valueOfItem = new ValueOfItems();
+        valueOfItem.setItemI(String.valueOf(i));
+        valueOfItem.setItemJ(String.valueOf(j));
+        valueOfItem.setValue(sim);
+        valueOfItem.setFunctionName(SIMULARITY_FUNCTION);
+        valueOfItem.setGMT_CREATE(Date.valueOf("2005-12-31"));
+        valueOfItemsDAO.insert(valueOfItem);
     }
 
     /**
@@ -105,6 +134,24 @@ public class NetflixSimularityPerformanceRecorder implements Runnable {
      */
     public void setSimilarityFunction(Function similarityFunction) {
         this.similarityFunction = similarityFunction;
+    }
+
+    /**
+     * Getter method for property <tt>valueOfItemsDAO</tt>.
+     * 
+     * @return property value of valueOfItemsDAO
+     */
+    public ValueOfItemsDAO getValueOfItemsDAO() {
+        return valueOfItemsDAO;
+    }
+
+    /**
+     * Setter method for property <tt>valueOfItemsDAO</tt>.
+     * 
+     * @param valueOfItemsDAO value to be assigned to property valueOfItemsDAO
+     */
+    public void setValueOfItemsDAO(ValueOfItemsDAO valueOfItemsDAO) {
+        this.valueOfItemsDAO = valueOfItemsDAO;
     }
 
 }
