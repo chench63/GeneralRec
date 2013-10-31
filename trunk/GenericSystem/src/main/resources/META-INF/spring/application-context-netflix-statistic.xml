@@ -25,6 +25,20 @@
 			</list>
 		</property>
 	</bean>
+	
+	<bean id="engineForSim"
+		class="edu.tongji.engine.NetflixSimlarityPerformanceMultiThreadEngine">
+		<property name="reader" ref="NetflixSimularityPerformanceDBReader" />
+		<property name="recorder">
+			<list>
+				<ref bean="NetflixSimularityPerformanceRecorder"></ref>
+				<ref bean="NetflixSimularityPerformanceRecorder"></ref>
+				<ref bean="NetflixSimularityPerformanceRecorder"></ref>
+				<ref bean="NetflixSimularityPerformanceRecorder"></ref>
+			</list>
+		</property>
+	</bean>
+	
 
 
 	<!-- ******************************************** 多线程部分************************************************ -->
@@ -33,7 +47,10 @@
 		<property name="similarityFunction" ref="AccCorrelationBasedSimularityFunction" />
 		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl" />
 	</bean>
-
+	<bean id="NetflixSimularityRecorder" class="edu.tongji.thread.NetflixSimularityRecorder"
+		scope="prototype">
+		<property name="predictor" ref="predictor" />
+	</bean>
 	<bean id="NetflixSimularityPerformancePaillierRecorder"
 		class="edu.tongji.thread.NetflixSimularityPerformancePaillierRecorder"
 		scope="prototype">
@@ -45,6 +62,13 @@
 	<bean id="NetflixSimularityPerformanceDBReader" class="edu.tongji.thread.NetflixSimularityPerformanceDBReader">
 		<property name="ratingDAO" ref="ratingDAO" />
 	</bean>
+	<bean id="NetFlixSimularityDBReader" class="edu.tongji.thread.NetFlixSimularityDBReader">
+		<property name="ratingDAO" ref="ratingDAO" />
+		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl" />
+	</bean>
+	
+
+
 
 
 	<!-- ******************************************** 相似度计算部分************************************************ -->
@@ -56,6 +80,11 @@
 		class="edu.tongji.function.HomoCorrelationBasedSimularityFunction" />
 	<bean id="AccCorrelationBasedSimularityFunction"
 		class="edu.tongji.function.AccCorrelationBasedSimularityFunction" />
+
+	
+	<!-- ******************************************** 预测器部分************************************************ -->
+	<bean id="predictor"
+		class="edu.tongji.predictor.GeneralPredictor" />
 
 
 

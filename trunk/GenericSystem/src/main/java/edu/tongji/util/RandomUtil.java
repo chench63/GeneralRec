@@ -28,6 +28,20 @@ public final class RandomUtil {
     }
 
     /**
+     * 生成一个[leftSide, rightSide)的整数
+     * 
+     * @param leftSide
+     * @param rightSide
+     * @return
+     */
+    public static int nextInt(int leftSide, int rightSide) {
+        int lowBound = leftSide;
+        lowBound += ran.nextInt(rightSide - leftSide);
+
+        return lowBound;
+    }
+
+    /**
      * 生成一个符合高斯分布的浮点数
      * 
      * @return
