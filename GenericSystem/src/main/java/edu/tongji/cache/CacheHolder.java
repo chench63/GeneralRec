@@ -17,6 +17,9 @@ public final class CacheHolder {
     /** 属性集合*/
     private final Map<String, Object> properties = new HashMap<String, Object>();
 
+    /** 固有属性 */
+    public final static String        KEY        = "KEY";
+
     /**
      * 添加属性
      * 
@@ -36,4 +39,17 @@ public final class CacheHolder {
     public Object get(String key) {
         return properties.get(key);
     }
+
+    /** 
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Object property : properties.values()) {
+            stringBuilder.append(property);
+        }
+        return stringBuilder.toString();
+    }
+
 }

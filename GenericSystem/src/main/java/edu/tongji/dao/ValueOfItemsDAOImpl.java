@@ -1,7 +1,10 @@
 package edu.tongji.dao;
 
-import edu.tongji.model.ValueOfItems;
+import java.util.List;
+
 import org.springframework.orm.ibatis.support.SqlMapClientDaoSupport;
+
+import edu.tongji.model.ValueOfItems;
 
 public class ValueOfItemsDAOImpl extends SqlMapClientDaoSupport implements ValueOfItemsDAO {
 
@@ -21,8 +24,10 @@ public class ValueOfItemsDAOImpl extends SqlMapClientDaoSupport implements Value
      *
      * @abatorgenerated Tue Sep 10 14:20:13 CST 2013
      */
+    @Override
     public Integer insert(ValueOfItems record) {
-        Object newKey = getSqlMapClientTemplate().insert("valueofitems.abatorgenerated_insert", record);
+        Object newKey = getSqlMapClientTemplate().insert("valueofitems.abatorgenerated_insert",
+            record);
         return (Integer) newKey;
     }
 
@@ -32,8 +37,10 @@ public class ValueOfItemsDAOImpl extends SqlMapClientDaoSupport implements Value
      *
      * @abatorgenerated Tue Sep 10 14:20:13 CST 2013
      */
+    @Override
     public int updateByPrimaryKey(ValueOfItems record) {
-        int rows = getSqlMapClientTemplate().update("valueofitems.abatorgenerated_updateByPrimaryKey", record);
+        int rows = getSqlMapClientTemplate().update(
+            "valueofitems.abatorgenerated_updateByPrimaryKey", record);
         return rows;
     }
 
@@ -43,8 +50,10 @@ public class ValueOfItemsDAOImpl extends SqlMapClientDaoSupport implements Value
      *
      * @abatorgenerated Tue Sep 10 14:20:13 CST 2013
      */
+    @Override
     public int updateByPrimaryKeySelective(ValueOfItems record) {
-        int rows = getSqlMapClientTemplate().update("valueofitems.abatorgenerated_updateByPrimaryKeySelective", record);
+        int rows = getSqlMapClientTemplate().update(
+            "valueofitems.abatorgenerated_updateByPrimaryKeySelective", record);
         return rows;
     }
 
@@ -54,11 +63,24 @@ public class ValueOfItemsDAOImpl extends SqlMapClientDaoSupport implements Value
      *
      * @abatorgenerated Tue Sep 10 14:20:13 CST 2013
      */
+    @Override
     public ValueOfItems selectByPrimaryKey(Integer id) {
         ValueOfItems key = new ValueOfItems();
         key.setId(id);
-        ValueOfItems record = (ValueOfItems) getSqlMapClientTemplate().queryForObject("valueofitems.abatorgenerated_selectByPrimaryKey", key);
+        ValueOfItems record = (ValueOfItems) getSqlMapClientTemplate().queryForObject(
+            "valueofitems.abatorgenerated_selectByPrimaryKey", key);
         return record;
+    }
+
+    /** 
+     * @see edu.tongji.dao.ValueOfItemsDAO#selectByFunctionName(java.lang.String)
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<ValueOfItems> selectByFunctionName(String functionName) {
+        ValueOfItems key = new ValueOfItems();
+        key.setFunctionName(functionName);
+        return getSqlMapClientTemplate().queryForList("valueofitems.select_by_functionName", key);
     }
 
     /**
@@ -67,10 +89,12 @@ public class ValueOfItemsDAOImpl extends SqlMapClientDaoSupport implements Value
      *
      * @abatorgenerated Tue Sep 10 14:20:13 CST 2013
      */
+    @Override
     public int deleteByPrimaryKey(Integer id) {
         ValueOfItems key = new ValueOfItems();
         key.setId(id);
-        int rows = getSqlMapClientTemplate().delete("valueofitems.abatorgenerated_deleteByPrimaryKey", key);
+        int rows = getSqlMapClientTemplate().delete(
+            "valueofitems.abatorgenerated_deleteByPrimaryKey", key);
         return rows;
     }
 }

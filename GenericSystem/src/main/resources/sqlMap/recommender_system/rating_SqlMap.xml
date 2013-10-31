@@ -33,6 +33,17 @@
 		) AS s
 		where s.times = 1;
 	</select>
+	<select id="select_by_usrs" resultMap="abatorgenerated_RatingResult"
+		parameterClass="java.util.ArrayList">
+    <![CDATA[
+    select id, usrId, movieId, rating, time
+    from rating
+    ]]>
+    where usrId in
+    	<iterate open="(" close=")" conjunction=",">
+			#param[]:VARCHAR#
+		</iterate>
+	</select>
 	<select id="excute_select_default" resultMap="abatorgenerated_RatingResult"
 		parameterClass="java.util.HashMap">
     <![CDATA[

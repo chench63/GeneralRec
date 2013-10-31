@@ -9,6 +9,7 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
+import edu.tongji.cache.CacheHolder;
 import edu.tongji.cache.DataStreamHolder;
 import edu.tongji.model.Rating;
 import edu.tongji.model.ValueOfItems;
@@ -44,6 +45,34 @@ public final class BeanUtil {
     }
 
     /**
+     * 转换ValueOfItems为CacheHolder。
+     * 填充{KEY, SIM}
+     * 
+     * @param valueOfItem
+     * @return
+     */
+    public static CacheHolder toBean(ValueOfItems valueOfItem) {
+        CacheHolder cacheHolder = new CacheHolder();
+        cacheHolder.put(CacheHolder.KEY, HashKeyUtil.genKey(valueOfItem));
+        cacheHolder.put("SIM", valueOfItem.getValue());
+        return cacheHolder;
+    }
+
+    /**
+     * 转换Rating为CacheHolder。
+     * 填充{KEY, RATING}
+     * 
+     * @param rating
+     * @return
+     */
+    public static CacheHolder toBean(Rating rating) {
+        CacheHolder cacheHolder = new CacheHolder();
+        cacheHolder.put(CacheHolder.KEY, rating.getUsrId());
+        cacheHolder.put("RATING", rating);
+        return cacheHolder;
+    }
+
+    /**
      * 转化string数字为Rating对象
      * 
      * @param elements
@@ -66,7 +95,7 @@ public final class BeanUtil {
      * @return
      * @throws ParseException
      */
-    public static RatingVO toBean(Rating rating) {
+    public static RatingVO toBeans(Rating rating) {
         RatingVO ratingVO = new RatingVO();
         ratingVO.setMovieId(rating.getMovieId());
         ratingVO.setUsrId(rating.getUsrId());

@@ -169,7 +169,7 @@ public final class SimularityStreamCache extends Observable {
 
                 //破坏数据，加入高斯噪声
                 double disguisedValue = rating.getRating() - RandomUtil.nextGaussian(0.67);
-                RatingVO ratingVO = BeanUtil.toBean(rating);
+                RatingVO ratingVO = BeanUtil.toBeans(rating);
                 ratingVO.put("DISGUISED_VALUE", disguisedValue);
                 Collections.synchronizedCollection(ratingsOfContext).add(ratingVO);
                 //载入缓存

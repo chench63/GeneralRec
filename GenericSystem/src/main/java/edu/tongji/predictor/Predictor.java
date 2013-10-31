@@ -10,10 +10,10 @@ package edu.tongji.predictor;
  * @version $Id: Predictor.java, v 0.1 2013-10-31 下午4:21:26 chenkh Exp $
  */
 public interface Predictor {
-    
+
     /**
      * 产生推荐结果
      */
-    public void predict();
-    
+    public void predict(PredictorHolder predictHolder);
+
 }
