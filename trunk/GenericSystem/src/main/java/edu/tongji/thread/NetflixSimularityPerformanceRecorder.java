@@ -39,7 +39,7 @@ public class NetflixSimularityPerformanceRecorder implements Runnable {
     private ValueOfItemsDAO     valueOfItemsDAO;
 
     /**  相似度名 */
-    private final static String SIMULARITY_FUNCTION = "RandomizePerturbation_CorrelationBasedSimularityFunction";
+    private final static String SIMULARITY_FUNCTION = "SecureMultiparty_CorrelationBasedSimularityFunction";
 
     /** logger */
     private final static Logger logger              = Logger
@@ -90,7 +90,7 @@ public class NetflixSimularityPerformanceRecorder implements Runnable {
                     Number sim = similarityFunction.calculate(numeratorOfSim,
                         denominatroOfSimAboutI, denominatroOfSimAboutJ);
                     LoggerUtil.debug(logger, "I: " + i + " J: " + j + " sim: " + sim.doubleValue());
-//                    persistence(i, j, sim.doubleValue());
+                    persistence(i, j, sim.doubleValue());
                 } catch (Exception e) {
                     ExceptionUtil.caught(e, "i: " + i + " j: " + j);
                 }

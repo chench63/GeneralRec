@@ -19,7 +19,7 @@ public class RatingVO extends Rating {
 
     /** 上下文，Map太耗内存，内存不够，这种用double变量代替*/
     //    private final Map<String, Object> properties       = new HashMap<String, Object>();
-    private Double            value;
+    private Float            value;
 
     /**
      * 新增usrId和rating键值对
@@ -29,7 +29,7 @@ public class RatingVO extends Rating {
      */
     public void put(String usrId, Object object) {
         //        properties.put(usrId, object);
-        value = (Double) object;
+        value = ((Double) object).floatValue();
     }
 
     /**
