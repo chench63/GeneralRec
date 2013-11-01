@@ -28,13 +28,13 @@
 	
 	<bean id="engineForSim"
 		class="edu.tongji.engine.NetflixSimlarityPerformanceMultiThreadEngine">
-		<property name="reader" ref="NetflixSimularityPerformanceDBReader" />
+		<property name="reader" ref="NetFlixSimularityDBReader" />
 		<property name="recorder">
 			<list>
-				<ref bean="NetflixSimularityPerformanceRecorder"></ref>
-				<ref bean="NetflixSimularityPerformanceRecorder"></ref>
-				<ref bean="NetflixSimularityPerformanceRecorder"></ref>
-				<ref bean="NetflixSimularityPerformanceRecorder"></ref>
+				<ref bean="NetflixSimularityRecorder"></ref>
+				<ref bean="NetflixSimularityRecorder"></ref>
+				<ref bean="NetflixSimularityRecorder"></ref>
+				<ref bean="NetflixSimularityRecorder"></ref>
 			</list>
 		</property>
 	</bean>

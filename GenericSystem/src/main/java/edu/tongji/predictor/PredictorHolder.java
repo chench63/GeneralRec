@@ -4,6 +4,7 @@
  */
 package edu.tongji.predictor;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -15,7 +16,7 @@ import java.util.Map;
 public class PredictorHolder {
 
     /** 属性集合*/
-    private final Map<String, Object> properties = null;
+    private final Map<String, Object> properties = new HashMap<String, Object>();
 
     /** 固有属性 */
     public final static String        KEY        = "KEY";

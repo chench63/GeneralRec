@@ -35,6 +35,9 @@ public class NetflixSimularityRecorder extends Thread {
     /** AE 平均绝对值误差*/
     private static double       absolute_error = 0.0;
 
+    /** AE 估计样本的个数*/
+    private static double       nCount         = 0.0;
+
     /** 
      * @see java.lang.Thread#run()
      */
@@ -44,6 +47,7 @@ public class NetflixSimularityRecorder extends Thread {
 
         CacheTask task = null;
         double partOfAE = 0.0;
+        double partOfnCount = 0.0;
         while ((task = GeneralCache.task()) != null) {
             //=============================
             //性能测试开始
@@ -66,15 +70,20 @@ public class NetflixSimularityRecorder extends Thread {
                 predictorHolder.put("PREDICT_ITEM", movieId);
                 predictor.predict(predictorHolder);
                 //计算估计值与真实值的绝对值
-                double predictValue = (double) predictorHolder.get("PREDICT_VALUE");
-                partOfAE += Math.abs(predictValue - rating.getRating());
+                Double predictValue = (Double) predictorHolder.get("PREDICT_VALUE");
+
+                if (predictValue != null) {
+                    //预测估计器，产生估计值，记录入内.
+                    partOfAE += Math.abs(predictValue - rating.getRating());
+                    partOfnCount += 1;
+                }
             }
             //=============================
             //性能测试结束
             //=============================
         }
 
-        update(partOfAE);
+        update(partOfAE, partOfnCount);
     }
 
     /**
@@ -82,9 +91,11 @@ public class NetflixSimularityRecorder extends Thread {
      * 
      * @param addition
      */
-    private static synchronized void update(double addition) {
+    private static synchronized void update(double addition, double additionOfCount) {
         absolute_error += addition;
-        LoggerUtil.info(logger, "更新绝对值误差: " + absolute_error);
+        nCount += additionOfCount;
+        LoggerUtil.info(logger, "绝对值误差: " + absolute_error + "  测试样本数量： " + nCount + "  MAE: "
+                                + (absolute_error / nCount));
     }
 
     /**

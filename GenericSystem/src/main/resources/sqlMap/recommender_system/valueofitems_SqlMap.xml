@@ -14,7 +14,7 @@
     <result column="GMT_CREATE" property="GMT_CREATE" jdbcType="TIMESTAMP" />
   </resultMap>
   
-  <select id="select_by_functionName" resultMap="abatorgenerated_RatingResult"
+  <select id="select_by_functionName" resultMap="abatorgenerated_ValueOfItemsResult"
 		parameterClass="edu.tongji.model.ValueOfItems">
     <![CDATA[
     select id, itemI, itemJ, value, functionName, GMT_CREATE
