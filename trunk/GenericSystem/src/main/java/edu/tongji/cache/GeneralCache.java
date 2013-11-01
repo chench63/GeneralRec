@@ -89,7 +89,7 @@ public final class GeneralCache {
 
         try {
             for (CacheHolder cacheHolder : cacheHolders) {
-                String key = String.valueOf(CacheHolder.KEY);
+                String key = String.valueOf(cacheHolder.get(CacheHolder.KEY));
                 Collections.synchronizedMap(context).put(key, cacheHolder);
             }
         } finally {
@@ -110,7 +110,7 @@ public final class GeneralCache {
 
         try {
             for (CacheHolder cacheHolder : cacheHolders) {
-                String key = String.valueOf(CacheHolder.KEY);
+                String key = String.valueOf(cacheHolder.get(CacheHolder.KEY));
                 List<CacheHolder> holdersOfContext = contexts.get(key);
                 if (holdersOfContext == null) {
                     holdersOfContext = new ArrayList<CacheHolder>();

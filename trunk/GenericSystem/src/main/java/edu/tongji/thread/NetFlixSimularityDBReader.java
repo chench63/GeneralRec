@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import edu.tongji.cache.CacheHolder;
 import edu.tongji.cache.GeneralCache;
 import edu.tongji.configure.TestCaseConfigurationConstant;
+import edu.tongji.constant.FunctionNameConstant;
 import edu.tongji.dao.RatingDAO;
 import edu.tongji.dao.ValueOfItemsDAO;
 import edu.tongji.log4j.LoggerDefineConstant;
@@ -34,11 +35,11 @@ public class NetFlixSimularityDBReader extends Thread {
     /** 投票信息的DAO */
     private RatingDAO           ratingDAO;
 
-    private final static String FUNCTION_NAME          = "SecureMultiparty_CorrelationBasedSimularityFunction";
+    private final static String FUNCTION_NAME          = FunctionNameConstant.SecureMultiparty;
 
     /** logger */
     private final static Logger logger                 = Logger
-                                                           .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
+                                                           .getLogger(LoggerDefineConstant.SERVICE_CACHE);
     /** 通过用户号查询评分集合 */
     private final static String EXCUTE_SELECT_BY_USERS = "select_by_usrs";
 
@@ -68,7 +69,7 @@ public class NetFlixSimularityDBReader extends Thread {
             cacheHolders.add(cacheHolder);
         }
         GeneralCache.put(cacheHolders);
-        LoggerUtil.info(logger, "NetFlixSimularityDBReader 相似度加载缓存结束");
+        LoggerUtil.info(logger, "NetFlixSimularityDBReader 完成读取相似度，数据量：" + resultSet.size());
     }
 
     /**
@@ -77,9 +78,18 @@ public class NetFlixSimularityDBReader extends Thread {
     private void loadTestCaseToCache() {
         //随机生成配置数量的测试集
         List<String> testSet = new ArrayList<String>();
-        for (int i = 0; i < TestCaseConfigurationConstant.TESTCASE_SIZE; i++) {
-            testSet.add(String.valueOf(RandomUtil.nextInt(TestCaseConfigurationConstant.LEFT_SIDE,
-                TestCaseConfigurationConstant.RIGHT_SIDE)));
+        if (TestCaseConfigurationConstant.NEED_RANDOM_TESTCASE) {
+            for (int i = 0; i < TestCaseConfigurationConstant.TESTCASE_SIZE; i++) {
+                testSet.add(String.valueOf(RandomUtil.nextInt(
+                    TestCaseConfigurationConstant.LEFT_SIDE,
+                    TestCaseConfigurationConstant.RIGHT_SIDE)));
+            }
+        } else {
+            String[] testCaseSet = TestCaseConfigurationConstant.TEST_CASE
+                .split(TestCaseConfigurationConstant.SAPERATOR_EXPRESSION);
+            for (String testCase : testCaseSet) {
+                testSet.add(testCase.trim());
+            }
         }
 
         //读取数据库相关评分数据

@@ -6,10 +6,14 @@ package edu.tongji.predictor;
 
 import java.util.List;
 
+import org.apache.log4j.Logger;
+
 import edu.tongji.cache.CacheHolder;
 import edu.tongji.cache.GeneralCache;
+import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.model.Rating;
 import edu.tongji.util.HashKeyUtil;
+import edu.tongji.util.LoggerUtil;
 
 /**
  * 
@@ -18,36 +22,63 @@ import edu.tongji.util.HashKeyUtil;
  */
 public class GeneralPredictor implements Predictor {
 
+    /** logger */
+    private final static Logger logger = Logger.getLogger(LoggerDefineConstant.SERVICE_NORMAL);
+
     /** 
      * @see edu.tongji.predictor.Predictor#predict(edu.tongji.predictor.PredictorHolder)
      */
     @Override
     public void predict(PredictorHolder predictHolder) {
-        //获得用户评分数据
         //PredictorHolder:
         //{KEY, @PREDICT_ITEM, @PREDICT_VALUE}
         //key为usrId
         String key = String.valueOf(predictHolder.get(PredictorHolder.KEY));
+        //获得被估计用户，所有历史评分数据
         List<CacheHolder> ratings = GeneralCache.gets(key);
-
+        //获得被估计用户，需要估计的itemId
         int predictItemId = (int) predictHolder.get("PREDICT_ITEM");
-        double predictValue = 0.0;
+
+        //估计itemd的评分
+        boolean canPredict = false;
+        double sumOfValue = 0.0;
+        double sumOfSim = 0.0;
+        double originalValue = 0.0;
         for (CacheHolder cacheHolder : ratings) {
             Rating rating = (Rating) cacheHolder.get("RATING");
+            if (rating.getMovieId() == predictItemId) {
+                //记录分析数据使用
+                originalValue = rating.getRating();
+            }
 
             //获取[predictItemId]与[该评分对应的item]相似度
             //{@SIM}
             CacheHolder similarity = GeneralCache.get(HashKeyUtil.genKey(predictItemId,
                 rating.getMovieId()));
-            Object sim = similarity.get("SIM");
-            if (sim == null || !(sim instanceof Double)) {
+            if (similarity == null) {
                 //相似度不存在,返回
                 continue;
             }
-            predictValue += rating.getRating() * ((Double) sim);
+
+            if (!canPredict) {
+                //存在有个item的历史数据在训练数据集内
+                //标记为可以估计
+                canPredict = true;
+            }
+            Object sim = similarity.get("SIM");
+            sumOfValue += rating.getRating() * ((Double) sim);
+            sumOfSim += ((Double) sim);
         }
 
         //添加估计值
-        predictHolder.put("PREDICT_VALUE", predictValue);
+        if (canPredict) {
+            predictHolder.put("PREDICT_VALUE", sumOfValue / sumOfSim);
+
+            if (logger.isDebugEnabled()) {
+
+            }
+            LoggerUtil.debug(logger, "产生估计...原始值：" + originalValue + "   估计值" + sumOfValue
+                                     / sumOfSim);
+        }
     }
 }
