@@ -14,7 +14,8 @@ import org.springframework.util.StopWatch;
 import edu.tongji.cache.CacheHolder;
 import edu.tongji.cache.CacheTask;
 import edu.tongji.cache.SimularityStreamCache;
-import edu.tongji.configure.ThreadConfigurationConstant;
+import edu.tongji.configure.TestCaseConfigurationConstant;
+import edu.tongji.constant.FunctionNameConstant;
 import edu.tongji.context.PaillierProcessorContextHelper;
 import edu.tongji.context.ProcessorContextHelper;
 import edu.tongji.dao.ValueOfItemsDAO;
@@ -39,7 +40,7 @@ public class NetflixSimularityPerformanceRecorder implements Runnable {
     private ValueOfItemsDAO     valueOfItemsDAO;
 
     /**  相似度名 */
-    private final static String SIMULARITY_FUNCTION = "SecureMultiparty_CorrelationBasedSimularityFunction";
+    private final static String SIMULARITY_FUNCTION = FunctionNameConstant.RandomizePerturbation;
 
     /** logger */
     private final static Logger logger              = Logger
@@ -69,10 +70,10 @@ public class NetflixSimularityPerformanceRecorder implements Runnable {
                 List<Rating> ratingOfJ = SimularityStreamCache.get(String.valueOf(j));
                 List<Number> valuesOfI = new ArrayList<Number>();
                 List<Number> valuesOfJ = new ArrayList<Number>();
-                if (ThreadConfigurationConstant.IS_PERTURBATION) {
+                if (TestCaseConfigurationConstant.IS_PERTURBATION) {
                     //随机扰动对应的数据处理类
                     ProcessorContextHelper.forgeRandomizedPerturbationRatingValues(ratingOfI,
-                        ratingOfJ, valuesOfI, valuesOfJ, false);
+                        ratingOfJ, valuesOfI, valuesOfJ, TestCaseConfigurationConstant.IS_NORMAL);
                 } else {
                     ProcessorContextHelper.forgeSymmetryRatingValues(ratingOfI, ratingOfJ,
                         valuesOfI, valuesOfJ);

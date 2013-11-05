@@ -23,6 +23,15 @@ public final class TestCaseConfigurationConstant {
     /** 测试集是否随机产生*/
     public final static boolean NEED_RANDOM_TESTCASE = false;
 
+    /** 测试集是否使用扰动效果*/
+    public final static boolean IS_PERTURBATION      = false;
+    
+    /** 绕送是否使用高斯噪声 */
+    public final static boolean IS_NORMAL      = false;
+
+    /** 测试集，高斯分布扰动概率范围 0.67-1.96*/
+    public final static double  PERTURBATION_DOMAIN  = 1.96;
+
     /** 自定义测试集合*/
     public final static String  TEST_CASE            = "700638, 65666, 2456884, 1877798, 33079, 1703932, 809671, 482597, 1771703"
                                                        + ",344444, 1025476, 1124058, 1561358, 1176808, 241923, 216623, 1402512, 722332, 2497412, 1341871, 283675, "

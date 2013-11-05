@@ -35,6 +35,7 @@ public class NetFlixSimularityDBReader extends Thread {
     /** 投票信息的DAO */
     private RatingDAO           ratingDAO;
 
+    /** 测试数据集相似度数据来源*/
     private final static String FUNCTION_NAME          = FunctionNameConstant.SecureMultiparty;
 
     /** logger */
@@ -99,7 +100,9 @@ public class NetFlixSimularityDBReader extends Thread {
         //加载测试集至缓存
         List<CacheHolder> cacheHolders = new ArrayList<CacheHolder>();
         for (Rating rating : resultSet) {
-            CacheHolder cacheHolder = BeanUtil.toBean(rating);
+            //填充{KEY, RATING, DISGUISED_VALUE}
+            CacheHolder cacheHolder = BeanUtil.toBean(rating,
+                TestCaseConfigurationConstant.IS_PERTURBATION);
             cacheHolders.add(cacheHolder);
         }
         GeneralCache.puts(cacheHolders);

@@ -11,6 +11,6 @@ package edu.tongji.configure;
  */
 public final class ThreadConfigurationConstant {
 
-    public final static boolean IS_PERTURBATION = true;
+//    public final static boolean IS_PERTURBATION = true;
 
 }

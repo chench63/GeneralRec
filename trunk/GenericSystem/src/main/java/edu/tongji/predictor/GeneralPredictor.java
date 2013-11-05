@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import edu.tongji.cache.CacheHolder;
 import edu.tongji.cache.GeneralCache;
+import edu.tongji.configure.TestCaseConfigurationConstant;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.model.Rating;
 import edu.tongji.util.HashKeyUtil;
@@ -66,7 +67,11 @@ public class GeneralPredictor implements Predictor {
                 canPredict = true;
             }
             Object sim = similarity.get("SIM");
-            sumOfValue += rating.getRating() * ((Double) sim);
+            if (TestCaseConfigurationConstant.IS_PERTURBATION) {
+                sumOfValue += ((Double) cacheHolder.get("DISGUISED_VALUE")) * ((Double) sim);
+            } else {
+                sumOfValue += rating.getRating() * ((Double) sim);
+            }
             sumOfSim += ((Double) sim);
         }
 

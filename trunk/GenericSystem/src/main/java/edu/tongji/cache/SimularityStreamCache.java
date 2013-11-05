@@ -17,6 +17,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.apache.log4j.Logger;
 
 import edu.tongji.configure.ConfigurationConstant;
+import edu.tongji.configure.TestCaseConfigurationConstant;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.model.Rating;
 import edu.tongji.util.BeanUtil;
@@ -153,7 +154,7 @@ public final class SimularityStreamCache extends Observable {
      * 
      * @param ratings
      */
-    public static void putAndDisguise(List<Rating> ratings) {
+    public static void putAndDisguise(List<Rating> ratings, boolean isGaussian) {
         //读写保护，加写锁
         Lock writeLock = lock.writeLock();
         writeLock.lock();
@@ -167,8 +168,17 @@ public final class SimularityStreamCache extends Observable {
                     ratingsOfContext = new ArrayList<Rating>();
                 }
 
-                //破坏数据，加入高斯噪声
-                double disguisedValue = rating.getRating() - RandomUtil.nextGaussian(0.67);
+                //破坏数据，加入高斯噪声0.67
+                double disguisedValue = 0.0;
+                if (isGaussian) {
+                    disguisedValue = rating.getRating()
+                                     - RandomUtil
+                                         .nextGaussian(TestCaseConfigurationConstant.PERTURBATION_DOMAIN);
+                } else {
+                    disguisedValue = rating.getRating()
+                                     - RandomUtil
+                                         .nextDouble(TestCaseConfigurationConstant.PERTURBATION_DOMAIN);
+                }
                 RatingVO ratingVO = BeanUtil.toBeans(rating);
                 ratingVO.put("DISGUISED_VALUE", disguisedValue);
                 Collections.synchronizedCollection(ratingsOfContext).add(ratingVO);

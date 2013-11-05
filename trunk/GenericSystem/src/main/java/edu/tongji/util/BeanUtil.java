@@ -11,6 +11,7 @@ import java.text.SimpleDateFormat;
 
 import edu.tongji.cache.CacheHolder;
 import edu.tongji.cache.DataStreamHolder;
+import edu.tongji.configure.TestCaseConfigurationConstant;
 import edu.tongji.model.Rating;
 import edu.tongji.model.ValueOfItems;
 import edu.tongji.vo.RatingVO;
@@ -60,15 +61,19 @@ public final class BeanUtil {
 
     /**
      * 转换Rating为CacheHolder。
-     * 填充{KEY, RATING}
+     * 填充{KEY, RATING, DISGUISED_VALUE}
      * 
      * @param rating
      * @return
      */
-    public static CacheHolder toBean(Rating rating) {
+    public static CacheHolder toBean(Rating rating, boolean isDisguised) {
         CacheHolder cacheHolder = new CacheHolder();
         cacheHolder.put(CacheHolder.KEY, rating.getUsrId());
         cacheHolder.put("RATING", rating);
+        cacheHolder.put(
+            "DISGUISED_VALUE",
+            rating.getRating()
+                    - RandomUtil.nextDouble(TestCaseConfigurationConstant.PERTURBATION_DOMAIN));
         return cacheHolder;
     }
 
