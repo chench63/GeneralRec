@@ -42,6 +42,17 @@ public final class RandomUtil {
     }
 
     /**
+     * 生成一个符合平均分布的双精度浮点数，且绝对值不大于边界
+     * 
+     * @param boundary
+     * @return
+     */
+    public static double nextDouble(double boundary) {
+        double result = ran.nextDouble() * boundary;
+        return ran.nextDouble() > 0.5 ? result : -1 * result;
+    }
+
+    /**
      * 生成一个符合高斯分布的浮点数
      * 
      * @return
@@ -61,6 +72,7 @@ public final class RandomUtil {
         double nextGaussian = 0.0;
         while (Math.abs(nextGaussian = nextGaussian()) > csi)
             ;
+
         return nextGaussian;
     }
 }

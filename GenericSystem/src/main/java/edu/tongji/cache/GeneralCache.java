@@ -49,6 +49,7 @@ public final class GeneralCache {
     public static synchronized CacheTask task() {
         if (keySet == null) {
             keySet = new ArrayList<String>(contexts.keySet());
+            LoggerUtil.info(logger, "GeneralCache  初始化测试用户数：" + keySet.size());
         } else if (keySet.isEmpty()) {
             LoggerUtil.debug(logger, "GeneralCache  任务结束.");
             return null;
