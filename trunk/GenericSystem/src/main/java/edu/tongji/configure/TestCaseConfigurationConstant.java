@@ -24,7 +24,7 @@ public final class TestCaseConfigurationConstant {
     public final static boolean NEED_RANDOM_TESTCASE = false;
 
     /** 测试集是否使用扰动效果*/
-    public final static boolean IS_PERTURBATION      = false;
+    public final static boolean IS_PERTURBATION      = true;
     
     /** 绕送是否使用高斯噪声 */
     public final static boolean IS_NORMAL      = false;
