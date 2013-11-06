@@ -40,7 +40,7 @@ public class NetflixSimularityPerformanceRecorder implements Runnable {
     private ValueOfItemsDAO     valueOfItemsDAO;
 
     /**  相似度名 */
-    private final static String SIMULARITY_FUNCTION = FunctionNameConstant.RandomizePerturbation;
+    private final static String SIMULARITY_FUNCTION = FunctionNameConstant.RandomizePerturbation_u50;
 
     /** logger */
     private final static Logger logger              = Logger

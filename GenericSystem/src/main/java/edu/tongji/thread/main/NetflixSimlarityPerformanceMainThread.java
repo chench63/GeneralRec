@@ -25,8 +25,8 @@ public final class NetflixSimlarityPerformanceMainThread {
         try {
             ctx = new ClassPathXmlApplicationContext(
                 "META-INF/spring/application-context-netflix-statistic.xml");
-            //            Engine engine = (Engine) ctx.getBean("engine");
-            Engine engine = (Engine) ctx.getBean("engineForSim");
+                        Engine engine = (Engine) ctx.getBean("engine");
+//            Engine engine = (Engine) ctx.getBean("engineForSim");
 
             engine.excute();
         } catch (Exception e) {
