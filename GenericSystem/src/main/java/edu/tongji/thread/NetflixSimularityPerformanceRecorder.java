@@ -40,7 +40,7 @@ public class NetflixSimularityPerformanceRecorder implements Runnable {
     private ValueOfItemsDAO     valueOfItemsDAO;
 
     /**  相似度名 */
-    private final static String SIMULARITY_FUNCTION = FunctionNameConstant.RandomizePerturbation_u50;
+    private final static String SIMULARITY_FUNCTION = FunctionNameConstant.SecureMultiparty;
 
     /** logger */
     private final static Logger logger              = Logger
@@ -79,12 +79,14 @@ public class NetflixSimularityPerformanceRecorder implements Runnable {
                         valuesOfI, valuesOfJ);
                 }
 
+                stopWatch.start();
                 List<Number> numeratorOfSim = new ArrayList<Number>();
                 List<Number> denominatroOfSimAboutI = new ArrayList<Number>();
                 List<Number> denominatroOfSimAboutJ = new ArrayList<Number>();
                 PaillierProcessorContextHelper.forgeDataAsPearson(valuesOfI, valuesOfJ,
                     numeratorOfSim, denominatroOfSimAboutI, denominatroOfSimAboutJ);
-
+                stopWatch.stop();
+                
                 //记录点
                 stopWatch.start();
                 try {

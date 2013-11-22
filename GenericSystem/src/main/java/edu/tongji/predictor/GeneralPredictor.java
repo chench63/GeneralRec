@@ -56,7 +56,8 @@ public class GeneralPredictor implements Predictor {
             //{@SIM}
             CacheHolder similarity = GeneralCache.get(HashKeyUtil.genKey(predictItemId,
                 rating.getMovieId()));
-            if (similarity == null) {
+            if (similarity == null
+                || (rating.getMovieId() >= TestCaseConfigurationConstant.SIMILARITY_RIGHT_SIDE)) {
                 //相似度不存在,返回
                 continue;
             }
@@ -77,13 +78,20 @@ public class GeneralPredictor implements Predictor {
 
         //添加估计值
         if (canPredict) {
-            predictHolder.put("PREDICT_VALUE", sumOfValue / sumOfSim);
+            double predictValue = sumOfValue / sumOfSim;
+
+            if (predictValue < 0) {
+                predictValue = 0;
+            } else if (predictValue > 5) {
+                predictValue = 5.0;
+            }
+
+            predictHolder.put("PREDICT_VALUE", predictValue);
 
             if (logger.isDebugEnabled()) {
 
             }
-            LoggerUtil.debug(logger, "产生估计...原始值：" + originalValue + "   估计值" + sumOfValue
-                                     / sumOfSim);
+            LoggerUtil.debug(logger, "产生估计...原始值：" + originalValue + "   估计值: " + predictValue);
         }
     }
 }

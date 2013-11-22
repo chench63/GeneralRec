@@ -16,5 +16,7 @@ public final class FunctionNameConstant {
 
     public static final String RandomizePerturbation_u50 = "SecureMultiparty_CorrelationBasedSimularityFunction_u50";
 
+    public static final String RandomizePerturbation_u = "SecureMultiparty_CorrelationBasedSimularityFunction_u";
+    
     public static final String RandomizePerturbation     = "RandomizePerturbation_CorrelationBasedSimularityFunction";
 }
