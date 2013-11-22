@@ -35,6 +35,8 @@ public class NetflixSimularityRecorder extends Thread {
     /** AE 平均绝对值误差*/
     private static double       absolute_error = 0.0;
 
+    private static double       square_error   = 0.0;
+
     /** AE 估计样本的个数*/
     private static double       nCount         = 0.0;
 
@@ -47,6 +49,7 @@ public class NetflixSimularityRecorder extends Thread {
 
         CacheTask task = null;
         double partOfAE = 0.0;
+        double partOfSE = 0.0;
         double partOfnCount = 0.0;
         while ((task = GeneralCache.task()) != null) {
             //=============================
@@ -75,6 +78,7 @@ public class NetflixSimularityRecorder extends Thread {
                 if (predictValue != null) {
                     //预测估计器，产生估计值，记录入内.
                     partOfAE += Math.abs(predictValue - rating.getRating());
+                    partOfSE += Math.pow(predictValue - rating.getRating(), 2.0);
                     partOfnCount += 1;
                 }
             }
@@ -83,7 +87,7 @@ public class NetflixSimularityRecorder extends Thread {
             //=============================
         }
 
-        update(partOfAE, partOfnCount);
+        update(partOfAE, partOfSE, partOfnCount);
     }
 
     /**
@@ -91,11 +95,13 @@ public class NetflixSimularityRecorder extends Thread {
      * 
      * @param addition
      */
-    private static synchronized void update(double addition, double additionOfCount) {
-        absolute_error += addition;
+    private static synchronized void update(double partOfAE, double partOfSE, double additionOfCount) {
+        absolute_error += partOfAE;
+        square_error += partOfSE;
         nCount += additionOfCount;
-        LoggerUtil.info(logger, "绝对值误差: " + absolute_error + "  测试样本数量： " + nCount + "  MAE: "
-                                + (absolute_error / nCount));
+        LoggerUtil.info(logger,
+            "绝对值误差: " + absolute_error + "  测试样本数量： " + nCount + "  MAE: "
+                    + (absolute_error / nCount) + "  RMSE: " + Math.sqrt(square_error / nCount));
     }
 
     /**

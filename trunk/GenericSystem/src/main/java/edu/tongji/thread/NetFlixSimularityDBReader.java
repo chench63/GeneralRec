@@ -36,7 +36,7 @@ public class NetFlixSimularityDBReader extends Thread {
     private RatingDAO           ratingDAO;
 
     /** 测试数据集相似度数据来源*/
-    private final static String FUNCTION_NAME          = FunctionNameConstant.RandomizePerturbation;
+    private final static String FUNCTION_NAME          = FunctionNameConstant.RandomizePerturbation_u50;
 
     /** logger */
     private final static Logger logger                 = Logger
