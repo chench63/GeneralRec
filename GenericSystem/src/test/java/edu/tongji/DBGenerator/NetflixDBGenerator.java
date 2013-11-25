@@ -6,9 +6,7 @@ package edu.tongji.DBGenerator;
 
 import java.util.Map;
 
-import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-
 import edu.tongji.dao.RatingDAO;
 import edu.tongji.engine.FileBasedRecommendationEngine;
 import edu.tongji.model.Rating;
@@ -16,13 +14,13 @@ import edu.tongji.orm.NetflixDataSource;
 import edu.tongji.util.ExceptionUtil;
 
 /**
- * 
+ * 将Netflix文本数据，导入数据库，
+ * 信息划分为【Rating】
  * @author chenkh
  * @version $Id: NetflixMockDBGenerator.java, v 0.1 2013-9-16 下午5:16:19 chenkh Exp $
  */
-public class NetflixMockDBGenerator {
+public class NetflixDBGenerator {
 
-    @Test
     public void test() {
         ClassPathXmlApplicationContext ctx = null;
         try {

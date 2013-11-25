@@ -40,11 +40,6 @@
 		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl"></property>
 		<property name="stopper" ref="stopper"></property>
 	</bean>
-	<bean id="fastRecommendationProcessor" class="edu.tongji.processor.FastAccRecommendationProcessor">
-		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl"></property>
-		<property name="stopper" ref="stopper"></property>
-		<property name="similarityFunction" ref="correlationBasedSimularityFunction"></property>
-	</bean>
 	<bean id="contextEnvelope" class="edu.tongji.context.ContextEnvelope">
 		<property name="samplingExpr">
 			<util:map key-type="edu.tongji.orm.SerializableBeanType">

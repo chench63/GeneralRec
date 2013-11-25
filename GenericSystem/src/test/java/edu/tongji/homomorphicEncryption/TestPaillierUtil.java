@@ -2,7 +2,7 @@
  * Tongji Edu.
  * Copyright (c) 2004-2013 All Rights Reserved.
  */
-package edu.tongji.homoEncr;
+package edu.tongji.homomorphicEncryption;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -22,7 +22,7 @@ import edu.tongji.util.PaillierUtil;
  * @author chenkh
  * @version $Id: TestHomoEncr.java, v 0.1 2013-10-10 下午5:22:16 chenkh Exp $
  */
-public class TestHomoEncr {
+public class TestPaillierUtil {
 
     private static final Logger logger = Logger.getLogger(LoggerDefineConstant.SERVICE_TEST);
 
