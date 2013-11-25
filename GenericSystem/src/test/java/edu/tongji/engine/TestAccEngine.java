@@ -10,16 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
-import org.springframework.util.StopWatch;
-
-import edu.tongji.context.AccRecommendationContext;
 import edu.tongji.context.ContextEnvelope;
 import edu.tongji.context.ProcessorContext;
 import edu.tongji.function.FunctionHelper;
 import edu.tongji.log4j.LoggerDefineConstant;
-import edu.tongji.orm.NetflixDataSource;
 import edu.tongji.processor.Processor;
 import edu.tongji.stopper.TimestampStopper;
 import edu.tongji.util.ExceptionUtil;
@@ -108,54 +103,6 @@ public class TestAccEngine {
         }
     }
 
-    @Test
-    public void test() {
-        ClassPathXmlApplicationContext ctx = null;
-        try {
-            ctx = new ClassPathXmlApplicationContext(
-                "META-INF/spring/application-context-netflix.xml");
-            FastAccRecommendationEngine engine = (FastAccRecommendationEngine) ctx
-                .getBean("RecommendationEngine");
-
-            StopWatch stopWatch = new StopWatch();
-            ;
-            for (int itemI = 2; itemI < 3; itemI++) {
-                for (int itemJ = 1; itemJ < itemI; itemJ++) {
-
-                    stopWatch.start();
-                    //=============================================
-                    //功能测试部分
-                    //=============================================
-                    NetflixDataSource dataSource = (NetflixDataSource) engine.dataSource;
-                    dataSource.setItemI(String.valueOf(itemI));
-                    dataSource.setItemJ(String.valueOf(itemJ));
-
-                    AccRecommendationContext context = (AccRecommendationContext) engine
-                        .getProcessorContext();
-                    context.setItemI(String.valueOf(itemI));
-                    context.setItemJ(String.valueOf(itemJ));
-
-                    engine.excute();
-                    dataSource.getStopper().reset();
-                    dataSource.setEpicZone(null);
-                    context.clearContext();
-                    //==============================================
-                    //功能测试结束
-                    //=============================================
-                    stopWatch.stop();
-                    LoggerUtil.info(logger, "执行任务  ItemI: " + itemI + " ItemJ： " + itemJ + " 耗时： "
-                                            + stopWatch.getLastTaskTimeMillis());
-                }
-            }
-
-        } catch (Exception e) {
-            ExceptionUtil.caught(e, "edu.tongji.engine.TestEngine 测试用例发生错误");
-        } finally {
-            if (ctx != null) {
-                ctx.close();
-            }
-        }
-    }
 
     private void mock(List<Serializable> resultSet, int style) {
         resultSet.clear();

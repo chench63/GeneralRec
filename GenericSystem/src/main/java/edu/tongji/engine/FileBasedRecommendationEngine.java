@@ -12,7 +12,7 @@ import edu.tongji.processor.RecommendationProcessor;
  * @author chenkh
  * @version $Id: RecommendationEngine.java, v 0.1 2013-9-7 下午9:44:35 chenkh Exp $
  */
-public class DefaultRecommendationEngine extends RecommendationEngine {
+public class FileBasedRecommendationEngine extends RecommendationEngine {
 
     /** 
      * @see edu.tongji.engine.Engine#excute()

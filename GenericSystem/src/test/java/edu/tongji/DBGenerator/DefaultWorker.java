@@ -9,7 +9,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import edu.tongji.context.RecommendationContext;
-import edu.tongji.engine.DefaultRecommendationEngine;
+import edu.tongji.engine.FileBasedRecommendationEngine;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.util.ExceptionUtil;
 import edu.tongji.util.LoggerUtil;
@@ -47,7 +47,7 @@ public class DefaultWorker implements Worker {
         try {
             LoggerUtil.info(logger, this.beanName + " starts to Run.");
 
-            DefaultRecommendationEngine engine = (DefaultRecommendationEngine) ctx.getBean(beanName);
+            FileBasedRecommendationEngine engine = (FileBasedRecommendationEngine) ctx.getBean(beanName);
             RecommendationContext context = (RecommendationContext) engine.getProcessorContext();
 
             for (int itemI = startOfItemI; itemI < endOfItemI; itemI++) {
