@@ -4,13 +4,11 @@
  */
 package edu.tongji.util;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
 import edu.tongji.cache.CacheHolder;
-import edu.tongji.cache.DataStreamHolder;
 import edu.tongji.configure.TestCaseConfigurationConstant;
 import edu.tongji.model.Rating;
 import edu.tongji.model.ValueOfItems;
@@ -28,22 +26,6 @@ public final class BeanUtil {
 
     /** Timestamp生成规格 */
     private final static String TIMESTAMP_CREATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-
-    /**
-     * 转化DataStreamHolder为ValueOfItems
-     * 
-     * @param task
-     * @return
-     */
-    public static ValueOfItems toBean(DataStreamHolder task) {
-        ValueOfItems bean = new ValueOfItems();
-        bean.setItemI(String.valueOf(task.getItemI()));
-        bean.setItemJ(String.valueOf(task.getItemJ()));
-        bean.setValue(task.getNumMissingRating() * 1.0 / task.getNumToalRating());
-        bean.setGMT_CREATE(Date.valueOf("2005-12-31"));
-        bean.setFunctionName("MISSING_RATING");
-        return bean;
-    }
 
     /**
      * 转换ValueOfItems为CacheHolder。
