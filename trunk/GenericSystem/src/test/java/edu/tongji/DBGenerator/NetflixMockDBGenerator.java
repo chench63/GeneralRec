@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import edu.tongji.dao.RatingDAO;
-import edu.tongji.engine.DefaultRecommendationEngine;
+import edu.tongji.engine.FileBasedRecommendationEngine;
 import edu.tongji.model.Rating;
 import edu.tongji.orm.NetflixDataSource;
 import edu.tongji.util.ExceptionUtil;
@@ -29,7 +29,7 @@ public class NetflixMockDBGenerator {
             ctx = new ClassPathXmlApplicationContext(
                 "META-INF/spring/application-context-netflix.xml");
 
-            DefaultRecommendationEngine engine = (DefaultRecommendationEngine) ctx
+            FileBasedRecommendationEngine engine = (FileBasedRecommendationEngine) ctx
                 .getBean("RecommendationEngine");
             RatingDAO ratingDao = (RatingDAO) ctx.getBean("ratingDAO");
             NetflixDataSource dataSource = (NetflixDataSource) engine.getDataSource();

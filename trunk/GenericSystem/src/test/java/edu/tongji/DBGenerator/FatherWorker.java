@@ -8,7 +8,7 @@ import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 import edu.tongji.context.ContextEnvelope;
 import edu.tongji.context.RecommendationContext;
-import edu.tongji.engine.DefaultRecommendationEngine;
+import edu.tongji.engine.FileBasedRecommendationEngine;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.orm.MovielensDatasource;
 import edu.tongji.util.ExceptionUtil;
@@ -39,7 +39,7 @@ public class FatherWorker implements Worker {
         try {
             LoggerUtil.info(logger, "FatherWorker Starts to Run.");
 
-            DefaultRecommendationEngine engine = (DefaultRecommendationEngine) ctx
+            FileBasedRecommendationEngine engine = (FileBasedRecommendationEngine) ctx
                 .getBean("RecommendationEngine");
             RecommendationContext context = (RecommendationContext) engine.getProcessorContext();
             MovielensDatasource dataSource = (MovielensDatasource) engine.getDataSource();

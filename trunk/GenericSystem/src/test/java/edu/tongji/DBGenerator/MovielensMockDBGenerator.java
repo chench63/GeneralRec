@@ -11,7 +11,7 @@ import org.junit.Test;
 import edu.tongji.dao.MovieDAO;
 import edu.tongji.dao.RatingDAO;
 import edu.tongji.dao.UserDAO;
-import edu.tongji.engine.DefaultRecommendationEngine;
+import edu.tongji.engine.FileBasedRecommendationEngine;
 import edu.tongji.model.Movie;
 import edu.tongji.model.Rating;
 import edu.tongji.model.User;
@@ -31,7 +31,7 @@ public class MovielensMockDBGenerator {
         try {
             ctx = new ClassPathXmlApplicationContext("META-INF/spring/application-context.xml");
 
-            DefaultRecommendationEngine engine = (DefaultRecommendationEngine) ctx
+            FileBasedRecommendationEngine engine = (FileBasedRecommendationEngine) ctx
                 .getBean("RecommendationEngine");
             RatingDAO ratingDao = (RatingDAO) ctx.getBean("ratingDAO");
             MovielensDatasource dataSource = (MovielensDatasource) engine.getDataSource();
@@ -56,7 +56,7 @@ public class MovielensMockDBGenerator {
         try {
             ctx = new ClassPathXmlApplicationContext("META-INF/spring/application-context.xml");
 
-            DefaultRecommendationEngine engine = (DefaultRecommendationEngine) ctx
+            FileBasedRecommendationEngine engine = (FileBasedRecommendationEngine) ctx
                 .getBean("RecommendationEngine");
             UserDAO userDao = (UserDAO) ctx.getBean("userDAO");
             MovielensDatasource dataSource = (MovielensDatasource) engine.getDataSource();
@@ -81,7 +81,7 @@ public class MovielensMockDBGenerator {
         try {
             ctx = new ClassPathXmlApplicationContext("META-INF/spring/application-context.xml");
 
-            DefaultRecommendationEngine engine = (DefaultRecommendationEngine) ctx
+            FileBasedRecommendationEngine engine = (FileBasedRecommendationEngine) ctx
                 .getBean("RecommendationEngine");
             MovieDAO movieDao = (MovieDAO) ctx.getBean("movieDAO");
             MovielensDatasource dataSource = (MovielensDatasource) engine.getDataSource();

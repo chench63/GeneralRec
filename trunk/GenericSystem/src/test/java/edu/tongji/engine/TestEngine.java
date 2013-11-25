@@ -62,7 +62,7 @@ public class TestEngine {
 
             Engine engine = (Engine) ctx.getBean("RecommendationEngine");
             mock();
-            ((DefaultRecommendationEngine) engine).setDataSource(dataSource);
+            ((FileBasedRecommendationEngine) engine).setDataSource(dataSource);
             engine.excute();
 
         } catch (Exception e) {
