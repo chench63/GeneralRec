@@ -12,7 +12,7 @@
 	<!-- ******************************************** 实验配置部分************************************************ -->
 	<bean class="edu.tongji.configure.TestCaseConfigurationConstant">
 		<!-- 不使用噪声干扰数据 -->
-		<property name="IS_PERTURBATION" value="true" />
+		<property name="IS_PERTURBATION" value="false" />
 		
 		<!-- 不随机生成测试集合，采用默认的测试集合 -->
 		<property name="NEED_RANDOM_TESTCASE" value="false" />
@@ -94,7 +94,7 @@
 
 
 	<!-- ******************************************** 预测器部分************************************************ -->
-	<bean id="predictor" class="edu.tongji.predictor.GeneralPredictor" />
+	<bean id="predictor" class="edu.tongji.predictor.NegativeDeniedPredictor" />
 
 
 
