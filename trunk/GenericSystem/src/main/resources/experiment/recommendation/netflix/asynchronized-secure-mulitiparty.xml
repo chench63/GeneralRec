@@ -16,8 +16,10 @@
 		
 		<!-- 不随机生成测试集合，采用默认的测试集合 -->
 		<property name="NEED_RANDOM_TESTCASE" value="false" />
-		<!-- 自定义测试集合范围[1, x) -->
+		<!-- 自定义测试集合范围[1, x)-->
 		<property name="SIMILARITY_RIGHT_SIDE" value="885" />
+		<!-- 相似度数据标签 -->
+		<property name="SIMILARITY_TYPE" value="SecureMultiparty_CorrelationBasedSimularityFunction" />
 	</bean>
 
 

@@ -15,7 +15,6 @@ import edu.tongji.cache.CacheHolder;
 import edu.tongji.cache.CacheTask;
 import edu.tongji.cache.SimularityStreamCache;
 import edu.tongji.configure.TestCaseConfigurationConstant;
-import edu.tongji.constant.FunctionNameConstant;
 import edu.tongji.context.PaillierProcessorContextHelper;
 import edu.tongji.context.ProcessorContextHelper;
 import edu.tongji.dao.ValueOfItemsDAO;
@@ -38,9 +37,6 @@ public class NetflixSimularityPerformanceRecorder implements Runnable {
 
     /** 相似度DAO */
     private ValueOfItemsDAO     valueOfItemsDAO;
-
-    /**  相似度名 */
-    private final static String SIMULARITY_FUNCTION = FunctionNameConstant.SecureMultiparty;
 
     /** logger */
     private final static Logger logger              = Logger
@@ -93,7 +89,7 @@ public class NetflixSimularityPerformanceRecorder implements Runnable {
                     Number sim = similarityFunction.calculate(numeratorOfSim,
                         denominatroOfSimAboutI, denominatroOfSimAboutJ);
                     LoggerUtil.debug(logger, "I: " + i + " J: " + j + " sim: " + sim.doubleValue());
-                    persistence(i, j, sim.doubleValue());
+//                    persistence(i, j, sim.doubleValue());
                 } catch (Exception e) {
                     ExceptionUtil.caught(e, "i: " + i + " j: " + j);
                 }
@@ -111,12 +107,19 @@ public class NetflixSimularityPerformanceRecorder implements Runnable {
 
     }
 
-    private void persistence(int i, int j, double sim) {
+    /**
+     * 持久化至数据库
+     * 
+     * @param i
+     * @param j
+     * @param sim
+     */
+    public void persistence(int i, int j, double sim) {
         ValueOfItems valueOfItem = new ValueOfItems();
         valueOfItem.setItemI(String.valueOf(i));
         valueOfItem.setItemJ(String.valueOf(j));
         valueOfItem.setValue(sim);
-        valueOfItem.setFunctionName(SIMULARITY_FUNCTION);
+        valueOfItem.setFunctionName(TestCaseConfigurationConstant.SIMILARITY_TYPE);
         valueOfItem.setGMT_CREATE(Date.valueOf("2005-12-31"));
         valueOfItemsDAO.insert(valueOfItem);
     }
