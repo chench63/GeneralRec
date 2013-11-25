@@ -8,11 +8,23 @@
 		http://www.springframework.org/schema/util
 		http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
-	<!-- ******************************************** 处理模板部分************************************************ -->
-	<!-- Entity Manager <bean id="engine" class="edu.tongji.engine.MissingRateEngine"> 
-		<property name="numOfReader" value="4" /> <property name="numOfWriter" value="1" 
-		/> </bean> -->
+	<!-- ******************************************** 实验配置部分************************************************ -->
+	<bean class="edu.tongji.configure.TestCaseConfigurationConstant">
+		<!-- 使用噪声干扰数据，使其失真 -->
+		<property name="IS_PERTURBATION" value="true" />
+		<!-- 不使用高斯噪声分布 -->
+		<property name="IS_NORMAL" value="false" />
+		<!-- 噪声干扰范围 -->
+		<property name="PERTURBATION_DOMAIN" value="0.67" />
+		
+		<!-- 不随机生成测试集合 -->
+		<property name="NEED_RANDOM_TESTCASE" value="false" />
+		<!-- 自定义测试集合范围[1, x) -->
+		<property name="SIMILARITY_RIGHT_SIDE" value="885" />
+	</bean>
 
+
+	<!-- ******************************************** 处理模板部分************************************************ -->
 	<bean id="engine"
 		class="edu.tongji.engine.DBBasedMultiThreadRecommendationEngine">
 		<property name="reader" ref="NetflixSimularityPerformanceDBReader" />
@@ -25,7 +37,7 @@
 			</list>
 		</property>
 	</bean>
-	
+
 	<bean id="engineForSim"
 		class="edu.tongji.engine.DBBasedMultiThreadRecommendationEngine">
 		<property name="reader" ref="NetFlixSimularityDBReader" />
@@ -38,18 +50,21 @@
 			</list>
 		</property>
 	</bean>
-	
+
 
 
 	<!-- ******************************************** 多线程部分************************************************ -->
+	<!-- 用户评分加载域 -->
+	<bean id="NetflixSimularityPerformanceDBReader" class="edu.tongji.thread.NetflixSimularityPerformanceDBReader">
+		<property name="ratingDAO" ref="ratingDAO" />
+	</bean>
+	
+	
+	<!-- 相似度计算域 -->
 	<bean id="NetflixSimularityPerformanceRecorder" class="edu.tongji.thread.NetflixSimularityPerformanceRecorder"
 		scope="prototype">
 		<property name="similarityFunction" ref="AccCorrelationBasedSimularityFunction" />
 		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl" />
-	</bean>
-	<bean id="NetflixSimularityRecorder" class="edu.tongji.thread.NetflixSimularityRecorder"
-		scope="prototype">
-		<property name="predictor" ref="predictor" />
 	</bean>
 	<bean id="NetflixSimularityPerformancePaillierRecorder"
 		class="edu.tongji.thread.NetflixSimularityPerformancePaillierRecorder"
@@ -57,16 +72,18 @@
 		<property name="similarityFunction" ref="HomoCorrelationBasedSimularityFunction" />
 		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl" />
 	</bean>
-
-
-	<bean id="NetflixSimularityPerformanceDBReader" class="edu.tongji.thread.NetflixSimularityPerformanceDBReader">
-		<property name="ratingDAO" ref="ratingDAO" />
+	
+	
+	<!-- 推荐结果计算域 -->
+	<bean id="NetflixSimularityRecorder" class="edu.tongji.thread.NetflixSimularityRecorder"
+		scope="prototype">
+		<property name="predictor" ref="predictor" />
 	</bean>
 	<bean id="NetFlixSimularityDBReader" class="edu.tongji.thread.NetFlixSimularityDBReader">
 		<property name="ratingDAO" ref="ratingDAO" />
 		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl" />
 	</bean>
-	
+
 
 
 
@@ -81,10 +98,10 @@
 	<bean id="AccCorrelationBasedSimularityFunction"
 		class="edu.tongji.function.AccCorrelationBasedSimularityFunction" />
 
-	
+
 	<!-- ******************************************** 预测器部分************************************************ -->
-	<bean id="predictor"
-		class="edu.tongji.predictor.GeneralPredictor" />
+	<bean id="predictor" class="edu.tongji.predictor.GeneralPredictor" />
+
 
 
 

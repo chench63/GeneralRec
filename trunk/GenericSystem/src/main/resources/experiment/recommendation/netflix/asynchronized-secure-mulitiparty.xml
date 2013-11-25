@@ -8,11 +8,20 @@
 		http://www.springframework.org/schema/util
 		http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
-	<!-- ******************************************** 处理模板部分************************************************ -->
-	<!-- Entity Manager <bean id="engine" class="edu.tongji.engine.MissingRateEngine"> 
-		<property name="numOfReader" value="4" /> <property name="numOfWriter" value="1" 
-		/> </bean> -->
 
+	<!-- ******************************************** 实验配置部分************************************************ -->
+	<bean class="edu.tongji.configure.TestCaseConfigurationConstant">
+		<!-- 不使用噪声干扰数据 -->
+		<property name="IS_PERTURBATION" value="true" />
+		
+		<!-- 不随机生成测试集合，采用默认的测试集合 -->
+		<property name="NEED_RANDOM_TESTCASE" value="false" />
+		<!-- 自定义测试集合范围[1, x) -->
+		<property name="SIMILARITY_RIGHT_SIDE" value="885" />
+	</bean>
+
+
+	<!-- ******************************************** 处理模板部分************************************************ -->
 	<bean id="engineForGeneratingSimilarity"
 		class="edu.tongji.engine.DBBasedMultiThreadRecommendationEngine">
 		<property name="reader" ref="NetflixSimularityPerformanceDBReader" />
@@ -25,7 +34,7 @@
 			</list>
 		</property>
 	</bean>
-	
+
 	<bean id="engineForGeneratingRecommendations"
 		class="edu.tongji.engine.DBBasedMultiThreadRecommendationEngine">
 		<property name="reader" ref="NetFlixSimularityDBReader" />
@@ -38,7 +47,7 @@
 			</list>
 		</property>
 	</bean>
-	
+
 
 
 	<!-- ******************************************** 多线程部分************************************************ -->
@@ -66,7 +75,7 @@
 		<property name="ratingDAO" ref="ratingDAO" />
 		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl" />
 	</bean>
-	
+
 
 
 
@@ -81,10 +90,9 @@
 	<bean id="AccCorrelationBasedSimularityFunction"
 		class="edu.tongji.function.AccCorrelationBasedSimularityFunction" />
 
-	
+
 	<!-- ******************************************** 预测器部分************************************************ -->
-	<bean id="predictor"
-		class="edu.tongji.predictor.GeneralPredictor" />
+	<bean id="predictor" class="edu.tongji.predictor.GeneralPredictor" />
 
 
 
