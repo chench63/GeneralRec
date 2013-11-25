@@ -19,6 +19,7 @@ import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.util.LoggerUtil;
 
 /**
+ * 泛型数据缓存，通过CacheHolder与具体应用场景数据类型解耦。
  * 
  * @author chenkh
  * @version $Id: GeneralCache.java, v 0.1 2013-10-31 下午4:32:59 chenkh Exp $
@@ -43,7 +44,10 @@ public final class GeneralCache {
 
     /**
      * 获取多线程任务
-     * 
+     * <p>
+     *  task分配任务，其实与具体的引用场景有很强的耦合，
+     *  其实可以剥离开来，另做一个类。
+     * </p>
      * @return
      */
     public static synchronized CacheTask task() {

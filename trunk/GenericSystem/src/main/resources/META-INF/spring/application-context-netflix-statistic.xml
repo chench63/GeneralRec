@@ -14,7 +14,7 @@
 		/> </bean> -->
 
 	<bean id="engine"
-		class="edu.tongji.engine.NetflixSimlarityPerformanceMultiThreadEngine">
+		class="edu.tongji.engine.DBBasedMultiThreadRecommendationEngine">
 		<property name="reader" ref="NetflixSimularityPerformanceDBReader" />
 		<property name="recorder">
 			<list>
@@ -27,7 +27,7 @@
 	</bean>
 	
 	<bean id="engineForSim"
-		class="edu.tongji.engine.NetflixSimlarityPerformanceMultiThreadEngine">
+		class="edu.tongji.engine.DBBasedMultiThreadRecommendationEngine">
 		<property name="reader" ref="NetFlixSimularityDBReader" />
 		<property name="recorder">
 			<list>

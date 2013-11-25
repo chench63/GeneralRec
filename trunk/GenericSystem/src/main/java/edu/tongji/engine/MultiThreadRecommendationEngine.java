@@ -15,7 +15,7 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @author chenkh
  * @version $Id: RecommendationMultiThreadEngine.java, v 0.1 2013-10-15 上午9:50:14 chenkh Exp $
  */
-public abstract class RecommendationMultiThreadEngine implements Engine, ApplicationContextAware {
+public abstract class MultiThreadRecommendationEngine implements Engine, ApplicationContextAware {
 
     /** Spring 上下文环境 */
     protected ConfigurableApplicationContext applicationContext;
