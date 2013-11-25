@@ -47,6 +47,9 @@ public final class TestCaseConfigurationConstant {
     /** 載入相似度范围的右区间   *999999999*/
     public static int          SIMILARITY_RIGHT_SIDE = 885;
 
+    /** 相似度数据标签*/
+    public static String       SIMILARITY_TYPE       = null;
+
     /**
      * Setter method for property <tt>tESTCASE_SIZE</tt>.
      * 
@@ -135,6 +138,15 @@ public final class TestCaseConfigurationConstant {
      */
     public static void setSIMILARITY_RIGHT_SIDE(int sIMILARITY_RIGHT_SIDE) {
         SIMILARITY_RIGHT_SIDE = sIMILARITY_RIGHT_SIDE;
+    }
+
+    /**
+     * Setter method for property <tt>sIMILARITY_TYPE</tt>.
+     * 
+     * @param SIMILARITY_TYPE value to be assigned to property sIMILARITY_TYPE
+     */
+    public static void setSIMILARITY_TYPE(String sIMILARITY_TYPE) {
+        SIMILARITY_TYPE = sIMILARITY_TYPE;
     }
 
 }

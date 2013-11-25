@@ -12,7 +12,6 @@ import org.apache.log4j.Logger;
 import edu.tongji.cache.CacheHolder;
 import edu.tongji.cache.GeneralCache;
 import edu.tongji.configure.TestCaseConfigurationConstant;
-import edu.tongji.constant.FunctionNameConstant;
 import edu.tongji.dao.RatingDAO;
 import edu.tongji.dao.ValueOfItemsDAO;
 import edu.tongji.log4j.LoggerDefineConstant;
@@ -34,9 +33,6 @@ public class NetFlixSimularityDBReader extends Thread {
 
     /** 投票信息的DAO */
     private RatingDAO           ratingDAO;
-
-    /** 测试数据集相似度数据来源*/
-    private final static String FUNCTION_NAME          = FunctionNameConstant.RandomizePerturbation_u50;
 
     /** logger */
     private final static Logger logger                 = Logger
@@ -61,7 +57,8 @@ public class NetFlixSimularityDBReader extends Thread {
      */
     private void loadSimularityToCache() {
         //DB读取所需要的数据，加载至缓存
-        List<ValueOfItems> resultSet = valueOfItemsDAO.selectByFunctionName(FUNCTION_NAME);
+        List<ValueOfItems> resultSet = valueOfItemsDAO
+            .selectByFunctionName(TestCaseConfigurationConstant.SIMILARITY_TYPE);
 
         //加载相似度入缓存
         List<CacheHolder> cacheHolders = new ArrayList<CacheHolder>();

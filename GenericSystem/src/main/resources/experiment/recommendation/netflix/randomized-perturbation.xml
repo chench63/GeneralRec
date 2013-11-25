@@ -21,11 +21,13 @@
 		<property name="NEED_RANDOM_TESTCASE" value="false" />
 		<!-- 自定义测试集合范围[1, x) -->
 		<property name="SIMILARITY_RIGHT_SIDE" value="885" />
+		<!-- 相似度数据标签 -->
+		<property name="SIMILARITY_TYPE" value="SecureMultiparty_CorrelationBasedSimularityFunction_u" />
 	</bean>
 
 
 	<!-- ******************************************** 处理模板部分************************************************ -->
-	<bean id="engine"
+	<bean id="engineForGeneratingSimilarity"
 		class="edu.tongji.engine.DBBasedMultiThreadRecommendationEngine">
 		<property name="reader" ref="NetflixSimularityPerformanceDBReader" />
 		<property name="recorder">
@@ -38,7 +40,7 @@
 		</property>
 	</bean>
 
-	<bean id="engineForSim"
+	<bean id="engineForGeneratingRecommendations"
 		class="edu.tongji.engine.DBBasedMultiThreadRecommendationEngine">
 		<property name="reader" ref="NetFlixSimularityDBReader" />
 		<property name="recorder">
