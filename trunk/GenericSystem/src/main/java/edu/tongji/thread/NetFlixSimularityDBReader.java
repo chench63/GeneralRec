@@ -18,6 +18,7 @@ import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.model.Rating;
 import edu.tongji.model.ValueOfItems;
 import edu.tongji.util.BeanUtil;
+import edu.tongji.util.FileUtil;
 import edu.tongji.util.LoggerUtil;
 import edu.tongji.util.RandomUtil;
 
@@ -71,7 +72,11 @@ public class NetFlixSimularityDBReader extends Thread {
     }
 
     /**
-     * 生成测试数据集，加载至缓存
+     * 生成测试数据集，加载至缓存。
+     * 加载顺序：
+     *  1.随机生成测试机
+     *  2.自定义文件加载
+     *  3.自定义变量加载
      */
     private void loadTestCaseToCache() {
         //随机生成配置数量的测试集
@@ -81,6 +86,11 @@ public class NetFlixSimularityDBReader extends Thread {
                 testSet.add(String.valueOf(RandomUtil.nextInt(
                     TestCaseConfigurationConstant.LEFT_SIDE,
                     TestCaseConfigurationConstant.RIGHT_SIDE)));
+            }
+        } else if (TestCaseConfigurationConstant.TEST_CASE_FILE != null) {
+            String[] testCaseSet = FileUtil.readlines(TestCaseConfigurationConstant.TEST_CASE_FILE);
+            for (String testCase : testCaseSet) {
+                testSet.add(testCase.trim());
             }
         } else {
             String[] testCaseSet = TestCaseConfigurationConstant.TEST_CASE

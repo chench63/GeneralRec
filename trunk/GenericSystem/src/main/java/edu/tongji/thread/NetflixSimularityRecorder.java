@@ -48,7 +48,7 @@ public class NetflixSimularityRecorder extends Thread {
      */
     @Override
     public void run() {
-        LoggerUtil.debug(logger, "NetflixSimularityRecorder 开始执行计算");
+        LoggerUtil.debug(logger, "Recorder join.");
 
         CacheTask task = null;
         double partOfAE = 0.0;
