@@ -4,6 +4,7 @@
  */
 package edu.tongji.thread;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -37,6 +38,8 @@ public class NetflixSimularityRecorder extends Thread {
 
     private static double       square_error   = 0.0;
 
+    private static double       positve_error  = 0.0;
+
     /** AE 估计样本的个数*/
     private static double       nCount         = 0.0;
 
@@ -51,6 +54,7 @@ public class NetflixSimularityRecorder extends Thread {
         double partOfAE = 0.0;
         double partOfSE = 0.0;
         double partOfnCount = 0.0;
+        double partOfPE = 0.0;
         while ((task = GeneralCache.task()) != null) {
             //=============================
             //性能测试开始
@@ -79,6 +83,8 @@ public class NetflixSimularityRecorder extends Thread {
                     //预测估计器，产生估计值，记录入内.
                     partOfAE += Math.abs(predictValue - rating.getRating());
                     partOfSE += Math.pow(predictValue - rating.getRating(), 2.0);
+                    partOfPE += (predictValue > rating.getRating()) ? predictValue
+                                                                      - rating.getRating() : 0;
                     partOfnCount += 1;
                 }
             }
@@ -87,7 +93,7 @@ public class NetflixSimularityRecorder extends Thread {
             //=============================
         }
 
-        update(partOfAE, partOfSE, partOfnCount);
+        update(partOfAE, partOfSE, partOfPE, partOfnCount);
     }
 
     /**
@@ -95,13 +101,19 @@ public class NetflixSimularityRecorder extends Thread {
      * 
      * @param addition
      */
-    private static synchronized void update(double partOfAE, double partOfSE, double additionOfCount) {
+    private static synchronized void update(double partOfAE, double partOfSE, double partOfPE,
+                                            double additionOfCount) {
         absolute_error += partOfAE;
         square_error += partOfSE;
+        positve_error += partOfPE;
         nCount += additionOfCount;
-        LoggerUtil.info(logger,
-            "绝对值误差: " + absolute_error + "  测试样本数量： " + nCount + "  MAE: "
-                    + (absolute_error / nCount) + "  RMSE: " + Math.sqrt(square_error / nCount));
+        DecimalFormat decimalFormat = new DecimalFormat("#.00000");
+        LoggerUtil.info(
+            logger,
+            "AE: " + decimalFormat.format(absolute_error) + " PE： "
+                    + decimalFormat.format(positve_error) + " Ic： " + (int) nCount + " MAE: "
+                    + decimalFormat.format(absolute_error / nCount) + " RMSE: "
+                    + decimalFormat.format(Math.sqrt(square_error / nCount)));
     }
 
     /**

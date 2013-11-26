@@ -43,9 +43,6 @@
 		<property name="recorder">
 			<list>
 				<ref bean="NetflixSimularityRecorder"></ref>
-				<ref bean="NetflixSimularityRecorder"></ref>
-				<ref bean="NetflixSimularityRecorder"></ref>
-				<ref bean="NetflixSimularityRecorder"></ref>
 			</list>
 		</property>
 	</bean>

@@ -4,6 +4,7 @@
  */
 package edu.tongji.predictor;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -24,7 +25,13 @@ import edu.tongji.util.LoggerUtil;
 public class NegativeDeniedPredictor implements Predictor {
 
     /** logger */
-    private final static Logger logger = Logger.getLogger(LoggerDefineConstant.SERVICE_NORMAL);
+    private final static Logger logger      = Logger.getLogger(LoggerDefineConstant.SERVICE_NORMAL);
+
+    /** logger */
+    private final static Logger log         = Logger.getLogger(LoggerDefineConstant.SERVICE_CORE);
+
+    /* 统计估计值大于原始值数量*/
+    private static int          countLagger = 0;
 
     /** 
      * @see edu.tongji.predictor.Predictor#predict(edu.tongji.predictor.PredictorHolder)
@@ -45,6 +52,7 @@ public class NegativeDeniedPredictor implements Predictor {
         double sumOfValue = 0.0;
         double sumOfSim = 0.0;
         double originalValue = 0.0;
+        //        int countOfNeighbour = 0;
         for (CacheHolder cacheHolder : ratings) {
             Rating rating = (Rating) cacheHolder.get("RATING");
             if (rating.getMovieId() == predictItemId) {
@@ -77,6 +85,7 @@ public class NegativeDeniedPredictor implements Predictor {
                 sumOfValue += rating.getRating() * (sim);
             }
             sumOfSim += sim;
+
         }
 
         //添加估计值
@@ -91,10 +100,29 @@ public class NegativeDeniedPredictor implements Predictor {
 
             predictHolder.put("PREDICT_VALUE", predictValue);
 
-            if (logger.isDebugEnabled()) {
-
+            if (!logger.isDebugEnabled()) {
+                //系统处于非Debug状态，直接返回
+                return;
             }
-            LoggerUtil.debug(logger, "产生估计...原始值：" + originalValue + "   估计值: " + predictValue);
+            DecimalFormat decimalFormat = null;
+            Boolean isBigger = false;
+            decimalFormat = new DecimalFormat("#.000");
+            if (predictValue > originalValue) {
+                countLagger++;
+                isBigger = true;
+
+                int itemsBelongtoUser = ratings.size();
+                StringBuilder logMessage = new StringBuilder(countLagger);
+                logMessage.append("\t").append(" U: ").append(String.format("%7s", key))
+                    .append(" I: ").append(String.format("%5d", predictItemId)).append(" P: ")
+                    .append(String.format("%4d", itemsBelongtoUser));
+                LoggerUtil.debug(log, countLagger + " " + logMessage);
+            }
+            LoggerUtil.debug(
+                logger,
+                "O：" + decimalFormat.format(originalValue) + " P: "
+                        + decimalFormat.format(predictValue) + " U: " + String.format("%7s", key)
+                        + (isBigger ? (" *") : ""));
         }
     }
 }
