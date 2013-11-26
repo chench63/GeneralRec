@@ -35,10 +35,9 @@ public class DBBasedMultiThreadRecommendationEngine extends MultiThreadRecommend
      */
     @Override
     public void excute() {
-        LoggerUtil.info(logger, "开始执行主线程.");
-        
+        LoggerUtil.info(logger, "Engine Start...");
+
         reader.start();
-        LoggerUtil.info(logger, "Reader线程启动完毕.");
         try {
             reader.join();
         } catch (InterruptedException e) {
@@ -49,7 +48,6 @@ public class DBBasedMultiThreadRecommendationEngine extends MultiThreadRecommend
         for (Runnable runnable : recorder) {
             exec.execute(runnable);
         }
-        LoggerUtil.info(logger, "Recorder线程启动完毕.");
         exec.shutdown();
 
     }
