@@ -38,8 +38,12 @@ public final class TestCaseConfigurationConstant {
                                                        + "1446922, 2453475, 328595, 1778888, 427770, 2381092, 296253, 192650, 656431, 472804, "
                                                        + "165393, 2560090, 159639, 2002276, 1122405, 999027, 1735892, "
                                                        + "1948535, 1645137, 2553999, 2201630, 2229348, 2059528";
+
+    /** 自定义测试集合,从文件中倒入*/
+    public static String       TEST_CASE_FILE        = null;
+
     /** 测试集使用的训练相似度*/
-    public static String       TEST_CASE_SIMULARITY  = "";
+    public static String       TEST_CASE_SIMULARITY  = null;
 
     /** 分隔符正则表达式 */
     public final static String SAPERATOR_EXPRESSION  = "\\,";
@@ -147,6 +151,15 @@ public final class TestCaseConfigurationConstant {
      */
     public static void setSIMILARITY_TYPE(String sIMILARITY_TYPE) {
         SIMILARITY_TYPE = sIMILARITY_TYPE;
+    }
+
+    /**
+     * Setter method for property <tt>tEST_CASE_FILE</tt>.
+     * 
+     * @param TEST_CASE_FILE value to be assigned to property tEST_CASE_FILE
+     */
+    public static void setTEST_CASE_FILE(String tEST_CASE_FILE) {
+        TEST_CASE_FILE = tEST_CASE_FILE;
     }
 
 }
