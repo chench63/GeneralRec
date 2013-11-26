@@ -70,11 +70,6 @@ public class NegativeDeniedPredictor implements Predictor {
                 continue;
             }
 
-            if (!canPredict) {
-                //存在有个item的历史数据在训练数据集内
-                //标记为可以估计
-                canPredict = true;
-            }
             Double sim = (Double) similarity.get("SIM");
             if (sim < 0) {
                 //拒绝负值的相似度
@@ -83,6 +78,11 @@ public class NegativeDeniedPredictor implements Predictor {
                 sumOfValue += ((Double) cacheHolder.get("DISGUISED_VALUE")) * (sim);
             } else {
                 sumOfValue += rating.getRating() * (sim);
+            }
+            if (!canPredict) {
+                //存在有个item的历史数据在训练数据集内
+                //标记为可以估计
+                canPredict = true;
             }
             sumOfSim += sim;
 

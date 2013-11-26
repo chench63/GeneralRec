@@ -13,11 +13,12 @@
 	<bean class="edu.tongji.configure.TestCaseConfigurationConstant">
 		<!-- 不使用噪声干扰数据 -->
 		<property name="IS_PERTURBATION" value="false" />
-		
+
 		<!-- 自定义测试集合 -->
 		<property name="NEED_RANDOM_TESTCASE" value="false" />
 		<!-- 从文件中导入 测试集合 -->
-		<property name="TEST_CASE_FILE" value="src/main/resources/dataset/testcase/richusers" />
+		<property name="TEST_CASE_FILE"
+			value="src/main/resources/dataset/testcase/I-1000" />
 
 
 		<!-- 自定义测试集合范围[1, x) -->
