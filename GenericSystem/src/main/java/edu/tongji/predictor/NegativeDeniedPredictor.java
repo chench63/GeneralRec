@@ -125,4 +125,30 @@ public class NegativeDeniedPredictor implements Predictor {
                         + (isBigger ? (" *") : ""));
         }
     }
+
+
+    /**
+     * 
+     * 
+     * @param predictHolder
+     * @param canPredict
+     * @param sumOfValue
+     * @param sumOfSim
+     */
+    protected void storeRespondingPackage(PredictorHolder predictHolder, boolean canPredict,
+                                          double sumOfValue, double sumOfSim) {
+        //添加估计值
+        if (canPredict) {
+            double predictValue = sumOfValue / sumOfSim;
+
+            if (predictValue < 0) {
+                predictValue = 0;
+            } else if (predictValue > 5) {
+                predictValue = 5.0;
+            }
+
+            predictHolder.put("PREDICT_VALUE", predictValue);
+        }
+    }
+
 }
