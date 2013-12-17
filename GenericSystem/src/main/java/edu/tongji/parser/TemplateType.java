@@ -19,7 +19,9 @@ public enum TemplateType implements Parser, Filter {
     /** 评分解析处理模板 */
     MOVIELENS_RATING_TEMPLATE(new MovielensRatingTemplateParser(), new DefaultTemplateFilter()),
     /** NetFlix评分解析处理模板 */
-    NETFLIX_RATING_TEMPLATE(new NetflixRatingTemplateParser(), new DefaultTemplateFilter());
+    NETFLIX_RATING_TEMPLATE(new NetflixRatingTemplateParser(), new DefaultTemplateFilter()),
+    /** UMASS电表读数处理模板*/
+    UMASS_SMART_GRID_TEMPLATE(new UMassSmartGridTemplateParser(), new DefaultTemplateFilter());
 
     /** 模板解析类 */
     private final Parser parser;

@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -36,11 +37,17 @@ import edu.tongji.vo.MeterReadingVO;
 public class SmartGridDataSource implements DataSource {
 
     /** 需要加载的文件  **/
-    private Map<TemplateType, String> sourceEntity;
+    private Map<TemplateType, String>  sourceEntity;
+
+    /** 电表读数上下文*/
+    public static List<MeterReadingVO> meterContexts    = new ArrayList<MeterReadingVO>();
 
     /** logger*/
-    private static final Logger       logger = Logger
-                                                 .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
+    private static final Logger        logger           = Logger
+                                                            .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
+
+    /** 间隔读数*/
+    public final static long           READING_INTERVAL = 15 * 60 * 1000;
 
     /** 
      * @see edu.tongji.orm.DataSource#isLazy()
@@ -70,11 +77,25 @@ public class SmartGridDataSource implements DataSource {
             try {
                 reader = new BufferedReader(new FileReader(file));
                 String context = null;
+                MeterReadingVO meterReading = null;
                 while ((context = reader.readLine()) != null) {
                     ParserTemplate template = new ParserTemplate();
                     template.setTemplate(context);
 
-                    doParser(parserType, template);
+                    // 解析
+                    MeterReadingVO meter = (MeterReadingVO) parserType.parser(template);
+                    if (meterReading == null) {
+                        //初始化
+                        meterReading = meter;
+                        continue;
+                    } else if (meter.getTimeVal() > meterReading.getTimeVal() + READING_INTERVAL) {
+                        //新的电表计时周期
+                        meterContexts.add(meterReading);
+                        meterReading = meter;
+                        continue;
+                    }
+                    //在同一计时周期，累计读数
+                    meterReading.setReading(meterReading.getReading() + meter.getReading());
                 }
             } catch (FileNotFoundException e) {
                 ExceptionUtil.caught(e, "无法找到对应的加载文件: " + entry.getValue());
@@ -85,16 +106,6 @@ public class SmartGridDataSource implements DataSource {
             }
 
         }
-    }
-
-    /**
-     * 解析数据
-     * 
-     * @param parserType
-     * @param template
-     */
-    private void doParser(TemplateType parserType, ParserTemplate template) {
-        MeterReadingVO meter = (MeterReadingVO) parserType.parser(template);
     }
 
     /** 
@@ -120,6 +131,24 @@ public class SmartGridDataSource implements DataSource {
     @Override
     public Map excuteEx(String expression) {
         throw new OwnedException(DataSourceErrorCode.NOT_SUPPORT_EXCUTEEX);
+    }
+
+    /**
+     * Getter method for property <tt>sourceEntity</tt>.
+     * 
+     * @return property value of sourceEntity
+     */
+    public Map<TemplateType, String> getSourceEntity() {
+        return sourceEntity;
+    }
+
+    /**
+     * Setter method for property <tt>sourceEntity</tt>.
+     * 
+     * @param sourceEntity value to be assigned to property sourceEntity
+     */
+    public void setSourceEntity(Map<TemplateType, String> sourceEntity) {
+        this.sourceEntity = sourceEntity;
     }
 
 }
