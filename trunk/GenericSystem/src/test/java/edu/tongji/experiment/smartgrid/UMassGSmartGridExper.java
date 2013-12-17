@@ -6,7 +6,7 @@ package edu.tongji.experiment.smartgrid;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import edu.tongji.orm.DataSource;
+import edu.tongji.engine.Engine;
 import edu.tongji.util.ExceptionUtil;
 
 /**
@@ -25,8 +25,8 @@ public final class UMassGSmartGridExper {
         try {
             ctx = new ClassPathXmlApplicationContext(
                 "experiment/smartgrid/umass/umass-one-time-pad.xml");
-            DataSource ds = (DataSource) ctx.getBean("datasource");
-            ds.reload();
+            Engine engine = (Engine) ctx.getBean("engine");
+            engine.excute();
         } catch (Exception e) {
             ExceptionUtil.caught(e, "edu.tongji.experiment.smartgrid.UMassGSmartGridExper 发生错误");
         } finally {

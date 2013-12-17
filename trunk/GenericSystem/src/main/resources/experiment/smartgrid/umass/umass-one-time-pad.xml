@@ -18,4 +18,11 @@
 		</property>
 	</bean>
 
+	<!-- Entity Manager -->
+	<bean id="engine" class="edu.tongji.engine.smartgrid.SmartGridEngine">
+		<property name="dataSource" ref="datasource" />
+	</bean>
+
+
+
 </beans>
