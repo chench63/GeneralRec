@@ -14,7 +14,10 @@ public enum DataSourceErrorCode implements ErrorCode {
     FILE_FORMAT_INCORRECT("提供文件的文件格式不合法", "DATASOURCE01001"),
 
     /** 不支持excuteEx方法  */
-    NOT_SUPPORT_EXCUTEEX("不支持excuteEx方法", "DATASOURCE02001");
+    NOT_SUPPORT_EXCUTEEX("不支持excuteEx方法", "DATASOURCE02001"),
+
+    /** 不支持excute方法  */
+    NOT_SUPPORT_EXCUTE("不支持excute方法", "DATASOURCE02001");
 
     /** 异常描述 */
     private final String description;
