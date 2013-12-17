@@ -37,17 +37,17 @@ import edu.tongji.vo.MeterReadingVO;
 public class SmartGridDataSource implements DataSource {
 
     /** 需要加载的文件  **/
-    private Map<TemplateType, String>  sourceEntity;
+    private Map<TemplateType, String>        sourceEntity;
 
     /** 电表读数上下文*/
-    public static List<MeterReadingVO> meterContexts    = new ArrayList<MeterReadingVO>();
+    public final static List<MeterReadingVO> meterContexts    = new ArrayList<MeterReadingVO>();
 
     /** logger*/
-    private static final Logger        logger           = Logger
-                                                            .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
+    private static final Logger              logger           = Logger
+                                                                  .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
 
     /** 间隔读数*/
-    public final static long           READING_INTERVAL = 15 * 60 * 1000;
+    public final static long                 READING_INTERVAL = 15 * 60 * 1000;
 
     /** 
      * @see edu.tongji.orm.DataSource#isLazy()

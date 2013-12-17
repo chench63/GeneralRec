@@ -18,7 +18,7 @@ import edu.tongji.encryption.EncryptionContext;
  */
 public final class OneTimePadUtil {
 
-    private static BigInteger BIG_PRIME = BigInteger.probablePrime(32, new Random());
+    private static BigInteger BIG_PRIME = BigInteger.probablePrime(64, new Random());
 
     /**
      * 禁用构造函数
