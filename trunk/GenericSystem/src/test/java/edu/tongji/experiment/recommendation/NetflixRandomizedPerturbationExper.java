@@ -2,7 +2,7 @@
  * Tongji Edu.
  * Copyright (c) 2004-2013 All Rights Reserved.
  */
-package edu.tongji.experiment;
+package edu.tongji.experiment.recommendation;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -14,7 +14,7 @@ import edu.tongji.util.ExceptionUtil;
  * @author chenkh
  * @version $Id: NetflixSimlarityPerformanceMainThread.java, v 0.1 2013-10-15 上午10:23:03 chenkh Exp $
  */
-public final class NetflixAsynchronizedSMPExper {
+public final class NetflixRandomizedPerturbationExper {
 
     /**
      * 
@@ -24,7 +24,7 @@ public final class NetflixAsynchronizedSMPExper {
         ClassPathXmlApplicationContext ctx = null;
         try {
             ctx = new ClassPathXmlApplicationContext(
-                "experiment/recommendation/netflix/asynchronized-secure-mulitiparty.xml");
+                "experiment/recommendation/netflix/randomized-perturbation.xml");
             Engine engine = (Engine) ctx.getBean("engineForGeneratingRecommendations");
             engine.excute();
         } catch (Exception e) {
