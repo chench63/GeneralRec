@@ -2,7 +2,7 @@
  * Tongji Edu.
  * Copyright (c) 2004-2013 All Rights Reserved.
  */
-package edu.tongji.homomorphicEncryption;
+package edu.tongji.util;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
