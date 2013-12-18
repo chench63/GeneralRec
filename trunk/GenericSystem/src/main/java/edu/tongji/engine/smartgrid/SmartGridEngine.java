@@ -30,7 +30,10 @@ public class SmartGridEngine implements Engine {
     protected SmartGridDataSource dataSource;
 
     /** logger */
-    private final static Logger   logger = Logger.getLogger(LoggerDefineConstant.SERVICE_NORMAL);
+    private final static Logger   logger   = Logger.getLogger(LoggerDefineConstant.SERVICE_NORMAL);
+
+    /** 测试需要，统计平均运行时间*/
+    public static long            runtimes = 0L;
 
     /** 
      * @see edu.tongji.engine.Engine#excute()
@@ -47,6 +50,7 @@ public class SmartGridEngine implements Engine {
         stopWatch.start();
 
         List<MeterReadingVO> meterContexts = dataSource.meterContexts;
+        OneTimePadUtil.newPrime(64);
         BigInteger cipherMonthly = BigInteger.ZERO;
         for (MeterReadingVO reading : meterContexts) {
             //模拟meter加密
@@ -64,8 +68,15 @@ public class SmartGridEngine implements Engine {
         stopWatch.stop();
 
         //3.输出日志
-        LoggerUtil.info(logger,
-            "共计算：" + meterContexts.size() + " 耗时：" + stopWatch.getLastTaskTimeMillis());
+        LoggerUtil.debug(
+            logger,
+            "共计算：" + meterContexts.size() + " 耗时："
+                    + String.format("%2d", stopWatch.getLastTaskTimeMillis()) + " Prime："
+                    + OneTimePadUtil.BIG_PRIME);
+        if (logger.isDebugEnabled()) {
+            runtimes += stopWatch.getLastTaskTimeMillis();
+        }
+
     }
 
     /**

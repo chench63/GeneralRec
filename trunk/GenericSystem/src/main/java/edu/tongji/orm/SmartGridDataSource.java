@@ -36,6 +36,9 @@ import edu.tongji.vo.MeterReadingVO;
  */
 public class SmartGridDataSource implements DataSource {
 
+    /** 是否懒加载，防止重复加载*/
+    private boolean                          isLazy           = false;
+
     /** 需要加载的文件  **/
     private Map<TemplateType, String>        sourceEntity;
 
@@ -66,9 +69,9 @@ public class SmartGridDataSource implements DataSource {
             File file = new File(entry.getValue());
 
             //验证文件是否存在
-            LoggerUtil.debug(logger, "开始加载数据文件: " + entry.getValue());
+            LoggerUtil.debug(logger, "加载文件: " + entry.getValue());
             if (!file.isFile() | !file.exists()) {
-                LoggerUtil.warn(logger, "无法找到对应的加载文件: " + entry.getValue());
+                LoggerUtil.warn(logger, "无法找到加载文件: " + entry.getValue());
                 continue;
             }
 
@@ -113,7 +116,10 @@ public class SmartGridDataSource implements DataSource {
      */
     @Override
     public void reload() {
-        load();
+        if (!isLazy) {
+            load();
+            isLazy = true;
+        }
     }
 
     /** 
