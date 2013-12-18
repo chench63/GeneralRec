@@ -19,7 +19,7 @@
 	</bean>
 
 	<!-- Entity Manager -->
-	<bean id="engine" class="edu.tongji.engine.smartgrid.OneTimePadEngine">
+	<bean id="engine" class="edu.tongji.engine.smartgrid.HomomorphicEngine">
 		<property name="dataSource" ref="datasource" />
 	</bean>
 
