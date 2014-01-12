@@ -12,23 +12,21 @@
 	<bean id="datasource" class="edu.tongji.orm.NetflixDataSource">
 		<property name="lazy" value="true" />
 		<property name="indexOfMoviesFront" value="1" />
-		<property name="countOfMovieFiles" value="17770" />
+		<property name="countOfMovieFiles" value="20" />
 		<property name="ratingDAO" ref="ratingDAO" />
 		<property name="stopper" ref="stopper" />
-		<property name="itemI" value="5317" />
-		<property name="itemJ" value="15124" />
 		<property name="sourceEntity">
 			<util:map key-type="edu.tongji.parser.TemplateType">
 				<entry key="NETFLIX_RATING_TEMPLATE"
-					value="src/main/resources/dataset/netflix/training_set/mv_" />
+					value="src/main/resources/dataset/testcase/netflix/mv_" />
 			</util:map>
 		</property>
 	</bean>
 
 	<!-- Entity Manager -->
-	<bean id="RecommendationEngine" class="edu.tongji.engine.FastAccRecommendationEngine">
+	<bean id="RecommendationEngine" class="edu.tongji.engine.FileBasedRecommendationEngine">
 		<property name="dataSource" ref="datasource" />
-		<property name="processor" ref="fastRecommendationProcessor" />
+		<property name="processor" ref="recommendationProcessor" />
 		<property name="processorContext" ref="recommendationContext" />
 		<property name="contextEnvelope" ref="contextEnvelope" />
 	</bean>
@@ -36,7 +34,7 @@
 		<property name="itemI" value="5317" />
 		<property name="itemJ" value="15124" />
 	</bean>
-	<bean id="recommendationProcessor" class="edu.tongji.processor.AccRecommendationProcessor">
+	<bean id="recommendationProcessor" class="edu.tongji.processor.FastAccRecommendationProcessor">
 		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl"></property>
 		<property name="stopper" ref="stopper"></property>
 	</bean>

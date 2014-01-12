@@ -11,7 +11,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.Serializable;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +32,6 @@ import edu.tongji.util.ExceptionUtil;
 import edu.tongji.util.HashKeyUtil;
 import edu.tongji.util.LoggerUtil;
 import edu.tongji.util.StringUtil;
-import edu.tongji.vo.RatingHistoryVO;
 
 /**
  * 
@@ -49,13 +47,13 @@ public class NetflixDataSource implements DataSource {
     private Map<TemplateType, String> sourceEntity;
 
     /** 本地数据源缓存数据结构<String, Rating> */
-    private final Map<String, Rating> ratingContexts                  = new HashMap<String, Rating>();
+    private final Map<String, Rating> ratingContexts    = new HashMap<String, Rating>();
 
     /** movieId 分隔符 */
-    private static final String       MOVIEID_SEPERATOR               = "\\:";
+    private static final String       MOVIEID_SEPERATOR = "\\:";
 
     /** 文件后缀 */
-    private static final String       FILE_SUFFIX                     = ".txt";
+    private static final String       FILE_SUFFIX       = ".txt";
 
     /** 文件总数 */
     private int                       countOfMovieFiles;
@@ -64,7 +62,7 @@ public class NetflixDataSource implements DataSource {
     private int                       indexOfMoviesFront;
 
     /** 文件格式的填充字符 */
-    private final static char         PAD_CHAR                        = '0';
+    private final static char         PAD_CHAR          = '0';
 
     /** DAO */
     private RatingDAO                 ratingDAO;
@@ -75,21 +73,9 @@ public class NetflixDataSource implements DataSource {
     /** 时间记录点*/
     private Timestamp                 epicZone;
 
-    /** 优化sql查询 */
-    private String                    itemI;
-
-    /** 优化sql查询 */
-    private String                    itemJ;
-
     /** logger */
-    private static final Logger       logger                          = Logger
-                                                                          .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
-
-    /** 查询补足评分记录 */
-    private final static String       EXCUTE_SELECT_COMPLEMENT_RATING = "excute_select_complement_rating";
-
-    /** 查询将会丢失评分的集合*/
-    private final static String       EXCUTE_SELECT_MISSING_RATING    = "excute_select_missing_rating";
+    private static final Logger       logger            = Logger
+                                                            .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
 
     /** 
      * @see edu.tongji.orm.DataSource#isLazy()
@@ -213,13 +199,7 @@ public class NetflixDataSource implements DataSource {
     @Override
     public List<? extends Serializable> excute(String expression) {
         List<? extends Serializable> resultSet = null;
-
-        if (StringUtil.equalsIgnoreCase(expression, "MISS_RATING")) {
-            resultSet = doMissingRatingExcute();
-        } else {
-            resultSet = doDefaultExcute();
-        }
-
+        resultSet = doDefaultExcute();
         return resultSet;
     }
 
@@ -229,21 +209,17 @@ public class NetflixDataSource implements DataSource {
     @SuppressWarnings("rawtypes")
     @Override
     public Map excuteEx(String expression) {
-        Map resultSet = null;
-
-        if (StringUtil.isEmpty(expression)) {
-            resultSet = doLoadingMissingRatingComplementExcute();
-        }
-
-        return resultSet;
+        return null;
     }
 
     /**
      * 按时钟定义，从数据库中捞取数据
      * 
+     * 
      * @return
      */
     private List<? extends Serializable> doDefaultExcute() {
+        //TODO: 修草坪
         //初始值
         if (epicZone == null) {
             epicZone = Timestamp.valueOf("1970-01-01 00:00:00");
@@ -261,8 +237,8 @@ public class NetflixDataSource implements DataSource {
         //功能测试部分
         //=============================================
         Map<String, String> map = new HashMap<String, String>();
-        map.put("itemI", itemI);
-        map.put("itemJ", itemJ);
+        //        map.put("itemI", itemI);
+        //        map.put("itemJ", itemJ);
         map.put("first", epicZone.toString());
         map.put("second", endZone.toString());
 
@@ -277,90 +253,6 @@ public class NetflixDataSource implements DataSource {
         //=============================================
 
         return resultSet;
-    }
-
-    /**
-     * 从数据库读取，丢失的用户评分记录
-     * 
-     * @return
-     */
-    private List<? extends Serializable> doMissingRatingExcute() {
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
-        //=============================================
-        //功能测试部分
-        //=============================================
-        //载入将会丢失的用户评分记录
-        List<? extends Serializable> resultSet = null;
-        List<String> param = new ArrayList<String>();
-        param.add(itemI);
-        param.add(itemJ);
-        resultSet = ratingDAO.select(EXCUTE_SELECT_MISSING_RATING, param);
-        //==============================================
-        //功能测试结束
-        //=============================================
-        stopWatch.stop();
-        LoggerUtil.info(logger,
-            "从数据库捞取[丢失用户]， 用户数量:" + resultSet.size() + " 耗时: " + stopWatch.getLastTaskTimeMillis());
-
-        return resultSet;
-    }
-
-    /**
-     * 从数据库读取，丢失的用户所有虚拟在线记录
-     * 
-     * @return
-     */
-    private Map<Timestamp, RatingHistoryVO> doLoadingMissingRatingComplementExcute() {
-
-        StopWatch stopWatch = new StopWatch();
-        stopWatch.start();
-        //=============================================
-        //功能测试部分
-        //=============================================
-        //载入将会丢失的用户评分记录
-        List<? extends Serializable> resultSet = null;
-        List<String> param = new ArrayList<String>();
-        param.add(itemI);
-        param.add(itemJ);
-        resultSet = ratingDAO.select(EXCUTE_SELECT_MISSING_RATING, param);
-        LoggerUtil.info(logger, "从数据库捞取[丢失用户]， 用户数量: " + resultSet.size());
-
-        //载入[丢失用户]的所有虚拟在线记录，以备在后续时间中补充修正
-        param.clear();
-        Rating rating = null;
-        for (Serializable customer : resultSet) {
-            rating = (Rating) customer;
-            param.add(rating.getUsrId());
-        }
-        resultSet = ratingDAO.select(EXCUTE_SELECT_COMPLEMENT_RATING, param);
-        LoggerUtil.info(logger, "从数据库捞取[丢失用户]的访问记录， 记录数量: " + resultSet.size());
-
-        //组装[丢失用户]所有虚拟在线记录
-        Map<Timestamp, RatingHistoryVO> ratingComplementsContexts = new HashMap<Timestamp, RatingHistoryVO>();
-        rating = null;
-        RatingHistoryVO ratingHistory = null;
-        for (Serializable customer : resultSet) {
-            rating = (Rating) customer;
-
-            ratingHistory = ratingComplementsContexts.get(rating.getTime());
-            if (ratingHistory == null) {
-                ratingHistory = new RatingHistoryVO();
-            }
-            ratingHistory.put(rating.getUsrId(), rating);
-            ratingComplementsContexts.put(rating.getTime(), ratingHistory);
-        }
-        stopWatch.stop();
-        LoggerUtil
-            .info(
-                logger,
-                "从数据库载入补偿用户访问记录，共捞取: " + resultSet.size() + " 耗时: "
-                        + stopWatch.getLastTaskTimeMillis());
-        //==============================================
-        //功能测试结束
-        //=============================================
-
-        return ratingComplementsContexts;
     }
 
     /**
@@ -472,42 +364,6 @@ public class NetflixDataSource implements DataSource {
     }
 
     /**
-     * Getter method for property <tt>itemI</tt>.
-     * 
-     * @return property value of itemI
-     */
-    public String getItemI() {
-        return itemI;
-    }
-
-    /**
-     * Setter method for property <tt>itemI</tt>.
-     * 
-     * @param itemI value to be assigned to property itemI
-     */
-    public void setItemI(String itemI) {
-        this.itemI = itemI;
-    }
-
-    /**
-     * Getter method for property <tt>itemJ</tt>.
-     * 
-     * @return property value of itemJ
-     */
-    public String getItemJ() {
-        return itemJ;
-    }
-
-    /**
-     * Setter method for property <tt>itemJ</tt>.
-     * 
-     * @param itemJ value to be assigned to property itemJ
-     */
-    public void setItemJ(String itemJ) {
-        this.itemJ = itemJ;
-    }
-
-    /**
      * Getter method for property <tt>epicZone</tt>.
      * 
      * @return property value of epicZone
@@ -524,5 +380,5 @@ public class NetflixDataSource implements DataSource {
     public void setEpicZone(Timestamp epicZone) {
         this.epicZone = epicZone;
     }
-    
+
 }

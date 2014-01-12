@@ -26,7 +26,7 @@ import edu.tongji.util.ExceptionUtil;
  */
 public class MovielensRatingDBGenerator {
 
-    public void generateRating(){
+    public void generateRating() {
         ClassPathXmlApplicationContext ctx = null;
         try {
             ctx = new ClassPathXmlApplicationContext("META-INF/spring/application-context.xml");
@@ -43,7 +43,7 @@ public class MovielensRatingDBGenerator {
                 ratingDao.insert(rating);
             }
         } catch (Exception e) {
-            ExceptionUtil.caught(e, "edu.tongji.engine.TestEngine 测试用例发生错误");
+            ExceptionUtil.caught(e, MovielensRatingDBGenerator.class + "发生致命错误");
         } finally {
             if (ctx != null) {
                 ctx.close();
@@ -68,7 +68,7 @@ public class MovielensRatingDBGenerator {
                 userDao.insert(usr);
             }
         } catch (Exception e) {
-            ExceptionUtil.caught(e, "edu.tongji.engine.TestEngine 测试用例发生错误");
+            ExceptionUtil.caught(e, MovielensRatingDBGenerator.class + "发生致命错误");
         } finally {
             if (ctx != null) {
                 ctx.close();
@@ -94,7 +94,7 @@ public class MovielensRatingDBGenerator {
             }
 
         } catch (Exception e) {
-            ExceptionUtil.caught(e, "edu.tongji.engine.TestEngine 测试用例发生错误");
+            ExceptionUtil.caught(e, MovielensRatingDBGenerator.class + "发生致命错误");
         } finally {
             if (ctx != null) {
                 ctx.close();
