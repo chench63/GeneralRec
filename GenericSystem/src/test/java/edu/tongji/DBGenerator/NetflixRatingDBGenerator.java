@@ -7,6 +7,7 @@ package edu.tongji.DBGenerator;
 import java.util.Map;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import edu.tongji.dao.RatingDAO;
 import edu.tongji.engine.FileBasedRecommendationEngine;
 import edu.tongji.model.Rating;
@@ -21,11 +22,14 @@ import edu.tongji.util.ExceptionUtil;
  */
 public class NetflixRatingDBGenerator {
 
-    public void test() {
+    /**
+     * 
+     * @param args
+     */
+    public static void main(String[] args) {
         ClassPathXmlApplicationContext ctx = null;
         try {
-            ctx = new ClassPathXmlApplicationContext(
-                "META-INF/spring/netflix-single.xml");
+            ctx = new ClassPathXmlApplicationContext("META-INF/spring/netflix-single.xml");
 
             FileBasedRecommendationEngine engine = (FileBasedRecommendationEngine) ctx
                 .getBean("RecommendationEngine");
@@ -47,11 +51,11 @@ public class NetflixRatingDBGenerator {
                     ratingDao.insert(rating);
                 }
 
-                start = end +1;
+                start = end + 1;
                 end = (start + step) <= countOfMovieFiles ? (start + step) : countOfMovieFiles;
             }
         } catch (Exception e) {
-            ExceptionUtil.caught(e, "edu.tongji.engine.TestEngine 测试用例发生错误");
+            ExceptionUtil.caught(e, NetflixRatingDBGenerator.class + " 发生致命错误");
         } finally {
             if (ctx != null) {
                 ctx.close();
