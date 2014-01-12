@@ -23,7 +23,7 @@ public class UMassHomomorphismExper {
     private final static Logger logger = Logger.getLogger(LoggerDefineConstant.SERVICE_NORMAL);
 
     /** 实验运行次数*/
-    private static int          TIMES  = 100;
+    private static int          TIMES  = 20;
 
     /**
      * 引导函数

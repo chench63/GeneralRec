@@ -21,6 +21,7 @@
 	<!-- Entity Manager -->
 	<bean id="engine" class="edu.tongji.engine.smartgrid.OneTimePadEngine">
 		<property name="dataSource" ref="datasource" />
+		<property name="keyLens" value="1024" />
 	</bean>
 
 

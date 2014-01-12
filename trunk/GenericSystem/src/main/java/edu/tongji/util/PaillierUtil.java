@@ -59,7 +59,7 @@ public final class PaillierUtil {
      * Constructs an instance of the Paillier cryptosystem with 512 bits of modulus and at least 1-2^(-64) certainty of primes generation.
      */
     public PaillierUtil() {
-        KeyGeneration(512, 64);
+        KeyGeneration(256, 64);
     }
 
     /**
