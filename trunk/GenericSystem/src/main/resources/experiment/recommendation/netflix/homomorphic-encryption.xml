@@ -13,7 +13,7 @@
 		<property name="numOfReader" value="4" /> <property name="numOfWriter" value="1" 
 		/> </bean> -->
 
-	<bean id="engine"
+	<bean id="engineForGeneratingRecommendations"
 		class="edu.tongji.engine.DBBasedMultiThreadRecommendationEngine">
 		<property name="reader" ref="NetflixSimularityPerformanceDBReader" />
 		<property name="recorder">
@@ -25,8 +25,8 @@
 			</list>
 		</property>
 	</bean>
-	
-	<bean id="engineForSim"
+
+	<bean id="engineForGeneratingSimilarity"
 		class="edu.tongji.engine.DBBasedMultiThreadRecommendationEngine">
 		<property name="reader" ref="NetFlixSimularityDBReader" />
 		<property name="recorder">
@@ -38,18 +38,20 @@
 			</list>
 		</property>
 	</bean>
-	
+
 
 
 	<!-- ******************************************** 多线程部分************************************************ -->
+	<!-- 用户评分加载域 -->
 	<bean id="NetflixSimularityPerformanceRecorder" class="edu.tongji.thread.NetflixSimularityPerformanceRecorder"
 		scope="prototype">
 		<property name="similarityFunction" ref="AccCorrelationBasedSimularityFunction" />
 		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl" />
 	</bean>
-	<bean id="NetflixSimularityRecorder" class="edu.tongji.thread.NetflixSimularityRecorder"
-		scope="prototype">
-		<property name="predictor" ref="predictor" />
+
+	<!-- 相似度计算域 -->
+	<bean id="NetflixSimularityPerformanceDBReader" class="edu.tongji.thread.NetflixSimularityPerformanceDBReader">
+		<property name="ratingDAO" ref="ratingDAO" />
 	</bean>
 	<bean id="NetflixSimularityPerformancePaillierRecorder"
 		class="edu.tongji.thread.NetflixSimularityPerformancePaillierRecorder"
@@ -58,15 +60,15 @@
 		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl" />
 	</bean>
 
-
-	<bean id="NetflixSimularityPerformanceDBReader" class="edu.tongji.thread.NetflixSimularityPerformanceDBReader">
-		<property name="ratingDAO" ref="ratingDAO" />
-	</bean>
+	<!-- 推荐结果计算域 -->
 	<bean id="NetFlixSimularityDBReader" class="edu.tongji.thread.NetFlixSimularityDBReader">
 		<property name="ratingDAO" ref="ratingDAO" />
 		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl" />
 	</bean>
-	
+	<bean id="NetflixSimularityRecorder" class="edu.tongji.thread.NetflixSimularityRecorder"
+		scope="prototype">
+		<property name="predictor" ref="predictor" />
+	</bean>
 
 
 
@@ -81,10 +83,9 @@
 	<bean id="AccCorrelationBasedSimularityFunction"
 		class="edu.tongji.function.AccCorrelationBasedSimularityFunction" />
 
-	
+
 	<!-- ******************************************** 预测器部分************************************************ -->
-	<bean id="predictor"
-		class="edu.tongji.predictor.GeneralPredictor" />
+	<bean id="predictor" class="edu.tongji.predictor.GeneralPredictor" />
 
 
 
