@@ -19,13 +19,13 @@ import edu.tongji.util.ExceptionUtil;
  * @author chenkh
  * @version $Id: NetflixMockDBGenerator.java, v 0.1 2013-9-16 下午5:16:19 chenkh Exp $
  */
-public class NetflixDBGenerator {
+public class NetflixRatingDBGenerator {
 
     public void test() {
         ClassPathXmlApplicationContext ctx = null;
         try {
             ctx = new ClassPathXmlApplicationContext(
-                "META-INF/spring/application-context-netflix.xml");
+                "META-INF/spring/netflix-single.xml");
 
             FileBasedRecommendationEngine engine = (FileBasedRecommendationEngine) ctx
                 .getBean("RecommendationEngine");

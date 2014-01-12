@@ -24,7 +24,7 @@ import edu.tongji.util.ExceptionUtil;
  * @author chenkh
  * @version $Id: TestGenerator.java, v 0.1 2013-9-10 上午11:27:11 chenkh Exp $
  */
-public class MovielensDBGenerator {
+public class MovielensRatingDBGenerator {
 
     public void generateRating(){
         ClassPathXmlApplicationContext ctx = null;
