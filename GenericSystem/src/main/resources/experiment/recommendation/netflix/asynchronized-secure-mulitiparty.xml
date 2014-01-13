@@ -71,12 +71,12 @@
 
 	<!-- 相似度计算域 -->
 	<bean id="NetflixSimularityPerformanceDBReader" class="edu.tongji.thread.NetflixSimularityPerformanceDBReader">
-		<property name="ratingDAO" ref="ratingDAO" />
+		<!-- <property name="ratingDAO" ref="ratingDAO" /> -->
 	</bean>
 	<bean id="NetflixSimularityPerformancePaillierRecorder"
 		class="edu.tongji.thread.NetflixSimularityPerformancePaillierRecorder"
 		scope="prototype">
-		<property name="similarityFunction" ref="HomoCorrelationBasedSimularityFunction" />
+		<property name="similarityFunction" ref="AccCorrelationBasedSimularityFunction" />
 		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl" />
 	</bean>
 

@@ -39,8 +39,7 @@ public class NetflixSimularityPerformanceRecorder implements Runnable {
     private ValueOfItemsDAO     valueOfItemsDAO;
 
     /** logger */
-    private final static Logger logger              = Logger
-                                                        .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
+    private final static Logger logger = Logger.getLogger(LoggerDefineConstant.SERVICE_NORMAL);
 
     /** 
      * @see java.lang.Runnable#run()
@@ -82,14 +81,16 @@ public class NetflixSimularityPerformanceRecorder implements Runnable {
                 PaillierProcessorContextHelper.forgeDataAsPearson(valuesOfI, valuesOfJ,
                     numeratorOfSim, denominatroOfSimAboutI, denominatroOfSimAboutJ);
                 stopWatch.stop();
-                
+
                 //记录点
                 stopWatch.start();
                 try {
                     Number sim = similarityFunction.calculate(numeratorOfSim,
                         denominatroOfSimAboutI, denominatroOfSimAboutJ);
                     LoggerUtil.debug(logger, "I: " + i + " J: " + j + " sim: " + sim.doubleValue());
-//                    persistence(i, j, sim.doubleValue());
+                    if (valueOfItemsDAO != null & !Double.isNaN(sim.doubleValue())) {
+                        persistence(i, j, sim.doubleValue());
+                    }
                 } catch (Exception e) {
                     ExceptionUtil.caught(e, "i: " + i + " j: " + j);
                 }

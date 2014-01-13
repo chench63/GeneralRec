@@ -74,7 +74,7 @@ public final class GeneralCache {
         writeLock.lock();
 
         try {
-            String key = String.valueOf(CacheHolder.KEY);
+            String key = String.valueOf(cacheHolder.get(CacheHolder.KEY));
             Collections.synchronizedMap(context).put(key, cacheHolder);
         } finally {
             writeLock.unlock();
@@ -104,7 +104,7 @@ public final class GeneralCache {
     }
 
     /**
-     * 载入缓存
+     * 载入缓存, 关联task()方法
      * 
      * @param cacheHolder
      */
