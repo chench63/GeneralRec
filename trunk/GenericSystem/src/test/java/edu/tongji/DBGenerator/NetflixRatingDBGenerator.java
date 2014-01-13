@@ -17,8 +17,8 @@ import edu.tongji.util.ExceptionUtil;
 /**
  * 将Netflix文本数据，导入数据库，
  * 信息划分为【Rating】
- * @author chenkh
- * @version $Id: NetflixMockDBGenerator.java, v 0.1 2013-9-16 下午5:16:19 chenkh Exp $
+ * @author chench
+ * @version $Id: NetflixMockDBGenerator.java, v 0.1 2013-9-16 下午5:16:19 chench Exp $
  */
 public class NetflixRatingDBGenerator {
 

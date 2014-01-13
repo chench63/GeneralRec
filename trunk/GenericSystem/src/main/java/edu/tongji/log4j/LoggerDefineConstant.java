@@ -7,8 +7,8 @@ package edu.tongji.log4j;
 /**
  * 日志分类常量类
  * 
- * @author chenkh
- * @version $Id: LoggerDefineConstant.java, v 0.1 2013-9-7 下午3:13:11 chenkh Exp $
+ * @author chench
+ * @version $Id: LoggerDefineConstant.java, v 0.1 2013-9-7 下午3:13:11 chench Exp $
  */
 public final class LoggerDefineConstant {
 

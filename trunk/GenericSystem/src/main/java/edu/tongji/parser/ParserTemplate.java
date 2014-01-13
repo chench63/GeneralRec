@@ -9,8 +9,8 @@ import java.util.Map;
 
 /**
  * 
- * @author chenkh
- * @version $Id: ParserTemplate.java, v 0.1 2013-9-6 下午4:19:59 chenkh Exp $
+ * @author chench
+ * @version $Id: ParserTemplate.java, v 0.1 2013-9-6 下午4:19:59 chench Exp $
  */
 public class ParserTemplate {
 

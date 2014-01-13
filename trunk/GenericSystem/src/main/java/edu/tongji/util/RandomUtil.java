@@ -9,8 +9,8 @@ import java.util.Random;
 /**
  * 随机数生成工具类
  * 
- * @author chenkh
- * @version $Id: RandomUtil.java, v 0.1 2013-10-30 下午7:59:31 chenkh Exp $
+ * @author chench
+ * @version $Id: RandomUtil.java, v 0.1 2013-10-30 下午7:59:31 chench Exp $
  */
 public final class RandomUtil {
 

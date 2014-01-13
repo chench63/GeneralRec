@@ -7,7 +7,7 @@ import java.util.Random;
  * 同态加密工具类,非线程安全。
  * 
  * @author unknown
- * @version $Id: PaillierUtil.java, v 0.1 2013-10-12 下午2:19:43 chenkh Exp $
+ * @version $Id: PaillierUtil.java, v 0.1 2013-10-12 下午2:19:43 chench Exp $
  */
 public final class PaillierUtil {
     /**

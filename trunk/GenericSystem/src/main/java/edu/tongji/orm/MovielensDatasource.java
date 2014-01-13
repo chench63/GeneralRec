@@ -36,8 +36,8 @@ import edu.tongji.util.LoggerUtil;
 
 /**
  * 针对文本格式的数据的数据源
- * @author chenkh
- * @version $Id: DatDatasource.java, v 0.1 2013-9-6 下午4:01:29 chenkh Exp $
+ * @author chench
+ * @version $Id: DatDatasource.java, v 0.1 2013-9-6 下午4:01:29 chench Exp $
  */
 public class MovielensDatasource implements DataSource, Initializable {
 

@@ -10,8 +10,8 @@ import edu.tongji.vo.MeterReadingVO;
 
 /**
  * 
- * @author chenkh
- * @version $Id: UMassSmartGridTemplateParser.java, v 0.1 2013-12-17 下午3:49:52 chenkh Exp $
+ * @author chench
+ * @version $Id: UMassSmartGridTemplateParser.java, v 0.1 2013-12-17 下午3:49:52 chench Exp $
  */
 public class UMassSmartGridTemplateParser implements Parser {
 

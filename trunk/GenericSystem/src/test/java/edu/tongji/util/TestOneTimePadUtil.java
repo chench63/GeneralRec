@@ -16,8 +16,8 @@ import edu.tongji.log4j.LoggerDefineConstant;
 
 /**
  * 
- * @author chenkh
- * @version $Id: TestOneTimePadUtil.java, v 0.1 2013-12-17 下午1:25:06 chenkh Exp $
+ * @author chench
+ * @version $Id: TestOneTimePadUtil.java, v 0.1 2013-12-17 下午1:25:06 chench Exp $
  */
 public class TestOneTimePadUtil {
 

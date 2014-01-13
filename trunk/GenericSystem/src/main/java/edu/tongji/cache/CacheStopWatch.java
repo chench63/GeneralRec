@@ -20,8 +20,8 @@ import edu.tongji.util.LoggerUtil;
 /**
  * 适用于多线程环境下的，计时累加器。
  * 
- * @author chenkh
- * @version $Id: CacheStopWatch.java, v 0.1 2013-1上午11:38:59 chenkh Exp $
+ * @author chench
+ * @version $Id: CacheStopWatch.java, v 0.1 2013-1上午11:38:59 chench Exp $
  */
 public final class CacheStopWatch {
 

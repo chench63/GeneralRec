@@ -12,8 +12,8 @@ import java.util.List;
  * <p>
  *  <b>T</b>代表返回值类型，<b>J</b>代表输入参数的类型
  * </p>
- * @author chenkh
- * @version $Id: Function.java, v 0.1 2013-9-7 下午4:00:14 chenkh Exp $
+ * @author chench
+ * @version $Id: Function.java, v 0.1 2013-9-7 下午4:00:14 chench Exp $
  */
 public interface Function {
 

@@ -9,8 +9,8 @@ import edu.tongji.util.StringUtil;
 
 /**
  * 
- * @author chenkh
- * @version $Id: UserTemplateParser.java, v 0.1 2013-9-6 下午4:22:44 chenkh Exp $
+ * @author chench
+ * @version $Id: UserTemplateParser.java, v 0.1 2013-9-6 下午4:22:44 chench Exp $
  */
 public class UserTemplateParser implements Parser {
     /** 分隔符正则表达式 */

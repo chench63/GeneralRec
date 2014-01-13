@@ -23,8 +23,8 @@ import edu.tongji.util.LoggerUtil;
 
 /**
  * 
- * @author chenkh
- * @version $Id: NetflixSimularityPerformancePaillierRecorder.java, v 0.1 2013-10-18 下午2:41:08 chenkh Exp $
+ * @author chench
+ * @version $Id: NetflixSimularityPerformancePaillierRecorder.java, v 0.1 2013-10-18 下午2:41:08 chench Exp $
  */
 public class NetflixSimularityPerformancePaillierRecorder implements Runnable {
 

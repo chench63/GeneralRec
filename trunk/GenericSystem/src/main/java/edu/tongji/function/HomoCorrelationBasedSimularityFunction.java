@@ -14,8 +14,8 @@ import edu.tongji.util.PaillierUtil;
 /**
  * 同态加密-皮尔森r相似度计算函数
  * 
- * @author chenkh
- * @version $Id: HomoCorrelationBasedSimularityFunction.java, v 0.1 2013-10-18 上午10:26:48 chenkh Exp $
+ * @author chench
+ * @version $Id: HomoCorrelationBasedSimularityFunction.java, v 0.1 2013-10-18 上午10:26:48 chench Exp $
  */
 public class HomoCorrelationBasedSimularityFunction implements Function {
 

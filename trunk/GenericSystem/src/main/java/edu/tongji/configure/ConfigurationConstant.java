@@ -5,15 +5,15 @@
 package edu.tongji.configure;
 
 /**
- * 配置参数管理类。
+ * 配置参数管理类。主要用于GenerateSim相关功能中。
  *  也可使用spring注入，提高代码的可复用度。
  * <p> 
  *  任务容量：<br>
  *      主任务参数[I, TASK_SIZE)<br>
  * </p>
  *  
- * @author chenkh
- * @version $Id: ConfigurationConstant.java, v 0.1 2013-10-16 上午10:51:00 chenkh Exp $
+ * @author chench
+ * @version $Id: ConfigurationConstant.java, v 0.1 2013-10-16 上午10:51:00 chench Exp $
  */
 public final class ConfigurationConstant {
 
@@ -136,5 +136,5 @@ public final class ConfigurationConstant {
     public static void setEndTimeLine(String endTimeLine) {
         ConfigurationConstant.endTimeLine = endTimeLine;
     }
-    
+
 }

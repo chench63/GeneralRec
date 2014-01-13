@@ -6,8 +6,8 @@ package edu.tongji.exception;
 
 /**
  * 
- * @author chenkh
- * @version $Id: DataSourceErrorCode.java, v 0.1 2013-9-16 下午2:28:59 chenkh Exp $
+ * @author chench
+ * @version $Id: DataSourceErrorCode.java, v 0.1 2013-9-16 下午2:28:59 chench Exp $
  */
 public enum DataSourceErrorCode implements ErrorCode {
     /** 提供文件的文件格式不合法  */

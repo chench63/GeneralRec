@@ -9,8 +9,8 @@ import java.util.List;
 /**
  * 函数计算帮助类
  * 
- * @author chenkh
- * @version $Id: FunctionHelper.java, v 0.1 2013-9-7 下午5:19:25 chenkh Exp $
+ * @author chench
+ * @version $Id: FunctionHelper.java, v 0.1 2013-9-7 下午5:19:25 chench Exp $
  */
 public final class FunctionHelper {
 

@@ -32,8 +32,8 @@ import edu.tongji.util.StringUtil;
  *      
  * </p>
  * 
- * @author chenkh
- * @version $Id: DatDatasourceHelper.java, v 0.1 2013-9-6 下午7:21:46 chenkh Exp $
+ * @author chench
+ * @version $Id: DatDatasourceHelper.java, v 0.1 2013-9-6 下午7:21:46 chench Exp $
  */
 public final class DataSourceExpressionReader {
 

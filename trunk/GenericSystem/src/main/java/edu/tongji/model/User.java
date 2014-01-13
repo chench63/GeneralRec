@@ -8,8 +8,8 @@ import java.io.Serializable;
 
 /**
  * 
- * @author chenkh
- * @version $Id: User.java, v 0.1 2013-9-6 下午3:41:20 chenkh Exp $
+ * @author chench
+ * @version $Id: User.java, v 0.1 2013-9-6 下午3:41:20 chench Exp $
  */
 public class User implements Serializable{
 

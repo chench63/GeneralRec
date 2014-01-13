@@ -13,8 +13,8 @@ import edu.tongji.vo.RatingVO;
 
 /**
  * 
- * @author chenkh
- * @version $Id: ProcessorContextHelper.java, v 0.1 2013-9-24 下午10:10:06 chenkh Exp $
+ * @author chench
+ * @version $Id: ProcessorContextHelper.java, v 0.1 2013-9-24 下午10:10:06 chench Exp $
  */
 public final class ProcessorContextHelper {
 

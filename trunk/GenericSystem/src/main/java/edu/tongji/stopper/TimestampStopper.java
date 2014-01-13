@@ -8,8 +8,8 @@ import java.sql.Timestamp;
 
 /**
  * 
- * @author chenkh
- * @version $Id: TimestampStopper.java, v 0.1 2013-9-18 上午11:33:20 chenkh Exp $
+ * @author chench
+ * @version $Id: TimestampStopper.java, v 0.1 2013-9-18 上午11:33:20 chench Exp $
  */
 public class TimestampStopper implements Stopper {
 

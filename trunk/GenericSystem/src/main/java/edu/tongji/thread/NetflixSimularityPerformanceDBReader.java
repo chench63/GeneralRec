@@ -19,8 +19,8 @@ import edu.tongji.util.LoggerUtil;
 
 /**
  * 
- * @author chenkh
- * @version $Id: NetflixSimularityPerformanceDBReader.java, v 0.1 2013-10-12 下午2:51:30 chenkh Exp $
+ * @author chench
+ * @version $Id: NetflixSimularityPerformanceDBReader.java, v 0.1 2013-10-12 下午2:51:30 chench Exp $
  */
 public class NetflixSimularityPerformanceDBReader extends Thread {
 

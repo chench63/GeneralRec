@@ -21,8 +21,8 @@ import edu.tongji.util.LoggerUtil;
 /**
  * 推荐系统对应的业务逻辑处理模板
  * 
- * @author chenkh
- * @version $Id: RecommendationProcessor.java, v 0.1 2013-9-7 下午8:23:24 chenkh Exp $
+ * @author chench
+ * @version $Id: RecommendationProcessor.java, v 0.1 2013-9-7 下午8:23:24 chench Exp $
  */
 public class RecommendationProcessor implements Processor {
 

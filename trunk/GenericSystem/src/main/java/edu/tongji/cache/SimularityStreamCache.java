@@ -27,8 +27,8 @@ import edu.tongji.vo.RatingVO;
 
 /**
  * 
- * @author chenkh
- * @version $Id: SimularityStreamCache.java, v 0.1 2013-10-12 下午2:53:34 chenkh Exp $
+ * @author chench
+ * @version $Id: SimularityStreamCache.java, v 0.1 2013-10-12 下午2:53:34 chench Exp $
  */
 public final class SimularityStreamCache extends Observable {
 

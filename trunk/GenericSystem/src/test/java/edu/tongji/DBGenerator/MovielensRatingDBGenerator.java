@@ -21,8 +21,8 @@ import edu.tongji.util.ExceptionUtil;
  * 将movieLens文本数据，导入数据库，
  * 信息划分为【Rating】【User】【Movie】
  * 
- * @author chenkh
- * @version $Id: TestGenerator.java, v 0.1 2013-9-10 上午11:27:11 chenkh Exp $
+ * @author chench
+ * @version $Id: TestGenerator.java, v 0.1 2013-9-10 上午11:27:11 chench Exp $
  */
 public class MovielensRatingDBGenerator {
 

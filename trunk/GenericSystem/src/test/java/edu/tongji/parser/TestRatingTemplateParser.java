@@ -17,8 +17,8 @@ import edu.tongji.util.LoggerUtil;
 
 /**
  * 
- * @author chenkh
- * @version $Id: TestRatingTemplateParser.java, v 0.1 2013-9-6 下午4:44:29 chenkh Exp $
+ * @author chench
+ * @version $Id: TestRatingTemplateParser.java, v 0.1 2013-9-6 下午4:44:29 chench Exp $
  */
 public class TestRatingTemplateParser {
 

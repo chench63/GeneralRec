@@ -8,8 +8,8 @@ package edu.tongji.parser;
  * 
  * 数据采集，解析类。将采集到的内容，转化为内部处理类。
  * 
- * @author chenkh
- * @version $Id: Parser.java, v 0.1 2013-9-6 下午4:16:35 chenkh Exp $
+ * @author chench
+ * @version $Id: Parser.java, v 0.1 2013-9-6 下午4:16:35 chench Exp $
  */
 public interface Parser {
 

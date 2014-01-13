@@ -28,8 +28,8 @@ import edu.tongji.vo.RatingHistoryVO;
  * <p>
  *   外部采集的信息
  * </p>
- * @author chenkh
- * @version $Id: ProcessorContextHolder.java, v 0.1 2013-9-7 下午7:28:26 chenkh Exp $
+ * @author chench
+ * @version $Id: ProcessorContextHolder.java, v 0.1 2013-9-7 下午7:28:26 chench Exp $
  */
 public class ContextEnvelope {
 

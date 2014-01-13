@@ -13,8 +13,8 @@ import org.junit.Test;
 /**
  * 相似度函数测试类
  * 
- * @author chenkh
- * @version $Id: TestFunction.java, v 0.1 2013-9-7 下午6:48:21 chenkh Exp $
+ * @author chench
+ * @version $Id: TestFunction.java, v 0.1 2013-9-7 下午6:48:21 chench Exp $
  */
 public class TestFunction {
     

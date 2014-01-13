@@ -6,8 +6,8 @@ package edu.tongji.exception;
 
 /**
  * 
- * @author chenkh
- * @version $Id: FunctionErrorCode.java, v 0.1 2013-9-7 下午4:09:15 chenkh Exp $
+ * @author chench
+ * @version $Id: FunctionErrorCode.java, v 0.1 2013-9-7 下午4:09:15 chench Exp $
  */
 public enum FunctionErrorCode implements ErrorCode {
 

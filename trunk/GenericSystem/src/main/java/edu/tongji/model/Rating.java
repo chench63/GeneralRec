@@ -13,8 +13,8 @@ import edu.tongji.util.StringUtil;
 
 /**
  * 
- * @author chenkh
- * @version $Id: Rating.java, v 0.1 2013-9-6 下午3:42:30 chenkh Exp $
+ * @author chench
+ * @version $Id: Rating.java, v 0.1 2013-9-6 下午3:42:30 chench Exp $
  */
 public class Rating implements Serializable {
 
