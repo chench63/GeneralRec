@@ -11,8 +11,8 @@ import edu.tongji.util.StringUtil;
 
 /**
  * 
- * @author chenkh
- * @version $Id: RatingTemplateParser.java, v 0.1 2013-9-6 下午4:39:29 chenkh Exp $
+ * @author chench
+ * @version $Id: RatingTemplateParser.java, v 0.1 2013-9-6 下午4:39:29 chench Exp $
  */
 public class MovielensRatingTemplateParser implements Parser {
 

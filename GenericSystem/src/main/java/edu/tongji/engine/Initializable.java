@@ -9,8 +9,8 @@ package edu.tongji.engine;
  * 采用Spring的init-method实现系统初始化<br>
  * 所有需要系统启动时自动初始化的BEAN都要实现这个接口<br>
  * 
- * @author chenkh
- * @version $Id: Initializable.java, v 0.1 2013-9-9 上午8:53:45 chenkh Exp $
+ * @author chench
+ * @version $Id: Initializable.java, v 0.1 2013-9-9 上午8:53:45 chench Exp $
  */
 public interface Initializable {
     /**

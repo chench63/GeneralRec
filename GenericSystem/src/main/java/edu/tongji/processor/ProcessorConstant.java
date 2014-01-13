@@ -6,8 +6,8 @@ package edu.tongji.processor;
 
 /**
  * 
- * @author chenkh
- * @version $Id: ProcessorConstant.java, v 0.1 2013-9-10 下午9:20:31 chenkh Exp $
+ * @author chench
+ * @version $Id: ProcessorConstant.java, v 0.1 2013-9-10 下午9:20:31 chench Exp $
  */
 public final class ProcessorConstant {
 

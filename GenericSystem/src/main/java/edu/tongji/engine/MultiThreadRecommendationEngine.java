@@ -12,8 +12,8 @@ import org.springframework.context.ConfigurableApplicationContext;
 /**
  * 推荐系统引擎：多线程抽象类 
  * 
- * @author chenkh
- * @version $Id: RecommendationMultiThreadEngine.java, v 0.1 2013-10-15 上午9:50:14 chenkh Exp $
+ * @author chench
+ * @version $Id: RecommendationMultiThreadEngine.java, v 0.1 2013-10-15 上午9:50:14 chench Exp $
  */
 public abstract class MultiThreadRecommendationEngine implements Engine, ApplicationContextAware {
 

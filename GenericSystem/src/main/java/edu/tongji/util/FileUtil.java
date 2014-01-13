@@ -16,8 +16,8 @@ import org.apache.commons.io.IOUtils;
 /**
  * 简单文件处理工具，读取文件中所有行。
  * 
- * @author chenkh
- * @version $Id: FileUtil.java, v 0.1 2013-11-26 上午11:16:49 chenkh Exp $
+ * @author chench
+ * @version $Id: FileUtil.java, v 0.1 2013-11-26 上午11:16:49 chench Exp $
  */
 public final class FileUtil {
 

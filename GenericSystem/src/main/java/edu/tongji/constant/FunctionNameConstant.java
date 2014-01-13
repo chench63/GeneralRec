@@ -6,8 +6,8 @@ package edu.tongji.constant;
 
 /**
  * 
- * @author chenkh
- * @version $Id: FunctionNameConstant.java, v 0.1 2013-11-1 下午4:42:23 chenkh Exp $
+ * @author chench
+ * @version $Id: FunctionNameConstant.java, v 0.1 2013-11-1 下午4:42:23 chench Exp $
  */
 public final class FunctionNameConstant {
     public static final String SecureMultiparty          = "SecureMultiparty_CorrelationBasedSimularityFunction";

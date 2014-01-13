@@ -10,8 +10,8 @@ import edu.tongji.model.ValueOfItems;
 /**
  * Map中自定义索引键工具类
  * 
- * @author chenkh
- * @version $Id: HashKeyUtil.java, v 0.1 2013-9-9 下午3:06:03 chenkh Exp $
+ * @author chench
+ * @version $Id: HashKeyUtil.java, v 0.1 2013-9-9 下午3:06:03 chench Exp $
  */
 public final class HashKeyUtil {
 

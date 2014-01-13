@@ -7,8 +7,8 @@ package edu.tongji.parser;
 /**
  * 解析模板
  * 
- * @author chenkh
- * @version $Id: TemplateParserType.java, v 0.1 2013-9-6 下午6:31:41 chenkh Exp $
+ * @author chench
+ * @version $Id: TemplateParserType.java, v 0.1 2013-9-6 下午6:31:41 chench Exp $
  */
 public enum TemplateType implements Parser, Filter {
 

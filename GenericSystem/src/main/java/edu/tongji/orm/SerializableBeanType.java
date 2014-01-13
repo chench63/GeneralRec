@@ -12,8 +12,8 @@ import edu.tongji.model.Rating;
  *      命名规则：<br/>
  *      <b>[类名]_BEAN</b>
  * </p>
- * @author chenkh
- * @version $Id: SerialableBeanType.java, v 0.1 2013-9-9 下午2:44:57 chenkh Exp $
+ * @author chench
+ * @version $Id: SerialableBeanType.java, v 0.1 2013-9-9 下午2:44:57 chench Exp $
  */
 @SuppressWarnings("rawtypes")
 public enum SerializableBeanType {

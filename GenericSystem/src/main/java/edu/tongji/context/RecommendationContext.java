@@ -20,8 +20,8 @@ import edu.tongji.util.LoggerUtil;
 /**
  * ProccessorContext，注意非线程安全。
  * 
- * @author chenkh
- * @version $Id: DefaultProcessorContext.java, v 0.1 2013-9-7 下午7:40:12 chenkh Exp $
+ * @author chench
+ * @version $Id: DefaultProcessorContext.java, v 0.1 2013-9-7 下午7:40:12 chench Exp $
  */
 public class RecommendationContext implements ProcessorContext {
 

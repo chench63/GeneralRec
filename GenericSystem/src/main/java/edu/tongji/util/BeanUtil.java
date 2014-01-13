@@ -16,8 +16,8 @@ import edu.tongji.vo.RatingVO;
 
 /**
  * 
- * @author chenkh
- * @version $Id: BeanUtil.java, v 0.1 2013-10-8 下午2:59:49 chenkh Exp $
+ * @author chench
+ * @version $Id: BeanUtil.java, v 0.1 2013-10-8 下午2:59:49 chench Exp $
  */
 public final class BeanUtil {
 

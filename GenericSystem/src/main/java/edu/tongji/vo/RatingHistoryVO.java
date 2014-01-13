@@ -12,8 +12,8 @@ import edu.tongji.model.Rating;
 
 /**
  * 
- * @author chenkh
- * @version $Id: RatingHistoryVO.java, v 0.1 2013-9-23 下午4:46:19 chenkh Exp $
+ * @author chench
+ * @version $Id: RatingHistoryVO.java, v 0.1 2013-9-23 下午4:46:19 chench Exp $
  */
 public class RatingHistoryVO {
 

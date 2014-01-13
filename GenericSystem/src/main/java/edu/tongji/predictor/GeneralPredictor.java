@@ -18,8 +18,8 @@ import edu.tongji.util.LoggerUtil;
 
 /**
  * 
- * @author chenkh
- * @version $Id: GeneralPredictor.java, v 0.1 2013-10-31 下午4:30:10 chenkh Exp $
+ * @author chench
+ * @version $Id: GeneralPredictor.java, v 0.1 2013-10-31 下午4:30:10 chench Exp $
  */
 public class GeneralPredictor implements Predictor {
 

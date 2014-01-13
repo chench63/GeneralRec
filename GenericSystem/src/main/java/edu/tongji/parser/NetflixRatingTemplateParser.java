@@ -11,8 +11,8 @@ import edu.tongji.util.StringUtil;
 
 /**
  * 
- * @author chenkh
- * @version $Id: NetflixRatingTemplateParser.java, v 0.1 2013-9-16 下午2:21:49 chenkh Exp $
+ * @author chench
+ * @version $Id: NetflixRatingTemplateParser.java, v 0.1 2013-9-16 下午2:21:49 chench Exp $
  */
 public class NetflixRatingTemplateParser implements Parser {
 

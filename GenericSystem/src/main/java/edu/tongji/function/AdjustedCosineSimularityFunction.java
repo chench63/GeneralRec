@@ -18,8 +18,8 @@ import edu.tongji.util.LoggerUtil;
  * <p>
  *  <b>用户评分平均值</b>置于List的尾部
  * </p>
- * @author chenkh
- * @version $Id: AdjustedCosineSimularityFunction.java, v 0.1 2013-9-7 下午5:17:57 chenkh Exp $
+ * @author chench
+ * @version $Id: AdjustedCosineSimularityFunction.java, v 0.1 2013-9-7 下午5:17:57 chench Exp $
  */
 public class AdjustedCosineSimularityFunction implements Function {
 

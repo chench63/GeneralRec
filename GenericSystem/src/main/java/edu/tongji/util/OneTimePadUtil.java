@@ -13,8 +13,8 @@ import edu.tongji.encryption.EncryptionContext;
  * 类One-time pad的加密协议，加密域仅为实数。
  *  一次一密,非线程安全。
  * 
- * @author chenkh
- * @version $Id: OneTimePadUtil.java, v 0.1 2013-12-17 上午10:23:10 chenkh Exp $
+ * @author chench
+ * @version $Id: OneTimePadUtil.java, v 0.1 2013-12-17 上午10:23:10 chench Exp $
  */
 public final class OneTimePadUtil {
 

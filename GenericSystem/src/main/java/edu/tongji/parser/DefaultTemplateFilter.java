@@ -7,8 +7,8 @@ package edu.tongji.parser;
 /**
  * 默认数据过滤类
  * 
- * @author chenkh
- * @version $Id: DefaultTemplateFilter.java, v 0.1 2013-9-6 下午7:28:52 chenkh Exp $
+ * @author chench
+ * @version $Id: DefaultTemplateFilter.java, v 0.1 2013-9-6 下午7:28:52 chench Exp $
  */
 public class DefaultTemplateFilter implements Filter {
 

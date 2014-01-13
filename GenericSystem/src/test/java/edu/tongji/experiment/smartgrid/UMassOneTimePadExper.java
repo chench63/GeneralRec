@@ -14,8 +14,8 @@ import edu.tongji.util.LoggerUtil;
 
 /**
  * 
- * @author chenkh
- * @version $Id: UMassGSmartGridExper.java, v 0.1 2013-12-17 下午6:35:04 chenkh Exp $
+ * @author chench
+ * @version $Id: UMassGSmartGridExper.java, v 0.1 2013-12-17 下午6:35:04 chench Exp $
  */
 public final class UMassOneTimePadExper {
 

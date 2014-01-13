@@ -26,8 +26,8 @@ import edu.tongji.util.LoggerUtil;
 
 /**
  * 
- * @author chenkh
- * @version $Id: FastAccRecommendationProcessor.java, v 0.1 2013-9-24 下午10:07:11 chenkh Exp $
+ * @author chench
+ * @version $Id: FastAccRecommendationProcessor.java, v 0.1 2013-9-24 下午10:07:11 chench Exp $
  */
 public class FastAccRecommendationProcessor implements Processor {
 

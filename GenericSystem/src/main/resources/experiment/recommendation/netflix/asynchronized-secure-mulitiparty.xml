@@ -18,7 +18,7 @@
 		<property name="NEED_RANDOM_TESTCASE" value="false" />
 		<!-- 从文件中导入 测试集合 -->
 		<property name="TEST_CASE_FILE"
-			value="src/main/resources/dataset/testcase/I-700" />
+			value="src/main/resources/dataset/testcase/netflix/I-700" />
 
 
 		<!-- 自定义测试集合范围[1, x) -->
@@ -29,15 +29,21 @@
 	</bean>
 
 
+	<bean class="edu.tongji.configure.ConfigurationConstant">
+		<!-- 主任务参数最大值 $Cache -->
+		<property name="TASK_SIZE" value="21" />
+
+		<!-- 单任务最大容量 $Cache -->
+		<property name="SINGLE_TASK_SIZE" value="1000" />
+	</bean>
+
+
 	<!-- ******************************************** 处理模板部分************************************************ -->
 	<bean id="engineForGeneratingSimilarity"
 		class="edu.tongji.engine.DBBasedMultiThreadRecommendationEngine">
 		<property name="reader" ref="NetflixSimularityPerformanceDBReader" />
 		<property name="recorder">
 			<list>
-				<ref bean="NetflixSimularityPerformanceRecorder"></ref>
-				<ref bean="NetflixSimularityPerformanceRecorder"></ref>
-				<ref bean="NetflixSimularityPerformanceRecorder"></ref>
 				<ref bean="NetflixSimularityPerformanceRecorder"></ref>
 			</list>
 		</property>
@@ -62,7 +68,7 @@
 		<property name="similarityFunction" ref="AccCorrelationBasedSimularityFunction" />
 		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl" />
 	</bean>
-	
+
 	<!-- 相似度计算域 -->
 	<bean id="NetflixSimularityPerformanceDBReader" class="edu.tongji.thread.NetflixSimularityPerformanceDBReader">
 		<property name="ratingDAO" ref="ratingDAO" />
@@ -73,7 +79,7 @@
 		<property name="similarityFunction" ref="HomoCorrelationBasedSimularityFunction" />
 		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl" />
 	</bean>
-	
+
 	<!-- 推荐结果计算域 -->
 	<bean id="NetflixSimularityRecorder" class="edu.tongji.thread.NetflixSimularityRecorder"
 		scope="prototype">
@@ -84,7 +90,7 @@
 		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl" />
 	</bean>
 
-	
+
 
 	<!-- ******************************************** 相似度计算部分************************************************ -->
 	<!-- Function Set -->

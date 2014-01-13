@@ -14,8 +14,8 @@ import edu.tongji.util.LoggerUtil;
 
 /**
  * 
- * @author chenkh
- * @version $Id: TestUMassSmartGridTemplateParser.java, v 0.1 2013-12-17 下午4:08:34 chenkh Exp $
+ * @author chench
+ * @version $Id: TestUMassSmartGridTemplateParser.java, v 0.1 2013-12-17 下午4:08:34 chench Exp $
  */
 public class TestUMassSmartGridTemplateParser {
 

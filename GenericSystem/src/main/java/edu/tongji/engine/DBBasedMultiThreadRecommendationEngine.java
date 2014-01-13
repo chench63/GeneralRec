@@ -16,8 +16,8 @@ import edu.tongji.util.LoggerUtil;
 
 /**
  * 
- * @author chenkh
- * @version $Id: NetflixSimlarityPerformanceMultiThreadEngine.java, v 0.1 2013-10-15 上午9:54:14 chenkh Exp $
+ * @author chench
+ * @version $Id: NetflixSimlarityPerformanceMultiThreadEngine.java, v 0.1 2013-10-15 上午9:54:14 chench Exp $
  */
 public class DBBasedMultiThreadRecommendationEngine extends MultiThreadRecommendationEngine {
 

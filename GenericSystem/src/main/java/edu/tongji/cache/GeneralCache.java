@@ -21,8 +21,8 @@ import edu.tongji.util.LoggerUtil;
 /**
  * 泛型数据缓存，通过CacheHolder与具体应用场景数据类型解耦。
  * 
- * @author chenkh
- * @version $Id: GeneralCache.java, v 0.1 2013-10-31 下午4:32:59 chenkh Exp $
+ * @author chench
+ * @version $Id: GeneralCache.java, v 0.1 2013-10-31 下午4:32:59 chench Exp $
  */
 public final class GeneralCache {
 

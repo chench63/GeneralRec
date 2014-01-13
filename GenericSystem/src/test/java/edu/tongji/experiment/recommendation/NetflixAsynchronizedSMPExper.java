@@ -13,8 +13,8 @@ import edu.tongji.util.ExceptionUtil;
  * 根据Homomorphic encryption & Secure multiple party computation 计算所得相似度
  * 预测评分
  * 
- * @author chenkh
- * @version $Id: NetflixSimlarityPerformanceMainThread.java, v 0.1 2013-10-15 上午10:23:03 chenkh Exp $
+ * @author chench
+ * @version $Id: NetflixSimlarityPerformanceMainThread.java, v 0.1 2013-10-15 上午10:23:03 chench Exp $
  */
 public final class NetflixAsynchronizedSMPExper {
 

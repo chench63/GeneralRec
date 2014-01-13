@@ -7,8 +7,8 @@ package edu.tongji.exception;
 /**
  * 异常码
  * 
- * @author chenkh
- * @version $Id: ErrorCode.java, v 0.1 2013-9-7 下午4:03:01 chenkh Exp $
+ * @author chench
+ * @version $Id: ErrorCode.java, v 0.1 2013-9-7 下午4:03:01 chench Exp $
  */
 public interface ErrorCode {
     /**

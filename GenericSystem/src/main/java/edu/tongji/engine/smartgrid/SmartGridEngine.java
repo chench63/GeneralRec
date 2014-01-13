@@ -12,8 +12,8 @@ import edu.tongji.orm.SmartGridDataSource;
 
 /**
  * 
- * @author chenkh
- * @version $Id: SmartGridEngine.java, v 0.1 2013-12-18 上午11:05:23 chenkh Exp $
+ * @author chench
+ * @version $Id: SmartGridEngine.java, v 0.1 2013-12-18 上午11:05:23 chench Exp $
  */
 public abstract class SmartGridEngine implements Engine {
 

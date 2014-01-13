@@ -9,8 +9,8 @@ import edu.tongji.model.Rating;
 /**
  * Rating的扩展值类
  * 
- * @author chenkh
- * @version $Id: RatingVO.java, v 0.1 2013-10-30 下午8:27:30 chenkh Exp $
+ * @author chench
+ * @version $Id: RatingVO.java, v 0.1 2013-10-30 下午8:27:30 chench Exp $
  */
 public class RatingVO extends Rating {
 
