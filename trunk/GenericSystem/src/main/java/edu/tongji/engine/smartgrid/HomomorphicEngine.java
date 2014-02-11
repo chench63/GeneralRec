@@ -5,10 +5,8 @@
 package edu.tongji.engine.smartgrid;
 
 import java.math.BigInteger;
-import java.util.List;
-
 import org.springframework.util.StopWatch;
-
+import edu.tongji.orm.SmartGridDataSource;
 import edu.tongji.util.LoggerUtil;
 import edu.tongji.util.PaillierUtil;
 import edu.tongji.vo.MeterReadingVO;
@@ -25,7 +23,6 @@ public class HomomorphicEngine extends SmartGridEngine {
     /**
      * @see edu.tongji.engine.Engine#excute()
      */
-    @SuppressWarnings("static-access")
     @Override
     public void excute() {
 
@@ -35,11 +32,9 @@ public class HomomorphicEngine extends SmartGridEngine {
         // 1.模拟记录读数
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-
-        List<MeterReadingVO> meterContexts = dataSource.meterContexts;
         PaillierUtil.newInstance();
         BigInteger cipherMonthly = null;
-        for (MeterReadingVO reading : meterContexts) {
+        for (MeterReadingVO reading : SmartGridDataSource.meterContexts) {
             // 模拟Customer加密
             BigInteger plaintext = new BigInteger(((Integer) reading.getReading()).toString());
             BigInteger ciphertext = PaillierUtil.encryptions(plaintext);
@@ -54,10 +49,8 @@ public class HomomorphicEngine extends SmartGridEngine {
         stopWatch.stop();
 
         // 3.输出日志
-        LoggerUtil.debug(
-            logger,
-            "共计算：" + meterContexts.size() + " 耗时："
-                    + String.format("%2d", stopWatch.getLastTaskTimeMillis()));
+        LoggerUtil.debug(logger, "共计算：" + SmartGridDataSource.meterContexts.size() + " 耗时："
+                                 + String.format("%2d", stopWatch.getLastTaskTimeMillis()));
         if (logger.isDebugEnabled()) {
             runtimes[0] += stopWatch.getLastTaskTimeMillis();
         }

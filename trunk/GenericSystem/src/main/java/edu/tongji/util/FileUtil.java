@@ -48,13 +48,13 @@ public final class FileUtil {
         try {
             reader = new BufferedReader(new FileReader(file));
 
-            List<String> testCaseSet = new ArrayList<String>();
+            List<String> lines = new ArrayList<String>();
             String context = null;
             while ((context = reader.readLine()) != null) {
-                testCaseSet.add(StringUtil.trim(context));
+                lines.add(StringUtil.trim(context));
             }
 
-            return testCaseSet.toArray(new String[testCaseSet.size()]);
+            return lines.toArray(new String[lines.size()]);
         } catch (FileNotFoundException e) {
             ExceptionUtil.caught(e, "无法找到对应的加载文件: " + path);
         } catch (IOException e) {
