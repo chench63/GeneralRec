@@ -24,7 +24,7 @@ public abstract class SmartGridEngine implements Engine {
     protected final static Logger logger   = Logger.getLogger(LoggerDefineConstant.SERVICE_NORMAL);
 
     /** 测试需要，统计平均运行时间*/
-    public static long            runtimes = 0L;
+    public static long[]          runtimes = { 0L, 0L };
 
     /**
      * Getter method for property <tt>dataSource</tt>.

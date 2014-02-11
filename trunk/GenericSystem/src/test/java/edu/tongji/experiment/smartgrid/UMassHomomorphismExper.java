@@ -41,7 +41,7 @@ public class UMassHomomorphismExper {
                 engine.excute();
             }
 
-            LoggerUtil.info(logger, "重复运行：" + TIMES + " 平均时间：" + (engine.runtimes * 1.0 / TIMES));
+            LoggerUtil.info(logger, "重复运行：" + TIMES + " 平均时间：" + (engine.runtimes[0] * 1.0 / TIMES));
         } catch (Exception e) {
             ExceptionUtil.caught(e, UMassHomomorphismExper.class + " 发生错误");
         } finally {
