@@ -22,45 +22,46 @@ import edu.tongji.vo.MeterReadingVO;
  */
 public class HomomorphicEngine extends SmartGridEngine {
 
-	/**
-	 * @see edu.tongji.engine.Engine#excute()
-	 */
-	@SuppressWarnings("static-access")
-	@Override
-	public void excute() {
+    /**
+     * @see edu.tongji.engine.Engine#excute()
+     */
+    @SuppressWarnings("static-access")
+    @Override
+    public void excute() {
 
-		// 0. 载入数据集
-		dataSource.reload();
+        // 0. 载入数据集
+        dataSource.reload();
 
-		// 1.模拟记录读数
-		StopWatch stopWatch = new StopWatch();
-		stopWatch.start();
+        // 1.模拟记录读数
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
 
-		List<MeterReadingVO> meterContexts = dataSource.meterContexts;
-		PaillierUtil.newInstance();
-		BigInteger cipherMonthly = null;
-		for (MeterReadingVO reading : meterContexts) {
-			// 模拟Customer加密
-			BigInteger plaintext = new BigInteger(
-					((Integer) reading.getReading()).toString());
-			BigInteger ciphertext = PaillierUtil.encryptions(plaintext);
+        List<MeterReadingVO> meterContexts = dataSource.meterContexts;
+        PaillierUtil.newInstance();
+        BigInteger cipherMonthly = null;
+        for (MeterReadingVO reading : meterContexts) {
+            // 模拟Customer加密
+            BigInteger plaintext = new BigInteger(((Integer) reading.getReading()).toString());
+            BigInteger ciphertext = PaillierUtil.encryptions(plaintext);
 
-			// 模拟Provider存储密文
-			if (cipherMonthly == null) {
-				cipherMonthly = ciphertext;
-			} else {
-				PaillierUtil.add(cipherMonthly, ciphertext);
-			}
-		}
-		stopWatch.stop();
+            // 模拟Provider存储密文
+            if (cipherMonthly == null) {
+                cipherMonthly = ciphertext;
+            } else {
+                PaillierUtil.add(cipherMonthly, ciphertext);
+            }
+        }
+        stopWatch.stop();
 
-		// 3.输出日志
-		LoggerUtil.debug(logger, "共计算：" + meterContexts.size() + " 耗时："
-				+ String.format("%2d", stopWatch.getLastTaskTimeMillis()));
-		if (logger.isDebugEnabled()) {
-			runtimes += stopWatch.getLastTaskTimeMillis();
-		}
+        // 3.输出日志
+        LoggerUtil.debug(
+            logger,
+            "共计算：" + meterContexts.size() + " 耗时："
+                    + String.format("%2d", stopWatch.getLastTaskTimeMillis()));
+        if (logger.isDebugEnabled()) {
+            runtimes[0] += stopWatch.getLastTaskTimeMillis();
+        }
 
-	}
+    }
 
 }

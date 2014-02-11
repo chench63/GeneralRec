@@ -23,7 +23,7 @@ public final class UMassOneTimePadExper {
     private final static Logger logger = Logger.getLogger(LoggerDefineConstant.SERVICE_NORMAL);
 
     /** 实验运行次数*/
-    private static int          TIMES  = 1000;
+    private static int          TIMES  = 100;
 
     /**
      * 引导函数
@@ -41,7 +41,16 @@ public final class UMassOneTimePadExper {
                 engine.excute();
             }
 
-            LoggerUtil.info(logger, "重复运行：" + TIMES +" 平均时间："+ (engine.runtimes*1.0/TIMES));
+            LoggerUtil.info(
+                logger,
+                "重复运行："
+                        + TIMES
+                        + " 平均时间："
+                        + (engine.runtimes[0] * 1.0 / TIMES)
+                        / 0.95
+                        + " 方差："
+                        + Math.sqrt((engine.runtimes[1] * 1.0 / TIMES - Math
+                            .pow(engine.runtimes[0] * 1.0 / TIMES, 2.0)) / 0.95));
         } catch (Exception e) {
             ExceptionUtil.caught(e, "edu.tongji.experiment.smartgrid.UMassGSmartGridExper 发生错误");
         } finally {
