@@ -20,6 +20,9 @@ public final class RandomUtil {
     /** 随机数据生成类 */
     private static Random ran  = new Random(seed);
 
+    /** 常量0 */
+    private static double ZERO = 0.0;
+
     /**
      * 禁用构造函数
      */
@@ -69,6 +72,11 @@ public final class RandomUtil {
      * @return
      */
     public static double nextGaussian(double csi) {
+        //最值为0时，无限制
+        if (csi == ZERO) {
+            return nextGaussian();
+        }
+
         double nextGaussian = 0.0;
         while (Math.abs(nextGaussian = nextGaussian()) > csi)
             ;
