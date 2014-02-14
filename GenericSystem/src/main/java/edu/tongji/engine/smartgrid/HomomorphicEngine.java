@@ -5,7 +5,9 @@
 package edu.tongji.engine.smartgrid;
 
 import java.math.BigInteger;
+
 import org.springframework.util.StopWatch;
+
 import edu.tongji.orm.SmartGridDataSource;
 import edu.tongji.util.LoggerUtil;
 import edu.tongji.util.PaillierUtil;
@@ -20,15 +22,11 @@ import edu.tongji.vo.MeterReadingVO;
  */
 public class HomomorphicEngine extends SmartGridEngine {
 
-    /**
-     * @see edu.tongji.engine.Engine#excute()
+    /** 
+     * @see edu.tongji.engine.smartgrid.SmartGridEngine#emulate()
      */
     @Override
-    public void excute() {
-
-        // 0. 载入数据集
-        dataSource.reload();
-
+    protected void emulate() {
         // 1.模拟记录读数
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();

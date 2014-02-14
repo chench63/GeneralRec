@@ -24,14 +24,10 @@ public class OneTimePadEngine extends SmartGridEngine {
     private int keyLens;
 
     /** 
-     * @see edu.tongji.engine.Engine#excute()
+     * @see edu.tongji.engine.smartgrid.SmartGridEngine#emulate()
      */
     @Override
-    public void excute() {
-
-        //0. 载入数据集
-        dataSource.reload();
-
+    protected void emulate() {
         //1.模拟记录读数
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
@@ -61,7 +57,6 @@ public class OneTimePadEngine extends SmartGridEngine {
             runtimes[0] += stopWatch.getLastTaskTimeMillis();
             runtimes[1] += Math.pow(stopWatch.getLastTaskTimeMillis(), 2);
         }
-
     }
 
     /**
