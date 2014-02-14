@@ -4,11 +4,6 @@
  */
 package edu.tongji.orm;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -16,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 
 import edu.tongji.exception.DataSourceErrorCode;
@@ -24,7 +18,7 @@ import edu.tongji.exception.OwnedException;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.parser.ParserTemplate;
 import edu.tongji.parser.TemplateType;
-import edu.tongji.util.ExceptionUtil;
+import edu.tongji.util.FileUtil;
 import edu.tongji.util.LoggerUtil;
 import edu.tongji.vo.MeterReadingVO;
 
@@ -36,8 +30,11 @@ import edu.tongji.vo.MeterReadingVO;
  */
 public class SmartGridDataSource implements DataSource {
 
-    /** 是否懒加载，防止重复加载*/
-    private boolean                          isLazy           = false;
+    /** 是否为本次加载*/
+    private boolean                          isFresh          = false;
+
+    /** 是否完成加载*/
+    private boolean                          isLoad           = false;
 
     /** 需要加载的文件  **/
     private Map<TemplateType, String>        sourceEntity;
@@ -61,51 +58,21 @@ public class SmartGridDataSource implements DataSource {
     }
 
     private void load() {
-
+        LoggerUtil.debug(logger, "SmartGridDataSource.load starts.");
         for (Iterator<Entry<TemplateType, String>> iter = sourceEntity.entrySet().iterator(); iter
             .hasNext();) {
             Entry<TemplateType, String> entry = iter.next();
             TemplateType parserType = entry.getKey();
-            File file = new File(entry.getValue());
-
-            //验证文件是否存在
-            LoggerUtil.debug(logger, "加载文件: " + entry.getValue());
-            if (!file.isFile() | !file.exists()) {
-                LoggerUtil.warn(logger, "无法找到加载文件: " + entry.getValue());
-                continue;
-            }
 
             //读取并解析数据
-            BufferedReader reader = null;
-            try {
-                reader = new BufferedReader(new FileReader(file));
-                String context = null;
-                MeterReadingVO meterReading = null;
-                while ((context = reader.readLine()) != null) {
-                    ParserTemplate template = new ParserTemplate();
-                    template.setTemplate(context);
+            String[] lines = FileUtil.readlines(entry.getValue());
+            for (String line : lines) {
+                ParserTemplate template = new ParserTemplate();
+                template.setTemplate(line);
 
-                    // 解析
-                    MeterReadingVO meter = (MeterReadingVO) parserType.parser(template);
-                    if (meterReading == null) {
-                        //初始化
-                        meterReading = meter;
-                        continue;
-                    } else if (meter.getTimeVal() > meterReading.getTimeVal() + READING_INTERVAL) {
-                        //新的电表计时周期
-                        meterContexts.add(meterReading);
-                        meterReading = meter;
-                        continue;
-                    }
-                    //在同一计时周期，累计读数
-                    meterReading.setReading(meterReading.getReading() + meter.getReading());
-                }
-            } catch (FileNotFoundException e) {
-                ExceptionUtil.caught(e, "无法找到对应的加载文件: " + entry.getValue());
-            } catch (IOException e) {
-                ExceptionUtil.caught(e, "读取文件发生异常，校验文件格式");
-            } finally {
-                IOUtils.closeQuietly(reader);
+                // 解析
+                MeterReadingVO meter = (MeterReadingVO) parserType.parser(template);
+                meterContexts.add(meter);
             }
 
         }
@@ -116,10 +83,15 @@ public class SmartGridDataSource implements DataSource {
      */
     @Override
     public void reload() {
-        if (!isLazy) {
-            load();
-            isLazy = true;
+        //完成加载且不需要修改，则返回
+        if (isLoad) {
+            isFresh = false;
+            return;
         }
+
+        load();
+        isFresh = true;
+        isLoad = true;
     }
 
     /** 
@@ -155,6 +127,15 @@ public class SmartGridDataSource implements DataSource {
      */
     public void setSourceEntity(Map<TemplateType, String> sourceEntity) {
         this.sourceEntity = sourceEntity;
+    }
+
+    /**
+     * Getter method for property <tt>isFresh</tt>.
+     * 
+     * @return property value of isFresh
+     */
+    public boolean isFresh() {
+        return isFresh;
     }
 
 }

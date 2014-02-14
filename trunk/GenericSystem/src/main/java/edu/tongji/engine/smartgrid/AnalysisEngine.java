@@ -1,29 +1,42 @@
 /**
- * Tongji.edu Inc.
+ * Tongji Edu.
  * Copyright (c) 2004-2014 All Rights Reserved.
  */
 package edu.tongji.engine.smartgrid;
 
 import org.springframework.util.StopWatch;
-
 import edu.tongji.orm.SmartGridDataSource;
 import edu.tongji.util.LoggerUtil;
 import edu.tongji.util.RandomUtil;
 import edu.tongji.vo.MeterReadingVO;
 
 /**
- * 混合高斯模型引擎
  * 
  * @author chench
- * @version $Id: MultipleGaussEngine.java, v 0.1 2014-1-20 上午10:16:36 chench Exp $
+ * @version $Id: AnalysisEngine.java, v 0.1 2014-2-14 下午12:42:00 chench Exp $
  */
-public class MultipleGaussEngine extends SmartGridEngine {
-
+public class AnalysisEngine extends SmartGridEngine {
     /** 高斯噪声产生范围*/
     private double[] gauseDomain;
 
     /** 主部和高斯噪声对应的比重系数*/
     private double[] weightDomain;
+
+    /** 
+     * @see edu.tongji.engine.smartgrid.SmartGridEngine#loadDataSet()
+     */
+    @Override
+    protected void loadDataSet() {
+        dataSource.reload();
+    }
+
+    /** 
+     * @see edu.tongji.engine.smartgrid.SmartGridEngine#assembleDataSet()
+     */
+    @Override
+    protected void assembleDataSet() {
+        super.assembleDataSet();
+    }
 
     /** 
      * @see edu.tongji.engine.smartgrid.SmartGridEngine#emulate()
