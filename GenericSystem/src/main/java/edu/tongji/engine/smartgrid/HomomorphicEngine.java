@@ -34,7 +34,7 @@ public class HomomorphicEngine extends SmartGridEngine {
         BigInteger cipherMonthly = null;
         for (MeterReadingVO reading : SmartGridDataSource.meterContexts) {
             // 模拟Customer加密
-            BigInteger plaintext = new BigInteger(((Integer) reading.getReading()).toString());
+            BigInteger plaintext = new BigInteger(((Double) reading.getReading()).toString());
             BigInteger ciphertext = PaillierUtil.encryptions(plaintext);
 
             // 模拟Provider存储密文

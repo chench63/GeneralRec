@@ -5,6 +5,7 @@
 package edu.tongji.parser;
 
 import java.sql.Timestamp;
+import java.util.Calendar;
 
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -24,8 +25,12 @@ public class TestUMassSmartGridTemplateParser {
 
     @Test
     public void test() {
-        long time = 1341047957000L;
-        LoggerUtil.info(logger, new Timestamp(time));
+        LoggerUtil.info(logger, new Timestamp(1341047995000L));
+        LoggerUtil.info(logger, new Timestamp(1343206423000L));
+        Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(1341047957000L);
+        LoggerUtil.info(logger, cal.get(Calendar.HOUR_OF_DAY));
+
     }
 
 }

@@ -15,7 +15,7 @@ import java.sql.Timestamp;
 public class MeterReadingVO {
 
     /** 电表读数*/
-    private int       reading;
+    private double    reading;
 
     /** 读取时间 */
     private Timestamp time;
@@ -28,7 +28,7 @@ public class MeterReadingVO {
      * 
      * @return property value of reading
      */
-    public int getReading() {
+    public double getReading() {
         return reading;
     }
 
@@ -37,7 +37,7 @@ public class MeterReadingVO {
      * 
      * @param reading value to be assigned to property reading
      */
-    public void setReading(int reading) {
+    public void setReading(double reading) {
         this.reading = reading;
     }
 
