@@ -36,7 +36,7 @@ public class OneTimePadEngine extends SmartGridEngine {
         BigInteger cipherMonthly = BigInteger.ZERO;
         for (MeterReadingVO reading : SmartGridDataSource.meterContexts) {
             //模拟meter加密
-            BigInteger plainMeter = new BigInteger(((Integer) reading.getReading()).toString());
+            BigInteger plainMeter = new BigInteger(((Double) reading.getReading()).toString());
             EncryptionContext providerContext = OneTimePadUtil.secretEnc(plainMeter);
             BigInteger cipherMeter = (BigInteger) providerContext.get("CIPHERTEXT");
 
