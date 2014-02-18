@@ -5,12 +5,16 @@
 package edu.tongji.util;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
+
 import org.apache.commons.io.IOUtils;
 
 /**
@@ -35,7 +39,7 @@ public final class FileUtil {
      * @param path   文件路径
      * @return
      */
-    public static String[] readlines(String path) {
+    public static String[] readLines(String path) {
         File file = new File(path);
 
         //读取并解析数据
@@ -66,4 +70,74 @@ public final class FileUtil {
         //出现异常，返回null
         return null;
     }
+
+    /**
+     * 根据通配符规则，读取多个文件
+     * 
+     * @param path
+     * @return
+     */
+    public static String[] readLinesByPattern(String path) {
+        if (StringUtil.isEmpty(path)) {
+            return null;
+        }
+
+        //拆分目录和正则表达式
+        int index = path.lastIndexOf("/");
+        String dirValue = path.substring(0, index);
+        String regexValue = path.substring(index + 1);
+        File dir = new File(dirValue);
+        if (!dir.isDirectory() | StringUtil.isBlank(regexValue)) {
+            ExceptionUtil.caught(new FileNotFoundException("File Not Found"), "目录不存在，校验文件路径: "
+                                                                              + path);
+            return null;
+        }
+
+        //批量读取文件
+        List<String> context = new ArrayList<String>();
+        File[] files = dir.listFiles();
+        Pattern p = Pattern.compile(regexValue);
+        for (File file : files) {
+            if (file.isFile() && p.matcher(file.getName()).matches()) {
+                BufferedReader reader = null;
+                try {
+                    reader = new BufferedReader(new FileReader(file));
+
+                    String line = null;
+                    while ((line = reader.readLine()) != null) {
+                        context.add(StringUtil.trim(line));
+                    }
+
+                } catch (FileNotFoundException e) {
+                    ExceptionUtil.caught(e, "无法找到对应的加载文件: " + path);
+                } catch (IOException e) {
+                    ExceptionUtil.caught(e, "读取文件发生异常，校验文件格式");
+                } finally {
+                    IOUtils.closeQuietly(reader);
+                }
+            }
+        }
+
+        return context.toArray(new String[context.size()]);
+    }
+
+    /**
+     * 简单写文件
+     * 
+     * @param file
+     * @param context
+     */
+    public static void write(String file, String context) {
+
+        BufferedWriter writer = null;
+        try {
+            writer = new BufferedWriter(new FileWriter(file));
+            writer.write(context);
+        } catch (IOException e) {
+            ExceptionUtil.caught(e, "写文件发生异常，校验文件格式");
+        } finally {
+            IOUtils.closeQuietly(writer);
+        }
+    }
+
 }

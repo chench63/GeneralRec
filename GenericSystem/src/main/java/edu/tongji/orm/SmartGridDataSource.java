@@ -65,7 +65,7 @@ public class SmartGridDataSource implements DataSource {
             TemplateType parserType = entry.getKey();
 
             //读取并解析数据
-            String[] lines = FileUtil.readlines(entry.getValue());
+            String[] lines = FileUtil.readLinesByPattern(entry.getValue());
             for (String line : lines) {
                 ParserTemplate template = new ParserTemplate();
                 template.setTemplate(line);

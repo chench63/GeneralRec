@@ -9,7 +9,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
 import org.springframework.util.StopWatch;
+
+import edu.tongji.extend.gnuplot.FigureFormatter;
 import edu.tongji.orm.SmartGridDataSource;
 import edu.tongji.util.DateUtil;
 import edu.tongji.util.LoggerUtil;
@@ -23,10 +26,16 @@ import edu.tongji.vo.MeterReadingVO;
  */
 public class AnalysisEngine extends SmartGridEngine {
     /** 高斯噪声产生范围*/
-    private double[] gauseDomain;
+    private double[]        gauseDomain;
 
     /** 主部和高斯噪声对应的比重系数*/
-    private double[] weightDomain;
+    private double[]        weightDomain;
+
+    /** 数据文件存储绝对地址 */
+    private String          fileAbsolutePath;
+
+    /** 图像格式器*/
+    private FigureFormatter formatter;
 
     /** 
      * @see edu.tongji.engine.smartgrid.SmartGridEngine#assembleDataSet()
@@ -61,11 +70,13 @@ public class AnalysisEngine extends SmartGridEngine {
                 meterReading = meter;
                 continue;
             } else if (!DateUtil.sameDayAndHour(meterReading.getTimeVal(), meter.getTimeVal())) {
+                LoggerUtil.debug(logger, "O：" + meterReading.getReading() + "   Date："
+                                         + new Timestamp(meterReading.getTimeVal()));
+
                 //新的电表计时周期
                 SmartGridDataSource.meterContexts.add(meterReading);
                 meterReading = meter;
-                LoggerUtil.debug(logger, "O：" + meterReading.getReading() + "   Date："
-                                         + new Timestamp(meterReading.getTimeVal()));
+
                 continue;
             }
             //在同一计时周期，累计读数
@@ -90,6 +101,10 @@ public class AnalysisEngine extends SmartGridEngine {
             }
             LoggerUtil.debug(logger, "O：" + reading.getReading() + " R：" + reads);
         }
+    }
+
+    protected void prepareDataSet() {
+
     }
 
     /**
@@ -126,6 +141,42 @@ public class AnalysisEngine extends SmartGridEngine {
      */
     public void setWeightDomain(double[] weightDomain) {
         this.weightDomain = weightDomain;
+    }
+
+    /**
+     * Getter method for property <tt>fileAbsolutePath</tt>.
+     * 
+     * @return property value of fileAbsolutePath
+     */
+    public String getFileAbsolutePath() {
+        return fileAbsolutePath;
+    }
+
+    /**
+     * Setter method for property <tt>fileAbsolutePath</tt>.
+     * 
+     * @param fileAbsolutePath value to be assigned to property fileAbsolutePath
+     */
+    public void setFileAbsolutePath(String fileAbsolutePath) {
+        this.fileAbsolutePath = fileAbsolutePath;
+    }
+
+    /**
+     * Getter method for property <tt>formatter</tt>.
+     * 
+     * @return property value of formatter
+     */
+    public FigureFormatter getFormatter() {
+        return formatter;
+    }
+
+    /**
+     * Setter method for property <tt>formatter</tt>.
+     * 
+     * @param formatter value to be assigned to property formatter
+     */
+    public void setFormatter(FigureFormatter formatter) {
+        this.formatter = formatter;
     }
 
 }
