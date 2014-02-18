@@ -25,6 +25,9 @@ import org.apache.commons.io.IOUtils;
  */
 public final class FileUtil {
 
+    /** 配置文件中所使用的路径分隔符*/
+    public static final char UNION_DIR_SEPERATOR = '/';
+
     /**
      * 禁用构造函数
      */
@@ -83,7 +86,7 @@ public final class FileUtil {
         }
 
         //拆分目录和正则表达式
-        int index = path.lastIndexOf("/");
+        int index = path.lastIndexOf(UNION_DIR_SEPERATOR);
         String dirValue = path.substring(0, index);
         String regexValue = path.substring(index + 1);
         File dir = new File(dirValue);

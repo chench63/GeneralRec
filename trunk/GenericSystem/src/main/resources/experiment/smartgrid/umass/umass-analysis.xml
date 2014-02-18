@@ -21,6 +21,9 @@
 	<!-- Entity Manager -->
 	<bean id="engine" class="edu.tongji.engine.smartgrid.AnalysisEngine">
 		<property name="dataSource" ref="datasource" />
+		<property name="absolutePath"
+			value="src/main/resources/dataset/testcase/smartgrid/data" />
+		<property name="formatter" ref="histographFormatter" />
 		<property name="gauseDomain">
 			<list>
 				<value>5.0</value>
@@ -35,6 +38,6 @@
 		</property>
 	</bean>
 
-
-
+	<!-- Figure Formatter -->
+	<bean id="histographFormatter" class="edu.tongji.extend.gnuplot.HistographFormatter" />
 </beans>

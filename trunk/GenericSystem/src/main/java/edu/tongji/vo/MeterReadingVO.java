@@ -24,6 +24,20 @@ public class MeterReadingVO {
     private long      timeVal;
 
     /**
+     * 构造函数
+     * 
+     * @param reading
+     * @param time
+     * @param timeVal
+     */
+    public MeterReadingVO(double reading, Timestamp time, long timeVal) {
+        super();
+        this.reading = reading;
+        this.time = time;
+        this.timeVal = timeVal;
+    }
+
+    /**
      * Getter method for property <tt>reading</tt>.
      * 
      * @return property value of reading

@@ -35,9 +35,7 @@ public class UMassSmartGridTemplateParser implements Parser {
             long timeVal = Long.valueOf(elements[1]) * 1000;
             int reading = Integer.valueOf(elements[2]);
 
-            MeterReadingVO meter = new MeterReadingVO();
-            meter.setTimeVal(timeVal);
-            meter.setReading(reading);
+            MeterReadingVO meter = new MeterReadingVO(reading, null, timeVal);
             return meter;
         } catch (Exception e) {
             ExceptionUtil.caught(e, "解析ParserTemplate错误，内容: " + template.getAsString());
