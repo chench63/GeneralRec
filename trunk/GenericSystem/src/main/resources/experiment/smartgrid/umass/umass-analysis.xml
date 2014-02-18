@@ -13,7 +13,7 @@
 		<property name="sourceEntity">
 			<util:map key-type="edu.tongji.parser.TemplateType">
 				<entry key="UMASS_SMART_GRID_TEMPLATE"
-					value="src/main/resources/dataset/testcase/smartgrid/2012-Jul-1.csv" />
+					value="src/main/resources/dataset/testcase/smartgrid/2012-Jul-[0-2]\d.csv" />
 			</util:map>
 		</property>
 	</bean>

@@ -88,7 +88,7 @@ public class NetFlixSimularityDBReader extends Thread {
                     TestCaseConfigurationConstant.RIGHT_SIDE)));
             }
         } else if (TestCaseConfigurationConstant.TEST_CASE_FILE != null) {
-            String[] testCaseSet = FileUtil.readlines(TestCaseConfigurationConstant.TEST_CASE_FILE);
+            String[] testCaseSet = FileUtil.readLines(TestCaseConfigurationConstant.TEST_CASE_FILE);
             for (String testCase : testCaseSet) {
                 testSet.add(testCase.trim());
             }
