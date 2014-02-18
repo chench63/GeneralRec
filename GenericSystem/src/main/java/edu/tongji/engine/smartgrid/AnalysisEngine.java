@@ -15,6 +15,7 @@ import org.springframework.util.StopWatch;
 import edu.tongji.extend.gnuplot.FigureFormatter;
 import edu.tongji.orm.SmartGridDataSource;
 import edu.tongji.util.DateUtil;
+import edu.tongji.util.GnuplotUtil;
 import edu.tongji.util.LoggerUtil;
 import edu.tongji.util.RandomUtil;
 import edu.tongji.vo.MeterReadingVO;
@@ -32,7 +33,7 @@ public class AnalysisEngine extends SmartGridEngine {
     private double[]        weightDomain;
 
     /** 数据文件存储绝对地址 */
-    private String          fileAbsolutePath;
+    private String          absolutePath;
 
     /** 图像格式器*/
     private FigureFormatter formatter;
@@ -90,17 +91,31 @@ public class AnalysisEngine extends SmartGridEngine {
      */
     @Override
     protected void emulate() {
-        //1.模拟记录读数
+
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
 
-        for (MeterReadingVO reading : SmartGridDataSource.meterContexts) {
+        //1.在原始数据后，添加隐私保护的数据
+        int blockSize = SmartGridDataSource.meterContexts.size();
+        for (int index = 0; index < blockSize; index++) {
+            MeterReadingVO reading = SmartGridDataSource.meterContexts.get(index);
             double reads = reading.getReading();
             for (int i = 0; i < gauseDomain.length; i++) {
                 reads += weightDomain[i] * RandomUtil.nextGaussian(gauseDomain[i]);
             }
             LoggerUtil.debug(logger, "O：" + reading.getReading() + " R：" + reads);
+
+            SmartGridDataSource.meterContexts.add(new MeterReadingVO(reads, null, reading
+                .getTimeVal()));
         }
+
+        //2.按不同图像要求，格式化数据
+        List<String> stream = formatter.format(SmartGridDataSource.meterContexts, blockSize);
+
+        //3.持久化操作，存储到目标文件
+        String fileAbsolutePath = (new StringBuilder(absolutePath)).append(
+            DateUtil.formatCurrent(DateUtil.LONG_FORMAT)).toString();
+        GnuplotUtil.genDataFile(stream, blockSize, fileAbsolutePath);
     }
 
     protected void prepareDataSet() {
@@ -144,21 +159,21 @@ public class AnalysisEngine extends SmartGridEngine {
     }
 
     /**
-     * Getter method for property <tt>fileAbsolutePath</tt>.
+     * Getter method for property <tt>absolutePath</tt>.
      * 
-     * @return property value of fileAbsolutePath
+     * @return property value of absolutePath
      */
-    public String getFileAbsolutePath() {
-        return fileAbsolutePath;
+    public String getAbsolutePath() {
+        return absolutePath;
     }
 
     /**
-     * Setter method for property <tt>fileAbsolutePath</tt>.
+     * Setter method for property <tt>absolutePath</tt>.
      * 
-     * @param fileAbsolutePath value to be assigned to property fileAbsolutePath
+     * @param absolutePath value to be assigned to property absolutePath
      */
-    public void setFileAbsolutePath(String fileAbsolutePath) {
-        this.fileAbsolutePath = fileAbsolutePath;
+    public void setAbsolutePath(String absolutePath) {
+        this.absolutePath = absolutePath;
     }
 
     /**
