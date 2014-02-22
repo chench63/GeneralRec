@@ -22,25 +22,29 @@ public final class GnuplotUtil {
 
     public final static char   BREAK_LINE        = '\n';
 
-    public static void genDataFile(List<String> stream, int stockSize, String absolutePath) {
-        //写入头部
+    public static void genDataFile(List<String> stream, int columnSize, String absolutePath) {
+        //0.写入头部
         StringBuilder context = new StringBuilder(HEADER);
 
-        for (int i = 0; i < stream.size(); i++) {
+        //1.输出坐标轴部分信息
+        //包含X轴信息和列数据;
+        context.append(stream.get(0));
+        context.append(BREAK_LINE);
+
+        //2.输出文本数据
+        int rowSeq = 0;
+        for (int i = 1; i < stream.size(); i++) {
             //输出完一行时，追加换行符号
-            if (i % stockSize == 0) {
-                context.append(BREAK_LINE);
+            if ((i - 1) % columnSize == 0) {
+                context.append(BREAK_LINE).append(rowSeq++).append(ELEMENT_SEPERATOR);
             }
 
             //输出一个数据后，最佳原始分隔符
             context.append(stream.get(i)).append(ELEMENT_SEPERATOR);
         }
-
         context.append(END);
+
+        //3.序列化至磁盘文件
         FileUtil.write(absolutePath, context.toString());
-    }
-
-    public static void plot(int length, int widh) {
-
     }
 }

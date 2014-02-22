@@ -21,23 +21,48 @@
 	<!-- Entity Manager -->
 	<bean id="engine" class="edu.tongji.engine.smartgrid.AnalysisEngine">
 		<property name="dataSource" ref="datasource" />
+		<property name="columnMsg" value="Month     Original     Perturb" />
 		<property name="absolutePath"
-			value="src/main/resources/dataset/testcase/smartgrid/data" />
+			value="C:\\Users\\ppiachen\\Desktop\\Backup\\Tex\\SmartMetering_Privacy\\Figure\\test" />
 		<property name="formatter" ref="histographFormatter" />
-		<property name="gauseDomain">
-			<list>
-				<value>5.0</value>
-				<value>5.0</value>
-			</list>
-		</property>
+		<property name="cracker" ref="linearExpectationCracker" />
+		<!-- 主部数据和噪声权值 -->
 		<property name="weightDomain">
 			<list>
-				<value>1.0</value>
-				<value>0.4</value>
+				<value>0.5</value>
+				<value>0.3</value>
+				<value>0.2</value>
 			</list>
+		</property>
+		<!-- 高斯噪声阈值 -->
+		<property name="gauseDomain">
+			<list>
+				<value>0.0</value>
+				<value>0.0</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- Factories -->
+	<bean id="statisticianFactory" class="edu.tongji.extend.statistics.StatisticianFactory">
+		<property name="reposity">
+			<map>
+				<entry key="mse">
+					<ref bean="mse" />
+				</entry>
+			</map>
 		</property>
 	</bean>
 
 	<!-- Figure Formatter -->
 	<bean id="histographFormatter" class="edu.tongji.extend.gnuplot.HistographFormatter" />
+
+	<!-- Crackers -->
+	<bean id="standardExpectationCracker" class="edu.tongji.crack.StandardExpectationCracker" />
+	<bean id="linearExpectationCracker" class="edu.tongji.crack.LinearExpectationCracker">
+		<property name="statisticianFactory" ref="statisticianFactory" />
+	</bean>
+
+	<!-- Statistics Entity -->
+	<bean id="mse" class="edu.tongji.extend.statistics.MSEStatistician" />
 </beans>

@@ -12,6 +12,8 @@ import java.util.List;
 
 import org.springframework.util.StopWatch;
 
+import edu.tongji.crack.CrackObject;
+import edu.tongji.crack.PrivacyCracker;
 import edu.tongji.extend.gnuplot.FigureFormatter;
 import edu.tongji.orm.SmartGridDataSource;
 import edu.tongji.util.DateUtil;
@@ -30,10 +32,16 @@ public class AnalysisEngine extends SmartGridEngine {
     private double[]        gauseDomain;
 
     /** 主部和高斯噪声对应的比重系数*/
-    private double[]        weightDomain;
+    private double[]        weightDomain = { 1.0 };
+
+    /** 列休息数据*/
+    private String          columnMsg;
 
     /** 数据文件存储绝对地址 */
     private String          absolutePath;
+
+    /** 隐私破解器*/
+    private PrivacyCracker  cracker;
 
     /** 图像格式器*/
     private FigureFormatter formatter;
@@ -99,9 +107,9 @@ public class AnalysisEngine extends SmartGridEngine {
         int blockSize = SmartGridDataSource.meterContexts.size();
         for (int index = 0; index < blockSize; index++) {
             MeterReadingVO reading = SmartGridDataSource.meterContexts.get(index);
-            double reads = reading.getReading();
+            double reads = reading.getReading() * weightDomain[0];
             for (int i = 0; i < gauseDomain.length; i++) {
-                reads += weightDomain[i] * RandomUtil.nextGaussian(gauseDomain[i]);
+                reads += weightDomain[i + 1] * RandomUtil.nextGaussian(gauseDomain[i]);
             }
             LoggerUtil.debug(logger, "O：" + reading.getReading() + " R：" + reads);
 
@@ -109,13 +117,19 @@ public class AnalysisEngine extends SmartGridEngine {
                 .getTimeVal()));
         }
 
-        //2.按不同图像要求，格式化数据
-        List<String> stream = formatter.format(SmartGridDataSource.meterContexts, blockSize);
+        //2.Crack Privacy Scheme
+        cracker.crack(new CrackObject(SmartGridDataSource.meterContexts), blockSize);
 
-        //3.持久化操作，存储到目标文件
+        //3.按不同图像要求，格式化数据
+        List<String> stream = new ArrayList<String>();
+        stream.add(columnMsg);
+        stream.addAll(formatter.format(SmartGridDataSource.meterContexts, blockSize));
+
+        //4.持久化操作，存储到目标文件
         String fileAbsolutePath = (new StringBuilder(absolutePath)).append(
             DateUtil.formatCurrent(DateUtil.LONG_FORMAT)).toString();
-        GnuplotUtil.genDataFile(stream, blockSize, fileAbsolutePath);
+        GnuplotUtil.genDataFile(stream, SmartGridDataSource.meterContexts.size() / blockSize,
+            fileAbsolutePath);
     }
 
     protected void prepareDataSet() {
@@ -192,6 +206,42 @@ public class AnalysisEngine extends SmartGridEngine {
      */
     public void setFormatter(FigureFormatter formatter) {
         this.formatter = formatter;
+    }
+
+    /**
+     * Getter method for property <tt>columnMsg</tt>.
+     * 
+     * @return property value of columnMsg
+     */
+    public String getColumnMsg() {
+        return columnMsg;
+    }
+
+    /**
+     * Setter method for property <tt>columnMsg</tt>.
+     * 
+     * @param columnMsg value to be assigned to property columnMsg
+     */
+    public void setColumnMsg(String columnMsg) {
+        this.columnMsg = columnMsg;
+    }
+
+    /**
+     * Getter method for property <tt>cracker</tt>.
+     * 
+     * @return property value of cracker
+     */
+    public PrivacyCracker getCracker() {
+        return cracker;
+    }
+
+    /**
+     * Setter method for property <tt>cracker</tt>.
+     * 
+     * @param cracker value to be assigned to property cracker
+     */
+    public void setCracker(PrivacyCracker cracker) {
+        this.cracker = cracker;
     }
 
 }

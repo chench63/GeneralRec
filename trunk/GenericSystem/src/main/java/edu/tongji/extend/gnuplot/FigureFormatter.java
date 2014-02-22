@@ -15,7 +15,7 @@ import java.util.List;
 public interface FigureFormatter {
 
     /**
-     * 格式化数据，复合图像格式
+     * 格式化数据，符合图像格式
      * 
      * @param context
      * @return
