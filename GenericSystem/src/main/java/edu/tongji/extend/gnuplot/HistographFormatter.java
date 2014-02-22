@@ -22,7 +22,7 @@ public class HistographFormatter implements FigureFormatter {
 
     protected final static char ELEMENT_SEPERATOR = '_';
 
-    protected final static int  HOUR_RANGE        = 23;
+    protected final static int  HOUR_RANGE        = 24;
 
     /** 
      * @see edu.tongji.extend.gnuplot.FigureFormatter#format(java.util.List)
@@ -37,8 +37,9 @@ public class HistographFormatter implements FigureFormatter {
             Map<String, Double> columns = new HashMap<String, Double>();
             for (int i = 0; i < context.size(); i++) {
                 MeterReadingVO reading = (MeterReadingVO) context.get(i);
-                String key = (new StringBuilder(DateUtil.getHourOfDay(reading.getTimeVal())))
-                    .append(ELEMENT_SEPERATOR).append(i % blockSize).toString();
+                String key = (new StringBuilder())
+                    .append(DateUtil.getHourOfDay(reading.getTimeVal())).append(ELEMENT_SEPERATOR)
+                    .append(i / blockSize).toString();
 
                 Double readingValue = columns.get(key);
                 if (readingValue == null) {
@@ -51,11 +52,11 @@ public class HistographFormatter implements FigureFormatter {
             //输出文本数据
             List<String> stream = new ArrayList<String>();
             for (int row = 0; row < HOUR_RANGE; row++)
-                for (int column = 0; column < blockSize; column++) {
-                    String keyInside = (new StringBuilder(row)).append(ELEMENT_SEPERATOR)
+                for (int column = 0; column < (context.size() / blockSize); column++) {
+                    String keyInside = (new StringBuilder()).append(row).append(ELEMENT_SEPERATOR)
                         .append(column).toString();
                     double reading = columns.get(keyInside);
-                    stream.add(String.valueOf(reading));
+                    stream.add(String.valueOf((int) reading));
                 }
             return stream;
         }

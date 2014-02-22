@@ -6,13 +6,15 @@ package edu.tongji.vo;
 
 import java.sql.Timestamp;
 
+import edu.tongji.extend.statistics.Statisticable;
+
 /**
  * 电表读数VO类
  * 
  * @author chench
  * @version $Id: MeterReading.java, v 0.1 2013-12-17 下午3:54:54 chench Exp $
  */
-public class MeterReadingVO {
+public class MeterReadingVO implements Statisticable {
 
     /** 电表读数*/
     private double    reading;
@@ -89,6 +91,14 @@ public class MeterReadingVO {
      */
     public void setTimeVal(long timeVal) {
         this.timeVal = timeVal;
+    }
+
+    /** 
+     * @see edu.tongji.extend.statistics.Statisticable#getValue()
+     */
+    @Override
+    public Number getValue() {
+        return this.reading;
     }
 
 }
