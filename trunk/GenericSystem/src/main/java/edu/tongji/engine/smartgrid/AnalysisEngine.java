@@ -15,21 +15,22 @@ import org.springframework.util.StopWatch;
 import edu.tongji.crack.CrackObject;
 import edu.tongji.crack.PrivacyCracker;
 import edu.tongji.extend.gnuplot.FigureFormatter;
+import edu.tongji.extend.noise.Noise;
 import edu.tongji.orm.SmartGridDataSource;
 import edu.tongji.util.DateUtil;
 import edu.tongji.util.GnuplotUtil;
 import edu.tongji.util.LoggerUtil;
-import edu.tongji.util.RandomUtil;
 import edu.tongji.vo.MeterReadingVO;
 
 /**
+ * 针对智能电网的分析引擎
  * 
  * @author chench
  * @version $Id: AnalysisEngine.java, v 0.1 2014-2-14 下午12:42:00 chench Exp $
  */
 public class AnalysisEngine extends SmartGridEngine {
     /** 高斯噪声产生范围*/
-    private double[]        gauseDomain;
+    private Noise[]         noises;
 
     /** 主部和高斯噪声对应的比重系数*/
     private double[]        weightDomain = { 1.0 };
@@ -108,8 +109,8 @@ public class AnalysisEngine extends SmartGridEngine {
         for (int index = 0; index < blockSize; index++) {
             MeterReadingVO reading = SmartGridDataSource.meterContexts.get(index);
             double reads = reading.getReading() * weightDomain[0];
-            for (int i = 0; i < gauseDomain.length; i++) {
-                reads += weightDomain[i + 1] * RandomUtil.nextGaussian(gauseDomain[i]);
+            for (int i = 0; i < noises.length; i++) {
+                reads += weightDomain[i + 1] * noises[i].random();
             }
             LoggerUtil.debug(logger, "O：" + reading.getReading() + " R：" + reads);
 
@@ -129,7 +130,7 @@ public class AnalysisEngine extends SmartGridEngine {
         String fileAbsolutePath = (new StringBuilder(absolutePath)).append(
             DateUtil.formatCurrent(DateUtil.LONG_FORMAT)).toString();
         GnuplotUtil.genDataFile(stream, SmartGridDataSource.meterContexts.size() / blockSize,
-            fileAbsolutePath);
+            fileAbsolutePath, formatter.needRowNum());
     }
 
     protected void prepareDataSet() {
@@ -137,21 +138,21 @@ public class AnalysisEngine extends SmartGridEngine {
     }
 
     /**
-     * Getter method for property <tt>gauseDomain</tt>.
+     * Getter method for property <tt>noises</tt>.
      * 
-     * @return property value of gauseDomain
+     * @return property value of noises
      */
-    public double[] getGauseDomain() {
-        return gauseDomain;
+    public Noise[] getNoises() {
+        return noises;
     }
 
     /**
-     * Setter method for property <tt>gauseDomain</tt>.
+     * Setter method for property <tt>noises</tt>.
      * 
-     * @param gauseDomain value to be assigned to property gauseDomain
+     * @param noises value to be assigned to property noises
      */
-    public void setGauseDomain(double[] gauseDomain) {
-        this.gauseDomain = gauseDomain;
+    public void setNoises(Noise[] noises) {
+        this.noises = noises;
     }
 
     /**

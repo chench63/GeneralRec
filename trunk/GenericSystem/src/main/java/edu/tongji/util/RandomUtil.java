@@ -6,6 +6,8 @@ package edu.tongji.util;
 
 import java.util.Random;
 
+import org.apache.commons.math3.distribution.NormalDistribution;
+
 /**
  * 随机数生成工具类
  * 
@@ -83,4 +85,16 @@ public final class RandomUtil {
 
         return nextGaussian;
     }
+
+    /**
+     * 生成一个符合设定正态分布的浮点数
+     * 
+     * @param mean
+     * @param deviation
+     * @return
+     */
+    public static double nextNormalDistribution(double mean, double deviation) {
+        return (new NormalDistribution(mean, deviation)).sample();
+    }
+
 }

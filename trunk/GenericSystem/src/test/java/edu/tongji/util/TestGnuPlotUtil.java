@@ -34,7 +34,7 @@ public class TestGnuPlotUtil {
         stream.add("2");
         stream.add("4");
         stream.add("5.9");
-        GnuplotUtil.genDataFile(stream, 3, path);
+        GnuplotUtil.genDataFile(stream, 3, path, true);
         LoggerUtil.debug(logger, TestGnuPlotUtil.class);
     }
 }
