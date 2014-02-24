@@ -106,5 +106,10 @@
 			<artifactId>commons-beanutils</artifactId>
 			<version>20030211.134440</version>
 		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-math3</artifactId>
+			<version>3.2</version>
+		</dependency>
 	</dependencies>
 </project>

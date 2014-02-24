@@ -33,6 +33,7 @@ public class HistographFormatter implements FigureFormatter {
         //智能电表处理逻辑
         if (!context.isEmpty() && context.get(0) instanceof MeterReadingVO) {
 
+            //对原始数据格式无要求，
             //使用map整理数据，KEY = [HOUR]_[COLUMN_SEQ]
             Map<String, Double> columns = new HashMap<String, Double>();
             for (int i = 0; i < context.size(); i++) {
@@ -50,6 +51,7 @@ public class HistographFormatter implements FigureFormatter {
             }
 
             //输出文本数据
+            //格式：[行数]   [列1]    [列2]    [列3]
             List<String> stream = new ArrayList<String>();
             for (int row = 0; row < HOUR_RANGE; row++)
                 for (int column = 0; column < (context.size() / blockSize); column++) {
@@ -62,6 +64,14 @@ public class HistographFormatter implements FigureFormatter {
         }
 
         return null;
+    }
+
+    /** 
+     * @see edu.tongji.extend.gnuplot.FigureFormatter#needRowNum()
+     */
+    @Override
+    public boolean needRowNum() {
+        return true;
     }
 
 }
