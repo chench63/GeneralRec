@@ -4,6 +4,7 @@
  */
 package edu.tongji.util;
 
+import java.math.BigInteger;
 import java.util.Random;
 
 import org.apache.commons.math3.distribution.NormalDistribution;
@@ -44,6 +45,16 @@ public final class RandomUtil {
         lowBound += ran.nextInt(rightSide - leftSide);
 
         return lowBound;
+    }
+
+    /**
+     * 生成一个固定长度的大整数
+     * 
+     * @param size
+     * @return
+     */
+    public static BigInteger nextBigInteger(int size) {
+        return new BigInteger(size, ran);
     }
 
     /**

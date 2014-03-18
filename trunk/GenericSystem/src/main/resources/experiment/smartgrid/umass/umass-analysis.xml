@@ -19,7 +19,7 @@
 	</bean>
 
 	<!-- Entity Manager -->
-	<bean id="engine" class="edu.tongji.engine.smartgrid.AnalysisEngine">
+	<bean id="engine" class="edu.tongji.engine.smartgrid.AnalysisMultipleGaussEngine">
 		<property name="dataSource" ref="datasource" />
 		<property name="columnMsg" value="Hour     Original     Perturb" />
 		<property name="absolutePath"

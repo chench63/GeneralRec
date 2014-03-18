@@ -21,7 +21,10 @@ import edu.tongji.vo.MeterReadingVO;
 public class OneTimePadEngine extends SmartGridEngine {
 
     /** 密钥长度*/
-    private int keyLens;
+    protected int keyLens;
+
+    /** 质数长度*/
+    protected int primeLens;
 
     /** 
      * @see edu.tongji.engine.smartgrid.SmartGridEngine#emulate()
@@ -36,7 +39,7 @@ public class OneTimePadEngine extends SmartGridEngine {
         BigInteger cipherMonthly = BigInteger.ZERO;
         for (MeterReadingVO reading : SmartGridDataSource.meterContexts) {
             //模拟meter加密
-            BigInteger plainMeter = new BigInteger(((Double) reading.getReading()).toString());
+            BigInteger plainMeter = new BigInteger(String.format("%.0f", reading.getReading()));
             EncryptionContext providerContext = OneTimePadUtil.secretEnc(plainMeter);
             BigInteger cipherMeter = (BigInteger) providerContext.get("CIPHERTEXT");
 
@@ -71,6 +74,24 @@ public class OneTimePadEngine extends SmartGridEngine {
      */
     public void setKeyLens(int keyLens) {
         this.keyLens = keyLens;
+    }
+
+    /**
+     * Getter method for property <tt>primeLens</tt>.
+     * 
+     * @return property value of primeLens
+     */
+    public int getPrimeLens() {
+        return primeLens;
+    }
+
+    /**
+     * Setter method for property <tt>primeLens</tt>.
+     * 
+     * @param primeLens value to be assigned to property primeLens
+     */
+    public void setPrimeLens(int primeLens) {
+        this.primeLens = primeLens;
     }
 
 }
