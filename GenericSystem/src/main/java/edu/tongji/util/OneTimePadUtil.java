@@ -18,7 +18,19 @@ import edu.tongji.encryption.EncryptionContext;
  */
 public final class OneTimePadUtil {
 
-    public static BigInteger BIG_PRIME = BigInteger.probablePrime(64, new Random());
+    /** 大质数长度*/
+    public static int        PRIME_LENGTH = 32;
+
+    /** 总体密钥长度*/
+    public static int        KEY_LENGTH   = 64;
+
+    /** sensitiveEnc 加密密钥基数*/
+    public static BigInteger BIG_PRIME    = BigInteger.probablePrime(PRIME_LENGTH, new Random());
+
+    /** 模底数, 2^64*/
+    public static BigInteger MODULUS_BASE = new BigInteger(
+                                              "10000000000000000000000000000000000000000000000000000000000000000",
+                                              2);
 
     /**
      * 禁用构造函数
@@ -31,7 +43,7 @@ public final class OneTimePadUtil {
      * 重新生成一个质数
      */
     public static void newPrime() {
-        newPrime(64);
+        newPrime(PRIME_LENGTH);
     }
 
     /**
@@ -40,7 +52,33 @@ public final class OneTimePadUtil {
      * @param bitLens
      */
     public static void newPrime(int bitLens) {
-        BIG_PRIME = BigInteger.probablePrime(bitLens, new Random());
+        PRIME_LENGTH = bitLens;
+        KEY_LENGTH = PRIME_LENGTH + 32;
+        BIG_PRIME = BigInteger.probablePrime(PRIME_LENGTH, new Random());
+
+        StringBuilder strBuilder = new StringBuilder("1");
+        for (int i = KEY_LENGTH; i > 0; i--) {
+            strBuilder.append(0);
+        }
+        MODULUS_BASE = new BigInteger(strBuilder.toString(), 2);
+    }
+
+    /**
+     * 初始化质数和密钥.
+     * 
+     * @param primeLens
+     * @param keyLens
+     */
+    public static void newPrime(int primeLens, int keyLens) {
+        PRIME_LENGTH = primeLens;
+        KEY_LENGTH = keyLens;
+        BIG_PRIME = BigInteger.probablePrime(PRIME_LENGTH, new Random());
+
+        StringBuilder strBuilder = new StringBuilder("1");
+        for (int i = KEY_LENGTH; i > 0; i--) {
+            strBuilder.append(0);
+        }
+        MODULUS_BASE = new BigInteger(strBuilder.toString(), 2);
     }
 
     /**
@@ -113,16 +151,12 @@ public final class OneTimePadUtil {
      * 密鈅生成算法
      * 
      * @param plaintext
+     * @param shouldGreatter
      * @return
      */
     private static BigInteger genKey(BigInteger plaintext, boolean shouldGreatter) {
-        //拼接密钥
-        String keyValue = ((Integer) RandomUtil.nextInt(-10, 10)).toString();
-        if (!shouldGreatter) {
-            return plaintext.multiply(new BigInteger(keyValue));
-        }
-
-        return plaintext.multiply(new BigInteger(keyValue)).multiply(BIG_PRIME);
+        //默认质数32位，扰动的密钥为 32 + 32
+        return RandomUtil.nextBigInteger(KEY_LENGTH);
     }
 
 }

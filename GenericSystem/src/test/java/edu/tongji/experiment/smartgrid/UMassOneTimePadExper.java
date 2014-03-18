@@ -35,7 +35,7 @@ public final class UMassOneTimePadExper {
         try {
             ctx = new ClassPathXmlApplicationContext(
                 "experiment/smartgrid/umass/umass-one-time-pad.xml");
-            OneTimePadEngine engine = (OneTimePadEngine) ctx.getBean("engine");
+            OneTimePadEngine engine = (OneTimePadEngine) ctx.getBean("analysisEngine");
 
             for (int i = 0; i < TIMES; i++) {
                 engine.excute();

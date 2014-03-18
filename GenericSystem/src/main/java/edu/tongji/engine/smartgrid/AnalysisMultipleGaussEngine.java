@@ -28,7 +28,7 @@ import edu.tongji.vo.MeterReadingVO;
  * @author chench
  * @version $Id: AnalysisEngine.java, v 0.1 2014-2-14 下午12:42:00 chench Exp $
  */
-public class AnalysisEngine extends SmartGridEngine {
+public class AnalysisMultipleGaussEngine extends SmartGridEngine {
     /** 高斯噪声产生范围*/
     private Noise[]         noises;
 
