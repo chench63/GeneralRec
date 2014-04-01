@@ -10,6 +10,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import edu.tongji.engine.smartgrid.OneTimePadEngine;
 import edu.tongji.engine.smartgrid.SmartGridEngine;
 import edu.tongji.log4j.LoggerDefineConstant;
+import edu.tongji.orm.SmartGridDataSource;
 import edu.tongji.util.ExceptionUtil;
 import edu.tongji.util.LoggerUtil;
 
@@ -24,7 +25,7 @@ public final class UMassOneTimePadExper {
     private final static Logger logger = Logger.getLogger(LoggerDefineConstant.SERVICE_NORMAL);
 
     /** 实验运行次数*/
-    private static int          TIMES  = 10;
+    private static int          TIMES  = 1000;
 
     /**
      * 引导函数
@@ -35,21 +36,16 @@ public final class UMassOneTimePadExper {
         try {
             ctx = new ClassPathXmlApplicationContext(
                 "experiment/smartgrid/umass/umass-one-time-pad.xml");
-            OneTimePadEngine engine = (OneTimePadEngine) ctx.getBean("analysisEngine");
+            OneTimePadEngine engine = (OneTimePadEngine) ctx.getBean("defaultEngine");
 
             for (int i = 0; i < TIMES; i++) {
                 engine.excute();
             }
 
-            LoggerUtil.info(
-                logger,
-                "重复运行："
-                        + TIMES
-                        + " 平均时间："
-                        + ((SmartGridEngine.runtimes[0] * 1.0 / TIMES) / 0.95)
-                        + " 标准差："
-                        + Math.sqrt((SmartGridEngine.runtimes[1] * 1.0 / TIMES - Math.pow(
-                            SmartGridEngine.runtimes[0] * 1.0 / TIMES, 2.0)) / 0.95));
+            LoggerUtil.info(logger,
+                "KL：" + engine.getKeyLens() + " Total：" + SmartGridDataSource.meterContexts.size()
+                        + " Mean：" + String.format("%.3f", SmartGridEngine.STAT.getMean()) + " SD："
+                        + String.format("%.3f", SmartGridEngine.STAT.getStandardDeviation()));
         } catch (Exception e) {
             ExceptionUtil.caught(e, UMassOneTimePadExper.class + " 发生错误");
         } finally {

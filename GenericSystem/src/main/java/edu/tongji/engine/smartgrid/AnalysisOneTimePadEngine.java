@@ -58,8 +58,7 @@ public class AnalysisOneTimePadEngine extends OneTimePadEngine {
                                  + String.format("%.2f", consumationInDomain) + " Estimation："
                                  + String.format("%.2f", consumationEsti));
         if (logger.isDebugEnabled()) {
-            runtimes[0] += stopWatch.getLastTaskTimeMillis();
-            runtimes[1] += Math.pow(stopWatch.getLastTaskTimeMillis(), 2);
+            SmartGridEngine.STAT.addValue(stopWatch.getLastTaskTimeMillis());
         }
     }
 

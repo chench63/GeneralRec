@@ -51,8 +51,8 @@ public final class OneTimePadUtil {
      * 
      * @param bitLens
      */
-    public static void newPrime(int bitLens) {
-        PRIME_LENGTH = bitLens;
+    public static void newPrime(int primeLens) {
+        PRIME_LENGTH = primeLens;
         KEY_LENGTH = PRIME_LENGTH + 32;
         BIG_PRIME = BigInteger.probablePrime(PRIME_LENGTH, new Random());
 

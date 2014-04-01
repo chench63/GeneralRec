@@ -35,15 +35,26 @@ public final class PaillierUtil {
     /**
      * singleton instance
      */
-    private static PaillierUtil singleton = PaillierUtil.newInstance();
+    private static PaillierUtil singleton = new PaillierUtil(256, 64);
 
     /**
      * 获取工具实例
      * 
      * @return
      */
-    public static PaillierUtil newInstance() {
-        return new PaillierUtil();
+    public static void newInstance() {
+        singleton = new PaillierUtil(256, 64);
+    }
+
+    /**
+     * 获取工具实例
+     * 
+     * @param bitLengthVal number of bits of modulus
+     * @param certainty The probability that the new BigInteger represents a prime number will exceed (1 - 2^(-certainty)). The execution time of this constructor is proportional to the value of this parameter.
+     * @return
+     */
+    public static void newInstance(int bitLengthVal, int certainty) {
+        singleton = new PaillierUtil(bitLengthVal, certainty);
     }
 
     /**
@@ -51,14 +62,14 @@ public final class PaillierUtil {
      * @param bitLengthVal number of bits of modulus
      * @param certainty The probability that the new BigInteger represents a prime number will exceed (1 - 2^(-certainty)). The execution time of this constructor is proportional to the value of this parameter.
      */
-    public PaillierUtil(int bitLengthVal, int certainty) {
+    protected PaillierUtil(int bitLengthVal, int certainty) {
         KeyGeneration(bitLengthVal, certainty);
     }
 
     /**
      * Constructs an instance of the Paillier cryptosystem with 512 bits of modulus and at least 1-2^(-64) certainty of primes generation.
      */
-    public PaillierUtil() {
+    protected PaillierUtil() {
         KeyGeneration(256, 64);
     }
 

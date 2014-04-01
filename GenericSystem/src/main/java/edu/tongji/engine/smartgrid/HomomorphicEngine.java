@@ -50,7 +50,7 @@ public class HomomorphicEngine extends SmartGridEngine {
         LoggerUtil.debug(logger, "共计算：" + SmartGridDataSource.meterContexts.size() + " 耗时："
                                  + String.format("%2d", stopWatch.getLastTaskTimeMillis()));
         if (logger.isDebugEnabled()) {
-            runtimes[0] += stopWatch.getLastTaskTimeMillis();
+            SmartGridEngine.STAT.addValue(stopWatch.getLastTaskTimeMillis());
         }
 
     }

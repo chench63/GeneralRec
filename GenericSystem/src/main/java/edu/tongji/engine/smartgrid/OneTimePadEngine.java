@@ -8,7 +8,7 @@ import java.math.BigInteger;
 import org.springframework.util.StopWatch;
 import edu.tongji.encryption.EncryptionContext;
 import edu.tongji.orm.SmartGridDataSource;
-import edu.tongji.util.LoggerUtil;
+//import edu.tongji.util.LoggerUtil;
 import edu.tongji.util.OneTimePadUtil;
 import edu.tongji.vo.MeterReadingVO;
 
@@ -34,9 +34,9 @@ public class OneTimePadEngine extends SmartGridEngine {
         //1.模拟记录读数
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-
-        OneTimePadUtil.newPrime(keyLens);
+        OneTimePadUtil.newPrime(primeLens, keyLens);
         BigInteger cipherMonthly = BigInteger.ZERO;
+
         for (MeterReadingVO reading : SmartGridDataSource.meterContexts) {
             //模拟meter加密
             BigInteger plainMeter = new BigInteger(String.format("%.0f", reading.getReading()));
@@ -53,12 +53,12 @@ public class OneTimePadEngine extends SmartGridEngine {
         stopWatch.stop();
 
         //3.输出日志
-        LoggerUtil.debug(logger, "共计算：" + SmartGridDataSource.meterContexts.size() + " 耗时："
-                                 + String.format("%2d", stopWatch.getLastTaskTimeMillis())
-                                 + " Prime：" + OneTimePadUtil.BIG_PRIME);
+        //        LoggerUtil.debug(logger,
+        //            "KL：" + keyLens + " Total：" + SmartGridDataSource.meterContexts.size() + " Tick："
+        //                    + String.format("%2d", stopWatch.getLastTaskTimeMillis()));
+        //                                 + " Prime：" + OneTimePadUtil.BIG_PRIME);
         if (logger.isDebugEnabled()) {
-            runtimes[0] += stopWatch.getLastTaskTimeMillis();
-            runtimes[1] += Math.pow(stopWatch.getLastTaskTimeMillis(), 2);
+            SmartGridEngine.STAT.addValue(stopWatch.getLastTaskTimeMillis());
         }
     }
 
