@@ -6,7 +6,10 @@ package edu.tongji.engine.smartgrid;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.log4j.Logger;
+
 import edu.tongji.engine.Engine;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.orm.SmartGridDataSource;
@@ -21,20 +24,20 @@ import edu.tongji.vo.MeterReadingVO;
 public abstract class SmartGridEngine implements Engine {
 
     /** 数据源*/
-    protected SmartGridDataSource dataSource;
+    protected SmartGridDataSource             dataSource;
 
     /** 保持逻辑数据集稳健*/
-    protected boolean             keepSteady       = true;
+    protected boolean                         keepSteady       = true;
 
     /** 测试需要，统计平均运行时间*/
-    public static long[]          runtimes         = { 0L, 0L };
+    public final static DescriptiveStatistics STAT             = new DescriptiveStatistics();
 
     /** 间隔读数*/
-    public final static long      READING_INTERVAL = 15 * 60 * 1000;
+    public final static long                  READING_INTERVAL = 15 * 60 * 1000;
 
     /** logger */
-    protected final static Logger logger           = Logger
-                                                       .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
+    protected final static Logger             logger           = Logger
+                                                                   .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
 
     /** 
      * @see edu.tongji.engine.Engine#excute()

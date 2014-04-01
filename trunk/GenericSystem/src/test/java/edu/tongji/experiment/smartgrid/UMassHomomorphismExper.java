@@ -8,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import edu.tongji.engine.smartgrid.HomomorphicEngine;
+import edu.tongji.engine.smartgrid.SmartGridEngine;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.util.ExceptionUtil;
 import edu.tongji.util.LoggerUtil;
@@ -40,8 +41,11 @@ public class UMassHomomorphismExper {
                 engine.excute();
             }
 
-            LoggerUtil.info(logger, "重复运行：" + TIMES + " 平均时间："
-                                    + (HomomorphicEngine.runtimes[0] * 1.0 / TIMES));
+            LoggerUtil.info(
+                logger,
+                "Repeats：" + TIMES + " Mean："
+                        + String.format("%.2f", SmartGridEngine.STAT.getMean()) + " SD："
+                        + String.format("%.2f", SmartGridEngine.STAT.getStandardDeviation()));
         } catch (Exception e) {
             ExceptionUtil.caught(e, UMassHomomorphismExper.class + " 发生错误");
         } finally {
