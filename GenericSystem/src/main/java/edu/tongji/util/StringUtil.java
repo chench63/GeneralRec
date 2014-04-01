@@ -14,6 +14,9 @@ public final class StringUtil {
     /** 空字符串 **/
     public static final String EMPTY_STRING = "";
 
+    /** 换行符 **/
+    public static final String BREAK_LINE   = "\n";
+
     /**
      * 检查字符串是否为<code>null</code>或空字符串<code>""</code>。
      * <pre>
