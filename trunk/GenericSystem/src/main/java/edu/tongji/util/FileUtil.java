@@ -42,6 +42,45 @@ public final class FileUtil {
      * @param path   文件路径
      * @return
      */
+    public static String readLinesAsStream(String path) {
+        File file = new File(path);
+
+        //读取并解析数据
+        if (!file.isFile() | !file.exists()) {
+            ExceptionUtil.caught(new FileNotFoundException("File Not Found"), "读取文件发生异常，校验文件路径: "
+                                                                              + path);
+            return null;
+        }
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(file));
+
+            StringBuilder stringBuilder = new StringBuilder();
+            String context = null;
+            while ((context = reader.readLine()) != null) {
+                stringBuilder.append(StringUtil.trim(context)).append(StringUtil.BREAK_LINE);
+            }
+
+            return stringBuilder.toString();
+        } catch (FileNotFoundException e) {
+            ExceptionUtil.caught(e, "无法找到对应的加载文件: " + path);
+        } catch (IOException e) {
+            ExceptionUtil.caught(e, "读取文件发生异常，校验文件格式");
+        } finally {
+            IOUtils.closeQuietly(reader);
+        }
+
+        //出现异常，返回null
+        return null;
+    }
+
+    /**
+     * 简单读取文件，
+     * 返回文件所有行，且去掉空格.
+     * 
+     * @param path   文件路径
+     * @return
+     */
     public static String[] readLines(String path) {
         File file = new File(path);
 
