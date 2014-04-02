@@ -13,25 +13,16 @@
 		<property name="sourceEntity">
 			<util:map key-type="edu.tongji.parser.TemplateType">
 				<entry key="UMASS_SMART_GRID_TEMPLATE"
-					value="src/main/resources/dataset/testcase/smartgrid/2012-Jul-.*.csv" />
+					value="src/test/resources/dataset/testcase/smartgrid/2012-Jul-[0-3]\d.csv" />
 			</util:map>
 		</property>
 	</bean>
 
-	<!-- Entity Manager -->
-	<bean id="defaultEngine" class="edu.tongji.engine.smartgrid.OneTimePadEngine">
+	<bean id="analysisEngine" class="edu.tongji.engine.smartgrid.AnalysisPerformanceEngine">
 		<property name="dataSource" ref="datasource" />
 		<property name="primeLens" value="32" />
-		<property name="keyLens" value="256" />
+		<property name="keyLens" value="0" />
+		<property name="testName" value="UCEAD" />
 	</bean>
-
-
-	<bean id="analysisEngine" class="edu.tongji.engine.smartgrid.AnalysisOneTimePadEngine">
-		<property name="dataSource" ref="datasource" />
-		<property name="primeLens" value="12" />
-		<property name="keyLens" value="32" />
-	</bean>
-
-
 
 </beans>
