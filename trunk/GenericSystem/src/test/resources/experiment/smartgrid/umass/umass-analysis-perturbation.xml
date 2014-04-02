@@ -13,13 +13,13 @@
 		<property name="sourceEntity">
 			<util:map key-type="edu.tongji.parser.TemplateType">
 				<entry key="UMASS_SMART_GRID_TEMPLATE"
-					value="src/main/resources/dataset/testcase/smartgrid/2012-Jul-[0-2]\d.csv" />
+					value="src/test/resources/dataset/testcase/smartgrid/2012-Jul-[0-2]\d.csv" />
 			</util:map>
 		</property>
 	</bean>
 
 	<!-- Entity Manager -->
-	<bean id="engine" class="edu.tongji.engine.smartgrid.AnalysisMultipleGaussEngine">
+	<bean id="engine" class="edu.tongji.engine.smartgrid.AnalysisPerturbationEngine">
 		<property name="dataSource" ref="datasource" />
 		<property name="absolutePath" value="C:\\Users\\chench\\Desktop\\DataSet\\test" />
 		<property name="velocityContextHelper" ref="velocityContextHelper" />
@@ -44,7 +44,7 @@
 
 	<bean id="assembleTemplate" class="edu.tongji.extend.gnuplot.AssembleTemplate">
 		<property name="mainTemplate"
-			value="src/main/resources/assemble/smartgrid/histrogram.vm" />
+			value="src/test/resources/assemble/smartgrid/histrogram.vm" />
 	</bean>
 
 

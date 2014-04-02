@@ -6,7 +6,7 @@ package edu.tongji.experiment.smartgrid;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import edu.tongji.engine.smartgrid.AnalysisMultipleGaussEngine;
+import edu.tongji.engine.smartgrid.AnalysisPerturbationEngine;
 import edu.tongji.util.ExceptionUtil;
 
 /**
@@ -15,7 +15,7 @@ import edu.tongji.util.ExceptionUtil;
  * @author chench
  * @version $Id: UMassAnalysisExper.java, v 0.1 2014-2-15 下午2:28:35 chench Exp $
  */
-public final class UMassAnalysisExper {
+public final class UMassAnalysisPerturbationExper {
 
     /**
      * 引导函数
@@ -25,11 +25,11 @@ public final class UMassAnalysisExper {
         ClassPathXmlApplicationContext ctx = null;
         try {
             ctx = new ClassPathXmlApplicationContext(
-                "experiment/smartgrid/umass/umass-analysis.xml");
-            AnalysisMultipleGaussEngine engine = (AnalysisMultipleGaussEngine) ctx.getBean("engine");
+                "experiment/smartgrid/umass/umass-analysis-perturbation.xml");
+            AnalysisPerturbationEngine engine = (AnalysisPerturbationEngine) ctx.getBean("engine");
             engine.excute();
         } catch (Exception e) {
-            ExceptionUtil.caught(e, UMassAnalysisExper.class + " 发生错误");
+            ExceptionUtil.caught(e, UMassAnalysisPerturbationExper.class + " 发生错误");
         } finally {
             if (ctx != null) {
                 ctx.close();

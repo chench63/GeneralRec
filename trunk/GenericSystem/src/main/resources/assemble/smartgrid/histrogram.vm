@@ -1,7 +1,0 @@
-
-
-#foreach( $row in $m.getMatrics())
-	#foreach( $column in $row )
-		$!column
-	#end
-#end
