@@ -11,6 +11,8 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.log4j.Logger;
 
 import edu.tongji.engine.Engine;
+import edu.tongji.engine.smartgrid.support.DataSetAssembler;
+import edu.tongji.engine.smartgrid.support.QuarterSeqDataSetAssembler;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.orm.SmartGridDataSource;
 import edu.tongji.vo.MeterReadingVO;
@@ -25,6 +27,9 @@ public abstract class SmartGridEngine implements Engine {
 
     /** 数据源*/
     protected SmartGridDataSource             dataSource;
+
+    /** 数据汇总合并器, 默认按刻钟计算*/
+    protected DataSetAssembler                assembler        = new QuarterSeqDataSetAssembler();
 
     /** 保持逻辑数据集稳健*/
     protected boolean                         keepSteady       = true;
@@ -77,22 +82,7 @@ public abstract class SmartGridEngine implements Engine {
         context.addAll(SmartGridDataSource.meterContexts);
         SmartGridDataSource.meterContexts.clear();
 
-        //处理数据集，默认15分钟为一组
-        MeterReadingVO meterReading = null;
-        for (MeterReadingVO meter : context) {
-            if (meterReading == null) {
-                //初始化
-                meterReading = meter;
-                continue;
-            } else if (meter.getTimeVal() > meterReading.getTimeVal() + READING_INTERVAL) {
-                //新的电表计时周期
-                SmartGridDataSource.meterContexts.add(meterReading);
-                meterReading = meter;
-                continue;
-            }
-            //在同一计时周期，累计读数
-            meterReading.setReading(meterReading.getReading() + meter.getReading());
-        }
+        assembler.assemble(context, SmartGridDataSource.meterContexts);
     }
 
     /**
@@ -118,6 +108,24 @@ public abstract class SmartGridEngine implements Engine {
      */
     public void setDataSource(SmartGridDataSource dataSource) {
         this.dataSource = dataSource;
+    }
+
+    /**
+     * Getter method for property <tt>assembler</tt>.
+     * 
+     * @return property value of assembler
+     */
+    public DataSetAssembler getAssembler() {
+        return assembler;
+    }
+
+    /**
+     * Setter method for property <tt>assembler</tt>.
+     * 
+     * @param assembler value to be assigned to property assembler
+     */
+    public void setAssembler(DataSetAssembler assembler) {
+        this.assembler = assembler;
     }
 
 }

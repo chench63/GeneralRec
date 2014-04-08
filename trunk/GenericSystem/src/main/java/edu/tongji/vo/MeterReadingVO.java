@@ -14,7 +14,7 @@ import edu.tongji.extend.statistics.Statisticable;
  * @author chench
  * @version $Id: MeterReading.java, v 0.1 2013-12-17 下午3:54:54 chench Exp $
  */
-public class MeterReadingVO implements Statisticable {
+public class MeterReadingVO implements Statisticable, Comparable<MeterReadingVO> {
 
     /** 电表读数*/
     private double    reading;
@@ -99,6 +99,16 @@ public class MeterReadingVO implements Statisticable {
     @Override
     public Number getValue() {
         return this.reading;
+    }
+
+    /** 
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
+     */
+    @Override
+    public int compareTo(MeterReadingVO o) {
+        if (this.getTimeVal() == o.getTimeVal())
+            return 0;
+        return (this.getTimeVal() - o.getTimeVal() > 0) ? 1 : -1;
     }
 
 }

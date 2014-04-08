@@ -27,7 +27,10 @@ public enum FunctionErrorCode implements ErrorCode {
     ZERO_OCCURS("零错误", "FUNC02002"),
 
     /** 空列表 */
-    EMPTY_LIST("List为空，Item-based情况下，该Item从未被评价过", "FUNC02003");
+    EMPTY_LIST("List为空，Item-based情况下，该Item从未被评价过", "FUNC02003"),
+
+    /** 函数未定义 */
+    NOT_DEFINITION("函数未定义", "FUNC03001");
 
     /** 异常描述 */
     private final String description;

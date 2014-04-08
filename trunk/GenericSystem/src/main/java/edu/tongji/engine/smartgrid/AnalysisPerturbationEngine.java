@@ -5,17 +5,14 @@
 package edu.tongji.engine.smartgrid;
 
 import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.sql.Date;
 
 import org.apache.velocity.VelocityContext;
 
 import edu.tongji.crack.CrackObject;
 import edu.tongji.crack.PrivacyCracker;
 import edu.tongji.extend.gnuplot.AssembleTemplate;
+import edu.tongji.extend.gnuplot.FigureFormatter;
 import edu.tongji.extend.gnuplot.support.GenericMessage;
 import edu.tongji.extend.gnuplot.support.VelocityContextHelper;
 import edu.tongji.extend.noise.Noise;
@@ -23,11 +20,12 @@ import edu.tongji.orm.SmartGridDataSource;
 import edu.tongji.util.DateUtil;
 import edu.tongji.util.FileUtil;
 import edu.tongji.util.LoggerUtil;
+import edu.tongji.util.StringUtil;
 import edu.tongji.util.VelocityUtil;
 import edu.tongji.vo.MeterReadingVO;
 
 /**
- * 针对智能电网的分析引擎
+ * 针对 扰动型隐私保护算法的分析引擎
  * 
  * @author chench
  * @version $Id: AnalysisEngine.java, v 0.1 2014-2-14 下午12:42:00 chench Exp $
@@ -35,13 +33,13 @@ import edu.tongji.vo.MeterReadingVO;
 public class AnalysisPerturbationEngine extends SmartGridEngine {
 
     /** 高斯噪声产生范围*/
-    private Noise[]               noises;
-
-    /** 主部和高斯噪声对应的比重系数*/
-    private double[]              weightDomain = { 1.0 };
+    private Noise                 noise;
 
     /** 数据文件存储绝对地址 */
     private String                absolutePath;
+
+    /** 格式器*/
+    private FigureFormatter       formatter;
 
     /** 隐私破解器*/
     private PrivacyCracker        cracker;
@@ -53,54 +51,6 @@ public class AnalysisPerturbationEngine extends SmartGridEngine {
     private VelocityContextHelper velocityContextHelper;
 
     /** 
-     * @see edu.tongji.engine.smartgrid.SmartGridEngine#assembleDataSet()
-     */
-    @Override
-    protected void assembleDataSet() {
-        //物理数据集为老数据集，
-        //逻辑数据集保持稳健
-        if (!dataSource.isFresh() && keepSteady) {
-            return;
-        }
-
-        //交替上下文
-        List<MeterReadingVO> context = new ArrayList<MeterReadingVO>();
-        context.addAll(SmartGridDataSource.meterContexts);
-        SmartGridDataSource.meterContexts.clear();
-
-        //对上下文进行排序
-        Collections.sort(context, new Comparator<MeterReadingVO>() {
-            @Override
-            public int compare(MeterReadingVO o1, MeterReadingVO o2) {
-                return ((Long) (o1.getTimeVal() - o2.getTimeVal())).intValue();
-            }
-        });
-
-        //处理数据集
-        MeterReadingVO meterReading = null;
-        for (MeterReadingVO meter : context) {
-
-            if (meterReading == null) {
-                //初始化
-                meterReading = meter;
-                continue;
-            } else if (!DateUtil.sameDayAndHour(meterReading.getTimeVal(), meter.getTimeVal())) {
-                LoggerUtil.debug(logger, "O：" + meterReading.getReading() + "   Date："
-                                         + new Timestamp(meterReading.getTimeVal()));
-
-                //新的电表计时周期
-                SmartGridDataSource.meterContexts.add(meterReading);
-                meterReading = meter;
-
-                continue;
-            }
-            //在同一计时周期，累计读数
-            meterReading.setReading(meterReading.getReading() + meter.getReading());
-
-        }
-    }
-
-    /** 
      * @see edu.tongji.engine.smartgrid.SmartGridEngine#emulate()
      */
     @Override
@@ -110,18 +60,25 @@ public class AnalysisPerturbationEngine extends SmartGridEngine {
         int rowSize = SmartGridDataSource.meterContexts.size();
         for (int index = 0; index < rowSize; index++) {
             MeterReadingVO reading = SmartGridDataSource.meterContexts.get(index);
-            double reads = reading.getReading() * weightDomain[0];
-            for (int i = 0; i < noises.length; i++) {
-                reads += weightDomain[i + 1] * noises[i].random();
-            }
-            LoggerUtil.debug(logger, "O：" + reading.getReading() + " R：" + reads);
+            double reads = noise.perturb(reading.getReading());
+            LoggerUtil.debug(
+                logger,
+                (new StringBuilder())
+                    .append("Tick：")
+                    .append(
+                        DateUtil.format(new Date(reading.getTimeVal()), DateUtil.LONG_FORMAT)
+                            .substring(4, 12)).append("\tO：")
+                    .append(StringUtil.alignLeft(String.format("%.2f", reading.getReading()), 8))
+                    .append(" R：").append(StringUtil.alignLeft(String.format("%.2f", reads), 8)));
 
             SmartGridDataSource.meterContexts.add(new MeterReadingVO(reads, null, reading
                 .getTimeVal()));
         }
 
-        //2.Crack Privacy Scheme
-        cracker.crack(new CrackObject(SmartGridDataSource.meterContexts), rowSize);
+        //2.破解还原数据
+        if (cracker != null) {
+            cracker.crack(new CrackObject(SmartGridDataSource.meterContexts), rowSize);
+        }
 
         //3.Velocity 渲染测试数据文件
         String content = rendContent(rowSize, SmartGridDataSource.meterContexts.size() / rowSize);
@@ -138,14 +95,7 @@ public class AnalysisPerturbationEngine extends SmartGridEngine {
      */
     protected String rendContent(int rowSize, int columnSize) {
         //格式化数据
-        String[][] matrics = new String[rowSize][columnSize];
-        int capcity = SmartGridDataSource.meterContexts.size();
-        for (int i = 0; i < capcity; i++) {
-            int row = i % rowSize;
-            int column = i / rowSize;
-            matrics[row][column] = String.format("%.2f", SmartGridDataSource.meterContexts.get(i)
-                .getReading());
-        }
+        String[][] matrics = formatter.formatToArrs(SmartGridDataSource.meterContexts, rowSize);
 
         try {
             //1. 填充VelocityContext，准备基础数据
@@ -161,42 +111,6 @@ public class AnalysisPerturbationEngine extends SmartGridEngine {
         }
 
         return null;
-    }
-
-    /**
-     * Getter method for property <tt>noises</tt>.
-     * 
-     * @return property value of noises
-     */
-    public Noise[] getNoises() {
-        return noises;
-    }
-
-    /**
-     * Setter method for property <tt>noises</tt>.
-     * 
-     * @param noises value to be assigned to property noises
-     */
-    public void setNoises(Noise[] noises) {
-        this.noises = noises;
-    }
-
-    /**
-     * Getter method for property <tt>weightDomain</tt>.
-     * 
-     * @return property value of weightDomain
-     */
-    public double[] getWeightDomain() {
-        return weightDomain;
-    }
-
-    /**
-     * Setter method for property <tt>weightDomain</tt>.
-     * 
-     * @param weightDomain value to be assigned to property weightDomain
-     */
-    public void setWeightDomain(double[] weightDomain) {
-        this.weightDomain = weightDomain;
     }
 
     /**
@@ -271,6 +185,42 @@ public class AnalysisPerturbationEngine extends SmartGridEngine {
      */
     public void setVelocityContextHelper(VelocityContextHelper velocityContextHelper) {
         this.velocityContextHelper = velocityContextHelper;
+    }
+
+    /**
+     * Getter method for property <tt>formatter</tt>.
+     * 
+     * @return property value of formatter
+     */
+    public FigureFormatter getFormatter() {
+        return formatter;
+    }
+
+    /**
+     * Setter method for property <tt>formatter</tt>.
+     * 
+     * @param formatter value to be assigned to property formatter
+     */
+    public void setFormatter(FigureFormatter formatter) {
+        this.formatter = formatter;
+    }
+
+    /**
+     * Getter method for property <tt>noise</tt>.
+     * 
+     * @return property value of noise
+     */
+    public Noise getNoise() {
+        return noise;
+    }
+
+    /**
+     * Setter method for property <tt>noise</tt>.
+     * 
+     * @param noise value to be assigned to property noise
+     */
+    public void setNoise(Noise noise) {
+        this.noise = noise;
     }
 
 }

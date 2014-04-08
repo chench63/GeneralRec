@@ -6,6 +6,7 @@ package edu.tongji.util;
 
 import edu.tongji.model.Rating;
 import edu.tongji.model.ValueOfItems;
+import edu.tongji.vo.MeterReadingVO;
 
 /**
  * Map中自定义索引键工具类
@@ -15,6 +16,9 @@ import edu.tongji.model.ValueOfItems;
  */
 public final class HashKeyUtil {
 
+    /** key分隔符号*/
+    public final static char ELEMENT_SEPERATOR = '_';
+
     /**
      * 生成Hash值
      * 
@@ -23,7 +27,7 @@ public final class HashKeyUtil {
      */
     public static String genKey(Rating rating) {
         StringBuilder stringBuilder = new StringBuilder(rating.getUsrId());
-        return stringBuilder.append("_").append(rating.getMovieId()).toString();
+        return stringBuilder.append(ELEMENT_SEPERATOR).append(rating.getMovieId()).toString();
     }
 
     /**
@@ -34,7 +38,37 @@ public final class HashKeyUtil {
      */
     public static String genKey(ValueOfItems valueOfItem) {
         StringBuilder stringBuilder = new StringBuilder(valueOfItem.getItemI());
-        return stringBuilder.append("_").append(valueOfItem.getItemJ()).toString();
+        return stringBuilder.append(ELEMENT_SEPERATOR).append(valueOfItem.getItemJ()).toString();
+    }
+
+    /**
+     * Map中Key值算法，[Day]_[Hour] <br/>
+     * e.g: 02011017 -> 32_10
+     * 
+     * @param meterReading
+     * @return
+     */
+    public static String genKeySeqHour(MeterReadingVO meterReading) {
+        return (new StringBuilder()).append(DateUtil.getDayOfYear(meterReading.getTimeVal()))
+            .append(HashKeyUtil.ELEMENT_SEPERATOR)
+            .append(DateUtil.getHourOfDay(meterReading.getTimeVal()))
+            .append(HashKeyUtil.ELEMENT_SEPERATOR)
+            .append(DateUtil.getMinOfHour(meterReading.getTimeVal()) / 15).toString();
+    }
+
+    /**
+     * Map中Key值算法，[Day]_[Hour]_[Quarter] <br/>
+     * e.g: 02011017 -> 32_10_1
+     * 
+     * @param meterReading
+     * @return
+     */
+    public static String genKeySeqQuarter(MeterReadingVO meterReading) {
+        return (new StringBuilder()).append(DateUtil.getDayOfYear(meterReading.getTimeVal()))
+            .append(HashKeyUtil.ELEMENT_SEPERATOR)
+            .append(DateUtil.getHourOfDay(meterReading.getTimeVal()))
+            .append(HashKeyUtil.ELEMENT_SEPERATOR)
+            .append(DateUtil.getMinOfHour(meterReading.getTimeVal()) / 15).toString();
     }
 
     /**
