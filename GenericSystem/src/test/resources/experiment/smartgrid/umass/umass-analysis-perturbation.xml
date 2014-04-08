@@ -12,8 +12,8 @@
 	<bean id="datasource" class="edu.tongji.orm.SmartGridDataSource">
 		<property name="sourceEntity">
 			<util:map key-type="edu.tongji.parser.TemplateType">
-				<entry key="UMASS_SMART_GRID_TEMPLATE"
-					value="src/test/resources/dataset/testcase/smartgrid/2012-Jul-[0-2]\d.csv" />
+				<entry key="UMASS_SMART_GRID_2_TEMPLATE"
+					value="src/test/resources/dataset/testcase/smartgrid/homeB/2012-Jun-[1-3]?\d.csv" />
 			</util:map>
 		</property>
 	</bean>
@@ -21,30 +21,21 @@
 	<!-- Entity Manager -->
 	<bean id="engine" class="edu.tongji.engine.smartgrid.AnalysisPerturbationEngine">
 		<property name="dataSource" ref="datasource" />
+		<!-- hourSeqDataSetAssembler | quarterSeqDataSetAssembler -->
+		<property name="assembler" ref="quarterSeqDataSetAssembler" />
 		<property name="absolutePath" value="C:\\Users\\chench\\Desktop\\DataSet\\test" />
 		<property name="velocityContextHelper" ref="velocityContextHelper" />
+		<!-- emSeqHourFormatter | meanSeqHourFormatter | meanSeqQuarterFormatter -->
+		<property name="formatter" ref="meanSeqQuarterFormatter" />
 		<property name="assembleTemplate" ref="assembleTemplate" />
-		<property name="cracker" ref="linearExpectationCracker" />
-		<!-- 主部数据和噪声权值 -->
-		<property name="weightDomain">
-			<list>
-				<value>0.5</value>
-				<value>0.1</value>
-				<value>0.4</value>
-			</list>
-		</property>
-		<!-- 高斯噪声阈值 -->
-		<property name="noises">
-			<list>
-				<ref bean="normalDistri"></ref>
-				<ref bean="normalDistri"></ref>
-			</list>
-		</property>
+		<!-- <property name="cracker" ref="linearExpectationCracker" /> -->
+		<!-- uniformNoise | normalDistri | gaussMixtureNoise -->
+		<property name="noise" ref="normalDistri" />
 	</bean>
 
 	<bean id="assembleTemplate" class="edu.tongji.extend.gnuplot.AssembleTemplate">
 		<property name="mainTemplate"
-			value="src/test/resources/assemble/smartgrid/histrogram.vm" />
+			value="src/test/resources/assemble/smartgrid/QuarterSeq.vm" />
 	</bean>
 
 
@@ -79,12 +70,50 @@
 	<bean id="rmse" class="edu.tongji.extend.statistics.RMSEStatistician" />
 
 	<!-- Noise Entity -->
-	<bean id="normalDistri" class="edu.tongji.extend.noise.NormalDistributionNoise"
+	<bean id="normalDistri" class="edu.tongji.extend.noise.NormalNoise"
 		scope="prototype">
-		<constructor-arg index="0" type="double" value="50.0" />
+		<constructor-arg index="0" type="double" value="0.0" />
+		<constructor-arg index="1" type="double" value="100.0" />
+	</bean>
+	<bean id="uniformNoise" class="edu.tongji.extend.noise.UniformNoise"
+		scope="prototype">
+		<constructor-arg index="0" type="double" value="-30.0" />
 		<constructor-arg index="1" type="double" value="30.0" />
-		<constructor-arg index="2" type="double" value="0.0" />
+	</bean>
+	<bean id="gaussMixtureNoise" class="edu.tongji.extend.noise.GaussMixtureNoise"
+		scope="prototype">
+		<!-- 混合高斯分布隐变量参数 -->
+		<property name="weight">
+			<list>
+				<value>0.1</value>
+				<value>0.2</value>
+				<value>0.7</value>
+			</list>
+		</property>
+		<!-- 混合高斯分布隐变量参数 -->
+		<property name="normalNoise">
+			<list>
+				<ref bean="normalDistri"></ref>
+				<ref bean="normalDistri"></ref>
+				<ref bean="normalDistri"></ref>
+			</list>
+		</property>
 	</bean>
 
+
+
+	<!-- Formatter -->
+	<bean id="meanSeqHourFormatter" class="edu.tongji.extend.gnuplot.MeanSeqHourFormatter" />
+	<bean id="meanSeqQuarterFormatter" class="edu.tongji.extend.gnuplot.MeanSeqQuarterFormatter" />
+	<bean id="emSeqHourFormatter" class="edu.tongji.extend.gnuplot.EmSeqHourFormatter">
+		<property name="noise" ref="gaussMixtureNoise" />
+		<property name="maxIterations" value="30" />
+	</bean>
+
+	<!-- Assembler -->
+	<bean id="quarterSeqDataSetAssembler"
+		class="edu.tongji.engine.smartgrid.support.QuarterSeqDataSetAssembler" />
+	<bean id="hourSeqDataSetAssembler"
+		class="edu.tongji.engine.smartgrid.support.HourSeqDataSetAssembler" />
 
 </beans>

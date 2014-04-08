@@ -20,6 +20,14 @@ public interface Noise {
     public double random();
 
     /**
+     * 返回扰动结果
+     * 
+     * @param input
+     * @return
+     */
+    public double perturb(double input);
+
+    /**
      * 噪声名称
      * 
      * @return

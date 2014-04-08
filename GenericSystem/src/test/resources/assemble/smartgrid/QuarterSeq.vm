@@ -1,8 +1,14 @@
 ##Automatically Generate
+Seq	O	R
 
 #set($sequence = 1)
 #foreach( $row in $m.getMatrics())
-	#set($line="$stringUtil.alignLeft($sequence.toString(), 8)")
+	#if($sequence%4 == 0)
+		#set($timeSeq= $sequence/4 +":"+45)
+	#else
+		#set($timeSeq= $sequence/4 +":"+($sequence%4 - 1)*15)
+	#end
+	#set($line="$stringUtil.alignLeft($timeSeq.toString(), 8)")
 	#foreach( $column in $row )
 		#set($line="$!line$stringUtil.alignLeft($!column, 12)")
 	#end

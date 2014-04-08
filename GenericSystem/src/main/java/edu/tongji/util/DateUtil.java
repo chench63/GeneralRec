@@ -60,6 +60,19 @@ public final class DateUtil {
     }
 
     /**
+     * 返回分钟数：<br/>
+     * E.g., at 10:04:15.250 PM the MINUTE is 4.
+     * 
+     * @param l1
+     * @return
+     */
+    public static int getMinOfHour(long l1) {
+        Calendar cal1 = Calendar.getInstance();
+        cal1.setTimeInMillis(l1);
+        return cal1.get(Calendar.MINUTE);
+    }
+
+    /**
      * 24小时制小时
      * 
      * @param l1

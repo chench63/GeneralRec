@@ -14,6 +14,12 @@ import java.util.List;
  */
 public interface FigureFormatter {
 
+    /** 总小时数*/
+    public final static int HOUR_RANGE    = 24;
+
+    /** 总时刻数*/
+    public final static int QUARTER_RANGE = 4;
+
     /**
      * 判断是否需要行号
      * 
@@ -28,6 +34,15 @@ public interface FigureFormatter {
      * @return
      */
     @SuppressWarnings("rawtypes")
-    public List<String> format(List context, int blockSize);
+    public List<String> format(List context, int rowSize);
+
+    /**
+     * 格式化数据，符合图像格式
+     * 
+     * @param context
+     * @return
+     */
+    @SuppressWarnings("rawtypes")
+    public String[][] formatToArrs(List context, int rowSize);
 
 }
