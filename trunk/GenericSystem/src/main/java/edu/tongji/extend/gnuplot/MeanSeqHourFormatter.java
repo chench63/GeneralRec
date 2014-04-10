@@ -47,6 +47,7 @@ public class MeanSeqHourFormatter implements FigureFormatter {
 
         //智能电表处理逻辑
         if (context.get(0) instanceof MeterReadingVO) {
+
             //1. 使用Map汇总数据
             Map<String, DescriptiveStatistics> repo = new HashMap<String, DescriptiveStatistics>();
             for (int i = 0, j = context.size(); i < j; i++) {

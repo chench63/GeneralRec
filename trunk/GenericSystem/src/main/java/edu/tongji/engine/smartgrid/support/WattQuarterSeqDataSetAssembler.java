@@ -10,17 +10,18 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+
 import edu.tongji.util.DateUtil;
 import edu.tongji.util.HashKeyUtil;
 import edu.tongji.vo.MeterReadingVO;
 
 /**
- * 按刻汇总合并数据
  * 
  * @author chench
- * @version $Id: QuarterSeqDataSetAssembler.java, v 0.1 5 Apr 2014 12:30:50 chench Exp $
+ * @version $Id: WattQuarterSeqDataSetAssembler.java, v 0.1 8 Apr 2014 21:25:56 chench Exp $
  */
-public class QuarterSeqDataSetAssembler implements DataSetAssembler {
+public class WattQuarterSeqDataSetAssembler implements DataSetAssembler {
 
     /** 
      * @see edu.tongji.engine.smartgrid.support.DataSetAssembler#assemble(java.util.List, java.util.List)
@@ -30,27 +31,35 @@ public class QuarterSeqDataSetAssembler implements DataSetAssembler {
 
         //处理数据集，默认15分钟为一组汇总数据
         Map<String, MeterReadingVO> repo = new HashMap<String, MeterReadingVO>();
+        Map<String, DescriptiveStatistics> meanRepo = new HashMap<String, DescriptiveStatistics>();
         MeterReadingVO meterReading = null;
+        DescriptiveStatistics stat = null;
         for (MeterReadingVO meter : source) {
             String key = HashKeyUtil.genKeySeqQuarter(meter);
             meterReading = repo.get(key);
+            stat = meanRepo.get(key);
 
             //Key对映值为null，插入值
-            if (meterReading == null) {
+            if (meterReading == null && stat == null) {
                 meter.setTimeVal(meter.getTimeVal() - 1000 * 60
                                  * (DateUtil.getMinOfHour(meter.getTimeVal()) % 15));
+                stat = new DescriptiveStatistics();
                 repo.put(key, meter);
-                continue;
+                meanRepo.put(key, stat);
             }
 
-            //更新读数
-            //按引用传递，无需重复插入到Map
-            double newReadingValue = meterReading.getReading() + meter.getReading();
-            meterReading.setReading(newReadingValue);
+            //累计功率
+            stat.addValue(meter.getReading());
         }
 
         //复制结果至上下文
+        for (String key : repo.keySet()) {
+            meterReading = repo.get(key);
+            stat = meanRepo.get(key);
+            meterReading.setReading(stat.getMean());
+        }
         Collections.synchronizedList(target).addAll(repo.values());
+
         //对上下文进行排序
         Collections.sort(target, new Comparator<MeterReadingVO>() {
             @Override

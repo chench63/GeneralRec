@@ -60,9 +60,13 @@ public final class EMUtil {
             iterations++;
             logLikelihoodOld = logLikelihoodNew;
             logLikelihoodNew = logLikelihood(normalNoises, weight, samples);
-            LoggerUtil.info(logger, (new StringBuilder()).append(String.format("%3d", iterations))
-                .append("：").append("LogLikelihood：")
-                .append(String.format("%4f", logLikelihoodNew)).toString());
+            LoggerUtil.info(
+                logger,
+                (new StringBuilder()).append(String.format("%3d", iterations)).append("：")
+                    .append("LogLikelihood：").append(String.format("%4f", logLikelihoodNew))
+                    .append(" Mean：")
+                    .append(String.format("%4f", normalNoises[normalNoises.length - 1].getMean()))
+                    .toString());
 
             //停机条件：likelihood稳定 或者 超过最大迭代次数
         } while (Math.abs((logLikelihoodNew - logLikelihoodOld) / logLikelihoodOld) > logLikelihoodThreshold
@@ -88,7 +92,7 @@ public final class EMUtil {
             double sum = 0.0d;
 
             for (int j = 0; j < numComponents; j++) {
-                double p_XZ = weights[j] * densityOfGaussian(samples[i], components[j]);
+                double p_XZ = weights[j] * components[j].density(samples[i]);
 
                 possbltyOfHiddenVar[i][j] = p_XZ;
                 sum += p_XZ;
@@ -120,39 +124,20 @@ public final class EMUtil {
 
         //计算mu
         for (int i = 0; i < numSamples; i++) {
-            for (int j = 0; j < numComponents; j++) {
-
-                mu += possbltyOfHiddenVar[i][j] * samples[i];
-                sum += possbltyOfHiddenVar[i][j];
-            }
+            mu += possbltyOfHiddenVar[i][numComponents - 1] * samples[i];
+            sum += possbltyOfHiddenVar[i][numComponents - 1];
         }
         mu /= sum;
 
         //计算sigma
         for (int i = 0; i < numSamples; i++) {
-            for (int j = 0; j < numComponents; j++) {
-                sigma += possbltyOfHiddenVar[i][j] * Math.pow(samples[i] - mu, 2);
-            }
+            sigma += possbltyOfHiddenVar[i][numComponents - 1] * Math.pow(samples[i] - mu, 2);
         }
         sigma /= sum;
 
         //更新估计量
         NormalNoise estimation = components[numComponents - 1];
         estimation.update(mu, Math.sqrt(sigma));
-    }
-
-    /**
-     * 返回单点概率，即概率密度，Pr[ X_i, Z_i ] <br/>
-     * X_i : 样本点，Z_i : GMM中一个Component变量（隐变量Z）
-     * 
-     * @param sample        样本
-     * @param component     正态分布
-     * @return              返回单点概率
-     */
-    private static double densityOfGaussian(double sample, NormalNoise component) {
-        return Math.exp(Math.pow((sample - component.getMean()), 2)
-                        / (-2.0d * component.getDeviation()))
-               / (Math.sqrt(2.0d * Math.PI) * component.getStandardDeviation());
     }
 
     /**
@@ -171,7 +156,7 @@ public final class EMUtil {
 
             double densityOfSample = 0.0;
             for (int j = 0; j < numComponents; j++) {
-                densityOfSample += weights[j] * densityOfGaussian(samples[i], components[j]);
+                densityOfSample += weights[j] * components[j].density(samples[i]);
             }
 
             logLikelyHood += Math.log(densityOfSample);
