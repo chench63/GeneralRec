@@ -32,10 +32,10 @@ public class EmSeqHourFormatter implements FigureFormatter {
     protected final static int ORIGIN_POSITION = 0;
 
     /** 高斯混合噪声*/
-    private Noise              noise;
+    protected Noise            noise;
 
     /** 最大迭代代数*/
-    private int                maxIterations;
+    protected int              maxIterations;
 
     /** 
      * @see edu.tongji.extend.gnuplot.FigureFormatter#needRowNum()
@@ -78,10 +78,10 @@ public class EmSeqHourFormatter implements FigureFormatter {
                 DescriptiveStatistics stat = repoOri.get(key);
                 if (stat == null) {
                     stat = new DescriptiveStatistics();
+                    repoOri.put(key, stat);
                 }
                 stat.addValue(reading.getReading());
 
-                repoOri.put(key, stat);
             }
 
             //  2) 汇总高斯混合模型数据
@@ -94,10 +94,10 @@ public class EmSeqHourFormatter implements FigureFormatter {
                 List<Double> samples = repoGMM.get(key);
                 if (samples == null) {
                     samples = new ArrayList<Double>();
+                    repoGMM.put(key, samples);
                 }
                 samples.add(reading.getReading());
 
-                repoGMM.put(key, samples);
             }
 
             //2. 按规则输出至二维数组

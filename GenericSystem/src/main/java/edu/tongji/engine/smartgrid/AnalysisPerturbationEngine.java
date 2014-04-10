@@ -7,6 +7,7 @@ package edu.tongji.engine.smartgrid;
 import java.io.IOException;
 import java.sql.Date;
 
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.velocity.VelocityContext;
 
 import edu.tongji.crack.CrackObject;
@@ -55,6 +56,15 @@ public class AnalysisPerturbationEngine extends SmartGridEngine {
      */
     @Override
     protected void emulate() {
+
+        //0.计算均值与方差
+        DescriptiveStatistics statInner = new DescriptiveStatistics();
+        for (MeterReadingVO smartMeter : SmartGridDataSource.meterContexts) {
+            statInner.addValue(smartMeter.getReading());
+        }
+        LoggerUtil
+            .debug(logger, "Meter Reading Mean：" + String.format("%.3f", statInner.getMean())
+                           + " SD：" + String.format("%.3f", statInner.getStandardDeviation()));
 
         //1.在原始数据后，添加隐私保护的数据
         int rowSize = SmartGridDataSource.meterContexts.size();

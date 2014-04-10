@@ -13,7 +13,7 @@
 		<property name="sourceEntity">
 			<util:map key-type="edu.tongji.parser.TemplateType">
 				<entry key="UMASS_SMART_GRID_2_TEMPLATE"
-					value="src/test/resources/dataset/testcase/smartgrid/homeB/2012-Jun-[1-3]?\d.csv" />
+					value="src/test/resources/dataset/testcase/smartgrid/homeB/2012-May-[1-3]?\d.csv" />
 			</util:map>
 		</property>
 	</bean>
@@ -21,16 +21,17 @@
 	<!-- Entity Manager -->
 	<bean id="engine" class="edu.tongji.engine.smartgrid.AnalysisPerturbationEngine">
 		<property name="dataSource" ref="datasource" />
-		<!-- hourSeqDataSetAssembler | quarterSeqDataSetAssembler -->
-		<property name="assembler" ref="quarterSeqDataSetAssembler" />
+		<!-- hourSeqDataSetAssembler | quarterSeqDataSetAssembler | wattQuarterSeqDataSetAssembler -->
+		<property name="assembler" ref="wattQuarterSeqDataSetAssembler" />
 		<property name="absolutePath" value="C:\\Users\\chench\\Desktop\\DataSet\\test" />
 		<property name="velocityContextHelper" ref="velocityContextHelper" />
-		<!-- emSeqHourFormatter | meanSeqHourFormatter | meanSeqQuarterFormatter -->
-		<property name="formatter" ref="meanSeqQuarterFormatter" />
+		<!-- emSeqHourFormatter | emSeqQuarterFormatter | meanSeqHourFormatter 
+			| meanSeqQuarterFormatter -->
+		<property name="formatter" ref="emSeqQuarterFormatter" />
 		<property name="assembleTemplate" ref="assembleTemplate" />
 		<!-- <property name="cracker" ref="linearExpectationCracker" /> -->
 		<!-- uniformNoise | normalDistri | gaussMixtureNoise -->
-		<property name="noise" ref="normalDistri" />
+		<property name="noise" ref="gaussMixtureNoise" />
 	</bean>
 
 	<bean id="assembleTemplate" class="edu.tongji.extend.gnuplot.AssembleTemplate">
@@ -73,12 +74,12 @@
 	<bean id="normalDistri" class="edu.tongji.extend.noise.NormalNoise"
 		scope="prototype">
 		<constructor-arg index="0" type="double" value="0.0" />
-		<constructor-arg index="1" type="double" value="100.0" />
+		<constructor-arg index="1" type="double" value="103.643" />
 	</bean>
 	<bean id="uniformNoise" class="edu.tongji.extend.noise.UniformNoise"
 		scope="prototype">
-		<constructor-arg index="0" type="double" value="-30.0" />
-		<constructor-arg index="1" type="double" value="30.0" />
+		<constructor-arg index="0" type="double" value="-179.515" />
+		<constructor-arg index="1" type="double" value="179.515" />
 	</bean>
 	<bean id="gaussMixtureNoise" class="edu.tongji.extend.noise.GaussMixtureNoise"
 		scope="prototype">
@@ -86,18 +87,33 @@
 		<property name="weight">
 			<list>
 				<value>0.1</value>
-				<value>0.2</value>
-				<value>0.7</value>
+				<value>0.1</value>
+				<value>0.8</value>
 			</list>
 		</property>
 		<!-- 混合高斯分布隐变量参数 -->
 		<property name="normalNoise">
 			<list>
-				<ref bean="normalDistri"></ref>
-				<ref bean="normalDistri"></ref>
-				<ref bean="normalDistri"></ref>
+				<ref bean="normalGMM1"></ref>
+				<ref bean="normalGMM2"></ref>
+				<ref bean="normalEsti"></ref>
 			</list>
 		</property>
+	</bean>
+	<bean id="normalGMM1" class="edu.tongji.extend.noise.NormalNoise"
+		scope="prototype">
+		<constructor-arg index="0" type="double" value="-3647.426173273514" />
+		<constructor-arg index="1" type="double" value="60.40" />
+	</bean>
+	<bean id="normalGMM2" class="edu.tongji.extend.noise.NormalNoise"
+		scope="prototype">
+		<constructor-arg index="0" type="double" value="4727.426173273514" />
+		<constructor-arg index="1" type="double" value="68.756" />
+	</bean>
+	<bean id="normalEsti" class="edu.tongji.extend.noise.NormalNoise"
+		scope="prototype">
+		<constructor-arg index="0" type="double" value="410.0" />
+		<constructor-arg index="1" type="double" value="205.891" />
 	</bean>
 
 
@@ -109,11 +125,17 @@
 		<property name="noise" ref="gaussMixtureNoise" />
 		<property name="maxIterations" value="30" />
 	</bean>
+	<bean id="emSeqQuarterFormatter" class="edu.tongji.extend.gnuplot.EmSeqQuarterFormatter">
+		<property name="noise" ref="gaussMixtureNoise" />
+		<property name="maxIterations" value="30" />
+	</bean>
 
 	<!-- Assembler -->
 	<bean id="quarterSeqDataSetAssembler"
 		class="edu.tongji.engine.smartgrid.support.QuarterSeqDataSetAssembler" />
 	<bean id="hourSeqDataSetAssembler"
 		class="edu.tongji.engine.smartgrid.support.HourSeqDataSetAssembler" />
+	<bean id="wattQuarterSeqDataSetAssembler"
+		class="edu.tongji.engine.smartgrid.support.WattQuarterSeqDataSetAssembler" />
 
 </beans>

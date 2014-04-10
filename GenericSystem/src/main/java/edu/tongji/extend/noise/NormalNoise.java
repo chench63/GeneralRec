@@ -14,7 +14,7 @@ import org.apache.commons.math3.distribution.NormalDistribution;
 public class NormalNoise implements Noise {
 
     /** 正态分布实体*/
-    protected NormalDistribution stat;
+    protected NormalDistribution normal;
 
     /**
      * 构造函数
@@ -31,7 +31,7 @@ public class NormalNoise implements Noise {
      * @param domain                值域
      */
     public NormalNoise(double mean, double standardDeviation) {
-        this.stat = new NormalDistribution(mean, standardDeviation);
+        this.normal = new NormalDistribution(mean, standardDeviation);
     }
 
     /** 
@@ -39,7 +39,7 @@ public class NormalNoise implements Noise {
      */
     @Override
     public double random() {
-        return stat.sample();
+        return normal.sample();
     }
 
     /** 
@@ -47,7 +47,7 @@ public class NormalNoise implements Noise {
      */
     @Override
     public double perturb(double input) {
-        return stat.sample() + input;
+        return normal.sample() + input;
     }
 
     /** 
@@ -66,7 +66,17 @@ public class NormalNoise implements Noise {
      * @param domain                值域
      */
     public void update(double mean, double standardDeviation) {
-        this.stat = new NormalDistribution(mean, standardDeviation);
+        this.normal = new NormalDistribution(mean, standardDeviation);
+    }
+
+    /**
+     * 返回概率密度值
+     * 
+     * @param x
+     * @return
+     */
+    public double density(double x) {
+        return this.normal.density(x);
     }
 
     /**
@@ -75,7 +85,7 @@ public class NormalNoise implements Noise {
      * @return property value of mean
      */
     public double getMean() {
-        return stat.getMean();
+        return normal.getMean();
     }
 
     /**
@@ -84,7 +94,7 @@ public class NormalNoise implements Noise {
      * @return property value of deviation
      */
     public double getStandardDeviation() {
-        return stat.getStandardDeviation();
+        return normal.getStandardDeviation();
     }
 
     /**
@@ -93,7 +103,7 @@ public class NormalNoise implements Noise {
      * @return property value of deviation
      */
     public double getDeviation() {
-        return Math.pow(stat.getStandardDeviation(), 2.0d);
+        return Math.pow(normal.getStandardDeviation(), 2.0d);
     }
 
 }
