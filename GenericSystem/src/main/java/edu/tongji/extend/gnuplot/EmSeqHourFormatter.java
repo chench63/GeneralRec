@@ -26,7 +26,7 @@ import edu.tongji.vo.MeterReadingVO;
  * @author chench
  * @version $Id: EmSeqHourFormatter.java, v 0.1 4 Apr 2014 10:51:46 chench Exp $
  */
-public class EmSeqHourFormatter implements FigureFormatter {
+public class EmSeqHourFormatter extends AbstractSeqTimeFormatter {
 
     /** 原始电表数据列号*/
     protected final static int ORIGIN_POSITION = 0;
@@ -140,7 +140,13 @@ public class EmSeqHourFormatter implements FigureFormatter {
 
                 if (column == ORIGIN_POSITION) {
                     DescriptiveStatistics stat = repo.get(key);
-                    matrics[row][column] = String.format("%.2f", stat.getMean());
+
+                    //判断输出为均值还是标准差
+                    if (mean) {
+                        matrics[row][column] = String.format("%.2f", stat.getMean());
+                    } else {
+                        matrics[row][column] = String.format("%.2f", stat.getStandardDeviation());
+                    }
                 } else {
                     List<Double> samples = repoGMM.get(key);
                     double[] samp = new double[samples.size()];
@@ -148,7 +154,15 @@ public class EmSeqHourFormatter implements FigureFormatter {
                         samp[i] = samples.get(i);
                     }
 
-                    matrics[row][column] = String.format("%.2f", EMUtil.estimate(noise, samp, 100));
+                    //判断输出为均值还是标准差
+                    if (mean) {
+                        matrics[row][column] = String.format("%.2f",
+                            EMUtil.estimate(noise, samp, 100)[0]);
+                    } else {
+                        matrics[row][column] = String.format("%.2f",
+                            EMUtil.estimate(noise, samp, 100)[1]);
+                    }
+
                 }
             }
         }

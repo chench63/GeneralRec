@@ -14,12 +14,6 @@ import java.util.List;
  */
 public interface FigureFormatter {
 
-    /** 总小时数*/
-    public final static int HOUR_RANGE    = 24;
-
-    /** 总时刻数*/
-    public final static int QUARTER_RANGE = 4;
-
     /**
      * 判断是否需要行号
      * 

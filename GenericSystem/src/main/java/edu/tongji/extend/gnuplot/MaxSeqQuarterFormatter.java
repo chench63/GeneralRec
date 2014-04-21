@@ -9,30 +9,15 @@ import java.util.Map;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
-import edu.tongji.util.DateUtil;
 import edu.tongji.util.HashKeyUtil;
-import edu.tongji.vo.MeterReadingVO;
 
 /**
- * 均值格式器，按刻分
+ * 按15分钟分，取最大值
  * 
  * @author chench
- * @version $Id: MeanSeqQuarterFormatter.java, v 0.1 5 Apr 2014 15:17:59 chench Exp $
+ * @version $Id: MaxSeqQuarterFormatter.java, v 0.1 15 Apr 2014 12:42:05 chench Exp $
  */
-public class MeanSeqQuarterFormatter extends MeanSeqHourFormatter {
-
-    /** 
-     * Map生成Key方法 KEY = [HOUR]_[Quarter]_[COLUMN_SEQ]
-     * 
-     * @see edu.tongji.extend.gnuplot.MeanSeqHourFormatter#generateKey(edu.tongji.vo.MeterReadingVO, int, int)
-     */
-    @Override
-    protected String generateKey(MeterReadingVO reading, int index, int rowSize) {
-        return (new StringBuilder()).append(DateUtil.getHourOfDay(reading.getTimeVal()))
-            .append(HashKeyUtil.ELEMENT_SEPERATOR)
-            .append(DateUtil.getMinOfHour(reading.getTimeVal()) / 15)
-            .append(HashKeyUtil.ELEMENT_SEPERATOR).append(index / rowSize).toString();
-    }
+public class MaxSeqQuarterFormatter extends MeanSeqQuarterFormatter {
 
     /** 
      * @see edu.tongji.extend.gnuplot.MeanSeqHourFormatter#doFormation(java.util.List, int, java.util.Map)
@@ -51,17 +36,12 @@ public class MeanSeqQuarterFormatter extends MeanSeqHourFormatter {
                         .append(HashKeyUtil.ELEMENT_SEPERATOR).append(column).toString();
                     DescriptiveStatistics stat = repo.get(key);
 
-                    //判断输出为均值还是标准差
-                    if (mean) {
-                        matrics[row * QUARTER_RANGE + quarter][column] = String.format("%.2f",
-                            stat.getMean());
-                    } else {
-                        matrics[row * QUARTER_RANGE + quarter][column] = String.format("%.2f",
-                            stat.getStandardDeviation());
-                    }
+                    matrics[row * QUARTER_RANGE + quarter][column] = String.format("%.2f",
+                        stat.getMax());
                 }
             }
         }
         return matrics;
     }
+
 }

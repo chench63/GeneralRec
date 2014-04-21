@@ -52,8 +52,15 @@ public class EmSeqQuarterFormatter extends EmSeqHourFormatter {
 
                     if (column == ORIGIN_POSITION) {
                         DescriptiveStatistics stat = repo.get(key);
-                        matrics[row * QUARTER_RANGE + quarter][column] = String.format("%.2f",
-                            stat.getMean());
+
+                        //判断输出为均值还是标准差
+                        if (mean) {
+                            matrics[row * QUARTER_RANGE + quarter][column] = String.format("%.2f",
+                                stat.getMean());
+                        } else {
+                            matrics[row * QUARTER_RANGE + quarter][column] = String.format("%.2f",
+                                stat.getStandardDeviation());
+                        }
                     } else {
                         List<Double> samples = repoGMM.get(key);
                         double[] samp = new double[samples.size()];
@@ -61,8 +68,14 @@ public class EmSeqQuarterFormatter extends EmSeqHourFormatter {
                             samp[i] = samples.get(i);
                         }
 
-                        matrics[row * QUARTER_RANGE + quarter][column] = String.format("%.2f",
-                            EMUtil.estimate(noise, samp, 100));
+                        //判断输出为均值还是标准差
+                        if (mean) {
+                            matrics[row * QUARTER_RANGE + quarter][column] = String.format("%.2f",
+                                EMUtil.estimate(noise, samp, 100)[0]);
+                        } else {
+                            matrics[row * QUARTER_RANGE + quarter][column] = String.format("%.2f",
+                                EMUtil.estimate(noise, samp, 100)[1]);
+                        }
                     }
                 }
             }
