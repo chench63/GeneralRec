@@ -4,6 +4,7 @@
  */
 package edu.tongji.util;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -60,6 +61,19 @@ public final class DateUtil {
     }
 
     /**
+     * Returns the value of the given calendar field.
+     * 
+     * @param l1    timeVal
+     * @param type  calendar-specific value
+     * @return
+     */
+    public static int get(long l1, int type) {
+        Calendar cal1 = Calendar.getInstance();
+        cal1.setTimeInMillis(l1);
+        return cal1.get(type);
+    }
+
+    /**
      * 返回分钟数：<br/>
      * E.g., at 10:04:15.250 PM the MINUTE is 4.
      * 
@@ -94,6 +108,39 @@ public final class DateUtil {
         Calendar cal1 = Calendar.getInstance();
         cal1.setTimeInMillis(l1);
         return cal1.get(Calendar.DAY_OF_YEAR);
+    }
+
+    /**
+     * 这一天是周几
+     * 
+     * @param l1
+     * @return
+     */
+    public static int getDayOfWeek(long l1) {
+        Calendar cal1 = Calendar.getInstance();
+        cal1.setTimeInMillis(l1);
+        return cal1.get(Calendar.DAY_OF_WEEK);
+    }
+
+    /**
+     * 日期字符串解析成日期对象基础方法，可以在此封装出多种便捷的方法直接使用
+     * 
+     * @param dateStr 日期字符串
+     * @param format 输入的格式
+     * @return 日期对象
+     * @throws ParseException 
+     */
+    public static Date parse(String dateStr, String format) throws ParseException {
+        if (StringUtil.isBlank(format)) {
+            throw new ParseException("format can not be null.", 0);
+        }
+
+        if (StringUtil.isBlank(dateStr)) {
+            throw new ParseException("date string's length is too small.", 0);
+        }
+
+        //调用API解析日期
+        return new SimpleDateFormat(format, Locale.SIMPLIFIED_CHINESE).parse(dateStr);
     }
 
     /**

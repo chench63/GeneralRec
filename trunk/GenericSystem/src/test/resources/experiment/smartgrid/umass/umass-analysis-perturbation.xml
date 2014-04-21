@@ -12,8 +12,9 @@
 	<bean id="datasource" class="edu.tongji.orm.SmartGridDataSource">
 		<property name="sourceEntity">
 			<util:map key-type="edu.tongji.parser.TemplateType">
-				<entry key="UMASS_SMART_GRID_2_TEMPLATE"
-					value="src/test/resources/dataset/testcase/smartgrid/homeB/2012-May-[1-3]?\d.csv" />
+				<!-- refrigerator | main | air_conditioning -->
+				<entry key="REDD_SMART_GRID_TEMPLATE"
+					value="src/test/resources/dataset/testcase/smartgrid/redd/main/H3_.*" />
 			</util:map>
 		</property>
 	</bean>
@@ -26,15 +27,17 @@
 		<property name="absolutePath" value="C:\\Users\\chench\\Desktop\\DataSet\\test" />
 		<property name="velocityContextHelper" ref="velocityContextHelper" />
 		<!-- emSeqHourFormatter | emSeqQuarterFormatter | meanSeqHourFormatter 
-			| meanSeqQuarterFormatter -->
-		<property name="formatter" ref="emSeqQuarterFormatter" />
+			| meanSeqQuarterFormatter | maxSeqQuarterFormatter -->
+		<!-- deviationSeqQuarterFormatter | deviationEmSeqQuarterFormatter -->
+		<property name="formatter" ref="meanSeqQuarterFormatter" />
 		<property name="assembleTemplate" ref="assembleTemplate" />
-		<!-- <property name="cracker" ref="linearExpectationCracker" /> -->
+		<!-- expectationSeqDayCracker | standardExpectationCracker -->
+		<property name="cracker" ref="expectationSeqDayCracker" />
 		<!-- uniformNoise | normalDistri | gaussMixtureNoise -->
-		<property name="noise" ref="gaussMixtureNoise" />
+		<property name="noise" ref="uniformNoise" />
 	</bean>
 
-	<bean id="assembleTemplate" class="edu.tongji.extend.gnuplot.AssembleTemplate">
+	<bean id="assembleTemplate" class="edu.tongji.extend.gnuplot.support.AssembleTemplate">
 		<property name="mainTemplate"
 			value="src/test/resources/assemble/smartgrid/QuarterSeq.vm" />
 	</bean>
@@ -54,6 +57,7 @@
 
 	<!-- Crackers -->
 	<bean id="standardExpectationCracker" class="edu.tongji.crack.StandardExpectationCracker" />
+	<bean id="expectationSeqDayCracker" class="edu.tongji.crack.ExpectationSeqDayCracker" />
 	<bean id="linearExpectationCracker" class="edu.tongji.crack.LinearExpectationCracker">
 		<property name="statisticianFactory" ref="statisticianFactory" />
 	</bean>
@@ -121,6 +125,7 @@
 	<!-- Formatter -->
 	<bean id="meanSeqHourFormatter" class="edu.tongji.extend.gnuplot.MeanSeqHourFormatter" />
 	<bean id="meanSeqQuarterFormatter" class="edu.tongji.extend.gnuplot.MeanSeqQuarterFormatter" />
+	<bean id="maxSeqQuarterFormatter" class="edu.tongji.extend.gnuplot.MaxSeqQuarterFormatter" />
 	<bean id="emSeqHourFormatter" class="edu.tongji.extend.gnuplot.EmSeqHourFormatter">
 		<property name="noise" ref="gaussMixtureNoise" />
 		<property name="maxIterations" value="30" />
@@ -130,6 +135,18 @@
 		<property name="maxIterations" value="30" />
 	</bean>
 
+
+	<bean id="deviationSeqQuarterFormatter" class="edu.tongji.extend.gnuplot.MeanSeqQuarterFormatter">
+		<property name="mean" value="false" />
+	</bean>
+	<bean id="deviationEmSeqQuarterFormatter" class="edu.tongji.extend.gnuplot.EmSeqQuarterFormatter">
+		<property name="mean" value="false" />
+		<property name="noise" ref="gaussMixtureNoise" />
+		<property name="maxIterations" value="30" />
+	</bean>
+
+
+
 	<!-- Assembler -->
 	<bean id="quarterSeqDataSetAssembler"
 		class="edu.tongji.engine.smartgrid.support.QuarterSeqDataSetAssembler" />
@@ -138,4 +155,9 @@
 	<bean id="wattQuarterSeqDataSetAssembler"
 		class="edu.tongji.engine.smartgrid.support.WattQuarterSeqDataSetAssembler" />
 
+	<!-- Cache -->
+	<bean class="edu.tongji.cache.WeatherCache">
+		<property name="source"
+			value="src/test/resources/dataset/cache/weather/Boston_2011_Jun" />
+	</bean>
 </beans>

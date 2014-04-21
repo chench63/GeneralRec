@@ -30,14 +30,14 @@ public final class EMUtil {
     }
 
     /**
-     * 估计混合模型中，估计量: mean
+     * 估计混合模型中，估计量: mean, standard deviation
      * 
      * @param noise             高斯混合模型
      * @param samples           样本空间
      * @param maxIterations     最大迭代次数
      * @return
      */
-    public static double estimate(Noise noise, double[] samples, int maxIterations) {
+    public static double[] estimate(Noise noise, double[] samples, int maxIterations) {
 
         //获取GMM的参数
         NormalNoise[] normalNoises = ((GaussMixtureNoise) noise).getNormalNoise();
@@ -60,7 +60,7 @@ public final class EMUtil {
             iterations++;
             logLikelihoodOld = logLikelihoodNew;
             logLikelihoodNew = logLikelihood(normalNoises, weight, samples);
-            LoggerUtil.info(
+            LoggerUtil.debug(
                 logger,
                 (new StringBuilder()).append(String.format("%3d", iterations)).append("：")
                     .append("LogLikelihood：").append(String.format("%4f", logLikelihoodNew))
@@ -72,7 +72,11 @@ public final class EMUtil {
         } while (Math.abs((logLikelihoodNew - logLikelihoodOld) / logLikelihoodOld) > logLikelihoodThreshold
                  & iterations < maxIterations);
 
-        return normalNoises[normalNoises.length - 1].getMean();
+        // 返回估计量
+        double[] result = new double[2];
+        result[0] = normalNoises[normalNoises.length - 1].getMean();
+        result[1] = normalNoises[normalNoises.length - 1].getStandardDeviation();
+        return result;
     }
 
     /**

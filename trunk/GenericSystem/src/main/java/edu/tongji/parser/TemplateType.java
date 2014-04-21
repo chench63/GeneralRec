@@ -23,7 +23,9 @@ public enum TemplateType implements Parser, Filter {
     /** UMASS电表读数处理模板*/
     UMASS_SMART_GRID_TEMPLATE(new UMassSmartGridTemplateParser(), new DefaultTemplateFilter()),
     /** UMASS电表读数处理模板*/
-    UMASS_SMART_GRID_2_TEMPLATE(new UMassSmartGrid2TemplateParser(), new DefaultTemplateFilter());
+    UMASS_SMART_GRID_2_TEMPLATE(new UMassSmartGrid2TemplateParser(), new DefaultTemplateFilter()),
+    /** REDD电表读数处理模板*/
+    REDD_SMART_GRID_TEMPLATE(new ReddSmartGridTemplateParser(), new DefaultTemplateFilter());
 
     /** 模板解析类 */
     private final Parser parser;

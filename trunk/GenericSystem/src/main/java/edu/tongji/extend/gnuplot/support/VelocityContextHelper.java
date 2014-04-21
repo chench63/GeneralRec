@@ -11,8 +11,6 @@ import java.util.Set;
 
 import org.apache.velocity.VelocityContext;
 
-import edu.tongji.extend.gnuplot.AssembleTemplate;
-
 /**
  * Velocity 工具类，初始化上下文和工具注入
  * 

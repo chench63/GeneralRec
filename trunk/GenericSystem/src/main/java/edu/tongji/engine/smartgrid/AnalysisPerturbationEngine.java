@@ -12,8 +12,8 @@ import org.apache.velocity.VelocityContext;
 
 import edu.tongji.crack.CrackObject;
 import edu.tongji.crack.PrivacyCracker;
-import edu.tongji.extend.gnuplot.AssembleTemplate;
 import edu.tongji.extend.gnuplot.FigureFormatter;
+import edu.tongji.extend.gnuplot.support.AssembleTemplate;
 import edu.tongji.extend.gnuplot.support.GenericMessage;
 import edu.tongji.extend.gnuplot.support.VelocityContextHelper;
 import edu.tongji.extend.noise.Noise;
@@ -68,22 +68,23 @@ public class AnalysisPerturbationEngine extends SmartGridEngine {
 
         //1.在原始数据后，添加隐私保护的数据
         int rowSize = SmartGridDataSource.meterContexts.size();
+        StringBuilder loggerMsg = new StringBuilder("Privacy Preserving Procedure：");
         for (int index = 0; index < rowSize; index++) {
             MeterReadingVO reading = SmartGridDataSource.meterContexts.get(index);
             double reads = noise.perturb(reading.getReading());
-            LoggerUtil.debug(
-                logger,
-                (new StringBuilder())
-                    .append("Tick：")
-                    .append(
-                        DateUtil.format(new Date(reading.getTimeVal()), DateUtil.LONG_FORMAT)
-                            .substring(4, 12)).append("\tO：")
-                    .append(StringUtil.alignLeft(String.format("%.2f", reading.getReading()), 8))
-                    .append(" R：").append(StringUtil.alignLeft(String.format("%.2f", reads), 8)));
-
             SmartGridDataSource.meterContexts.add(new MeterReadingVO(reads, null, reading
                 .getTimeVal()));
+
+            //日志信息
+            loggerMsg
+                .append("\nTick：")
+                .append(
+                    DateUtil.format(new Date(reading.getTimeVal()), DateUtil.LONG_FORMAT)
+                        .substring(4, 12)).append("\tO：")
+                .append(StringUtil.alignLeft(String.format("%.2f", reading.getReading()), 8))
+                .append(" R：").append(StringUtil.alignLeft(String.format("%.2f", reads), 8));
         }
+        LoggerUtil.debug(logger, loggerMsg);
 
         //2.破解还原数据
         if (cracker != null) {

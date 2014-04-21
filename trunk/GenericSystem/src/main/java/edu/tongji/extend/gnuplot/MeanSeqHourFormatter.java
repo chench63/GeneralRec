@@ -23,7 +23,7 @@ import edu.tongji.vo.MeterReadingVO;
  * @author chench
  * @version $Id: HistographFormatter.java, v 0.1 2014-2-18 下午2:05:52 chench Exp $
  */
-public class MeanSeqHourFormatter implements FigureFormatter {
+public class MeanSeqHourFormatter extends AbstractSeqTimeFormatter {
 
     /** 
      * @see edu.tongji.extend.gnuplot.FigureFormatter#format(java.util.List)
@@ -101,7 +101,13 @@ public class MeanSeqHourFormatter implements FigureFormatter {
                 String key = (new StringBuilder()).append(row)
                     .append(HashKeyUtil.ELEMENT_SEPERATOR).append(column).toString();
                 DescriptiveStatistics stat = repo.get(key);
-                matrics[row][column] = String.format("%.2f", stat.getMean());
+
+                //判断输出为均值还是标准差
+                if (mean) {
+                    matrics[row][column] = String.format("%.2f", stat.getMean());
+                } else {
+                    matrics[row][column] = String.format("%.2f", stat.getStandardDeviation());
+                }
             }
         }
         return matrics;

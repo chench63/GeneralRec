@@ -23,7 +23,7 @@ public class UMassAnalysisPerformanceExper {
         ClassPathXmlApplicationContext ctx = null;
         try {
             ctx = new ClassPathXmlApplicationContext(
-                "performance/smartgrid/umass/umass-analysis.xml");
+                "performance/smartgrid/umass/umass-analysis-performance.xml");
             SmartGridEngine engine = (SmartGridEngine) ctx.getBean("analysisEngine");
             engine.excute();
 

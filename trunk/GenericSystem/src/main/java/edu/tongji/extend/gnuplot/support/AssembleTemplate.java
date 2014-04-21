@@ -2,7 +2,7 @@
  * Alipay.com Inc.
  * Copyright (c) 2004-2014 All Rights Reserved.
  */
-package edu.tongji.extend.gnuplot;
+package edu.tongji.extend.gnuplot.support;
 
 /**
  * Gnuplot数据文件模板
