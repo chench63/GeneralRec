@@ -4,6 +4,10 @@
  */
 package edu.tongji.extend.gnuplot;
 
+import org.apache.log4j.Logger;
+
+import edu.tongji.log4j.LoggerDefineConstant;
+
 /**
  * 
  * @author chench
@@ -12,13 +16,17 @@ package edu.tongji.extend.gnuplot;
 public abstract class AbstractSeqTimeFormatter implements FigureFormatter {
 
     /** 总小时数*/
-    protected final static int HOUR_RANGE    = 24;
+    protected final static int    HOUR_RANGE    = 24;
 
     /** 总时刻数*/
-    protected final static int QUARTER_RANGE = 4;
+    protected final static int    QUARTER_RANGE = 4;
 
     /** 是否输出均值*/
-    protected boolean          mean          = true;
+    protected boolean             mean          = true;
+
+    /** logger */
+    protected final static Logger logger        = Logger
+                                                    .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
 
     /**
      * Getter method for property <tt>mean</tt>.

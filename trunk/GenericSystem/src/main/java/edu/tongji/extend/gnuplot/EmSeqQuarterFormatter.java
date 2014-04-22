@@ -35,12 +35,10 @@ public class EmSeqQuarterFormatter extends EmSeqHourFormatter {
     /** 
      * @see edu.tongji.extend.gnuplot.EmSeqHourFormatter#doFormation(java.util.List, int, java.util.Map, java.util.Map)
      */
-    @SuppressWarnings("rawtypes")
     @Override
-    protected String[][] doFormation(List context, int rowSize,
+    protected String[][] doFormation(int columnSize, int rowSize,
                                      Map<String, DescriptiveStatistics> repo,
                                      Map<String, List<Double>> repoGMM) {
-        int columnSize = context.size() / rowSize;
         String[][] matrics = new String[HOUR_RANGE * QUARTER_RANGE][columnSize];
 
         for (int row = 0; row < HOUR_RANGE; row++) {

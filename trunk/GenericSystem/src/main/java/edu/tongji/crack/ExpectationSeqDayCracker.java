@@ -55,14 +55,13 @@ public class ExpectationSeqDayCracker extends ExpectationCracker {
                 .append("\n T：")
                 .append(
                     DateUtil.format(new Date(baseElems.get(i).getTimeVal()), DateUtil.LONG_FORMAT)
-                        .substring(4, 12)).append(" W：")
+                        .substring(2, 8)).append(" W：")
                 .append(DateUtil.getDayOfWeek(baseElems.get(i).getTimeVal())).append(" M：")
                 .append(StringUtil.alignRight(mean.toString(), 18)).append(" SD：")
                 .append(StringUtil.alignRight(sd.toString(), 18)).append(" S：")
                 .append(String.format("%.2f", baseElems.get(i).getStats().getSum())).append(" (")
                 .append(String.format("%.2f", estimateElems.get(i).getStats().getSum()))
                 .append(")");
-            //                .append(" Y：").append(DateUtil.get(baseElems.get(i).getTimeVal(), Calendar.YEAR));
         }
         LoggerUtil.info(logger, logMsg);
     }
