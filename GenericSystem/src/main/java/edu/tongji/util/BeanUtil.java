@@ -60,22 +60,6 @@ public final class BeanUtil {
     }
 
     /**
-     * 转化string数字为Rating对象
-     * 
-     * @param elements
-     * @return
-     * @throws ParseException
-     */
-    public static Rating toBean(String[] elements) throws ParseException {
-        Rating rating = new Rating();
-        rating.setMovieId(Integer.valueOf(elements[0]));
-        rating.setUsrId(elements[1]);
-        rating.setRating(Integer.valueOf(elements[2]));
-        rating.setTime(parserTimestamp(elements[3]));
-        return rating;
-    }
-
-    /**
      * 转化Rating数字为RatingVO对象，日后使用反射扩展功能。
      * 
      * @param elements

@@ -9,7 +9,6 @@ import java.math.BigInteger;
 import java.sql.Timestamp;
 
 import edu.tongji.util.PaillierUtil;
-import edu.tongji.util.StringUtil;
 
 /**
  * 
@@ -25,7 +24,7 @@ public class Rating implements Serializable {
     private int               id;
 
     /** 用户id **/
-    private String            usrId;
+    private int               usrId;
 
     /** 电影id **/
     private int               movieId;
@@ -35,6 +34,25 @@ public class Rating implements Serializable {
 
     /** 评分时间 **/
     private Timestamp         time;
+
+    /**
+     * 
+     */
+    public Rating() {
+    }
+
+    /**
+     * @param usrId
+     * @param movieId
+     * @param rating
+     * @param time
+     */
+    public Rating(int usrId, int movieId, int rating, Timestamp time) {
+        this.usrId = usrId;
+        this.movieId = movieId;
+        this.rating = rating;
+        this.time = time;
+    }
 
     /**
      * 获得同态加密算法，评分的密文数据
@@ -50,7 +68,7 @@ public class Rating implements Serializable {
      * 
      * @return property value of usrId
      */
-    public String getUsrId() {
+    public int getUsrId() {
         return usrId;
     }
 
@@ -59,7 +77,7 @@ public class Rating implements Serializable {
      * 
      * @param usrId value to be assigned to property usrId
      */
-    public void setUsrId(String usrId) {
+    public void setUsrId(int usrId) {
         this.usrId = usrId;
     }
 
@@ -141,7 +159,7 @@ public class Rating implements Serializable {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Rating) {
-            return StringUtil.equalsIgnoreCase(this.usrId, ((Rating) obj).usrId);
+            return this.usrId == ((Rating) obj).usrId;
         }
 
         return super.equals(obj);
@@ -152,11 +170,8 @@ public class Rating implements Serializable {
      */
     @Override
     public int hashCode() {
-        if (StringUtil.isNotBlank(usrId)) {
-            return Integer.valueOf(this.usrId).hashCode();
-        }
+        return Integer.valueOf(this.usrId).hashCode();
 
-        return super.hashCode();
     }
 
     /** 

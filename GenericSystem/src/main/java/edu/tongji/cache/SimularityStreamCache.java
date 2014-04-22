@@ -5,17 +5,12 @@
 package edu.tongji.cache;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Observable;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-
 import org.apache.log4j.Logger;
-
 import edu.tongji.configure.ConfigurationConstant;
 import edu.tongji.configure.TestCaseConfigurationConstant;
 import edu.tongji.log4j.LoggerDefineConstant;
@@ -33,19 +28,19 @@ import edu.tongji.vo.RatingVO;
 public final class SimularityStreamCache extends Observable {
 
     /** 读写锁 */
-    private static final ReadWriteLock             lock           = new ReentrantReadWriteLock();
+    private static final ReadWriteLock      lock           = new ReentrantReadWriteLock();
 
     /** logger */
-    private final static Logger                    logger         = Logger
-                                                                      .getLogger(LoggerDefineConstant.SERVICE_CACHE);
+    private final static Logger             logger         = Logger
+                                                               .getLogger(LoggerDefineConstant.SERVICE_CACHE);
     /** 本地数据缓存*/
-    private final static Map<String, List<Rating>> ratingContext  = new HashMap<String, List<Rating>>();
+    private final static List<List<Rating>> ratingContext  = new ArrayList<List<Rating>>(17770);
 
     /** 运行时间*/
-    private final static CacheStopWatch            catchStopWatch = new CacheStopWatch();
+    private final static CacheStopWatch     catchStopWatch = new CacheStopWatch();
 
     /** 运行时间*/
-    private static long                            runtimes       = 0;
+    private static long                     runtimes       = 0;
 
     /**
      * NetflixRatingRecorder任务
@@ -56,7 +51,7 @@ public final class SimularityStreamCache extends Observable {
         CacheTask task = new CacheTask(CacheTask.I, 1, CacheTask.I);
 
         //判断任务是否结束
-        if (CacheTask.I == ConfigurationConstant.TASK_SIZE) {
+        if (CacheTask.I > ConfigurationConstant.TASK_SIZE) {
             LoggerUtil.info(logger, "CacheTask  Completes.....");
             return null;
         }
@@ -88,73 +83,21 @@ public final class SimularityStreamCache extends Observable {
     }
 
     /**
-     * 添加新的评分记录
-     * 
-     * @param rating
-     */
-    public static void put(Rating rating) {
-        //读写保护，加写锁
-        Lock writeLock = lock.writeLock();
-        writeLock.lock();
-
-        try {
-            String movieId = String.valueOf(rating.getMovieId());
-            List<Rating> ratings = ratingContext.get(movieId);
-
-            if (ratings == null) {
-                ratings = new ArrayList<Rating>();
-            }
-            Collections.synchronizedCollection(ratings).add(rating);
-            ratingContext.put(movieId, ratings);
-        } finally {
-            writeLock.unlock();
-            LoggerUtil.info(logger, "缓存加载数据完毕，加载量：1");
-        }
-    }
-
-    /**
      * 快速添加评分记录
      * 
      * @param movieId   
      * @param ratings
      */
-    public static void fastPut(String movieId, List<Rating> ratings) {
+    public static void put(int movieId, List<Rating> ratings) {
         //读写保护，加写锁
         Lock writeLock = lock.writeLock();
         writeLock.lock();
 
         try {
-            ratingContext.put(movieId, ratings);
+            ratingContext.add(ratings);
         } finally {
             writeLock.unlock();
             LoggerUtil.info(logger, (new StringBuilder("movieId ：")).append(movieId));
-        }
-    }
-
-    /**
-     * 添加新的评分记录
-     * 
-     * @param ratings
-     */
-    public static void put(List<Rating> ratings) {
-        //读写保护，加写锁
-        Lock writeLock = lock.writeLock();
-        writeLock.lock();
-
-        try {
-            for (Rating rating : ratings) {
-                String movieId = String.valueOf(rating.getMovieId());
-                List<Rating> ratingsOfContext = ratingContext.get(movieId);
-
-                if (ratingsOfContext == null) {
-                    ratingsOfContext = new ArrayList<Rating>();
-                }
-                Collections.synchronizedCollection(ratingsOfContext).add(rating);
-                ratingContext.put(movieId, ratingsOfContext);
-            }
-        } finally {
-            writeLock.unlock();
-            LoggerUtil.info(logger, "缓存加载数据完毕，加载量：" + ratings.size());
         }
     }
 
@@ -163,19 +106,14 @@ public final class SimularityStreamCache extends Observable {
      * 
      * @param ratings
      */
-    public static void putAndDisguise(List<Rating> ratings, boolean isGaussian) {
+    public static void putAndDisguise(int movieId, List<Rating> ratings, boolean isGaussian) {
         //读写保护，加写锁
         Lock writeLock = lock.writeLock();
         writeLock.lock();
 
         try {
-            for (Rating rating : ratings) {
-                String movieId = String.valueOf(rating.getMovieId());
-                List<Rating> ratingsOfContext = ratingContext.get(movieId);
-
-                if (ratingsOfContext == null) {
-                    ratingsOfContext = new ArrayList<Rating>();
-                }
+            for (int i = 0, j = ratings.size(); i < j; i++) {
+                Rating rating = ratings.get(i);
 
                 //破坏数据，加入高斯噪声0.67
                 double disguisedValue = 0.0;
@@ -188,15 +126,17 @@ public final class SimularityStreamCache extends Observable {
                                      - RandomUtil
                                          .nextDouble(TestCaseConfigurationConstant.PERTURBATION_DOMAIN);
                 }
+
+                //覆盖原数据
                 RatingVO ratingVO = BeanUtil.toBeans(rating);
                 ratingVO.put("DISGUISED_VALUE", disguisedValue);
-                Collections.synchronizedCollection(ratingsOfContext).add(ratingVO);
-                //载入缓存
-                ratingContext.put(movieId, ratingsOfContext);
+                ratings.set(i, ratingVO);
             }
+
+            ratingContext.add(ratings);
         } finally {
             writeLock.unlock();
-            LoggerUtil.info(logger, "缓存加载数据完毕，加载量：" + ratings.size());
+            LoggerUtil.info(logger, (new StringBuilder("movieId ：")).append(movieId));
         }
     }
 
@@ -206,12 +146,14 @@ public final class SimularityStreamCache extends Observable {
      * @param movieId
      * @return
      */
-    public static List<Rating> get(String movieId) {
+    public static List<Rating> get(int movieId) {
         Lock readLock = lock.readLock();
         readLock.lock();
 
         try {
-            return ratingContext.get(movieId);
+            //Movie_id [1, 17770]
+            //对应的索引  [0, 17770-1]
+            return ratingContext.get(movieId - 1);
         } finally {
             readLock.unlock();
         }

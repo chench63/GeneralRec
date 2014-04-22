@@ -6,11 +6,14 @@ package edu.tongji.cache;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.log4j.Logger;
+
 import edu.tongji.configure.ConfigurationConstant;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.util.LoggerUtil;
+import edu.tongji.util.StringUtil;
 
 /**
  * 适用于多线程环境下的，计时累加器。
@@ -58,14 +61,14 @@ public final class CacheStopWatch {
             //输出日志
             LoggerUtil.info(logger,
                 (new StringBuilder("SubTask：")).append(indexOfContext).append(" Completes over：")
-                    .append(stat.getSum()));
+                    .append(StringUtil.alignRight(String.valueOf((int) stat.getSum()), 15)));
         } else if ((indexOfContext == 0)
                    && (stat.getN() == (ConfigurationConstant.SUB_TASK_SIZE - 1))) {
             //Movie_id [2, 1777] 段日志
             //输出日志
             LoggerUtil.info(logger,
                 (new StringBuilder("SubTask：")).append(indexOfContext).append(" Completes over：")
-                    .append(stat.getSum()));
+                    .append(StringUtil.alignRight(String.valueOf((int) stat.getSum()), 15)));
         }
     }
 

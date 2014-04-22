@@ -77,7 +77,7 @@ public final class ProcessorContextHelper {
                                                                List<Number> ratingsValusOfItemJ,
                                                                boolean isCountSingles) {
         //优化代码效率，使搜索复杂度为O(1)，但是提高了内存使用率
-        Map<String, Integer> usrIdOfItemJ = new HashMap<String, Integer>();
+        Map<Integer, Integer> usrIdOfItemJ = new HashMap<Integer, Integer>();
         for (int i = 0; i < ratingsOfItemJ.size(); i++) {
             usrIdOfItemJ.put(ratingsOfItemJ.get(i).getUsrId(), i);
         }
@@ -129,7 +129,7 @@ public final class ProcessorContextHelper {
                                             List<Number> ratingsValusOfItemI,
                                             List<Number> ratingsValusOfItemJ, boolean isCountSingles) {
         //优化代码效率，使搜索复杂度为O(1)，但是提高了内存使用率
-        Map<String, Integer> usrIdOfItemJ = new HashMap<String, Integer>();
+        Map<Integer, Integer> usrIdOfItemJ = new HashMap<Integer, Integer>();
         for (int i = 0; i < ratingsOfItemJ.size(); i++) {
             usrIdOfItemJ.put(ratingsOfItemJ.get(i).getUsrId(), i);
         }

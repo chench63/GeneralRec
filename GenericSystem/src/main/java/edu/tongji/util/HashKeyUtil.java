@@ -26,8 +26,8 @@ public final class HashKeyUtil {
      * @return
      */
     public static String genKey(Rating rating) {
-        StringBuilder stringBuilder = new StringBuilder(rating.getUsrId());
-        return stringBuilder.append(ELEMENT_SEPERATOR).append(rating.getMovieId()).toString();
+        return (new StringBuilder()).append(rating.getUsrId()).append(ELEMENT_SEPERATOR)
+            .append(rating.getMovieId()).toString();
     }
 
     /**

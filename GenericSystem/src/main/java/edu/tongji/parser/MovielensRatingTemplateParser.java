@@ -35,7 +35,7 @@ public class MovielensRatingTemplateParser implements Parser {
 
         Rating rating = new Rating();
         String[] elements = context.split(SAPERATOR_EXPRESSION);
-        rating.setUsrId(elements[0]);
+        rating.setUsrId(Integer.valueOf(elements[0]));
         rating.setMovieId(Integer.valueOf(elements[1]));
         rating.setRating(Integer.valueOf(elements[2]));
         rating.setTime(new Timestamp(Long.valueOf(elements[3]) * SEC_TO_MILSEC));

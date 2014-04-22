@@ -54,8 +54,8 @@ public class NetflixSimularityPerformancePaillierRecorder implements Runnable {
             //=============================
             StopWatch stopWatch = new StopWatch();
             for (int j = jStart; j < jEnd; j++) {
-                List<Rating> ratingOfI = SimularityStreamCache.get(String.valueOf(i));
-                List<Rating> ratingOfJ = SimularityStreamCache.get(String.valueOf(j));
+                List<Rating> ratingOfI = SimularityStreamCache.get(i);
+                List<Rating> ratingOfJ = SimularityStreamCache.get(j);
                 List<Number> valuesOfI = new ArrayList<Number>();
                 List<Number> valuesOfJ = new ArrayList<Number>();
                 ProcessorContextHelper.forgeSymmetryRatingValues(ratingOfI, ratingOfJ, valuesOfI,
