@@ -53,27 +53,18 @@ public final class SimularityStreamCache extends Observable {
      * @return
      */
     public static synchronized CacheTask task() {
-        int I = CacheTask.I;
-        int J = CacheTask.J;
-        int endJ = (J + ConfigurationConstant.SINGLE_TASK_SIZE < I) ? (J + ConfigurationConstant.SINGLE_TASK_SIZE)
-            : I;
-        CacheTask task = new CacheTask(I, J, endJ);
+        CacheTask task = new CacheTask(CacheTask.I, 1, CacheTask.I);
 
         //判断任务是否结束
-        if (I == ConfigurationConstant.TASK_SIZE) {
-            LoggerUtil.debug(logger, "SimularityStreamCache  任务结束.");
+        if (CacheTask.I == ConfigurationConstant.TASK_SIZE) {
+            LoggerUtil.info(logger, "CacheTask  Completes.....");
             return null;
         }
 
         //更新任务
-        if (I == endJ) {
-            CacheTask.I++;
-            CacheTask.J = 1;
-        } else {
-            CacheTask.J = endJ;
-        }
+        CacheTask.I++;
 
-        LoggerUtil.debug(logger, "释放任务: " + task);
+        LoggerUtil.info(logger, "Release Task: " + task);
         return task;
     }
 
@@ -94,7 +85,6 @@ public final class SimularityStreamCache extends Observable {
      */
     public static synchronized void update(CacheHolder cacheHolder) {
         catchStopWatch.put(cacheHolder);
-        catchStopWatch.check();
     }
 
     /**
@@ -119,6 +109,25 @@ public final class SimularityStreamCache extends Observable {
         } finally {
             writeLock.unlock();
             LoggerUtil.info(logger, "缓存加载数据完毕，加载量：1");
+        }
+    }
+
+    /**
+     * 快速添加评分记录
+     * 
+     * @param movieId   
+     * @param ratings
+     */
+    public static void fastPut(String movieId, List<Rating> ratings) {
+        //读写保护，加写锁
+        Lock writeLock = lock.writeLock();
+        writeLock.lock();
+
+        try {
+            ratingContext.put(movieId, ratings);
+        } finally {
+            writeLock.unlock();
+            LoggerUtil.info(logger, (new StringBuilder("movieId ：")).append(movieId));
         }
     }
 

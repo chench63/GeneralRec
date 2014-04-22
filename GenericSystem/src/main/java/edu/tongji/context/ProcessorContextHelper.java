@@ -146,7 +146,6 @@ public final class ProcessorContextHelper {
             if (indexOfRatingsJ != null && indexOfRatingsJ > -1) {
                 ratingsValusOfItemI.add((Integer) rating.getRating());
                 ratingsValusOfItemJ.add(ratingsOfItemJ.get(indexOfRatingsJ).getRating());
-                ratingsOfItemJ.remove(indexOfRatingsJ);
             } else if (isCountSingles) {
                 ratingsValusOfItemI.add(rating.getRating());
                 ratingsValusOfItemJ.add(0);

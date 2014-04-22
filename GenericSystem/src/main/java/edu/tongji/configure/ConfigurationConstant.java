@@ -27,7 +27,7 @@ public final class ConfigurationConstant {
     public static int    TASK_SIZE        = 885;
 
     /**  子任务容量 $CacheStopWatch : 使用分组，必须保证，分组数 >= 2*/
-    public static int    SUB_TASK_SIZE    = 177;
+    public static int    SUB_TASK_SIZE    = 1777;
 
     /**  主任务参数i, 分配任务式使用 $CacheTask*/
     public static int    I                = 2;
