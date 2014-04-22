@@ -15,10 +15,16 @@ import java.util.Map;
 public final class CacheHolder {
 
     /** 属性集合*/
-    private final Map<String, Object> properties = new HashMap<String, Object>();
+    private final Map<String, Object> properties = new HashMap<String, Object>(4);
 
     /** 固有属性 */
     public final static String        KEY        = "KEY";
+
+    /** 计算用时*/
+    public final static String        ELAPSE     = "ELAPS";
+
+    /** MOVIE_ID*/
+    public final static String        MOVIE_ID   = "MOVIE_ID";
 
     /**
      * 添加属性

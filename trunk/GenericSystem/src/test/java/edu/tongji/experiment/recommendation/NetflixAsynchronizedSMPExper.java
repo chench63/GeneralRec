@@ -27,7 +27,7 @@ public final class NetflixAsynchronizedSMPExper {
         try {
             ctx = new ClassPathXmlApplicationContext(
                 "experiment/recommendation/netflix/asynchronized-secure-mulitiparty.xml");
-            Engine engine = (Engine) ctx.getBean("engineForGeneratingRecommendations");
+            Engine engine = (Engine) ctx.getBean("engineForGeneratingSimilarity");
             engine.excute();
         } catch (Exception e) {
             ExceptionUtil.caught(e, NetflixAsynchronizedSMPExper.class + "发生致命错误");

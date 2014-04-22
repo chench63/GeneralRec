@@ -5,15 +5,10 @@
 package edu.tongji.cache;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.log4j.Logger;
-
 import edu.tongji.configure.ConfigurationConstant;
-import edu.tongji.function.FunctionHelper;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.util.LoggerUtil;
 
@@ -26,71 +21,52 @@ import edu.tongji.util.LoggerUtil;
 public final class CacheStopWatch {
 
     /** 运行时间存储上下文：按子任务划分*/
-    private final Map<Integer, List<Long>> stopWatchContext   = new HashMap<Integer, List<Long>>();
-
-    /** 当前任务编号*/
-    private Integer                        indexOfCurrentTask = 0;
+    private final List<DescriptiveStatistics> stopWatchContext = new ArrayList<DescriptiveStatistics>(
+                                                                   10);
 
     /** logger */
-    private final static Logger            logger             = Logger
-                                                                  .getLogger(LoggerDefineConstant.SERVICE_CACHE);
+    private final static Logger               logger           = Logger
+                                                                   .getLogger(LoggerDefineConstant.SERVICE_CORE);
 
     /**
      * 添加已经完成的运行时间
      * 
-     * @param cacheHolder
+     * @param cacheHolder   通用信息载体
      */
     public void put(CacheHolder cacheHolder) {
-        Long elaps = (long) cacheHolder.get("ELAPS");
-        Integer indexOfContext = (Integer) cacheHolder.get("MOVIE_ID")
-                                 / ConfigurationConstant.SUB_TASK_SIZE;
+        long elapse = (long) cacheHolder.get(CacheHolder.ELAPSE);
+        int movieId = ((Integer) cacheHolder.get(CacheHolder.MOVIE_ID)).intValue();
+        //movie_id [2, TASK_SIZE]
+        int indexOfContext = (movieId - 1) / ConfigurationConstant.SUB_TASK_SIZE;
 
-        List<Long> elapses = stopWatchContext.get(indexOfContext);
-        if (elapses == null) {
-            elapses = new ArrayList<Long>();
-        }
-        Collections.synchronizedCollection(elapses).add(elaps);
-        stopWatchContext.put(indexOfContext, elapses);
-    }
-
-    /**
-     * 递归检查，是否已经完成所有的输出。
-     */
-    public void check() {
-        if (indexOfCurrentTask > (ConfigurationConstant.TASK_SIZE / ConfigurationConstant.SUB_TASK_SIZE)) {
-            //分组索引号 > 最大分组号，说明已完成所有输出。
-            return;
+        //1. 获取上下文,并记数据
+        DescriptiveStatistics stat = null;
+        try {
+            stat = stopWatchContext.get(indexOfContext);
+        } catch (IndexOutOfBoundsException e) {
+            stat = new DescriptiveStatistics();
+            stopWatchContext.add(stat);
+        } finally {
+            stat.addValue(elapse);
         }
 
-        List<Long> elapses = stopWatchContext.get(indexOfCurrentTask);
-        if (elapses == null) {
-            return;
-        } else if (indexOfCurrentTask == (ConfigurationConstant.TASK_SIZE / ConfigurationConstant.SUB_TASK_SIZE)
-                   && elapses.size() != (ConfigurationConstant.TASK_SIZE
-                                         % ConfigurationConstant.SUB_TASK_SIZE)) {
-            //最后一个分组任务时，
-            //满足：分组个数为   ConfigurationConstant.TASK_SIZE % ConfigurationConstant.SUB_TASK_SIZE 数据时，标志子任务结束
-            return;
-        } else if (indexOfCurrentTask == 0
-                   && elapses.size() != ConfigurationConstant.SUB_TASK_SIZE - 2) {
-            //第一个分组任务是，
-            //应该任务从2开始分配，少了0,1两个参数
-            //满足：分组个数为 ConfigurationConstant.SUB_TASK_SIZE - 2，标志子任务结束
-            return;
-        } else if (indexOfCurrentTask != 0
-                   && indexOfCurrentTask != (ConfigurationConstant.TASK_SIZE / ConfigurationConstant.SUB_TASK_SIZE)
-                   && elapses.size() != ConfigurationConstant.SUB_TASK_SIZE) {
-            //介于头尾分组之间的分组，
-            //满足：分子格式为 ConfigurationConstant.SUB_TASK_SIZE，标志子任务结束
-            return;
-        }
+        //2. 控制日志
+        if (stat.getN() == ConfigurationConstant.SUB_TASK_SIZE) {
+            //Movie_id [1777 + 1, 17770] 段日志
+            stat.addValue(stopWatchContext.get(indexOfContext - 1).getSum());
 
-        Long total = FunctionHelper.sumValue(elapses).longValue();
-        LoggerUtil.info(logger, "Task: " + indexOfCurrentTask.intValue() + " Finished. Consume: "
-                                + total);
-        //递归继续坚持
-        indexOfCurrentTask++;
-        check();
+            //输出日志
+            LoggerUtil.info(logger,
+                (new StringBuilder("SubTask：")).append(indexOfContext).append(" Completes over：")
+                    .append(stat.getSum()));
+        } else if ((indexOfContext == 0)
+                   && (stat.getN() == (ConfigurationConstant.SUB_TASK_SIZE - 1))) {
+            //Movie_id [2, 1777] 段日志
+            //输出日志
+            LoggerUtil.info(logger,
+                (new StringBuilder("SubTask：")).append(indexOfContext).append(" Completes over：")
+                    .append(stat.getSum()));
+        }
     }
 
 }

@@ -46,8 +46,8 @@ public class CacheTask {
      */
     @Override
     public String toString() {
-        return (new StringBuilder("DataStreamTask: ")).append("i: ").append(this.i)
-            .append(" jStart: ").append(this.jStart).append(" jEnd: ").append(this.jEnd).toString();
+        return (new StringBuilder("CacheTask: ")).append("i: ").append(this.i).append(" jStart: ")
+            .append(this.jStart).append(" jEnd: ").append(this.jEnd).toString();
     }
 
 }

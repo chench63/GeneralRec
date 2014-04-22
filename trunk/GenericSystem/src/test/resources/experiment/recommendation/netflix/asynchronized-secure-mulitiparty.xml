@@ -24,27 +24,23 @@
 		<!-- 自定义测试集合范围[1, x) -->
 		<property name="SIMILARITY_RIGHT_SIDE" value="885" />
 		<!-- 相似度数据标签 -->
-		<property name="SIMILARITY_TYPE"
-			value="SecureMultiparty_CorrelationBasedSimularityFunction" />
+		<property name="SIMILARITY_TYPE" value="SMP_Pearson" />
 	</bean>
 
 
 	<bean class="edu.tongji.configure.ConfigurationConstant">
 		<!-- 主任务参数最大值 $Cache -->
-		<property name="TASK_SIZE" value="21" />
-
-		<!-- 单任务最大容量 $Cache -->
-		<property name="SINGLE_TASK_SIZE" value="1000" />
+		<property name="TASK_SIZE" value="17770" />
 	</bean>
 
 
 	<!-- ******************************************** 处理模板部分************************************************ -->
 	<bean id="engineForGeneratingSimilarity"
 		class="edu.tongji.engine.DBBasedMultiThreadRecommendationEngine">
-		<property name="reader" ref="NetflixSimularityPerformanceDBReader" />
+		<property name="reader" ref="NetflixCmpSimFileReader" />
 		<property name="recorder">
 			<list>
-				<ref bean="NetflixSimularityPerformanceRecorder"></ref>
+				<ref bean="NetflixCmpSimRecorder"></ref>
 			</list>
 		</property>
 	</bean>
@@ -62,16 +58,23 @@
 
 
 	<!-- ******************************************** 多线程部分************************************************ -->
-	<!-- 用户评分加载域 -->
-	<bean id="NetflixSimularityPerformanceRecorder" class="edu.tongji.thread.NetflixSimularityPerformanceRecorder"
+	<!-- 相似度计算域 -->
+	<bean id="NetflixCmpSimDBReader" class="edu.tongji.thread.NetflixCmpSimDBReader">
+		<!-- <property name="ratingDAO" ref="ratingDAO" /> -->
+	</bean>
+	<bean id="NetflixCmpSimFileReader" class="edu.tongji.thread.NetflixCmpSimFileReader">
+		<property name="sourceEntity">
+			<util:map key-type="edu.tongji.parser.TemplateType">
+				<entry key="NETFLIX_RATING_TEMPLATE" value="src/test/resources/dataset/testcase/netflix/mv_" />
+			</util:map>
+		</property>
+	</bean>
+
+
+	<bean id="NetflixCmpSimRecorder" class="edu.tongji.thread.NetflixCmpSimRecorder"
 		scope="prototype">
 		<property name="similarityFunction" ref="AccCorrelationBasedSimularityFunction" />
 		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl" />
-	</bean>
-
-	<!-- 相似度计算域 -->
-	<bean id="NetflixSimularityPerformanceDBReader" class="edu.tongji.thread.NetflixSimularityPerformanceDBReader">
-		<!-- <property name="ratingDAO" ref="ratingDAO" /> -->
 	</bean>
 	<bean id="NetflixSimularityPerformancePaillierRecorder"
 		class="edu.tongji.thread.NetflixSimularityPerformancePaillierRecorder"

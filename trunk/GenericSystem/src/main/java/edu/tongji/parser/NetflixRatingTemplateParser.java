@@ -23,7 +23,7 @@ public class NetflixRatingTemplateParser implements Parser {
     private final static String SAPERATOR_EXPRESSION = "\\,";
 
     /** movieId键 */
-    private final static String KEY_MOVIEID          = "movieId";
+    public final static String  KEY_MOVIEID          = "movieId";
 
     /** 
      * @see edu.tongji.parser.Parser#parser(edu.tongji.parser.ParserTemplate)

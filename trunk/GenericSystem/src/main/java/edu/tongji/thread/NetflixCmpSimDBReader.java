@@ -22,7 +22,7 @@ import edu.tongji.util.LoggerUtil;
  * @author chench
  * @version $Id: NetflixSimularityPerformanceDBReader.java, v 0.1 2013-10-12 下午2:51:30 chench Exp $
  */
-public class NetflixSimularityPerformanceDBReader extends Thread {
+public class NetflixCmpSimDBReader extends Thread {
 
     /** 查询评分的集合*/
     private final static String EXCUTE_SELECT_GENERAL_RATING = "excute_select_general_rating";

@@ -30,7 +30,7 @@ import edu.tongji.util.LoggerUtil;
  * @author chench
  * @version $Id: NetflixSimularityPerformanceRecorder.java, v 0.1 2013-10-12 下午2:51:12 chench Exp $
  */
-public class NetflixSimularityPerformanceRecorder implements Runnable {
+public class NetflixCmpSimRecorder implements Runnable {
 
     /** 相似度计算函数*/
     private Function            similarityFunction;
@@ -60,6 +60,12 @@ public class NetflixSimularityPerformanceRecorder implements Runnable {
             //性能测试开始
             //=============================
             StopWatch stopWatch = new StopWatch();
+            long performance = 0L;
+            List<List<Number>> numerators = new ArrayList<List<Number>>(jEnd - jStart);
+            List<List<Number>> denominatroIs = new ArrayList<List<Number>>(jEnd - jStart);
+            List<List<Number>> denominatroJs = new ArrayList<List<Number>>(jEnd - jStart);
+
+            //1. 计算Pearson相似度的，分子和两个分母
             for (int j = jStart; j < jEnd; j++) {
                 List<Rating> ratingOfI = SimularityStreamCache.get(String.valueOf(i));
                 List<Rating> ratingOfJ = SimularityStreamCache.get(String.valueOf(j));
@@ -80,49 +86,57 @@ public class NetflixSimularityPerformanceRecorder implements Runnable {
                 List<Number> denominatroOfSimAboutJ = new ArrayList<Number>();
                 PaillierProcessorContextHelper.forgeDataAsPearson(valuesOfI, valuesOfJ,
                     numeratorOfSim, denominatroOfSimAboutI, denominatroOfSimAboutJ);
-                stopWatch.stop();
 
-                //记录点
-                stopWatch.start();
+                //载入整体列表
+                numerators.add(numeratorOfSim);
+                denominatroIs.add(denominatroOfSimAboutI);
+                denominatroJs.add(denominatroOfSimAboutJ);
+
+            }
+            stopWatch.stop();
+            //使用RP算法，计算量由服务器承担，固记入
+            if (TestCaseConfigurationConstant.IS_PERTURBATION) {
+                performance += stopWatch.getLastTaskTimeMillis();
+            }
+
+            //2. 计算相似度
+            stopWatch.start();
+            List<ValueOfItems> sims = new ArrayList<ValueOfItems>(jEnd - jStart);
+            for (int j = jStart; j < jEnd; j++) {
                 try {
-                    Number sim = similarityFunction.calculate(numeratorOfSim,
-                        denominatroOfSimAboutI, denominatroOfSimAboutJ);
+                    Number sim = similarityFunction.calculate(numerators.get(j - jStart),
+                        denominatroIs.get(j - jStart), denominatroJs.get(j - jStart));
+
+                    //记录日志
                     LoggerUtil.debug(logger, "I: " + i + " J: " + j + " sim: " + sim.doubleValue());
-                    if (valueOfItemsDAO != null & !Double.isNaN(sim.doubleValue())) {
-                        persistence(i, j, sim.doubleValue());
+                    if (!Double.isNaN(sim.doubleValue())) {
+                        sims.add(new ValueOfItems(String.valueOf(i), String.valueOf(j), sim
+                            .doubleValue(), TestCaseConfigurationConstant.SIMILARITY_TYPE, Date
+                            .valueOf("2005-12-31")));
                     }
                 } catch (Exception e) {
                     ExceptionUtil.caught(e, "i: " + i + " j: " + j);
                 }
-                stopWatch.stop();
+
             }
+            stopWatch.stop();
+            performance += stopWatch.getLastTaskTimeMillis();
             //=============================
             //性能测试结束
             //=============================
+
+            //持久化之数据库
+            for (ValueOfItems valueOfItem : sims) {
+                valueOfItemsDAO.insert(valueOfItem);
+            }
+
             CacheHolder cacheHolder = new CacheHolder();
-            cacheHolder.put("ELAPS", stopWatch.getTotalTimeMillis());
-            cacheHolder.put("MOVIE_ID", i);
+            cacheHolder.put(CacheHolder.ELAPSE, performance);
+            cacheHolder.put(CacheHolder.MOVIE_ID, i);
             SimularityStreamCache.update(cacheHolder);
 
         }
 
-    }
-
-    /**
-     * 持久化至数据库
-     * 
-     * @param i
-     * @param j
-     * @param sim
-     */
-    public void persistence(int i, int j, double sim) {
-        ValueOfItems valueOfItem = new ValueOfItems();
-        valueOfItem.setItemI(String.valueOf(i));
-        valueOfItem.setItemJ(String.valueOf(j));
-        valueOfItem.setValue(sim);
-        valueOfItem.setFunctionName(TestCaseConfigurationConstant.SIMILARITY_TYPE);
-        valueOfItem.setGMT_CREATE(Date.valueOf("2005-12-31"));
-        valueOfItemsDAO.insert(valueOfItem);
     }
 
     /**

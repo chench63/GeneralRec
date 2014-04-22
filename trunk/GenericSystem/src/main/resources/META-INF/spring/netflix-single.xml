@@ -12,13 +12,12 @@
 	<bean id="datasource" class="edu.tongji.orm.NetflixDataSource">
 		<property name="lazy" value="true" />
 		<property name="indexOfMoviesFront" value="1" />
-		<property name="countOfMovieFiles" value="20" />
+		<property name="countOfMovieFiles" value="17770" />
 		<property name="ratingDAO" ref="ratingDAO" />
 		<property name="stopper" ref="stopper" />
 		<property name="sourceEntity">
 			<util:map key-type="edu.tongji.parser.TemplateType">
-				<entry key="NETFLIX_RATING_TEMPLATE"
-					value="src/main/resources/dataset/testcase/netflix/mv_" />
+				<entry key="NETFLIX_RATING_TEMPLATE" value="src/test/resources/dataset/testcase/netflix/mv_" />
 			</util:map>
 		</property>
 	</bean>
