@@ -175,13 +175,13 @@ public class AccRecommendationContext implements ProcessorContext {
 
         if (StringUtil.equalsIgnoreCase(rating.getMovieId(), itemI)
             && !userTableOfItemI.containsKey(rating.getUsrId())) {
-            userTableOfItemI.put(rating.getUsrId(), rating.getRating());
+            userTableOfItemI.put(String.valueOf(rating.getUsrId()), rating.getRating());
             newCustomersOfItemI.add(rating);
         }
 
         if (StringUtil.equalsIgnoreCase(rating.getMovieId(), itemJ)
             && !userTableOfItemJ.containsKey(rating.getUsrId())) {
-            userTableOfItemJ.put(rating.getUsrId(), rating.getRating());
+            userTableOfItemJ.put(String.valueOf(rating.getUsrId()), rating.getRating());
             newCustomersOfItemJ.add(rating);
         }
 

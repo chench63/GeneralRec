@@ -137,4 +137,13 @@ public final class ConfigurationConstant {
         ConfigurationConstant.endTimeLine = endTimeLine;
     }
 
+    /**
+     * Getter method for property <tt>sUB_TASK_SIZE</tt>.
+     * 
+     * @return property value of SUB_TASK_SIZE
+     */
+    public static int getSUB_TASK_SIZE() {
+        return SUB_TASK_SIZE;
+    }
+
 }

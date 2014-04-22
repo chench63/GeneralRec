@@ -68,14 +68,14 @@ public class NetflixCmpSimRecorder implements Runnable {
             //1. 计算Pearson相似度的，分子和两个分母
             stopWatch.start();
             for (int j = jStart; j < jEnd; j++) {
-                List<Rating> ratingOfI = SimularityStreamCache.get(String.valueOf(i));
-                List<Rating> ratingOfJ = SimularityStreamCache.get(String.valueOf(j));
+                List<Rating> ratingOfI = SimularityStreamCache.get(i);
+                List<Rating> ratingOfJ = SimularityStreamCache.get(j);
                 List<Number> valuesOfI = new ArrayList<Number>();
                 List<Number> valuesOfJ = new ArrayList<Number>();
                 if (TestCaseConfigurationConstant.IS_PERTURBATION) {
                     //随机扰动对应的数据处理类
                     ProcessorContextHelper.forgeRandomizedPerturbationRatingValues(ratingOfI,
-                        ratingOfJ, valuesOfI, valuesOfJ, TestCaseConfigurationConstant.IS_NORMAL);
+                        ratingOfJ, valuesOfI, valuesOfJ, false);
                 } else {
                     ProcessorContextHelper.forgeSymmetryRatingValues(ratingOfI, ratingOfJ,
                         valuesOfI, valuesOfJ);

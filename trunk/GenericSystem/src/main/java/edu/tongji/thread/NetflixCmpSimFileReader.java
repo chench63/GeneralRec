@@ -12,6 +12,8 @@ import java.util.Map.Entry;
 import org.apache.log4j.Logger;
 
 import edu.tongji.cache.SimularityStreamCache;
+import edu.tongji.configure.ConfigurationConstant;
+import edu.tongji.configure.TestCaseConfigurationConstant;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.model.Rating;
 import edu.tongji.parser.NetflixRatingTemplateParser;
@@ -47,7 +49,7 @@ public class NetflixCmpSimFileReader extends Thread {
     @Override
     public void run() {
         Entry<TemplateType, String> entry = sourceEntity.entrySet().iterator().next();
-        for (int movieId = 1; movieId <= 17770; movieId++) {
+        for (int movieId = 1; movieId <= ConfigurationConstant.TASK_SIZE; movieId++) {
             //1. 拼写文件名
             String fileName = (new StringBuilder(entry.getValue()))
                 .append(StringUtil.alignRight(String.valueOf(movieId), 7, PAD_CHAR))
@@ -67,7 +69,12 @@ public class NetflixCmpSimFileReader extends Thread {
             }
 
             //4. 载入缓存
-            SimularityStreamCache.fastPut(String.valueOf(movieId), singleItems);
+            if (TestCaseConfigurationConstant.IS_PERTURBATION) {
+                SimularityStreamCache.putAndDisguise(movieId, singleItems,
+                    TestCaseConfigurationConstant.IS_NORMAL);
+            } else {
+                SimularityStreamCache.put(movieId, singleItems);
+            }
         }
     }
 

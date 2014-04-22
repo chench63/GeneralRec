@@ -31,15 +31,20 @@
 	<bean class="edu.tongji.configure.ConfigurationConstant">
 		<!-- 主任务参数最大值 $Cache -->
 		<property name="TASK_SIZE" value="17770" />
+		<property name="SUB_TASK_SIZE" value="1777" />
 	</bean>
 
 
 	<!-- ******************************************** 处理模板部分************************************************ -->
 	<bean id="engineForGeneratingSimilarity"
 		class="edu.tongji.engine.DBBasedMultiThreadRecommendationEngine">
+		<!-- 只能配置一个，SimularityStreamCache序列化载入 -->
 		<property name="reader" ref="NetflixCmpSimFileReader" />
 		<property name="recorder">
 			<list>
+				<ref bean="NetflixCmpSimRecorder"></ref>
+				<ref bean="NetflixCmpSimRecorder"></ref>
+				<ref bean="NetflixCmpSimRecorder"></ref>
 				<ref bean="NetflixCmpSimRecorder"></ref>
 			</list>
 		</property>
@@ -59,9 +64,6 @@
 
 	<!-- ******************************************** 多线程部分************************************************ -->
 	<!-- 相似度计算域 -->
-	<bean id="NetflixCmpSimDBReader" class="edu.tongji.thread.NetflixCmpSimDBReader">
-		<!-- <property name="ratingDAO" ref="ratingDAO" /> -->
-	</bean>
 	<bean id="NetflixCmpSimFileReader" class="edu.tongji.thread.NetflixCmpSimFileReader">
 		<property name="sourceEntity">
 			<util:map key-type="edu.tongji.parser.TemplateType">
