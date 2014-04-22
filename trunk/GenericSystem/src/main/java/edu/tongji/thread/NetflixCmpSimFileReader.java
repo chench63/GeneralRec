@@ -47,7 +47,7 @@ public class NetflixCmpSimFileReader extends Thread {
     @Override
     public void run() {
         Entry<TemplateType, String> entry = sourceEntity.entrySet().iterator().next();
-        for (int movieId = 1; movieId <= 10; movieId++) {
+        for (int movieId = 1; movieId <= 17770; movieId++) {
             //1. 拼写文件名
             String fileName = (new StringBuilder(entry.getValue()))
                 .append(StringUtil.alignRight(String.valueOf(movieId), 7, PAD_CHAR))
