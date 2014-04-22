@@ -66,6 +66,7 @@ public class NetflixCmpSimRecorder implements Runnable {
             List<List<Number>> denominatroJs = new ArrayList<List<Number>>(jEnd - jStart);
 
             //1. 计算Pearson相似度的，分子和两个分母
+            stopWatch.start();
             for (int j = jStart; j < jEnd; j++) {
                 List<Rating> ratingOfI = SimularityStreamCache.get(String.valueOf(i));
                 List<Rating> ratingOfJ = SimularityStreamCache.get(String.valueOf(j));
@@ -80,7 +81,6 @@ public class NetflixCmpSimRecorder implements Runnable {
                         valuesOfI, valuesOfJ);
                 }
 
-                stopWatch.start();
                 List<Number> numeratorOfSim = new ArrayList<Number>();
                 List<Number> denominatroOfSimAboutI = new ArrayList<Number>();
                 List<Number> denominatroOfSimAboutJ = new ArrayList<Number>();
