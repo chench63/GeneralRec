@@ -101,7 +101,7 @@ public class EmSeqHourFormatter extends AbstractSeqTimeFormatter {
             }
 
             //2. 按规则输出至二维数组
-            return doFormation(context, rowSize, repoOri, repoGMM);
+            return doFormation(context.size() / rowSize, rowSize, repoOri, repoGMM);
         }
 
         return null;
@@ -127,11 +127,9 @@ public class EmSeqHourFormatter extends AbstractSeqTimeFormatter {
      * @param rowSize
      * @param repo
      */
-    @SuppressWarnings("rawtypes")
-    protected String[][] doFormation(List context, int rowSize,
+    protected String[][] doFormation(int columnSize, int rowSize,
                                      Map<String, DescriptiveStatistics> repo,
                                      Map<String, List<Double>> repoGMM) {
-        int columnSize = context.size() / rowSize;
         String[][] matrics = new String[HOUR_RANGE][columnSize];
         for (int row = 0; row < HOUR_RANGE; row++) {
             for (int column = 0; column < columnSize; column++) {

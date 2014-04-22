@@ -4,7 +4,6 @@
  */
 package edu.tongji.extend.gnuplot;
 
-import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
@@ -22,11 +21,9 @@ public class MaxSeqQuarterFormatter extends MeanSeqQuarterFormatter {
     /** 
      * @see edu.tongji.extend.gnuplot.MeanSeqHourFormatter#doFormation(java.util.List, int, java.util.Map)
      */
-    @SuppressWarnings("rawtypes")
     @Override
-    protected String[][] doFormation(List context, int rowSize,
+    protected String[][] doFormation(int columnSize, int rowSize,
                                      Map<String, DescriptiveStatistics> repo) {
-        int columnSize = context.size() / rowSize;
         String[][] matrics = new String[HOUR_RANGE * QUARTER_RANGE][columnSize];
         for (int row = 0; row < HOUR_RANGE; row++) {
             for (int quarter = 0; quarter < QUARTER_RANGE; quarter++) {

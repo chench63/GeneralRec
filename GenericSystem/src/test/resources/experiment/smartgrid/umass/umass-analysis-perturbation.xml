@@ -14,7 +14,7 @@
 			<util:map key-type="edu.tongji.parser.TemplateType">
 				<!-- refrigerator | main | air_conditioning -->
 				<entry key="REDD_SMART_GRID_TEMPLATE"
-					value="src/test/resources/dataset/testcase/smartgrid/redd/main/H3_.*" />
+					value="src/test/resources/dataset/testcase/smartgrid/redd/air_conditioning/H6_C16" />
 			</util:map>
 		</property>
 	</bean>
@@ -27,9 +27,9 @@
 		<property name="absolutePath" value="C:\\Users\\chench\\Desktop\\DataSet\\test" />
 		<property name="velocityContextHelper" ref="velocityContextHelper" />
 		<!-- emSeqHourFormatter | emSeqQuarterFormatter | meanSeqHourFormatter 
-			| meanSeqQuarterFormatter | maxSeqQuarterFormatter -->
+			| meanSeqQuarterFormatter | maxSeqQuarterFormatter | specifiedDayFormatter -->
 		<!-- deviationSeqQuarterFormatter | deviationEmSeqQuarterFormatter -->
-		<property name="formatter" ref="meanSeqQuarterFormatter" />
+		<property name="formatter" ref="specifiedDayFormatter" />
 		<property name="assembleTemplate" ref="assembleTemplate" />
 		<!-- expectationSeqDayCracker | standardExpectationCracker -->
 		<property name="cracker" ref="expectationSeqDayCracker" />
@@ -134,7 +134,9 @@
 		<property name="noise" ref="gaussMixtureNoise" />
 		<property name="maxIterations" value="30" />
 	</bean>
-
+	<bean id="specifiedDayFormatter" class="edu.tongji.extend.gnuplot.SpecifiedDayFormatter">
+		<property name="specifiedDay" value="20110610" />
+	</bean>
 
 	<bean id="deviationSeqQuarterFormatter" class="edu.tongji.extend.gnuplot.MeanSeqQuarterFormatter">
 		<property name="mean" value="false" />
