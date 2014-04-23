@@ -4,6 +4,9 @@
  */
 package edu.tongji.cache;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import edu.tongji.configure.ConfigurationConstant;
 
 /**
@@ -14,19 +17,32 @@ import edu.tongji.configure.ConfigurationConstant;
 public class CacheTask {
 
     /** 主任务参数i, 分配任务式使用*/
-    public static int I = ConfigurationConstant.I;
+    public static int                 I          = ConfigurationConstant.I;
 
     /** 协任务参数j, 分配任务式使用*/
-    public static int J = ConfigurationConstant.J;
+    public static int                 J          = ConfigurationConstant.J;
 
     /** 当前任务i */
-    public int        i;
+    public int                        i;
 
     /** 当前任务j */
-    public int        jStart;
+    public int                        jStart;
 
     /** 当前任务j */
-    public int        jEnd;
+    public int                        jEnd;
+
+    /** 属性集合*/
+    private final Map<String, Object> properties = new HashMap<String, Object>(1);
+
+    /** KEY: FILE*/
+    public static final String        FILE       = "FILE";
+
+    /**
+     * 
+     */
+    public CacheTask() {
+        super();
+    }
 
     /**
      * 任务区间 [jStart, jEnd)
@@ -39,6 +55,26 @@ public class CacheTask {
         this.i = i;
         this.jStart = jStart;
         this.jEnd = jEnd;
+    }
+
+    /**
+     * 添加属性
+     * 
+     * @param key
+     * @param value
+     */
+    public void put(String key, Object value) {
+        properties.put(key, value);
+    }
+
+    /**
+     * 获得属性
+     * 
+     * @param key
+     * @return
+     */
+    public Object get(String key) {
+        return properties.get(key);
     }
 
     /** 

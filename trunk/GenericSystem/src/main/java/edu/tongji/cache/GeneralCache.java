@@ -5,16 +5,14 @@
 package edu.tongji.cache;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.log4j.Logger;
 
+import edu.tongji.configure.ConfigurationConstant;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.util.LoggerUtil;
 
@@ -27,125 +25,88 @@ import edu.tongji.util.LoggerUtil;
 public final class GeneralCache {
 
     /** 读写锁 */
-    private static final ReadWriteLock                  lock     = new ReentrantReadWriteLock();
+    private static final ReadWriteLock      lock         = new ReentrantReadWriteLock();
 
     /** logger */
-    private final static Logger                         logger   = Logger
-                                                                     .getLogger(LoggerDefineConstant.SERVICE_CACHE);
+    protected final static Logger           logger       = Logger
+                                                             .getLogger(LoggerDefineConstant.SERVICE_CACHE);
 
-    /** 本地数据缓存*/
-    private final static Map<String, CacheHolder>       context  = new HashMap<String, CacheHolder>();
+    /** 构建二维，数值缓存*/
+    private final static List<List<Number>> numericCache = new ArrayList<List<Number>>(
+                                                             ConfigurationConstant.TASK_SIZE);
 
-    /** 本地数据缓存*/
-    private final static Map<String, List<CacheHolder>> contexts = new HashMap<String, List<CacheHolder>>();
-
-    /** task任务链 */
-    private static List<String>                         keySet   = null;
+    /** 任务缓存*/
+    protected final static List<CacheTask>  tasks        = new ArrayList<CacheTask>();
 
     /**
-     * 获取多线程任务
-     * <p>
-     *  task分配任务，其实与具体的引用场景有很强的耦合，
-     *  其实可以剥离开来，另做一个类。
-     * </p>
+     * 获取任务
+     * 
      * @return
      */
     public static synchronized CacheTask task() {
-        if (keySet == null) {
-            keySet = new ArrayList<String>(contexts.keySet());
-            LoggerUtil.info(logger, "GeneralCache  初始化测试用户数：" + keySet.size());
-        } else if (keySet.isEmpty()) {
-            LoggerUtil.debug(logger, "GeneralCache  任务结束.");
+        if (tasks.isEmpty()) {
+            LoggerUtil.info(logger, "CacheTask  Completes.....");
             return null;
+        } else {
+            return tasks.remove(0);
         }
-
-        String key = Collections.synchronizedList(keySet).remove(0);
-        return new CacheTask(Integer.valueOf(key), 0, 0);
     }
 
     /**
-     * 载入缓存
+     * 添加任务
      * 
-     * @param cacheHolder
+     * @param task
      */
-    public static void put(CacheHolder cacheHolder) {
+    public static void store(CacheTask task) {
+        tasks.add(task);
+    }
+
+    /**
+     * 插入数值
+     * 
+     * @param x         横坐标
+     * @param y         纵坐标
+     * @param num       数值
+     */
+    public static void put(int x, int y, Number num) {
         //读写保护，加写锁
         Lock writeLock = lock.writeLock();
         writeLock.lock();
 
         try {
-            String key = String.valueOf(cacheHolder.get(CacheHolder.KEY));
-            Collections.synchronizedMap(context).put(key, cacheHolder);
-        } finally {
-            writeLock.unlock();
-            LoggerUtil.debug(logger, "缓存加载，对象: " + cacheHolder);
-        }
-    }
-
-    /**
-     * 载入缓存
-     * 
-     * @param cacheHolder
-     */
-    public static void put(List<CacheHolder> cacheHolders) {
-        //读写保护，加写锁
-        Lock writeLock = lock.writeLock();
-        writeLock.lock();
-
-        try {
-            for (CacheHolder cacheHolder : cacheHolders) {
-                String key = String.valueOf(cacheHolder.get(CacheHolder.KEY));
-                Collections.synchronizedMap(context).put(key, cacheHolder);
-            }
-        } finally {
-            writeLock.unlock();
-            LoggerUtil.debug(logger, "缓存完成加载, 加载量: " + cacheHolders.size());
-        }
-    }
-
-    /**
-     * 载入缓存, 关联task()方法
-     * 
-     * @param cacheHolder
-     */
-    public static void puts(List<CacheHolder> cacheHolders) {
-        //读写保护，加写锁
-        Lock writeLock = lock.writeLock();
-        writeLock.lock();
-
-        try {
-            for (CacheHolder cacheHolder : cacheHolders) {
-                String key = String.valueOf(cacheHolder.get(CacheHolder.KEY));
-                List<CacheHolder> holdersOfContext = contexts.get(key);
-                if (holdersOfContext == null) {
-                    holdersOfContext = new ArrayList<CacheHolder>();
+            //首次使用初始化
+            if (numericCache.isEmpty()) {
+                for (int i = 0; i < ConfigurationConstant.TASK_SIZE; i++) {
+                    numericCache.add(new ArrayList<Number>(1));
                 }
-                holdersOfContext.add(cacheHolder);
-                Collections.synchronizedMap(contexts).put(key, holdersOfContext);
             }
+
+            List<Number> content = numericCache.get(x);
+            //首次接触该x对应的List，
+            //节约内存，对角初始化
+            //x列，包含x-1行
+            if (content.isEmpty()) {
+                ((ArrayList<Number>) content).ensureCapacity(x);
+                for (int i = 1; i < x; i++) {
+                    content.add(0L);
+                }
+            }
+            content.set(y, num);
         } finally {
             writeLock.unlock();
-            LoggerUtil.debug(logger, "缓存完成加载, 加载量: " + cacheHolders.size());
         }
     }
 
     /**
-     * 读取缓存
+     * 返回数值
      * 
-     * @param key
+     * @param x         横坐标
+     * @param y         纵坐标
      * @return
      */
-    public static CacheHolder get(String key) {
-        return context.get(key);
+    public static Number get(int x, int y) {
+        return numericCache.get(x).get(y);
+
     }
 
-    /**
-     * 读取缓存
-     * 
-     * @param key
-     * @return
-     */
-    public static List<CacheHolder> gets(String key) {
-        return contexts.get(key);
-    }
 }

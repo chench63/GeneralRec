@@ -4,6 +4,10 @@
  */
 package edu.tongji.parser;
 
+import edu.tongji.parser.netflix.NetflixRatingTemplateParser;
+import edu.tongji.parser.netflix.NetflixRatingVOTemplateParser;
+import edu.tongji.parser.netflix.SimilarityTemplateParser;
+
 /**
  * 解析模板
  * 
@@ -20,6 +24,10 @@ public enum TemplateType implements Parser, Filter {
     MOVIELENS_RATING_TEMPLATE(new MovielensRatingTemplateParser(), new DefaultTemplateFilter()),
     /** NetFlix评分解析处理模板 */
     NETFLIX_RATING_TEMPLATE(new NetflixRatingTemplateParser(), new DefaultTemplateFilter()),
+    /** NetFlix评分解析处理模板 */
+    NETFLIX_RATINGVO_TEMPLATE(new NetflixRatingVOTemplateParser(), new DefaultTemplateFilter()),
+    /** 相似度解析处理模板 */
+    SIMILARITY_TEMPLATE(new SimilarityTemplateParser(), new DefaultTemplateFilter()),
     /** UMASS电表读数处理模板*/
     UMASS_SMART_GRID_TEMPLATE(new UMassSmartGridTemplateParser(), new DefaultTemplateFilter()),
     /** UMASS电表读数处理模板*/

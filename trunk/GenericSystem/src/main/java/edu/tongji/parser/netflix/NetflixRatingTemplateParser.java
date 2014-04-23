@@ -2,9 +2,11 @@
  * Tongji Edu.
  * Copyright (c) 2004-2013 All Rights Reserved.
  */
-package edu.tongji.parser;
+package edu.tongji.parser.netflix;
 
 import edu.tongji.model.Rating;
+import edu.tongji.parser.Parser;
+import edu.tongji.parser.ParserTemplate;
 import edu.tongji.util.ExceptionUtil;
 import edu.tongji.util.StringUtil;
 
@@ -22,6 +24,8 @@ public class NetflixRatingTemplateParser implements Parser {
     public final static String  KEY_MOVIEID          = "movieId";
 
     /** 
+     * [userId],[movieId],[rating],[date]
+     * 
      * @see edu.tongji.parser.Parser#parser(edu.tongji.parser.ParserTemplate)
      */
     @Override

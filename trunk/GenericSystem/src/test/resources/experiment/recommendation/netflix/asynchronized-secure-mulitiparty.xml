@@ -10,28 +10,24 @@
 
 
 	<!-- ******************************************** 实验配置部分************************************************ -->
-	<bean class="edu.tongji.configure.TestCaseConfigurationConstant">
-		<!-- 不使用噪声干扰数据 -->
-		<property name="IS_PERTURBATION" value="false" />
-
-		<!-- 自定义测试集合 -->
-		<property name="NEED_RANDOM_TESTCASE" value="false" />
-		<!-- 从文件中导入 测试集合 -->
-		<property name="TEST_CASE_FILE"
-			value="src/main/resources/dataset/testcase/netflix/I-700" />
-
-
-		<!-- 自定义测试集合范围[1, x) -->
-		<property name="SIMILARITY_RIGHT_SIDE" value="885" />
-		<!-- 相似度数据标签 -->
-		<property name="SIMILARITY_TYPE" value="SMP_Pearson" />
-	</bean>
-
-
 	<bean class="edu.tongji.configure.ConfigurationConstant">
 		<!-- 主任务参数最大值 $Cache -->
 		<property name="TASK_SIZE" value="17770" />
 		<property name="SUB_TASK_SIZE" value="1777" />
+		<!-- 持久化文件路径 -->
+		<property name="USER_SEQ_FILE_PATH" value="C:\\Users\\chench\\Desktop\\DataSet\\" />
+		<property name="SIMILARITY_FILE_PATH" value="C:\\Users\\chench\\Desktop\\DataSet\\" />
+
+		<!-- CmpSim -->
+
+
+		<!-- EvaPrdct -- UserSeq -->
+		<property name="USER_BEGIN" value="1" />
+		<property name="USER_END" value="17770" />
+
+		<!-- EvaPrdct -- Simlrt -->
+		<property name="SIMLRTY_BEGIN" value="1" />
+		<property name="SIMLRTY_END" value="17770" />
 	</bean>
 
 
@@ -52,10 +48,10 @@
 
 	<bean id="engineForGeneratingRecommendations"
 		class="edu.tongji.engine.DBBasedMultiThreadRecommendationEngine">
-		<property name="reader" ref="NetFlixSimularityDBReader" />
+		<property name="reader" ref="NetflixEvaPredctDBReader" />
 		<property name="recorder">
 			<list>
-				<ref bean="NetflixSimularityRecorder"></ref>
+				<ref bean="NetflixEvaPredctRecorder"></ref>
 			</list>
 		</property>
 	</bean>
@@ -71,29 +67,27 @@
 			</util:map>
 		</property>
 	</bean>
-
-
 	<bean id="NetflixCmpSimRecorder" class="edu.tongji.thread.NetflixCmpSimRecorder"
 		scope="prototype">
 		<property name="similarityFunction" ref="AccCorrelationBasedSimularityFunction" />
 		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl" />
 	</bean>
-	<bean id="NetflixSimularityPerformancePaillierRecorder"
-		class="edu.tongji.thread.NetflixSimularityPerformancePaillierRecorder"
+	<bean id="NetflixCmpSimPaillierRecorder" class="edu.tongji.thread.NetflixCmpSimPaillierRecorder"
 		scope="prototype">
 		<property name="similarityFunction" ref="AccCorrelationBasedSimularityFunction" />
 		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl" />
 	</bean>
 
 	<!-- 推荐结果计算域 -->
-	<bean id="NetflixSimularityRecorder" class="edu.tongji.thread.NetflixSimularityRecorder"
-		scope="prototype">
-		<property name="predictor" ref="predictor" />
-	</bean>
-	<bean id="NetFlixSimularityDBReader" class="edu.tongji.thread.NetFlixSimularityDBReader">
+	<bean id="NetflixEvaPredctDBReader" class="edu.tongji.thread.NetflixEvaPredctDBReader">
 		<property name="ratingDAO" ref="ratingDAO" />
 		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl" />
 	</bean>
+	<bean id="NetflixEvaPredctRecorder" class="edu.tongji.thread.NetflixEvaPredctRecorder"
+		scope="prototype">
+		<property name="predictor" ref="predictor" />
+	</bean>
+
 
 
 

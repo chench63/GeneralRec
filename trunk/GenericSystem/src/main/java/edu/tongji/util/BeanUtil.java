@@ -8,12 +8,6 @@ import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 
-import edu.tongji.cache.CacheHolder;
-import edu.tongji.configure.TestCaseConfigurationConstant;
-import edu.tongji.model.Rating;
-import edu.tongji.model.ValueOfItems;
-import edu.tongji.vo.RatingVO;
-
 /**
  * 
  * @author chench
@@ -26,54 +20,6 @@ public final class BeanUtil {
 
     /** Timestamp生成规格 */
     private final static String TIMESTAMP_CREATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
-
-    /**
-     * 转换ValueOfItems为CacheHolder。
-     * 填充{KEY, SIM}
-     * 
-     * @param valueOfItem
-     * @return
-     */
-    public static CacheHolder toBean(ValueOfItems valueOfItem) {
-        CacheHolder cacheHolder = new CacheHolder();
-        cacheHolder.put(CacheHolder.KEY, HashKeyUtil.genKey(valueOfItem));
-        cacheHolder.put("SIM", valueOfItem.getValue());
-        return cacheHolder;
-    }
-
-    /**
-     * 转换Rating为CacheHolder。
-     * 填充{KEY, RATING, DISGUISED_VALUE}
-     * 
-     * @param rating
-     * @return
-     */
-    public static CacheHolder toBean(Rating rating, boolean isDisguised) {
-        CacheHolder cacheHolder = new CacheHolder();
-        cacheHolder.put(CacheHolder.KEY, rating.getUsrId());
-        cacheHolder.put("RATING", rating);
-        cacheHolder.put(
-            "DISGUISED_VALUE",
-            rating.getRating()
-                    - RandomUtil.nextDouble(TestCaseConfigurationConstant.PERTURBATION_DOMAIN));
-        return cacheHolder;
-    }
-
-    /**
-     * 转化Rating数字为RatingVO对象，日后使用反射扩展功能。
-     * 
-     * @param elements
-     * @return
-     * @throws ParseException
-     */
-    public static RatingVO toBeans(Rating rating) {
-        RatingVO ratingVO = new RatingVO();
-        ratingVO.setMovieId(rating.getMovieId());
-        ratingVO.setUsrId(rating.getUsrId());
-        ratingVO.setRating(rating.getRating());
-        ratingVO.setTime(rating.getTime());
-        return ratingVO;
-    }
 
     /**
      *  转化日期格式，日后抽取为DateUtil 

@@ -18,7 +18,10 @@ import edu.tongji.util.PaillierUtil;
 public class Rating implements Serializable {
 
     /**  serialVersionUID*/
-    private static final long serialVersionUID = -7837456678460417103L;
+    private static final long serialVersionUID  = -7837456678460417103L;
+
+    /** 元素发个符号 */
+    public static final char  ELEMENT_SEPERATOR = ',';
 
     /** 主键 */
     private int               id;
@@ -179,8 +182,16 @@ public class Rating implements Serializable {
      */
     @Override
     public String toString() {
-        return "[Rating]  usrId： " + usrId + "  movieId: " + movieId + "  rating: " + rating
-               + "  time: " + time;
+        StringBuilder stringBuilder = (new StringBuilder()).append(this.usrId)
+            .append(Rating.ELEMENT_SEPERATOR).append(this.movieId).append(Rating.ELEMENT_SEPERATOR)
+            .append(this.rating).append(Rating.ELEMENT_SEPERATOR);
+        if (this.time == null) {
+            stringBuilder.append(Rating.ELEMENT_SEPERATOR);
+        } else {
+            stringBuilder.append(this.time.toString());
+        }
+
+        return stringBuilder.toString();
     }
 
 }

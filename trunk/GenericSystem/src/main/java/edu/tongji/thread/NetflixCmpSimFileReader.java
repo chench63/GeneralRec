@@ -13,14 +13,14 @@ import org.apache.log4j.Logger;
 
 import edu.tongji.cache.SimularityStreamCache;
 import edu.tongji.configure.ConfigurationConstant;
-import edu.tongji.configure.TestCaseConfigurationConstant;
+import edu.tongji.extend.noise.Noise;
 import edu.tongji.log4j.LoggerDefineConstant;
-import edu.tongji.model.Rating;
-import edu.tongji.parser.NetflixRatingTemplateParser;
 import edu.tongji.parser.ParserTemplate;
 import edu.tongji.parser.TemplateType;
+import edu.tongji.parser.netflix.NetflixRatingTemplateParser;
 import edu.tongji.util.FileUtil;
 import edu.tongji.util.StringUtil;
+import edu.tongji.vo.RatingVO;
 
 /**
  * 文件中读取数据。
@@ -33,15 +33,12 @@ public class NetflixCmpSimFileReader extends Thread {
     /** 需要加载的文件  **/
     private Map<TemplateType, String> sourceEntity;
 
+    /** 噪声*/
+    private Noise                     noise;
+
     /** logger */
-    protected final static Logger     logger      = Logger
-                                                      .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
-
-    /** 文件后缀 */
-    private static final String       FILE_SUFFIX = ".txt";
-
-    /** 文件格式的填充字符 */
-    private final static char         PAD_CHAR    = '0';
+    protected final static Logger     logger = Logger
+                                                 .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
 
     /** 
      * @see java.lang.Thread#run()
@@ -52,30 +49,47 @@ public class NetflixCmpSimFileReader extends Thread {
         for (int movieId = 1; movieId <= ConfigurationConstant.TASK_SIZE; movieId++) {
             //1. 拼写文件名
             String fileName = (new StringBuilder(entry.getValue()))
-                .append(StringUtil.alignRight(String.valueOf(movieId), 7, PAD_CHAR))
-                .append(FILE_SUFFIX).toString();
+                .append(StringUtil.alignRight(String.valueOf(movieId), 7, FileUtil.ZERO_PAD_CHAR))
+                .append(FileUtil.TXT_FILE_SUFFIX).toString();
 
             //2. 读取文件
             String[] contents = FileUtil.readLines(fileName);
 
             //3. 解析模板 
-            List<Rating> singleItems = new ArrayList<Rating>(contents.length);
+            List<RatingVO> singleItems = new ArrayList<RatingVO>(contents.length);
             for (int i = 1; i < contents.length; i++) {
                 ParserTemplate template = new ParserTemplate();
                 template.setTemplate(contents[i]);
                 template.put(NetflixRatingTemplateParser.KEY_MOVIEID, String.valueOf(movieId));
 
-                singleItems.add((Rating) TemplateType.NETFLIX_RATING_TEMPLATE.parser(template));
+                singleItems.add((RatingVO) entry.getKey().parser(template));
             }
 
             //4. 载入缓存
-            if (TestCaseConfigurationConstant.IS_PERTURBATION) {
-                SimularityStreamCache.putAndDisguise(movieId, singleItems,
-                    TestCaseConfigurationConstant.IS_NORMAL);
+            if (ConfigurationConstant.IS_PERTURBATION) {
+                SimularityStreamCache.putAndDisguise(movieId, singleItems, noise);
             } else {
                 SimularityStreamCache.put(movieId, singleItems);
             }
         }
+    }
+
+    /**
+     * Getter method for property <tt>noise</tt>.
+     * 
+     * @return property value of noise
+     */
+    public Noise getNoise() {
+        return noise;
+    }
+
+    /**
+     * Setter method for property <tt>noise</tt>.
+     * 
+     * @param noise value to be assigned to property noise
+     */
+    public void setNoise(Noise noise) {
+        this.noise = noise;
     }
 
     /**
