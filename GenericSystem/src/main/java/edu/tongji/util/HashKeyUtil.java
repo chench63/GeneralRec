@@ -32,13 +32,14 @@ public final class HashKeyUtil {
 
     /**
      * 生成Hash值
+     * [itemI]_[itemJ]
      * 
      * @param valueOfItem
      * @return
      */
     public static String genKey(ValueOfItems valueOfItem) {
-        StringBuilder stringBuilder = new StringBuilder(valueOfItem.getItemI());
-        return stringBuilder.append(ELEMENT_SEPERATOR).append(valueOfItem.getItemJ()).toString();
+        return (new StringBuilder(valueOfItem.getItemI())).append(ELEMENT_SEPERATOR)
+            .append(valueOfItem.getItemJ()).toString();
     }
 
     /**

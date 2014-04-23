@@ -16,10 +16,10 @@ import java.util.Map;
 public class PredictorHolder {
 
     /** 属性集合*/
-    private final Map<String, Object> properties = new HashMap<String, Object>();
+    private final Map<String, Object> properties           = new HashMap<String, Object>(2);
 
-    /** 固有属性 */
-    public final static String        KEY        = "KEY";
+    /** 单用户所有浏览记录*/
+    public final static String        PERSON_RATING_HISTRY = "PERSON_RATING_HISTRY";
 
     /**
      * 添加属性

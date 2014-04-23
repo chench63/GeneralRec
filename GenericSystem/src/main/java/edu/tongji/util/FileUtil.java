@@ -26,7 +26,16 @@ import org.apache.commons.io.IOUtils;
 public final class FileUtil {
 
     /** 配置文件中所使用的路径分隔符*/
-    public static final char UNION_DIR_SEPERATOR = '/';
+    public static final char   UNION_DIR_SEPERATOR = '/';
+
+    /** 文件换行符*/
+    public static final char   BREAK_LINE          = '\n';
+
+    /** 文件后缀 */
+    public static final String TXT_FILE_SUFFIX     = ".txt";
+
+    /** 文件格式的填充字符 */
+    public final static char   ZERO_PAD_CHAR       = '0';
 
     /**
      * 禁用构造函数
@@ -161,6 +170,39 @@ public final class FileUtil {
         }
 
         return context.toArray(new String[context.size()]);
+    }
+
+    /**
+     * 获取符合模式的文件路径
+     * 
+     * @param path  文件路径的RE
+     * @return
+     */
+    public static File[] parserFilesByPattern(String path) {
+        if (StringUtil.isEmpty(path)) {
+            return null;
+        }
+
+        //拆分目录和正则表达式
+        int index = path.lastIndexOf(UNION_DIR_SEPERATOR);
+        String dirValue = path.substring(0, index);
+        String regexValue = path.substring(index + 1);
+        File dir = new File(dirValue);
+        if (!dir.isDirectory() | StringUtil.isBlank(regexValue)) {
+            ExceptionUtil.caught(new FileNotFoundException("File Not Found"), "目录不存在，校验文件路径: "
+                                                                              + path);
+            return null;
+        }
+
+        //批量读取文件
+        List<File> filePaths = new ArrayList<File>();
+        Pattern p = Pattern.compile(regexValue);
+        for (File file : dir.listFiles()) {
+            if (file.isFile() && p.matcher(file.getName()).matches()) {
+                filePaths.add(file);
+            }
+        }
+        return filePaths.toArray(new File[filePaths.size()]);
     }
 
     /**

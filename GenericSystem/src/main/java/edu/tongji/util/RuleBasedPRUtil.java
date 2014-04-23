@@ -6,12 +6,10 @@ package edu.tongji.util;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import edu.tongji.cache.WeatherCache;
-import edu.tongji.extend.gnuplot.support.SmartGridFormatterHelper;
 import edu.tongji.vo.MeterReadingVO;
 import edu.tongji.vo.WeatherVO;
 
@@ -59,8 +57,8 @@ public final class RuleBasedPRUtil {
         }
 
         //2. 恢复图形，寻找Peak值
-        Map<String, DescriptiveStatistics> repo = SmartGridFormatterHelper.tabulateOrderQuarter(
-            temple, Integer.MAX_VALUE);
+        //        Map<String, DescriptiveStatistics> repo = SmartGridFormatterHelper.tabulateOrderQuarter(
+        //            temple, Integer.MAX_VALUE);
 
         //Mean值大，说明存在 空调的可能性大
         //Sigma值大，说明存在用户行为的波动大
