@@ -24,7 +24,7 @@ public class NetflixRatingTemplateParser implements Parser {
     public final static String  KEY_MOVIEID          = "movieId";
 
     /** 
-     * [userId],[movieId],[rating],[date]
+     * [userId],[rating],[date]
      * 
      * @see edu.tongji.parser.Parser#parser(edu.tongji.parser.ParserTemplate)
      */

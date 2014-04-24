@@ -4,6 +4,7 @@
  */
 package edu.tongji.context;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,7 +78,7 @@ public final class ProcessorContextHelper {
                                                  List<Number> ratingsValusOfItemI,
                                                  List<Number> ratingsValusOfItemJ) {
         //优化代码效率，使搜索复杂度为O(1)，但是提高了内存使用率
-        Map<Integer, Integer> usrIdOfItemJ = new HashMap<Integer, Integer>();
+        Map<Integer, Integer> usrIdOfItemJ = new HashMap<Integer, Integer>(ratingsOfItemJ.size());
         for (int i = 0; i < ratingsOfItemJ.size(); i++) {
             usrIdOfItemJ.put(ratingsOfItemJ.get(i).getUsrId(), i);
         }
@@ -93,8 +94,11 @@ public final class ProcessorContextHelper {
                 ratingsValusOfItemI.add(rating.getRatingCmp());
                 ratingsValusOfItemJ.add(ratingsOfItemJ.get(indexOfRatingsJ).getRatingCmp());
             }
-
         }
+
+        //对齐内存
+        ((ArrayList<Number>) ratingsValusOfItemI).ensureCapacity(ratingsValusOfItemI.size());
+        ((ArrayList<Number>) ratingsValusOfItemJ).ensureCapacity(ratingsValusOfItemJ.size());
     }
 
 }

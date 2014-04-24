@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
 
+import edu.tongji.configure.ConfigurationConstant;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.util.ExceptionUtil;
 import edu.tongji.util.LoggerUtil;
@@ -36,6 +37,8 @@ public class DBBasedMultiThreadRecommendationEngine extends MultiThreadRecommend
     @Override
     public void excute() {
         LoggerUtil.info(logger, "Engine Start...");
+        //系统常量配置区
+        ConfigurationConstant.setTHREAD_SIZE(recorder.size());
 
         reader.start();
         try {

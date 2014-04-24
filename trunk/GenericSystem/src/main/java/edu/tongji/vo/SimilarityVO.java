@@ -46,7 +46,7 @@ public final class SimilarityVO {
     @Override
     public String toString() {
         return (new StringBuilder()).append(this.itemI).append(SimilarityTemplateParser.SEPERATOR)
-            .append(this.itemI).append(SimilarityTemplateParser.SEPERATOR).append(this.similarity)
+            .append(this.itemJ).append(SimilarityTemplateParser.SEPERATOR).append(this.similarity)
             .toString();
     }
 

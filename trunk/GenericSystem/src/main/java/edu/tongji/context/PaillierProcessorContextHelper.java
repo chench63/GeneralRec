@@ -94,16 +94,16 @@ public final class PaillierProcessorContextHelper {
         int size = ratingsValusOfItemI.size();
         for (int i = 0; i < size; i++) {
             //分子
-            Number numerator = ratingsValusOfItemI.get(i).doubleValue()
-                               * ratingsValusOfItemJ.get(i).doubleValue();
+            Number numerator = ratingsValusOfItemI.get(i).floatValue()
+                               * ratingsValusOfItemJ.get(i).floatValue();
             numeratorOfSim.add(numerator);
 
             //I部分分母
-            Number denomiOfI = Math.pow(ratingsValusOfItemI.get(i).doubleValue(), 2.0);
+            Number denomiOfI = Math.pow(ratingsValusOfItemI.get(i).floatValue(), 2.0);
             denominatroOfSimAboutI.add(denomiOfI);
 
             //J部分分母
-            Number denomiOfJ = Math.pow(ratingsValusOfItemJ.get(i).doubleValue(), 2.0);
+            Number denomiOfJ = Math.pow(ratingsValusOfItemJ.get(i).floatValue(), 2.0);
             denominatroOfSimAboutJ.add(denomiOfJ);
         }
 

@@ -12,7 +12,7 @@ import org.springframework.util.StopWatch;
 
 import edu.tongji.cache.CacheHolder;
 import edu.tongji.cache.CacheTask;
-import edu.tongji.cache.SimularityStreamCache;
+import edu.tongji.cache.SimilarityStreamCache;
 import edu.tongji.context.PaillierProcessorContextHelper;
 import edu.tongji.context.ProcessorContextHelper;
 import edu.tongji.function.Function;
@@ -44,7 +44,7 @@ public class NetflixCmpSimPaillierRecorder implements Runnable {
 
         CacheTask task = null;
 
-        while ((task = SimularityStreamCache.task()) != null) {
+        while ((task = SimilarityStreamCache.task()) != null) {
             int i = task.i;
             int jStart = task.jStart;
             int jEnd = task.jEnd;
@@ -60,8 +60,8 @@ public class NetflixCmpSimPaillierRecorder implements Runnable {
             stopWatch.start();
             //1. 计算Pearson相似度的，分子和两个分母
             for (int j = jStart; j < jEnd; j++) {
-                List<RatingVO> ratingOfI = SimularityStreamCache.get(i);
-                List<RatingVO> ratingOfJ = SimularityStreamCache.get(j);
+                List<RatingVO> ratingOfI = SimilarityStreamCache.get(i);
+                List<RatingVO> ratingOfJ = SimilarityStreamCache.get(j);
                 List<Number> valuesOfI = new ArrayList<Number>();
                 List<Number> valuesOfJ = new ArrayList<Number>();
                 ProcessorContextHelper.forgeSymmetryRatingValues(ratingOfI, ratingOfJ, valuesOfI,
@@ -98,7 +98,7 @@ public class NetflixCmpSimPaillierRecorder implements Runnable {
             CacheHolder cacheHolder = new CacheHolder();
             cacheHolder.put(CacheHolder.ELAPSE, stopWatch.getTotalTimeMillis());
             cacheHolder.put(CacheHolder.MOVIE_ID, i);
-            SimularityStreamCache.update(cacheHolder);
+            SimilarityStreamCache.update(cacheHolder);
         }
 
     }

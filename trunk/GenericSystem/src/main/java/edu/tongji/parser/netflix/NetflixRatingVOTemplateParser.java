@@ -21,11 +21,8 @@ public class NetflixRatingVOTemplateParser implements Parser {
     /** 分隔符正则表达式 */
     private final static String SAPERATOR_EXPRESSION = "\\,";
 
-    /** movieId键 */
-    public final static String  KEY_MOVIEID          = "movieId";
-
     /** 
-     * [userId],[movieId],[ratingReal],,[ratingCmp]
+     * [movieId],[userId],[ratingReal],,[ratingCmp]
      * 
      * @see edu.tongji.parser.Parser#parser(edu.tongji.parser.ParserTemplate)
      */
@@ -39,8 +36,8 @@ public class NetflixRatingVOTemplateParser implements Parser {
 
         try {
             String[] elements = context.split(SAPERATOR_EXPRESSION);
-            int userId = Integer.valueOf(elements[0]).intValue();
-            int movieId = Integer.valueOf(template.get(KEY_MOVIEID)).intValue();
+            int movieId = Integer.valueOf(elements[0]).intValue();
+            int userId = Integer.valueOf(elements[1]).intValue();
             Float ratingReal = Float.valueOf(elements[2]);
             Float ratingCmp = (elements.length == 5 && StringUtil.isNotBlank(elements[4])) ? Float
                 .valueOf(elements[4]) : ratingReal;
