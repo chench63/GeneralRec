@@ -1,5 +1,5 @@
 /**
- * Alipay.com Inc.
+ * Tongji Edu.
  * Copyright (c) 2004-2013 All Rights Reserved.
  */
 package edu.tongji.thread;
@@ -23,8 +23,8 @@ import edu.tongji.util.StringUtil;
 import edu.tongji.vo.SimilarityVO;
 
 /**
- * 读取文件中的用户数据，
- * 至数据库，读取相似度信息；
+ * 从文件中读取相似度信息，<br/>
+ * 按RE规则，读取用户集
  * 
  * @author chench
  * @version $Id: NetFlixSimularityDBReader.java, v 0.1 31 Oct 2013 19:42:33 chench Exp $
@@ -76,7 +76,8 @@ public class NetflixEvaPredctFileReader extends Thread {
         //加载相似度入缓存
         for (SimilarityVO sim : content) {
             //由插入数据保证，x>y
-            GeneralCache.put(sim.getItemI(), sim.getItemJ(), sim.getSimilarity());
+            GeneralCache.put(sim.getItemI(), sim.getItemJ(),
+                sim.getSimilarity() > 0.0F ? sim.getSimilarity() : 0.0F);
         }
         LoggerUtil.info(logger, "loading similarity to Cache...Size: " + content.size());
     }

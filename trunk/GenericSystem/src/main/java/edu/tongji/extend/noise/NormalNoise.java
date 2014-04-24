@@ -7,6 +7,7 @@ package edu.tongji.extend.noise;
 import org.apache.commons.math3.distribution.NormalDistribution;
 
 /**
+ * 正态分布噪声类
  * 
  * @author chench
  * @version $Id: NormalDistributionNoise.java, v 0.1 2014-2-24 下午4:18:10 chench Exp $
@@ -15,6 +16,9 @@ public class NormalNoise implements Noise {
 
     /** 正态分布实体*/
     protected NormalDistribution normal;
+
+    /** 默认icf(1)对应的值*/
+    protected float              icf_limit = Float.MAX_VALUE;
 
     /**
      * 构造函数
@@ -34,12 +38,21 @@ public class NormalNoise implements Noise {
         this.normal = new NormalDistribution(mean, standardDeviation);
     }
 
+    public NormalNoise(double mean, double standardDeviation, double probality) {
+        this.normal = new NormalDistribution(mean, standardDeviation);
+        this.icf_limit = Double.valueOf(normal.inverseCumulativeProbability(probality))
+            .floatValue();
+    }
+
     /** 
      * @see edu.tongji.extend.noise.Noise#random()
      */
     @Override
     public double random() {
-        return normal.sample();
+        double sample = 0.0d;
+        while (Math.abs(sample = normal.sample()) > icf_limit)
+            ;
+        return sample;
     }
 
     /** 
@@ -47,7 +60,10 @@ public class NormalNoise implements Noise {
      */
     @Override
     public double perturb(double input) {
-        return normal.sample() + input;
+        double sample = 0.0d;
+        while (Math.abs(sample = normal.sample()) > icf_limit)
+            ;
+        return sample + input;
     }
 
     /** 

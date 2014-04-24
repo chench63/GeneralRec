@@ -15,11 +15,23 @@
 		<!-- 主任务参数最大值 $Cache -->
 		<property name="TASK_SIZE" value="17770" />
 		<property name="SUB_TASK_SIZE" value="1777" />
-
-		<!-- 相似度数据标签 -->
-		<property name="SIMILARITY_TYPE" value="RP_Pearson" />
+		<property name="THREAD_FOR_STEP" value="800" />
 		<!-- 持久化文件路径 -->
-		<property name="FILE_PATH" value="SMP_Pearson" />
+		<property name="USER_SEQ_FILE_PATH"
+			value="C:\\Users\\ppiachen\\Desktop\\DataSet\\Rating\\ur_" />
+		<property name="SIMILARITY_FILE_PATH"
+			value="C:\\Users\\ppiachen\\Desktop\\DataSet\\Simularity\\sm_" />
+
+		<!-- CmpSim -->
+
+
+		<!-- EvaPrdct UserSeq -->
+		<property name="USER_BEGIN" value="1" />
+		<property name="USER_END" value="17770" />
+
+		<!-- EvaPrdct Simlrt -->
+		<property name="SIMLRTY_BEGIN" value="1" />
+		<property name="SIMLRTY_END" value="17770" />
 
 	</bean>
 
@@ -50,16 +62,17 @@
 	<!-- ******************************************** 多线程部分************************************************ -->
 	<!-- 相似度计算域 -->
 	<bean id="NetflixCmpSimFileReader" class="edu.tongji.thread.NetflixCmpSimFileReader">
+		<!--normalDistri_0_95 | normalDistri_0_80 -->
+		<property name="noise" ref="normalDistri_0_95" />
 		<property name="sourceEntity">
 			<util:map key-type="edu.tongji.parser.TemplateType">
-				<entry key="NETFLIX_RATING_TEMPLATE" value="src/test/resources/dataset/testcase/netflix/mv_" />
+				<entry key="NETFLIX_RATINGVO_TEMPLATE" value="src/test/resources/dataset/testcase/netflix/mv_" />
 			</util:map>
 		</property>
 	</bean>
 	<bean id="NetflixCmpSimRecorder" class="edu.tongji.thread.NetflixCmpSimRecorder"
 		scope="prototype">
 		<property name="similarityFunction" ref="AccCorrelationBasedSimularityFunction" />
-		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl" />
 	</bean>
 	<bean id="NetflixCmpSimPaillierRecorder" class="edu.tongji.thread.NetflixCmpSimPaillierRecorder"
 		scope="prototype">
@@ -68,18 +81,39 @@
 	</bean>
 
 	<!-- 推荐结果计算域 -->
-	<bean id="NetflixEvaPredctDBReader" class="edu.tongji.thread.NetflixEvaPredctDBReader">
-		<property name="ratingDAO" ref="ratingDAO" />
-		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl" />
+	<bean id="NetflixEvaPredctFileReader" class="edu.tongji.thread.NetflixEvaPredctFileReader">
+		<property name="sourceEntity">
+			<util:map key-type="edu.tongji.parser.TemplateType">
+				<entry key="SIMILARITY_TEMPLATE" value="src/test/resources/dataset/testcase/netflix/mv_" />
+				<entry key="NETFLIX_RATINGVO_TEMPLATE" value="src/test/resources/dataset/testcase/netflix/mv_" />
+			</util:map>
+		</property>
 	</bean>
 	<bean id="NetflixEvaPredctRecorder" class="edu.tongji.thread.NetflixEvaPredctRecorder"
 		scope="prototype">
-		<property name="predictor" ref="predictor" />
+		<property name="predictor" ref="GeneralPredictor" />
 	</bean>
 
 
-
-
+	<!-- ******************************************** 噪声部分************************************************ -->
+	<!-- Noise Entity -->
+	<bean id="normalDistri_0_95" class="edu.tongji.extend.noise.NormalNoise"
+		scope="prototype">
+		<constructor-arg index="0" type="double" value="0.0" />
+		<constructor-arg index="1" type="double" value="1.0" />
+		<constructor-arg index="2" type="double" value="0.95" />
+	</bean>
+	<bean id="normalDistri_0_80" class="edu.tongji.extend.noise.NormalNoise"
+		scope="prototype">
+		<constructor-arg index="0" type="double" value="0.0" />
+		<constructor-arg index="1" type="double" value="1.0" />
+		<constructor-arg index="2" type="double" value="0.80" />
+	</bean>
+	<bean id="uniformNoise" class="edu.tongji.extend.noise.UniformNoise"
+		scope="prototype">
+		<constructor-arg index="0" type="double" value="-2.0" />
+		<constructor-arg index="1" type="double" value="2.0" />
+	</bean>
 
 	<!-- ******************************************** 相似度计算部分************************************************ -->
 	<!-- Function Set -->
@@ -94,8 +128,6 @@
 
 	<!-- ******************************************** 预测器部分************************************************ -->
 	<bean id="predictor" class="edu.tongji.predictor.GeneralPredictor" />
-
-
 
 
 	<!-- ******************************************** 配置DB数据源 ************************************************ -->

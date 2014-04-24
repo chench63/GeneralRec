@@ -61,7 +61,6 @@
 	<!-- ******************************************** 多线程部分************************************************ -->
 	<!-- 相似度计算域 -->
 	<bean id="NetflixCmpSimFileReader" class="edu.tongji.thread.NetflixCmpSimFileReader">
-		<property name="noise" ref="normalDistri" />
 		<property name="sourceEntity">
 			<util:map key-type="edu.tongji.parser.TemplateType">
 				<entry key="NETFLIX_RATINGVO_TEMPLATE" value="src/test/resources/dataset/testcase/netflix/mv_" />
@@ -90,20 +89,6 @@
 	<bean id="NetflixEvaPredctRecorder" class="edu.tongji.thread.NetflixEvaPredctRecorder"
 		scope="prototype">
 		<property name="predictor" ref="GeneralPredictor" />
-	</bean>
-
-
-	<!-- ******************************************** 噪声部分************************************************ -->
-	<!-- Noise Entity -->
-	<bean id="normalDistri" class="edu.tongji.extend.noise.NormalNoise"
-		scope="prototype">
-		<constructor-arg index="0" type="double" value="0.0" />
-		<constructor-arg index="1" type="double" value="103.643" />
-	</bean>
-	<bean id="uniformNoise" class="edu.tongji.extend.noise.UniformNoise"
-		scope="prototype">
-		<constructor-arg index="0" type="double" value="-2.0" />
-		<constructor-arg index="1" type="double" value="2.0" />
 	</bean>
 
 
