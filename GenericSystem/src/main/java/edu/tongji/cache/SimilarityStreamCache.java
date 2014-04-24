@@ -5,8 +5,10 @@
 package edu.tongji.cache;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Observable;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -27,7 +29,7 @@ import edu.tongji.vo.RatingVO;
  * @author chench
  * @version $Id: SimularityStreamCache.java, v 0.1 2013-10-12 下午2:53:34 chench Exp $
  */
-public final class SimularityStreamCache extends Observable {
+public final class SimilarityStreamCache extends Observable {
 
     /** 读写锁 */
     private static final ReadWriteLock        lock           = new ReentrantReadWriteLock();
@@ -41,7 +43,7 @@ public final class SimularityStreamCache extends Observable {
     /** 运行时间*/
     private final static CacheStopWatch       catchStopWatch = new CacheStopWatch();
 
-    protected static SimularityStreamCache    singletone     = new SimularityStreamCache();
+    protected static SimilarityStreamCache    singletone     = new SimilarityStreamCache();
 
     /**
      * NetflixRatingRecorder任务
@@ -52,21 +54,22 @@ public final class SimularityStreamCache extends Observable {
         CacheTask task = new CacheTask(CacheTask.I, 1, CacheTask.I);
 
         //判断任务是否结束
-        if (CacheTask.I > ConfigurationConstant.TASK_SIZE) {
-            LoggerUtil.info(logger, "CacheTask  Completes.....");
+        if (CacheTask.I <= ConfigurationConstant.TASK_SIZE) {
+            LoggerUtil.info(logger, "Release Task: " + task);
+            CacheTask.I++;
+            return task;
+        } else if (CacheTask.I == (ConfigurationConstant.TASK_SIZE + ConfigurationConstant.THREAD_SIZE)
+                   & !ratingContext.isEmpty()
+                   & StringUtil.isNotBlank(ConfigurationConstant.USER_SEQ_FILE_PATH)) {
             //将数据转化为，按用户分类的文件
-            if (!ratingContext.isEmpty()
-                & StringUtil.isNotBlank(ConfigurationConstant.USER_SEQ_FILE_PATH)) {
-                singletone.tabulateSeqUserInner();
-            }
-            return null;
+            singletone.tabulateSeqUserInner();
         }
 
-        //更新任务
+        //更新任务累计量
+        LoggerUtil.info(logger, "CacheTask  Completes.....");
         CacheTask.I++;
+        return null;
 
-        LoggerUtil.info(logger, "Release Task: " + task);
-        return task;
     }
 
     /**
@@ -147,56 +150,70 @@ public final class SimularityStreamCache extends Observable {
     protected void tabulateSeqUserInner() {
         LoggerUtil.info(logger, "Tabulates prepare.");
 
-        List<UserSeq> userSeqs = new ArrayList<UserSeq>();
-        //转换散列数组，索引为User_Id
+        //使用Map加快查询速度,netflix总用户数40w, 20MBye
+        //索引为User_Id
+        Map<Integer, UserSeq> usrSeqCache = new HashMap<Integer, UserSeq>();
         for (int i = ratingContext.size() - 1; i >= 0; i--) {
-            //从尾部开始剔除释放原数据
-            List<RatingVO> ratingRepo = ratingContext.remove(i);
-
+            //节约内存，剔除原数据
+            List<RatingVO> ratingRepo = ratingContext.remove(0);
             for (RatingVO rating : ratingRepo) {
                 //1. 获得用户数组
-                UserSeq userSeq = null;
-                int index = userSeqs.indexOf(rating.getUsrId());
-                if (index == -1) {
+                UserSeq userSeq = usrSeqCache.get(rating.getUsrId());
+                if (userSeq == null) {
                     //没出现过该用户，新增一个UserSeq
                     userSeq = new UserSeq(rating.getUsrId(), new ArrayList<RatingVO>());
-                } else {
-                    userSeq = userSeqs.get(index);
+                    usrSeqCache.put(rating.getUsrId(), userSeq);
                 }
 
                 //2. 对应Rating,添加至用户数组
                 userSeq.put(rating);
             }
+
+            //确保释放子链内存
+            ratingRepo.clear();
         }
+        //确保全部释放
+        ratingContext.clear();
+        LoggerUtil.info(logger, "Tabulates writing file.");
 
         //输出至文件
-        for (UserSeq userSeq : userSeqs) {
+        for (UserSeq userSeq : usrSeqCache.values()) {
             //1. 获取文件名 和 文件内容
-            //文件名称   [0000010.txt]
+            //文件名称   [ur_0000010.txt]
             StringBuilder fileName = (new StringBuilder(ConfigurationConstant.USER_SEQ_FILE_PATH))
                 .append(
-                    StringUtil.alignRight(String.valueOf(userSeq.userId), 7, FileUtil.ZERO_PAD_CHAR))
-                .append(FileUtil.TXT_FILE_SUFFIX);
+                    StringUtil.alignRight(String.valueOf(userSeq.userId), 10,
+                        FileUtil.ZERO_PAD_CHAR)).append(FileUtil.TXT_FILE_SUFFIX);
             StringBuilder context = new StringBuilder();
             for (Iterator<RatingVO> iter = userSeq.iterator(); iter.hasNext();) {
                 RatingVO rating = iter.next();
-
                 context.append(rating.toString()).append(FileUtil.BREAK_LINE);
             }
 
             //输出至文件
             FileUtil.write(fileName.toString(), context.toString());
-            LoggerUtil.info(logger, (new StringBuilder("FILE: ")).append(fileName));
+            LoggerUtil.info(
+                logger,
+                (new StringBuilder("FILE: ")).append(
+                    StringUtil.alignRight(String.valueOf(userSeq.userId), 10,
+                        FileUtil.ZERO_PAD_CHAR)).append(FileUtil.TXT_FILE_SUFFIX));
         }
         LoggerUtil.info(logger, "Tabulates Complete.");
     }
 
     protected class UserSeq {
         /** User_Id*/
-        private final int            userId;
+        private final int      userId;
 
         /** Rating列表*/
-        private final List<RatingVO> ratingArr;
+        private List<RatingVO> ratingArr;
+
+        /**
+         * @param userId
+         */
+        public UserSeq(int userId) {
+            this.userId = userId;
+        }
 
         /**
          * @param userId
@@ -230,7 +247,10 @@ public final class SimularityStreamCache extends Observable {
          */
         @Override
         public boolean equals(Object obj) {
-            return ((Integer) obj).equals(this.userId);
+            if (obj instanceof UserSeq) {
+                return ((UserSeq) obj).userId == this.userId;
+            }
+            return false;
         }
 
     }

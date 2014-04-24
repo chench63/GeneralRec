@@ -14,18 +14,21 @@
 		<!-- 主任务参数最大值 $Cache -->
 		<property name="TASK_SIZE" value="17770" />
 		<property name="SUB_TASK_SIZE" value="1777" />
+		<property name="THREAD_FOR_STEP" value="800" />
 		<!-- 持久化文件路径 -->
-		<property name="USER_SEQ_FILE_PATH" value="C:\\Users\\chench\\Desktop\\DataSet\\" />
-		<property name="SIMILARITY_FILE_PATH" value="C:\\Users\\chench\\Desktop\\DataSet\\" />
+		<property name="USER_SEQ_FILE_PATH"
+			value="C:\\Users\\ppiachen\\Desktop\\DataSet\\Rating\\ur_" />
+		<property name="SIMILARITY_FILE_PATH"
+			value="C:\\Users\\ppiachen\\Desktop\\DataSet\\Simularity\\sm_" />
 
 		<!-- CmpSim -->
 
 
-		<!-- EvaPrdct -- UserSeq -->
+		<!-- EvaPrdct UserSeq -->
 		<property name="USER_BEGIN" value="1" />
 		<property name="USER_END" value="17770" />
 
-		<!-- EvaPrdct -- Simlrt -->
+		<!-- EvaPrdct Simlrt -->
 		<property name="SIMLRTY_BEGIN" value="1" />
 		<property name="SIMLRTY_END" value="17770" />
 	</bean>
@@ -39,16 +42,13 @@
 		<property name="recorder">
 			<list>
 				<ref bean="NetflixCmpSimRecorder"></ref>
-				<ref bean="NetflixCmpSimRecorder"></ref>
-				<ref bean="NetflixCmpSimRecorder"></ref>
-				<ref bean="NetflixCmpSimRecorder"></ref>
 			</list>
 		</property>
 	</bean>
 
 	<bean id="engineForGeneratingRecommendations"
 		class="edu.tongji.engine.DBBasedMultiThreadRecommendationEngine">
-		<property name="reader" ref="NetflixEvaPredctDBReader" />
+		<property name="reader" ref="NetflixEvaPredctFileReader" />
 		<property name="recorder">
 			<list>
 				<ref bean="NetflixEvaPredctRecorder"></ref>
@@ -61,16 +61,16 @@
 	<!-- ******************************************** 多线程部分************************************************ -->
 	<!-- 相似度计算域 -->
 	<bean id="NetflixCmpSimFileReader" class="edu.tongji.thread.NetflixCmpSimFileReader">
+		<property name="noise" ref="normalDistri" />
 		<property name="sourceEntity">
 			<util:map key-type="edu.tongji.parser.TemplateType">
-				<entry key="NETFLIX_RATING_TEMPLATE" value="src/test/resources/dataset/testcase/netflix/mv_" />
+				<entry key="NETFLIX_RATINGVO_TEMPLATE" value="src/test/resources/dataset/testcase/netflix/mv_" />
 			</util:map>
 		</property>
 	</bean>
 	<bean id="NetflixCmpSimRecorder" class="edu.tongji.thread.NetflixCmpSimRecorder"
 		scope="prototype">
 		<property name="similarityFunction" ref="AccCorrelationBasedSimularityFunction" />
-		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl" />
 	</bean>
 	<bean id="NetflixCmpSimPaillierRecorder" class="edu.tongji.thread.NetflixCmpSimPaillierRecorder"
 		scope="prototype">
@@ -79,15 +79,32 @@
 	</bean>
 
 	<!-- 推荐结果计算域 -->
-	<bean id="NetflixEvaPredctDBReader" class="edu.tongji.thread.NetflixEvaPredctDBReader">
-		<property name="ratingDAO" ref="ratingDAO" />
-		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl" />
+	<bean id="NetflixEvaPredctFileReader" class="edu.tongji.thread.NetflixEvaPredctFileReader">
+		<property name="sourceEntity">
+			<util:map key-type="edu.tongji.parser.TemplateType">
+				<entry key="SIMILARITY_TEMPLATE" value="src/test/resources/dataset/testcase/netflix/mv_" />
+				<entry key="NETFLIX_RATINGVO_TEMPLATE" value="src/test/resources/dataset/testcase/netflix/mv_" />
+			</util:map>
+		</property>
 	</bean>
 	<bean id="NetflixEvaPredctRecorder" class="edu.tongji.thread.NetflixEvaPredctRecorder"
 		scope="prototype">
-		<property name="predictor" ref="predictor" />
+		<property name="predictor" ref="GeneralPredictor" />
 	</bean>
 
+
+	<!-- ******************************************** 噪声部分************************************************ -->
+	<!-- Noise Entity -->
+	<bean id="normalDistri" class="edu.tongji.extend.noise.NormalNoise"
+		scope="prototype">
+		<constructor-arg index="0" type="double" value="0.0" />
+		<constructor-arg index="1" type="double" value="103.643" />
+	</bean>
+	<bean id="uniformNoise" class="edu.tongji.extend.noise.UniformNoise"
+		scope="prototype">
+		<constructor-arg index="0" type="double" value="-2.0" />
+		<constructor-arg index="1" type="double" value="2.0" />
+	</bean>
 
 
 
@@ -103,7 +120,7 @@
 
 
 	<!-- ******************************************** 预测器部分************************************************ -->
-	<bean id="predictor" class="edu.tongji.predictor.NegativeDeniedPredictor" />
+	<bean id="GeneralPredictor" class="edu.tongji.predictor.GeneralPredictor" />
 
 
 

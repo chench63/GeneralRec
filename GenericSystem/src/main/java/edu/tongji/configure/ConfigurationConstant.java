@@ -59,6 +59,30 @@ public final class ConfigurationConstant {
     /** 读取用户序列：结束userId号*/
     public static int     USER_END             = 885;
 
+    /** 多线程数量*/
+    public static int     THREAD_SIZE          = -1;
+
+    /** NetflixCmpSimRecorder中，循环步长*/
+    public static int     THREAD_FOR_STEP      = 800;
+
+    /**
+     * Setter method for property <tt>tHREAD_FOR_STEP</tt>.
+     * 
+     * @param THREAD_FOR_STEP value to be assigned to property tHREAD_FOR_STEP
+     */
+    public static void setTHREAD_FOR_STEP(int tHREAD_FOR_STEP) {
+        THREAD_FOR_STEP = tHREAD_FOR_STEP;
+    }
+
+    /**
+     * Setter method for property <tt>tHREAD_SIZE</tt>.
+     * 
+     * @param THREAD_SIZE value to be assigned to property tHREAD_SIZE
+     */
+    public static void setTHREAD_SIZE(int tHREAD_SIZE) {
+        THREAD_SIZE = tHREAD_SIZE;
+    }
+
     /**
      * Setter method for property <tt>mAX_CACHE_SIZE</tt>.
      * 

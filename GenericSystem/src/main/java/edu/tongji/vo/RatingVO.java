@@ -118,14 +118,14 @@ public class RatingVO {
     }
 
     /** 
-     * [userId],[movieId],[ratingCmp],[ratingReal]
+     * [movieId],[userId],[ratingReal],,[ratingCmp]
      * 
      * @see edu.tongji.model.Rating#toString()
      */
     @Override
     public String toString() {
-        return (new StringBuilder()).append(this.usrId).append(Rating.ELEMENT_SEPERATOR)
-            .append(this.movieId).append(Rating.ELEMENT_SEPERATOR).append(this.ratingCmp)
-            .append(Rating.ELEMENT_SEPERATOR).append(this.ratingReal).toString();
+        return (new StringBuilder()).append(this.movieId).append(Rating.ELEMENT_SEPERATOR)
+            .append(this.usrId).append(Rating.ELEMENT_SEPERATOR).append(this.ratingReal)
+            .append(Rating.ELEMENT_SEPERATOR).append(this.ratingCmp).toString();
     }
 }

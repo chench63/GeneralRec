@@ -11,10 +11,11 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
-import edu.tongji.cache.SimularityStreamCache;
+import edu.tongji.cache.SimilarityStreamCache;
 import edu.tongji.configure.ConfigurationConstant;
 import edu.tongji.extend.noise.Noise;
 import edu.tongji.log4j.LoggerDefineConstant;
+import edu.tongji.model.Rating;
 import edu.tongji.parser.ParserTemplate;
 import edu.tongji.parser.TemplateType;
 import edu.tongji.parser.netflix.NetflixRatingTemplateParser;
@@ -59,7 +60,8 @@ public class NetflixCmpSimFileReader extends Thread {
             List<RatingVO> singleItems = new ArrayList<RatingVO>(contents.length);
             for (int i = 1; i < contents.length; i++) {
                 ParserTemplate template = new ParserTemplate();
-                template.setTemplate(contents[i]);
+                template.setTemplate((new StringBuilder()).append(movieId)
+                    .append(Rating.ELEMENT_SEPERATOR).append(contents[i]).toString());
                 template.put(NetflixRatingTemplateParser.KEY_MOVIEID, String.valueOf(movieId));
 
                 singleItems.add((RatingVO) entry.getKey().parser(template));
@@ -67,9 +69,9 @@ public class NetflixCmpSimFileReader extends Thread {
 
             //4. 载入缓存
             if (ConfigurationConstant.IS_PERTURBATION) {
-                SimularityStreamCache.putAndDisguise(movieId, singleItems, noise);
+                SimilarityStreamCache.putAndDisguise(movieId, singleItems, noise);
             } else {
-                SimularityStreamCache.put(movieId, singleItems);
+                SimilarityStreamCache.put(movieId, singleItems);
             }
         }
     }
