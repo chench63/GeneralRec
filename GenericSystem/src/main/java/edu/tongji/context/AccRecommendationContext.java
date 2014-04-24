@@ -1,5 +1,5 @@
 /**
- * Alipay.com Inc.
+ * Tongji Edu.
  * Copyright (c) 2004-2013 All Rights Reserved.
  */
 package edu.tongji.context;
