@@ -32,10 +32,11 @@ import edu.tongji.vo.SimilarityVO;
 public class NetflixEvaPredctFileReader extends Thread {
 
     /** 需要加载的文件  **/
-    private Map<TemplateType, String> sourceEntity;
+    private static Map<TemplateType, String> sourceEntity;
 
     /** logger */
-    private final static Logger       logger = Logger.getLogger(LoggerDefineConstant.SERVICE_CACHE);
+    private final static Logger              logger = Logger
+                                                        .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
 
     /** 
      * @see java.lang.Thread#run()
@@ -43,7 +44,9 @@ public class NetflixEvaPredctFileReader extends Thread {
     @Override
     public void run() {
         //加载相似度信息至缓存
-        loadSimularityToCache();
+        if (!ConfigurationConstant.ENABLE_ECONOMICAL_CACHE) {
+            loadSimularityToCache();
+        }
 
         //加载评分测试用户级
         loadUserToCahche();
@@ -52,34 +55,51 @@ public class NetflixEvaPredctFileReader extends Thread {
     /**
      * 加载相似度信息至缓存
      */
-    private void loadSimularityToCache() {
-        List<SimilarityVO> content = null;
-        for (int movieId = 1; movieId <= ConfigurationConstant.TASK_SIZE; movieId++) {
-            //1. 拼写文件名
-            String fileName = (new StringBuilder(sourceEntity.get(TemplateType.SIMILARITY_TEMPLATE)))
-                .append(StringUtil.alignRight(String.valueOf(movieId), 7, FileUtil.ZERO_PAD_CHAR))
-                .append(FileUtil.TXT_FILE_SUFFIX).toString();
+    protected void loadSimularityToCache() {
 
-            //2. 读取文件
-            String[] contents = FileUtil.readLines(fileName);
+        for (int movieId = 2; movieId <= ConfigurationConstant.TASK_SIZE; movieId++) {
 
-            //3. 解析模板 
-            content = new ArrayList<SimilarityVO>(contents.length);
-            for (int i = 1; i < contents.length; i++) {
-                ParserTemplate template = new ParserTemplate();
-                template.setTemplate(contents[i]);
+            //1. 读取特定Item的相似度
+            List<SimilarityVO> content = new ArrayList<SimilarityVO>();
+            String fileName = loadSimilarityOutter(movieId, content);
 
-                content.add((SimilarityVO) TemplateType.SIMILARITY_TEMPLATE.parser(template));
+            //2. 加载相似度入缓存
+            for (SimilarityVO sim : content) {
+                //由插入数据保证，x>y
+                GeneralCache.put(sim.getItemI(), sim.getItemJ(), sim.getSimilarity());
             }
+
+            //3. 输出日志
+            LoggerUtil.info(logger, "File: " + fileName);
         }
 
-        //加载相似度入缓存
-        for (SimilarityVO sim : content) {
-            //由插入数据保证，x>y
-            GeneralCache.put(sim.getItemI(), sim.getItemJ(),
-                sim.getSimilarity() > 0.0F ? sim.getSimilarity() : 0.0F);
+    }
+
+    /**
+     * 读取特定Item的相似度
+     * 
+     * @param movieId
+     * @return
+     */
+    public static String loadSimilarityOutter(int movieId, List<SimilarityVO> content) {
+        //1. 拼写文件名
+        String fileName = (new StringBuilder(sourceEntity.get(TemplateType.SIMILARITY_TEMPLATE)))
+            .append(StringUtil.alignRight(String.valueOf(movieId), 7, FileUtil.ZERO_PAD_CHAR))
+            .append(FileUtil.TXT_FILE_SUFFIX).toString();
+
+        //2. 读取文件
+        String[] contents = FileUtil.readLines(fileName);
+
+        //3. 解析模板 
+        for (int i = 0; i < contents.length; i++) {
+            ParserTemplate template = new ParserTemplate();
+            template.setTemplate(contents[i]);
+
+            content.add((SimilarityVO) TemplateType.SIMILARITY_TEMPLATE.parser(template));
         }
-        LoggerUtil.info(logger, "loading similarity to Cache...Size: " + content.size());
+        ((ArrayList<SimilarityVO>) content).ensureCapacity(contents.length);
+
+        return fileName;
     }
 
     /**
@@ -106,7 +126,7 @@ public class NetflixEvaPredctFileReader extends Thread {
      * @param sourceEntity value to be assigned to property sourceEntity
      */
     public void setSourceEntity(Map<TemplateType, String> sourceEntity) {
-        this.sourceEntity = sourceEntity;
+        NetflixEvaPredctFileReader.sourceEntity = sourceEntity;
     }
 
 }

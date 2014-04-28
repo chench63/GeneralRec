@@ -40,8 +40,8 @@ public class DBBasedMultiThreadRecommendationEngine extends MultiThreadRecommend
         //系统常量配置区
         ConfigurationConstant.setTHREAD_SIZE(recorder.size());
 
-        reader.start();
         try {
+            reader.start();
             reader.join();
         } catch (InterruptedException e) {
             ExceptionUtil.caught(e, "NetflixSimularityPerformanceRecorder 线程等待join异常");

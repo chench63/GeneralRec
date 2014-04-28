@@ -48,25 +48,50 @@ public class GeneralPredictor implements Predictor {
             RatingVO subject = prsnHistry.get(i);
 
             float sum = 0.0F;
+            float sumOfSim = 0.0F;
             for (int j = 0; j < len; j++) {
                 if (i == j) {
                     continue;
                 }
 
-                int x = i > j ? i : j;
-                int y = i > j ? j : i;
-                sum += GeneralCache.get(x, y).floatValue() * ratingCmp[j];
+                int x = subject.getMovieId() > prsnHistry.get(j).getMovieId() ? subject
+                    .getMovieId() : prsnHistry.get(j).getMovieId();
+                int y = subject.getMovieId() > prsnHistry.get(j).getMovieId() ? prsnHistry.get(j)
+                    .getMovieId() : subject.getMovieId();
+
+                float sim = GeneralCache.get(x, y).floatValue();
+                sumOfSim += sim;
+                sum += sim * ratingCmp[j];
             }
 
-            float predictVal = sum > 0 ? sum / (len - 1) : 0.0F;
-            loggerMsg.append(StringUtil.alignLeft(String.valueOf(subject.getMovieId()), 7))
-                .append("O：").append(String.format("%.2f", subject.getRatingReal())).append("  P：")
-                .append(String.format("%.2f", predictVal)).append(FileUtil.BREAK_LINE);
+            float predictVal = normalize(sum, sumOfSim);
+            loggerMsg.append(FileUtil.BREAK_LINE)
+                .append(StringUtil.alignLeft(String.valueOf(subject.getMovieId()), 7)).append("O：")
+                .append(String.format("%.2f", subject.getRatingReal())).append("  P：")
+                .append(String.format("%.2f", predictVal));
             //ratingCmp存放预测值
             subject.setRatingCmp(predictVal);
         }
 
         //4.载入日志
         LoggerUtil.info(logger, loggerMsg);
+    }
+
+    /**
+     * 标准化评分值
+     * 
+     * @param sum
+     * @param n
+     * @return
+     */
+    protected float normalize(float sum, float sim) {
+        float predictVal = sum / sim;
+        if (predictVal > 5.0f) {
+            return 5.0f;
+        } else if (predictVal < 0.0f) {
+            return 0.0f;
+        }
+
+        return predictVal;
     }
 }

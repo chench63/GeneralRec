@@ -1,6 +1,6 @@
 /**
  * Tongji Edu.
- * Copyright (c) 2004-2013 All Rights Reserved.
+ * Copyright (c) 2004-2014 All Rights Reserved.
  */
 package edu.tongji.experiment.recommendation;
 
@@ -10,30 +10,29 @@ import edu.tongji.engine.Engine;
 import edu.tongji.util.ExceptionUtil;
 
 /**
+ * CMP对应，生成评分启动器
  * 
  * @author chench
- * @version $Id: NetflixSimlarityPerformanceMainThread.java, v 0.1 2013-10-15 上午10:23:03 chench Exp $
+ * @version $Id: NetflixEvaPredctCMPExper.java, v 0.1 25 Apr 2014 11:40:20 chench Exp $
  */
-public final class NetflixRandomizedPerturbationExper {
+public final class NetflixEvaPredctSMPExper {
 
     /**
-     * 
      * @param args
      */
     public static void main(String[] args) {
         ClassPathXmlApplicationContext ctx = null;
         try {
             ctx = new ClassPathXmlApplicationContext(
-                "experiment/recommendation/netflix/randomized-perturbation.xml");
+                "experiment/recommendation/netflix/asynchronized-secure-mulitiparty.xml");
             Engine engine = (Engine) ctx.getBean("engineForGeneratingRecommendations");
             engine.excute();
         } catch (Exception e) {
-            ExceptionUtil.caught(e, NetflixRandomizedPerturbationExper.class + "发生致命错误");
+            ExceptionUtil.caught(e, NetflixCmpSimSMPExper.class + "发生致命错误");
         } finally {
             if (ctx != null) {
                 ctx.close();
             }
         }
     }
-
 }
