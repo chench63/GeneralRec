@@ -14,19 +14,15 @@
 		<!-- 主任务参数最大值 $Cache -->
 		<property name="TASK_SIZE" value="17770" />
 		<property name="SUB_TASK_SIZE" value="1777" />
-		<property name="THREAD_FOR_STEP" value="800" />
-		<!-- 持久化文件路径 -->
+		<property name="ENABLE_ECONOMICAL_CACHE" value="true" />
+
+
+		<!-- CmpSim -->
 		<property name="USER_SEQ_FILE_PATH"
 			value="C:\\Users\\ppiachen\\Desktop\\DataSet\\Rating\\ur_" />
 		<property name="SIMILARITY_FILE_PATH"
 			value="C:\\Users\\ppiachen\\Desktop\\DataSet\\Simularity\\sm_" />
-
-		<!-- CmpSim -->
-
-
-		<!-- EvaPrdct UserSeq -->
-		<property name="USER_BEGIN" value="1" />
-		<property name="USER_END" value="17770" />
+		<property name="THREAD_FOR_STEP" value="800" />
 
 		<!-- EvaPrdct Simlrt -->
 		<property name="SIMLRTY_BEGIN" value="1" />
@@ -74,15 +70,14 @@
 	<bean id="NetflixCmpSimPaillierRecorder" class="edu.tongji.thread.NetflixCmpSimPaillierRecorder"
 		scope="prototype">
 		<property name="similarityFunction" ref="AccCorrelationBasedSimularityFunction" />
-		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl" />
 	</bean>
 
 	<!-- 推荐结果计算域 -->
 	<bean id="NetflixEvaPredctFileReader" class="edu.tongji.thread.NetflixEvaPredctFileReader">
 		<property name="sourceEntity">
 			<util:map key-type="edu.tongji.parser.TemplateType">
-				<entry key="SIMILARITY_TEMPLATE" value="src/test/resources/dataset/testcase/netflix/mv_" />
-				<entry key="NETFLIX_RATINGVO_TEMPLATE" value="src/test/resources/dataset/testcase/netflix/mv_" />
+				<entry key="SIMILARITY_TEMPLATE" value="G:/DataSet/Simularity/sm_" />
+				<entry key="NETFLIX_RATINGVO_TEMPLATE" value="G:/DataSet/Rating_0/.*" />
 			</util:map>
 		</property>
 	</bean>
@@ -90,8 +85,6 @@
 		scope="prototype">
 		<property name="predictor" ref="GeneralPredictor" />
 	</bean>
-
-
 
 	<!-- ******************************************** 相似度计算部分************************************************ -->
 	<!-- Function Set -->

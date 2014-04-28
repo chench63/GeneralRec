@@ -7,8 +7,6 @@ package edu.tongji.cache;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.tongji.configure.ConfigurationConstant;
-
 /**
  * 
  * @author chench
@@ -17,10 +15,10 @@ import edu.tongji.configure.ConfigurationConstant;
 public class CacheTask {
 
     /** 主任务参数i, 分配任务式使用*/
-    public static int                 I          = ConfigurationConstant.I;
+    public static int                 I          = 2;
 
     /** 协任务参数j, 分配任务式使用*/
-    public static int                 J          = ConfigurationConstant.J;
+    public static int                 J          = 1;
 
     /** 当前任务i */
     public int                        i;

@@ -8,12 +8,21 @@
 		http://www.springframework.org/schema/util
 		http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
-	<!-- ******************************************** 处理模板部分************************************************ -->
-	<!-- Entity Manager <bean id="engine" class="edu.tongji.engine.MissingRateEngine"> 
-		<property name="numOfReader" value="4" /> <property name="numOfWriter" value="1" 
-		/> </bean> -->
+	<!-- ******************************************** 实验配置部分************************************************ -->
+	<bean class="edu.tongji.configure.ConfigurationConstant">
+		<!-- 主任务参数最大值 $Cache -->
+		<property name="TASK_SIZE" value="17770" />
+		<property name="SUB_TASK_SIZE" value="1777" />
+		<property name="ENABLE_ECONOMICAL_CACHE" value="true" />
 
-	<bean id="engineForGeneratingRecommendations"
+		<!-- EvaPrdct Simlrt -->
+		<property name="SIMLRTY_BEGIN" value="1" />
+		<property name="SIMLRTY_END" value="17770" />
+	</bean>
+
+
+	<!-- ******************************************** 处理模板部分************************************************ -->
+	<bean id="engineForGeneratingSimilarity"
 		class="edu.tongji.engine.DBBasedMultiThreadRecommendationEngine">
 		<property name="reader" ref="NetflixCmpSimFileReader" />
 		<property name="recorder">
@@ -26,19 +35,6 @@
 		</property>
 	</bean>
 
-	<bean id="engineForGeneratingSimilarity"
-		class="edu.tongji.engine.DBBasedMultiThreadRecommendationEngine">
-		<property name="reader" ref="NetFlixSimularityDBReader" />
-		<property name="recorder">
-			<list>
-				<ref bean="NetflixSimularityRecorder"></ref>
-				<ref bean="NetflixSimularityRecorder"></ref>
-				<ref bean="NetflixSimularityRecorder"></ref>
-				<ref bean="NetflixSimularityRecorder"></ref>
-			</list>
-		</property>
-	</bean>
-
 
 
 	<!-- ******************************************** 多线程部分************************************************ -->
@@ -46,29 +42,31 @@
 	<bean id="NetflixCmpSimFileReader" class="edu.tongji.thread.NetflixCmpSimFileReader">
 		<property name="sourceEntity">
 			<util:map key-type="edu.tongji.parser.TemplateType">
-				<entry key="NETFLIX_RATING_TEMPLATE" value="src/test/resources/dataset/testcase/netflix/mv_" />
+				<entry key="NETFLIX_RATINGVO_TEMPLATE" value="src/test/resources/dataset/testcase/netflix/mv_" />
 			</util:map>
 		</property>
 	</bean>
 	<bean id="NetflixCmpSimRecorder" class="edu.tongji.thread.NetflixCmpSimRecorder"
 		scope="prototype">
 		<property name="similarityFunction" ref="AccCorrelationBasedSimularityFunction" />
-		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl" />
 	</bean>
 	<bean id="NetflixCmpSimPaillierRecorder" class="edu.tongji.thread.NetflixCmpSimPaillierRecorder"
 		scope="prototype">
 		<property name="similarityFunction" ref="AccCorrelationBasedSimularityFunction" />
-		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl" />
 	</bean>
 
 	<!-- 推荐结果计算域 -->
-	<bean id="NetflixEvaPredctDBReader" class="edu.tongji.thread.NetflixEvaPredctDBReader">
-		<property name="ratingDAO" ref="ratingDAO" />
-		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl" />
+	<bean id="NetflixEvaPredctFileReader" class="edu.tongji.thread.NetflixEvaPredctFileReader">
+		<property name="sourceEntity">
+			<util:map key-type="edu.tongji.parser.TemplateType">
+				<entry key="SIMILARITY_TEMPLATE" value="src/test/resources/dataset/testcase/netflix/mv_" />
+				<entry key="NETFLIX_RATINGVO_TEMPLATE" value="src/test/resources/dataset/testcase/netflix/mv_" />
+			</util:map>
+		</property>
 	</bean>
 	<bean id="NetflixEvaPredctRecorder" class="edu.tongji.thread.NetflixEvaPredctRecorder"
 		scope="prototype">
-		<property name="predictor" ref="predictor" />
+		<property name="predictor" ref="GeneralPredictor" />
 	</bean>
 
 

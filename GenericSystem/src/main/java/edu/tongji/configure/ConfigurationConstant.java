@@ -18,52 +18,61 @@ package edu.tongji.configure;
 public final class ConfigurationConstant {
 
     /** 用户序列，文件路径*/
-    public static String  USER_SEQ_FILE_PATH   = null;
+    public static String  USER_SEQ_FILE_PATH      = null;
 
     /** 相似度，文件路径*/
-    public static String  SIMILARITY_FILE_PATH = null;
+    public static String  SIMILARITY_FILE_PATH    = null;
 
     /** 是否加入随机噪声*/
-    public static boolean IS_PERTURBATION      = false;
+    public static boolean IS_PERTURBATION         = false;
 
     /** 是否将数据转化为，按用户分类的文件*/
-    public static boolean TABULATE_SEQ_USER    = false;
-
-    /**  最大缓存容量 $Cache*/
-    public static int     MAX_CACHE_SIZE       = 10000;
-
-    /**  单任务最大容量 $Cache*/
-    public static int     SINGLE_TASK_SIZE     = 1000;
+    public static boolean TABULATE_SEQ_USER       = false;
 
     /**  主任务参数最大值 $Cache*/
-    public static int     TASK_SIZE            = 17770;
+    public static int     TASK_SIZE               = 17770;
 
     /**  子任务容量 $CacheStopWatch : 使用分组，必须保证，分组数 >= 2*/
-    public static int     SUB_TASK_SIZE        = 1777;
-
-    /**  主任务参数i, 分配任务式使用 $CacheTask*/
-    public static int     I                    = 2;
-
-    /**  协任务参数j, 分配任务式使用 $CacheTask*/
-    public static int     J                    = 1;
+    public static int     SUB_TASK_SIZE           = 1777;
 
     /** 读取文件相似度：开始movieId号*/
-    public static int     SIMLRTY_BEGIN        = 1;
+    public static int     SIMLRTY_BEGIN           = 1;
 
     /** 读取文件相似度：结束movieId号*/
-    public static int     SIMLRTY_END          = 885;
-
-    /** 读取用户序列：开始userId号*/
-    public static int     USER_BEGIN           = 1;
-
-    /** 读取用户序列：结束userId号*/
-    public static int     USER_END             = 885;
+    public static int     SIMLRTY_END             = 885;
 
     /** 多线程数量*/
-    public static int     THREAD_SIZE          = -1;
+    public static int     THREAD_SIZE             = -1;
 
     /** NetflixCmpSimRecorder中，循环步长*/
-    public static int     THREAD_FOR_STEP      = 800;
+    public static int     THREAD_FOR_STEP         = 800;
+
+    /** 数值缓存容量上限*/
+    public static float   NUMERIC_CACHE_LIMIT_GB  = 1.2f * 1024 * 1024 * 1024;
+
+    /** 辅助缓存容量上限*/
+    public static int     AUXILIARY_MEM_SIZE      = 100;
+
+    /** 启用集约缓存*/
+    public static boolean ENABLE_ECONOMICAL_CACHE = false;
+
+    /**
+     * Setter method for property <tt>aUXILIARY_MEM_SIZE</tt>.
+     * 
+     * @param AUXILIARY_MEM_SIZE value to be assigned to property aUXILIARY_MEM_SIZE
+     */
+    public static void setAUXILIARY_MEM_SIZE(int aUXILIARY_MEM_SIZE) {
+        AUXILIARY_MEM_SIZE = aUXILIARY_MEM_SIZE;
+    }
+
+    /**
+     * Setter method for property <tt>eNABLE_ECONOMICAL_CACHE</tt>.
+     * 
+     * @param ENABLE_ECONOMICAL_CACHE value to be assigned to property eNABLE_ECONOMICAL_CACHE
+     */
+    public static void setENABLE_ECONOMICAL_CACHE(boolean eNABLE_ECONOMICAL_CACHE) {
+        ENABLE_ECONOMICAL_CACHE = eNABLE_ECONOMICAL_CACHE;
+    }
 
     /**
      * Setter method for property <tt>tHREAD_FOR_STEP</tt>.
@@ -84,42 +93,6 @@ public final class ConfigurationConstant {
     }
 
     /**
-     * Setter method for property <tt>mAX_CACHE_SIZE</tt>.
-     * 
-     * @param MAX_CACHE_SIZE value to be assigned to property mAX_CACHE_SIZE
-     */
-    public static void setMAX_CACHE_SIZE(int mAX_CACHE_SIZE) {
-        MAX_CACHE_SIZE = mAX_CACHE_SIZE;
-    }
-
-    /**
-     * Setter method for property <tt>uSER_BEGIN</tt>.
-     * 
-     * @param USER_BEGIN value to be assigned to property uSER_BEGIN
-     */
-    public static void setUSER_BEGIN(int uSER_BEGIN) {
-        USER_BEGIN = uSER_BEGIN;
-    }
-
-    /**
-     * Setter method for property <tt>uSER_END</tt>.
-     * 
-     * @param USER_END value to be assigned to property uSER_END
-     */
-    public static void setUSER_END(int uSER_END) {
-        USER_END = uSER_END;
-    }
-
-    /**
-     * Setter method for property <tt>sINGLE_TASK_SIZE</tt>.
-     * 
-     * @param SINGLE_TASK_SIZE value to be assigned to property sINGLE_TASK_SIZE
-     */
-    public static void setSINGLE_TASK_SIZE(int sINGLE_TASK_SIZE) {
-        SINGLE_TASK_SIZE = sINGLE_TASK_SIZE;
-    }
-
-    /**
      * Setter method for property <tt>tASK_SIZE</tt>.
      * 
      * @param TASK_SIZE value to be assigned to property tASK_SIZE
@@ -135,24 +108,6 @@ public final class ConfigurationConstant {
      */
     public static void setSUB_TASK_SIZE(int sUB_TASK_SIZE) {
         SUB_TASK_SIZE = sUB_TASK_SIZE;
-    }
-
-    /**
-     * Setter method for property <tt>i</tt>.
-     * 
-     * @param I value to be assigned to property i
-     */
-    public static void setI(int i) {
-        I = i;
-    }
-
-    /**
-     * Setter method for property <tt>j</tt>.
-     * 
-     * @param J value to be assigned to property j
-     */
-    public static void setJ(int j) {
-        J = j;
     }
 
     /**
@@ -216,6 +171,15 @@ public final class ConfigurationConstant {
      */
     public static void setIS_PERTURBATION(boolean iS_PERTURBATION) {
         IS_PERTURBATION = iS_PERTURBATION;
+    }
+
+    /**
+     * Setter method for property <tt>nUMERIC_CACHE_LIMIT_GB</tt>.
+     * 
+     * @param NUMERIC_CACHE_LIMIT_GB value to be assigned to property nUMERIC_CACHE_LIMIT_GB
+     */
+    public static void setNUMERIC_CACHE_LIMIT_GB(float nUMERIC_CACHE_LIMIT_GB) {
+        NUMERIC_CACHE_LIMIT_GB = nUMERIC_CACHE_LIMIT_GB * 1024 * 1024 * 1024;
     }
 
 }
