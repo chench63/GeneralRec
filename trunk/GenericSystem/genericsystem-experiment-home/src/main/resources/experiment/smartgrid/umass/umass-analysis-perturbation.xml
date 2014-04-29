@@ -24,7 +24,7 @@
 		<property name="dataSource" ref="datasource" />
 		<!-- hourSeqDataSetAssembler | quarterSeqDataSetAssembler | wattQuarterSeqDataSetAssembler -->
 		<property name="assembler" ref="wattQuarterSeqDataSetAssembler" />
-		<property name="absolutePath" value="C:\\Users\\chench\\Desktop\\DataSet\\test" />
+		<property name="absolutePath" value="G:\\DataSet\\test" />
 		<property name="velocityContextHelper" ref="velocityContextHelper" />
 		<!-- emSeqHourFormatter | emSeqQuarterFormatter | meanSeqHourFormatter 
 			| meanSeqQuarterFormatter | maxSeqQuarterFormatter | specifiedDayFormatter -->
