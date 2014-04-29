@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.2.xsd
+		http://www.springframework.org/schema/util
+		http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+	<!-- ******************************************** 处理模板部分************************************************ -->
+	<!-- Entity Manager <bean id="engine" class="edu.tongji.engine.MissingRateEngine"> 
+		<property name="numOfReader" value="4" /> <property name="numOfWriter" value="1" 
+		/> </bean> -->
+
+	<bean id="engine"
+		class="edu.tongji.engine.DBBasedMultiThreadRecommendationEngine">
+		<property name="reader" ref="NetflixSimularityPerformanceDBReader" />
+		<property name="recorder">
+			<list>
+				<ref bean="NetflixSimularityPerformanceRecorder"></ref>
+				<ref bean="NetflixSimularityPerformanceRecorder"></ref>
+				<ref bean="NetflixSimularityPerformanceRecorder"></ref>
+				<ref bean="NetflixSimularityPerformanceRecorder"></ref>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="engineForSim"
+		class="edu.tongji.engine.DBBasedMultiThreadRecommendationEngine">
+		<property name="reader" ref="NetFlixSimularityDBReader" />
+		<property name="recorder">
+			<list>
+				<ref bean="NetflixSimularityRecorder"></ref>
+				<ref bean="NetflixSimularityRecorder"></ref>
+				<ref bean="NetflixSimularityRecorder"></ref>
+				<ref bean="NetflixSimularityRecorder"></ref>
+			</list>
+		</property>
+	</bean>
+	
+
+
+	<!-- ******************************************** 多线程部分************************************************ -->
+	<bean id="NetflixSimularityPerformanceRecorder" class="edu.tongji.thread.NetflixSimularityPerformanceRecorder"
+		scope="prototype">
+		<property name="similarityFunction" ref="AccCorrelationBasedSimularityFunction" />
+		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl" />
+	</bean>
+	<bean id="NetflixSimularityRecorder" class="edu.tongji.thread.NetflixSimularityRecorder"
+		scope="prototype">
+		<property name="predictor" ref="predictor" />
+	</bean>
+	<bean id="NetflixSimularityPerformancePaillierRecorder"
+		class="edu.tongji.thread.NetflixSimularityPerformancePaillierRecorder"
+		scope="prototype">
+		<property name="similarityFunction" ref="HomoCorrelationBasedSimularityFunction" />
+		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl" />
+	</bean>
+
+
+	<bean id="NetflixSimularityPerformanceDBReader" class="edu.tongji.thread.NetflixSimularityPerformanceDBReader">
+		<property name="ratingDAO" ref="ratingDAO" />
+	</bean>
+	<bean id="NetFlixSimularityDBReader" class="edu.tongji.thread.NetFlixSimularityDBReader">
+		<property name="ratingDAO" ref="ratingDAO" />
+		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl" />
+	</bean>
+	
+
+
+
+
+	<!-- ******************************************** 相似度计算部分************************************************ -->
+	<!-- Function Set -->
+	<bean id="cosineSimularityFunction" class="edu.tongji.function.CosineSimularityFunction" />
+	<bean id="correlationBasedSimularityFunction" class="edu.tongji.function.CorrelationBasedSimularityFunction" />
+	<bean id="adjustedCosineSimularityFunction" class="edu.tongji.function.AdjustedCosineSimularityFunction" />
+	<bean id="HomoCorrelationBasedSimularityFunction"
+		class="edu.tongji.function.HomoCorrelationBasedSimularityFunction" />
+	<bean id="AccCorrelationBasedSimularityFunction"
+		class="edu.tongji.function.AccCorrelationBasedSimularityFunction" />
+
+	
+	<!-- ******************************************** 预测器部分************************************************ -->
+	<bean id="predictor"
+		class="edu.tongji.predictor.GeneralPredictor" />
+
+
+
+	<!-- ******************************************** 配置DB数据源 ************************************************ -->
+	<!-- 1.配置数据源 -->
+	<bean id="dataSourceOfDB" class="org.apache.commons.dbcp.BasicDataSource">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url"
+			value="jdbc:mysql://127.0.0.1:3306/recommendersystem_netflix" />
+		<property name="username" value="chench" />
+		<property name="password" value="123456" />
+	</bean>
+
+	<!-- 2.配置ibatis配置文件 -->
+	<bean id="sqlMapClient" class="org.springframework.orm.ibatis.SqlMapClientFactoryBean">
+		<property name="dataSource">
+			<ref local="dataSourceOfDB" />
+		</property>
+		<property name="configLocation">
+			<value>classpath:META-INF/ibatis/ibatisConfig.xml</value>
+		</property>
+	</bean>
+	<bean id="sqlMapClientTemplate" class="org.springframework.orm.ibatis.SqlMapClientTemplate">
+		<property name="sqlMapClient" ref="sqlMapClient" />
+	</bean>
+
+	<!-- 3.配置相对应的DAO -->
+	<bean id="movieDAO" class="edu.tongji.dao.MovieDAOImpl" scope="prototype">
+		<property name="sqlMapClient" ref="sqlMapClient" />
+	</bean>
+
+	<bean id="userDAO" class="edu.tongji.dao.UserDAOImpl" scope="prototype">
+		<property name="sqlMapClient" ref="sqlMapClient" />
+	</bean>
+
+	<bean id="ratingDAO" class="edu.tongji.dao.RatingDAOImpl" scope="prototype">
+		<property name="sqlMapClient" ref="sqlMapClient" />
+	</bean>
+
+	<bean id="valueOfItemsDAOImpl" class="edu.tongji.dao.ValueOfItemsDAOImpl"
+		scope="prototype">
+		<property name="sqlMapClient" ref="sqlMapClient" />
+	</bean>
+
+</beans>
