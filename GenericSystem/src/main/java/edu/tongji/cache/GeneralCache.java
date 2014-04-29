@@ -378,7 +378,7 @@ public final class GeneralCache {
 			}
 
 			// 3. 输出日志
-			LoggerUtil.info(logger, "A.M       File: " + fileName);
+			LoggerUtil.debug(logger, "A.M       File: " + fileName);
 
 		}
 
