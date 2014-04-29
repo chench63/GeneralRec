@@ -103,7 +103,7 @@ public final class GeneralCache {
 			if (content.isEmpty()) {
 				((ArrayList<Number>) content).ensureCapacity(x);
 				for (int i = 0; i < x; i++) {
-					content.add(0L);
+					content.add((short) 0);
 				}
 			}
 			content.set(y, num);
@@ -212,12 +212,7 @@ public final class GeneralCache {
 			}
 
 			// 2. 尝试从辅助缓存读取数据
-			int index = auxiliaryCache.indexOf(new NumberSeq(x));
-			if (index == -1) {
-				// 载入二级缓存，默认在列表头部
-				FrequencyUtil.insertIntoAuxiliaryMem(x);
-				index = 0;
-			}
+			FrequencyUtil.insertIntoAuxiliaryMem(x);
 			return FrequencyUtil.get(x).get(y);
 
 		} finally {
@@ -324,8 +319,10 @@ public final class GeneralCache {
 			LoggerUtil.info(logger, logMsg);
 
 			// 更新最小引用次数
-			min_freqncy = freArrInMain.get(freArrInMain.size() - 1)
-					.getFreqncy();
+			if (freArrInMain.size() - 1 >= 0) {
+				min_freqncy = freArrInMain.get(freArrInMain.size() - 1)
+						.getFreqncy();
+			}
 		}
 
 		/**
@@ -360,22 +357,19 @@ public final class GeneralCache {
 		 */
 		public static void insertIntoAuxiliaryMem(int id) {
 			// 1. 读取文件数据
-			List<Number> xArr = numericCache.get(id);
+			List<Number> xArr = new ArrayList<Number>();
 			List<SimilarityVO> content = new ArrayList<SimilarityVO>();
 			String fileName = NetflixEvaPredctFileReader.loadSimilarityOutter(
 					id, content);
 			loadSingleArr(xArr, content, id);
 
 			// 2. 载入辅助缓存
-			if (auxiliaryCache.size() < ConfigurationConstant.AUXILIARY_MEM_SIZE) {
-				// 辅助缓存未满
-				auxiliaryCache.add(new NumberSeq(id, xArr));
-			} else {
+			if (!FrequencyUtil.existsFreeSpaceInAuxiliary()) {
 				// 辅助缓存已满，头部插入，尾部剔除
 				auxiliaryCache
 						.remove(ConfigurationConstant.AUXILIARY_MEM_SIZE - 1);
-				auxiliaryCache.add(0, new NumberSeq(id, xArr));
 			}
+			auxiliaryCache.add(0, new NumberSeq(id, xArr));
 
 			// 3. 输出日志
 			LoggerUtil.debug(logger, "A.M       File: " + fileName);
@@ -416,7 +410,7 @@ public final class GeneralCache {
 			xArr.clear();
 			((ArrayList<Number>) xArr).ensureCapacity(x);
 			for (int i = 0; i < x; i++) {
-				xArr.add(0L);
+				xArr.add((short) 0);
 			}
 
 			for (SimilarityVO simlrty : content) {
