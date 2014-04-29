@@ -1,0 +1,1 @@
+mvn eclipse:m2eclipse
