@@ -126,6 +126,7 @@ public class RatingVO {
     public String toString() {
         return (new StringBuilder()).append(this.movieId).append(Rating.ELEMENT_SEPERATOR)
             .append(this.usrId).append(Rating.ELEMENT_SEPERATOR).append(this.ratingReal)
-            .append(Rating.ELEMENT_SEPERATOR).append(this.ratingCmp).toString();
+            .append(Rating.ELEMENT_SEPERATOR).append(Rating.ELEMENT_SEPERATOR)
+            .append(this.ratingCmp).toString();
     }
 }
