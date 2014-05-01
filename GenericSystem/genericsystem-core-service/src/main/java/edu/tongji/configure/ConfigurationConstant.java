@@ -56,6 +56,18 @@ public final class ConfigurationConstant {
     /** 启用集约缓存*/
     public static boolean ENABLE_ECONOMICAL_CACHE = false;
 
+    /** 解析RatingVO相关文件*/
+    public static boolean PARSER_RATINGVO         = true;
+
+    /**
+     * Setter method for property <tt>pARSER_RATINGVO</tt>.
+     * 
+     * @param PARSER_RATINGVO value to be assigned to property pARSER_RATINGVO
+     */
+    public static void setPARSER_RATINGVO(boolean pARSER_RATINGVO) {
+        PARSER_RATINGVO = pARSER_RATINGVO;
+    }
+
     /**
      * Setter method for property <tt>aUXILIARY_MEM_SIZE</tt>.
      * 
