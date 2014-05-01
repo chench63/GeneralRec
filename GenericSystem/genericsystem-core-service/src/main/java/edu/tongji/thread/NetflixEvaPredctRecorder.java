@@ -63,10 +63,18 @@ public class NetflixEvaPredctRecorder extends Thread {
                 ParserTemplate template = new ParserTemplate();
                 template.setTemplate(contents[i]);
 
-                prsnHistry.add((RatingVO) TemplateType.NETFLIX_RATINGVO_TEMPLATE.parser(template));
+                RatingVO rating = (RatingVO) TemplateType.NETFLIX_RATINGVO_TEMPLATE
+                    .parser(template);
+                if (rating.getMovieId() <= ConfigurationConstant.TASK_SIZE) {
+                    prsnHistry.add(rating);
+                }
             }
 
             // 2. 生产预测评分
+            if (prsnHistry.isEmpty()) {
+                //无数据，则下一个任务
+                continue;
+            }
             PredictorHolder prdctHlder = new PredictorHolder();
             prdctHlder.put(PredictorHolder.PERSON_RATING_HISTRY, prsnHistry);
             predictor.predict(prdctHlder);
@@ -85,7 +93,7 @@ public class NetflixEvaPredctRecorder extends Thread {
 
         }
 
-        // 4. 输出日志
+        //汇报最终日志
         completeAndReport(statGlobal, statSquareGlobal);
 
     }
@@ -95,8 +103,8 @@ public class NetflixEvaPredctRecorder extends Thread {
      * 
      * @param statGlobal
      */
-    protected synchronized void completeAndReport(StatisticsInner statGlobal,
-                                                  StatisticsInner statSquareGlobal) {
+    protected static synchronized void completeAndReport(StatisticsInner statGlobal,
+                                                         StatisticsInner statSquareGlobal) {
         //输出个体日志
         LoggerUtil.info(logger, (new StringBuilder("Task Completes: ")).append(statGlobal));
         STAT.addValue(statGlobal.sum, statGlobal.N);
