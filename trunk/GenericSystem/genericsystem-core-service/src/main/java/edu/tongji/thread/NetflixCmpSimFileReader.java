@@ -58,14 +58,18 @@ public class NetflixCmpSimFileReader extends Thread {
 
             //3. 解析模板 
             List<RatingVO> singleItems = new ArrayList<RatingVO>(contents.length);
-            for (int i = 1; i < contents.length; i++) {
-                //循环从1开始，缘于netflix文件，第一行为movieId
+            for (int i = 0; i < contents.length; i++) {
                 ParserTemplate template = new ParserTemplate();
                 template.setTemplate((new StringBuilder()).append(movieId)
                     .append(Rating.ELEMENT_SEPERATOR).append(contents[i]).toString());
                 template.put(NetflixRatingTemplateParser.KEY_MOVIEID, String.valueOf(movieId));
 
-                singleItems.add((RatingVO) entry.getKey().parser(template));
+                RatingVO rating = (RatingVO) entry.getKey().parser(template);
+                if (rating == null) {
+                    //异常处理
+                    continue;
+                }
+                singleItems.add(rating);
             }
 
             //4. 载入缓存
