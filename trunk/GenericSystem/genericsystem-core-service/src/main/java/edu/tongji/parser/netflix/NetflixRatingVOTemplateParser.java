@@ -19,37 +19,35 @@ import edu.tongji.vo.RatingVO;
  */
 public class NetflixRatingVOTemplateParser implements Parser {
 
-	/** 分隔符正则表达式 */
-	private final static String SAPERATOR_EXPRESSION = "\\,";
+    /** 分隔符正则表达式 */
+    private final static String SAPERATOR_EXPRESSION = "\\,";
 
-	/**
-	 * [movieId],[userId],[ratingReal],,[ratingCmp]
-	 * 
-	 * @see edu.tongji.parser.Parser#parser(edu.tongji.parser.ParserTemplate)
-	 */
-	@Override
-	public Object parser(ParserTemplate template) {
-		// 获取模板内容
-		String context = template.getAsString();
-		if (StringUtil.isEmpty(context)) {
-			return null;
-		}
+    /**
+     * [movieId],[userId],[ratingReal],,[ratingCmp]
+     * 
+     * @see edu.tongji.parser.Parser#parser(edu.tongji.parser.ParserTemplate)
+     */
+    @Override
+    public Object parser(ParserTemplate template) {
+        // 获取模板内容
+        String context = template.getAsString();
+        if (StringUtil.isEmpty(context) | (context.indexOf(":") != -1)) {
+            return null;
+        }
 
-		try {
-			String[] elements = context.split(SAPERATOR_EXPRESSION);
-			int movieId = Integer.valueOf(elements[0]).intValue();
-			int userId = Integer.valueOf(elements[1]).intValue();
-			Float ratingReal = Float.valueOf(elements[2]);
-			Float ratingCmp = (elements.length == 5 && StringUtil
-					.isNotBlank(elements[4])) ? Float.valueOf(elements[4])
-					: ratingReal;
-			return new RatingVO(userId, movieId, ratingCmp, ratingReal);
-		} catch (Exception e) {
-			ExceptionUtil.caught(e,
-					"解析ParserTemplate错误，内容: " + template.getAsString());
-		}
+        try {
+            String[] elements = context.split(SAPERATOR_EXPRESSION);
+            int movieId = Integer.valueOf(elements[0]).intValue();
+            int userId = Integer.valueOf(elements[1]).intValue();
+            Float ratingReal = Float.valueOf(elements[2]);
+            Float ratingCmp = (elements.length == 5 && StringUtil.isNotBlank(elements[4])) ? Float
+                .valueOf(elements[4]) : ratingReal;
+            return new RatingVO(userId, movieId, ratingCmp, ratingReal);
+        } catch (Exception e) {
+            ExceptionUtil.caught(e, "解析ParserTemplate错误，内容: " + template.getAsString());
+        }
 
-		return null;
-	}
+        return null;
+    }
 
 }
