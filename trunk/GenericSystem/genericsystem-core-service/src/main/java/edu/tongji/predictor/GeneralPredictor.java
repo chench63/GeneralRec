@@ -65,7 +65,8 @@ public class GeneralPredictor implements Predictor {
             }
 
             float predictVal = normalize(sum, sumOfSim);
-            loggerMsg.append(FileUtil.BREAK_LINE)
+            loggerMsg.append(FileUtil.BREAK_LINE).append("U：")
+                .append(StringUtil.alignLeft(String.valueOf(subject.getUsrId()), 7)).append(" M：")
                 .append(StringUtil.alignLeft(String.valueOf(subject.getMovieId()), 7)).append("O：")
                 .append(String.format("%.2f", subject.getRatingReal())).append("  P：")
                 .append(String.format("%.2f", predictVal));
@@ -74,7 +75,7 @@ public class GeneralPredictor implements Predictor {
         }
 
         //4.载入日志
-        LoggerUtil.info(logger, loggerMsg);
+        LoggerUtil.debug(logger, loggerMsg);
     }
 
     /**

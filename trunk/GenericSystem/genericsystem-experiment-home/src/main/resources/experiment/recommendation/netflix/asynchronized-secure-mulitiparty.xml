@@ -12,21 +12,13 @@
 	<!-- ******************************************** 实验配置部分************************************************ -->
 	<bean class="edu.tongji.configure.ConfigurationConstant">
 		<!-- 主任务参数最大值 $Cache -->
-		<property name="TASK_SIZE" value="17770" />
+		<property name="TASK_SIZE" value="10662" />
 		<property name="SUB_TASK_SIZE" value="1777" />
-		<property name="ENABLE_ECONOMICAL_CACHE" value="true" />
-
 
 		<!-- CmpSim -->
-		<property name="USER_SEQ_FILE_PATH"
-			value="C:\\Users\\ppiachen\\Desktop\\DataSet\\Rating\\ur_" />
-		<property name="SIMILARITY_FILE_PATH"
-			value="C:\\Users\\ppiachen\\Desktop\\DataSet\\Simularity\\sm_" />
+		<property name="SIMILARITY_FILE_PATH" value="E:/Proposed/Simularity_50/sm_" />
 		<property name="THREAD_FOR_STEP" value="800" />
 
-		<!-- EvaPrdct Simlrt -->
-		<property name="SIMLRTY_BEGIN" value="1" />
-		<property name="SIMLRTY_END" value="17770" />
 	</bean>
 
 
@@ -38,6 +30,9 @@
 		<property name="recorder">
 			<list>
 				<ref bean="NetflixCmpSimRecorder"></ref>
+				<ref bean="NetflixCmpSimRecorder"></ref>
+				<ref bean="NetflixCmpSimRecorder"></ref>
+				<ref bean="NetflixCmpSimRecorder"></ref>
 			</list>
 		</property>
 	</bean>
@@ -47,6 +42,9 @@
 		<property name="reader" ref="NetflixEvaPredctFileReader" />
 		<property name="recorder">
 			<list>
+				<ref bean="NetflixEvaPredctRecorder"></ref>
+				<ref bean="NetflixEvaPredctRecorder"></ref>
+				<ref bean="NetflixEvaPredctRecorder"></ref>
 				<ref bean="NetflixEvaPredctRecorder"></ref>
 			</list>
 		</property>
@@ -59,7 +57,7 @@
 	<bean id="NetflixCmpSimFileReader" class="edu.tongji.thread.NetflixCmpSimFileReader">
 		<property name="sourceEntity">
 			<util:map key-type="edu.tongji.parser.TemplateType">
-				<entry key="NETFLIX_RATINGVO_TEMPLATE" value="src/test/resources/dataset/testcase/netflix/mv_" />
+				<entry key="NETFLIX_RATINGVO_TEMPLATE" value="E:/Proposed/RatingSeqMovie/mv_" />
 			</util:map>
 		</property>
 	</bean>
@@ -76,8 +74,8 @@
 	<bean id="NetflixEvaPredctFileReader" class="edu.tongji.thread.NetflixEvaPredctFileReader">
 		<property name="sourceEntity">
 			<util:map key-type="edu.tongji.parser.TemplateType">
-				<entry key="SIMILARITY_TEMPLATE" value="G:/DataSet/Simularity/sm_" />
-				<entry key="NETFLIX_RATINGVO_TEMPLATE" value="G:/DataSet/Rating_0/.*" />
+				<entry key="SIMILARITY_TEMPLATE" value="E:/RP_95/Simularity/sm_" />
+				<entry key="NETFLIX_RATINGVO_TEMPLATE" value="E:/RP_95/Rating/.*" />
 			</util:map>
 		</property>
 	</bean>

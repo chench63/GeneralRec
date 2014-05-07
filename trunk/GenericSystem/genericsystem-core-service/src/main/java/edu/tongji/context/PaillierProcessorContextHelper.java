@@ -8,6 +8,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 import edu.tongji.function.FunctionHelper;
+import edu.tongji.thread.NetflixCmpSimPaillierRecorder;
 import edu.tongji.util.PaillierUtil;
 
 /**
@@ -31,37 +32,44 @@ public final class PaillierProcessorContextHelper {
                                                   List<Number> numeratorOfSim,
                                                   List<Number> denominatroOfSimAboutI,
                                                   List<Number> denominatroOfSimAboutJ) {
-        //求平均值
-        Number avgOfItemI = FunctionHelper.averageValue(ratingsValusOfItemI);
-        Number avgOfItemJ = FunctionHelper.averageValue(ratingsValusOfItemJ);
-
-        //向量线性变换
-        //Vector: v 
-        //Constant Vector: c
-        // v - c
-        FunctionHelper.tranformAsSubtact(ratingsValusOfItemI, avgOfItemI);
-        FunctionHelper.tranformAsSubtact(ratingsValusOfItemJ, avgOfItemJ);
-
+        //1. 求I,J的评分和
+        //求和数据经过解密，获得均值
+        //用户与服务器交互，用户发送分子加密数据给服务器
         int size = ratingsValusOfItemI.size();
+        Number avgOfItemI = BigInteger.ZERO;
+        Number avgOfItemJ = BigInteger.ZERO;
         for (int i = 0; i < size; i++) {
-            //分子加密 , 保证运算进度，*1000
-            Number numerator = ratingsValusOfItemI.get(i).doubleValue() * 1000
-                               * ratingsValusOfItemJ.get(i).doubleValue() * 1000;
-            BigInteger numChiper = PaillierUtil
-                .encryptions(BigInteger.valueOf(numerator.intValue()));
-            numeratorOfSim.add(numChiper);
+            if (i == 0) {
+                avgOfItemI = ratingsValusOfItemI.get(0);
+                avgOfItemJ = ratingsValusOfItemJ.get(0);
+            }
 
-            //I部分分母加密
-            Number denomiOfI = Math.pow(ratingsValusOfItemI.get(i).doubleValue() * 1000, 2.0);
-            BigInteger denomiChiperOfI = PaillierUtil.encryptions(BigInteger.valueOf(denomiOfI
-                .intValue()));
-            denominatroOfSimAboutI.add(denomiChiperOfI);
+            //求和
+            avgOfItemI = PaillierUtil.add((BigInteger) avgOfItemI,
+                (BigInteger) ratingsValusOfItemI.get(i));
+            avgOfItemJ = PaillierUtil.add((BigInteger) avgOfItemJ,
+                (BigInteger) ratingsValusOfItemJ.get(i));
+        }
 
-            //J部分分母加密
-            Number denomiOfJ = Math.pow(ratingsValusOfItemJ.get(i).doubleValue() * 1000, 2.0);
-            BigInteger denomiChiperOfJ = PaillierUtil.encryptions(BigInteger.valueOf(denomiOfJ
-                .intValue()));
-            denominatroOfSimAboutJ.add(denomiChiperOfJ);
+        //2. 求分子与分母各个部分
+        for (int i = 0; i < size; i++) {
+            //模拟值
+            BigInteger chipher = NetflixCmpSimPaillierRecorder.CHIPHER_CACHE[i
+                                                                             % NetflixCmpSimPaillierRecorder.CHIPHER_CACHE.length];
+            //分子部分
+            //服务器计算均值后，发给用户，用户计算分子部分值，
+            //完成加密，发送给服务器, 此值模拟
+            numeratorOfSim.add(chipher);
+
+            //I分母部分
+            //服务器计算均值后，发给用户，用户计算分子部分值，
+            //完成加密，发送给服务器, 此值模拟
+            denominatroOfSimAboutI.add(chipher);
+
+            //J分母部分
+            //服务器计算均值后，发给用户，用户计算分子部分值，
+            //完成加密，发送给服务器, 此值模拟
+            denominatroOfSimAboutJ.add(chipher);
         }
 
     }

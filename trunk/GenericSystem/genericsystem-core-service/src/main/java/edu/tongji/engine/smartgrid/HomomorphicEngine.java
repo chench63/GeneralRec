@@ -30,7 +30,7 @@ public class HomomorphicEngine extends SmartGridEngine {
         // 1.模拟记录读数
         StopWatch stopWatch = new StopWatch();
         stopWatch.start();
-        PaillierUtil.newInstance();
+        PaillierUtil.newInstance(256, 64);
         BigInteger cipherMonthly = null;
         for (MeterReadingVO reading : SmartGridDataSource.meterContexts) {
             // 模拟Customer加密

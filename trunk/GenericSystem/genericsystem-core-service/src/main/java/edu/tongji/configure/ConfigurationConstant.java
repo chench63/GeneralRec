@@ -18,46 +18,55 @@ package edu.tongji.configure;
 public final class ConfigurationConstant {
 
     /** 用户序列，文件路径*/
-    public static String  USER_SEQ_FILE_PATH      = null;
+    public static String  USER_SEQ_FILE_PATH        = null;
 
     /** 相似度，文件路径*/
-    public static String  SIMILARITY_FILE_PATH    = null;
+    public static String  SIMILARITY_FILE_PATH      = null;
 
     /** 是否加入随机噪声*/
-    public static boolean IS_PERTURBATION         = false;
+    public static boolean IS_PERTURBATION           = false;
 
-    /** 是否将数据转化为，按用户分类的文件*/
-    public static boolean TABULATE_SEQ_USER       = false;
+    /** 是否进行同态加密*/
+    public static boolean IS_HOMOMORPHIC_ENCRYPTION = false;
 
     /**  主任务参数最大值 $Cache*/
-    public static int     TASK_SIZE               = 17770;
+    public static int     TASK_SIZE                 = 17770;
 
     /**  子任务容量 $CacheStopWatch : 使用分组，必须保证，分组数 >= 2*/
-    public static int     SUB_TASK_SIZE           = 1777;
+    public static int     SUB_TASK_SIZE             = 1777;
 
     /** 读取文件相似度：开始movieId号*/
-    public static int     SIMLRTY_BEGIN           = 1;
+    public static int     SIMLRTY_BEGIN             = 1;
 
     /** 读取文件相似度：结束movieId号*/
-    public static int     SIMLRTY_END             = 885;
+    public static int     SIMLRTY_END               = 885;
 
     /** 多线程数量*/
-    public static int     THREAD_SIZE             = -1;
+    public static int     THREAD_SIZE               = -1;
 
     /** NetflixCmpSimRecorder中，循环步长*/
-    public static int     THREAD_FOR_STEP         = 800;
+    public static int     THREAD_FOR_STEP           = 800;
 
     /** 数值缓存容量上限*/
-    public static float   NUMERIC_CACHE_LIMIT_GB  = 1.2f * 1024 * 1024 * 1024;
+    public static float   NUMERIC_CACHE_LIMIT_GB    = 1.2f * 1024 * 1024 * 1024;
 
     /** 辅助缓存容量上限*/
-    public static int     AUXILIARY_MEM_SIZE      = 100;
+    public static int     AUXILIARY_MEM_SIZE        = 100;
 
     /** 启用集约缓存*/
-    public static boolean ENABLE_ECONOMICAL_CACHE = false;
+    public static boolean ENABLE_ECONOMICAL_CACHE   = false;
 
     /** 解析RatingVO相关文件*/
-    public static boolean PARSER_RATINGVO         = true;
+    public static boolean PARSER_RATINGVO           = true;
+
+    /**
+     * Setter method for property <tt>iS_HOMOMORPHIC_ENCRYPTION</tt>.
+     * 
+     * @param IS_HOMOMORPHIC_ENCRYPTION value to be assigned to property iS_HOMOMORPHIC_ENCRYPTION
+     */
+    public static void setIS_HOMOMORPHIC_ENCRYPTION(boolean iS_HOMOMORPHIC_ENCRYPTION) {
+        IS_HOMOMORPHIC_ENCRYPTION = iS_HOMOMORPHIC_ENCRYPTION;
+    }
 
     /**
      * Setter method for property <tt>pARSER_RATINGVO</tt>.
@@ -147,15 +156,6 @@ public final class ConfigurationConstant {
      */
     public static int getSUB_TASK_SIZE() {
         return SUB_TASK_SIZE;
-    }
-
-    /**
-     * Setter method for property <tt>tABULATE_SEQ_USER</tt>.
-     * 
-     * @param TABULATE_SEQ_USER value to be assigned to property tABULATE_SEQ_USER
-     */
-    public static void setTABULATE_SEQ_USER(boolean tABULATE_SEQ_USER) {
-        TABULATE_SEQ_USER = tABULATE_SEQ_USER;
     }
 
     /**

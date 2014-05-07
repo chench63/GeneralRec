@@ -11,13 +11,10 @@
 	<!-- ******************************************** 实验配置部分************************************************ -->
 	<bean class="edu.tongji.configure.ConfigurationConstant">
 		<!-- 主任务参数最大值 $Cache -->
-		<property name="TASK_SIZE" value="17770" />
-		<property name="SUB_TASK_SIZE" value="1777" />
-		<property name="ENABLE_ECONOMICAL_CACHE" value="true" />
-
-		<!-- EvaPrdct Simlrt -->
-		<property name="SIMLRTY_BEGIN" value="1" />
-		<property name="SIMLRTY_END" value="17770" />
+		<property name="TASK_SIZE" value="1777" />
+		<property name="SUB_TASK_SIZE" value="177" />
+		<property name="IS_HOMOMORPHIC_ENCRYPTION" value="true" />
+		<property name="PARSER_RATINGVO" value="false" />
 	</bean>
 
 
@@ -42,7 +39,8 @@
 	<bean id="NetflixCmpSimFileReader" class="edu.tongji.thread.NetflixCmpSimFileReader">
 		<property name="sourceEntity">
 			<util:map key-type="edu.tongji.parser.TemplateType">
-				<entry key="NETFLIX_RATINGVO_TEMPLATE" value="src/test/resources/dataset/testcase/netflix/mv_" />
+				<entry key="NETFLIX_RATINGVO_TEMPLATE"
+					value="C:/Users/ppiachen/Desktop/Desktop/DataSet/NetFlix/Netflix_Prize/training_set/mv_" />
 			</util:map>
 		</property>
 	</bean>
@@ -85,8 +83,6 @@
 
 	<!-- ******************************************** 预测器部分************************************************ -->
 	<bean id="predictor" class="edu.tongji.predictor.GeneralPredictor" />
-
-
 
 	<!-- ******************************************** 配置DB数据源 ************************************************ -->
 	<!-- 1.配置数据源 -->
