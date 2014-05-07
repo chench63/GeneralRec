@@ -12,26 +12,18 @@
 	<bean class="edu.tongji.configure.ConfigurationConstant">
 		<!-- 使用噪声干扰数据，使其失真 -->
 		<property name="IS_PERTURBATION" value="true" />
+		<property name="PARSER_RATINGVO" value="false" />
+
 		<!-- 主任务参数最大值 $Cache -->
 		<property name="TASK_SIZE" value="17770" />
 		<property name="SUB_TASK_SIZE" value="1777" />
-		<property name="THREAD_FOR_STEP" value="800" />
+		<property name="THREAD_FOR_STEP" value="700" />
+
 		<!-- 持久化文件路径 -->
-		<property name="USER_SEQ_FILE_PATH"
-			value="C:\\Users\\ppiachen\\Desktop\\DataSet\\Rating\\ur_" />
-		<property name="SIMILARITY_FILE_PATH"
-			value="C:\\Users\\ppiachen\\Desktop\\DataSet\\Simularity\\sm_" />
+		<property name="USER_SEQ_FILE_PATH" value="E:/RP_50/Rating/ur_" />
+		<property name="SIMILARITY_FILE_PATH" value="E:/RP_50/Simularity/sm_" />
 
 		<!-- CmpSim -->
-
-
-		<!-- EvaPrdct UserSeq -->
-		<property name="USER_BEGIN" value="1" />
-		<property name="USER_END" value="17770" />
-
-		<!-- EvaPrdct Simlrt -->
-		<property name="SIMLRTY_BEGIN" value="1" />
-		<property name="SIMLRTY_END" value="17770" />
 
 	</bean>
 
@@ -51,9 +43,12 @@
 
 	<bean id="engineForGeneratingRecommendations"
 		class="edu.tongji.engine.DBBasedMultiThreadRecommendationEngine">
-		<property name="reader" ref="NetflixEvaPredctDBReader" />
+		<property name="reader" ref="NetflixEvaPredctFileReader" />
 		<property name="recorder">
 			<list>
+				<ref bean="NetflixEvaPredctRecorder"></ref>
+				<ref bean="NetflixEvaPredctRecorder"></ref>
+				<ref bean="NetflixEvaPredctRecorder"></ref>
 				<ref bean="NetflixEvaPredctRecorder"></ref>
 			</list>
 		</property>
@@ -62,11 +57,12 @@
 	<!-- ******************************************** 多线程部分************************************************ -->
 	<!-- 相似度计算域 -->
 	<bean id="NetflixCmpSimFileReader" class="edu.tongji.thread.NetflixCmpSimFileReader">
-		<!--normalDistri_0_95 | normalDistri_0_80 -->
-		<property name="noise" ref="normalDistri_0_95" />
+		<!--uniformNoise_0_50 | uniformNoise_0_95 -->
+		<property name="noise" ref="uniformNoise_0_50" />
 		<property name="sourceEntity">
 			<util:map key-type="edu.tongji.parser.TemplateType">
-				<entry key="NETFLIX_RATINGVO_TEMPLATE" value="src/test/resources/dataset/testcase/netflix/mv_" />
+				<entry key="NETFLIX_RATINGVO_TEMPLATE"
+					value="C:/Users/ppiachen/Desktop/Desktop/DataSet/NetFlix/Netflix_Prize/training_set/mv_" />
 			</util:map>
 		</property>
 	</bean>
@@ -84,14 +80,14 @@
 	<bean id="NetflixEvaPredctFileReader" class="edu.tongji.thread.NetflixEvaPredctFileReader">
 		<property name="sourceEntity">
 			<util:map key-type="edu.tongji.parser.TemplateType">
-				<entry key="SIMILARITY_TEMPLATE" value="src/test/resources/dataset/testcase/netflix/mv_" />
-				<entry key="NETFLIX_RATINGVO_TEMPLATE" value="src/test/resources/dataset/testcase/netflix/mv_" />
+				<entry key="SIMILARITY_TEMPLATE" value="E:/RP_95/Simularity/sm_" />
+				<entry key="NETFLIX_RATINGVO_TEMPLATE" value="E:/RP_95/Rating/.*" />
 			</util:map>
 		</property>
 	</bean>
 	<bean id="NetflixEvaPredctRecorder" class="edu.tongji.thread.NetflixEvaPredctRecorder"
 		scope="prototype">
-		<property name="predictor" ref="GeneralPredictor" />
+		<property name="predictor" ref="predictor" />
 	</bean>
 
 
@@ -101,18 +97,23 @@
 		scope="prototype">
 		<constructor-arg index="0" type="double" value="0.0" />
 		<constructor-arg index="1" type="double" value="1.0" />
-		<constructor-arg index="2" type="double" value="0.95" />
+		<constructor-arg index="2" type="double" value="0.975" />
 	</bean>
-	<bean id="normalDistri_0_80" class="edu.tongji.extend.noise.NormalNoise"
+	<bean id="normalDistri_0_50" class="edu.tongji.extend.noise.NormalNoise"
 		scope="prototype">
 		<constructor-arg index="0" type="double" value="0.0" />
 		<constructor-arg index="1" type="double" value="1.0" />
-		<constructor-arg index="2" type="double" value="0.80" />
+		<constructor-arg index="2" type="double" value="0.75" />
 	</bean>
-	<bean id="uniformNoise" class="edu.tongji.extend.noise.UniformNoise"
+	<bean id="uniformNoise_0_95" class="edu.tongji.extend.noise.UniformNoise"
 		scope="prototype">
-		<constructor-arg index="0" type="double" value="-2.0" />
-		<constructor-arg index="1" type="double" value="2.0" />
+		<constructor-arg index="0" type="double" value="-1.96" />
+		<constructor-arg index="1" type="double" value="1.96" />
+	</bean>
+	<bean id="uniformNoise_0_50" class="edu.tongji.extend.noise.UniformNoise"
+		scope="prototype">
+		<constructor-arg index="0" type="double" value="-0.67" />
+		<constructor-arg index="1" type="double" value="0.67" />
 	</bean>
 
 	<!-- ******************************************** 相似度计算部分************************************************ -->

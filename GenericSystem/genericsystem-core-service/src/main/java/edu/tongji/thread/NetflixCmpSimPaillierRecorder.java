@@ -4,6 +4,7 @@
  */
 package edu.tongji.thread;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,6 +20,7 @@ import edu.tongji.function.Function;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.util.ExceptionUtil;
 import edu.tongji.util.LoggerUtil;
+import edu.tongji.util.PaillierUtil;
 import edu.tongji.vo.RatingVO;
 
 /**
@@ -29,10 +31,24 @@ import edu.tongji.vo.RatingVO;
 public class NetflixCmpSimPaillierRecorder implements Runnable {
 
     /** 相似度计算函数*/
-    private Function            similarityFunction;
+    private Function                 similarityFunction;
+
+    /** 密文缓存*/
+    public final static BigInteger[] CHIPHER_CACHE = new BigInteger[7];
 
     /** logger */
-    private final static Logger logger = Logger.getLogger(LoggerDefineConstant.SERVICE_NORMAL);
+    private final static Logger      logger        = Logger
+                                                       .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
+
+    //初始化缓存
+    static {
+        PaillierUtil.newInstance(512, 64);
+        for (int i = 0; i < CHIPHER_CACHE.length - 1; i++) {
+            CHIPHER_CACHE[i] = PaillierUtil.encryptions(BigInteger.valueOf(i));
+        }
+
+        CHIPHER_CACHE[CHIPHER_CACHE.length - 1] = PaillierUtil.encryptions(BigInteger.TEN);
+    }
 
     /** 
      * @see java.lang.Runnable#run()
@@ -64,7 +80,7 @@ public class NetflixCmpSimPaillierRecorder implements Runnable {
                 List<RatingVO> ratingOfJ = SimilarityStreamCache.get(j);
                 List<Number> valuesOfI = new ArrayList<Number>();
                 List<Number> valuesOfJ = new ArrayList<Number>();
-                ProcessorContextHelper.forgeSymmetryRatingValues(ratingOfI, ratingOfJ, valuesOfI,
+                ProcessorContextHelper.forgeSymmetryChipherValues(ratingOfI, ratingOfJ, valuesOfI,
                     valuesOfJ);
 
                 List<Number> numeratorOfSim = new ArrayList<Number>();

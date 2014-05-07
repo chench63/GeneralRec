@@ -18,7 +18,6 @@ import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.model.Rating;
 import edu.tongji.parser.ParserTemplate;
 import edu.tongji.parser.TemplateType;
-import edu.tongji.parser.netflix.NetflixRatingTemplateParser;
 import edu.tongji.util.FileUtil;
 import edu.tongji.util.StringUtil;
 import edu.tongji.vo.RatingVO;
@@ -37,9 +36,15 @@ public class NetflixCmpSimFileReader extends Thread {
     /** 噪声*/
     private Noise                     noise;
 
+    /** 任务开始位置*/
+    private int                       taskStart = 1;
+
+    /** 任务结束位置*/
+    private int                       taskEnd   = ConfigurationConstant.TASK_SIZE;
+
     /** logger */
-    protected final static Logger     logger = Logger
-                                                 .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
+    protected final static Logger     logger    = Logger
+                                                    .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
 
     /** 
      * @see java.lang.Thread#run()
@@ -47,7 +52,7 @@ public class NetflixCmpSimFileReader extends Thread {
     @Override
     public void run() {
         Entry<TemplateType, String> entry = sourceEntity.entrySet().iterator().next();
-        for (int movieId = 1; movieId <= ConfigurationConstant.TASK_SIZE; movieId++) {
+        for (int movieId = taskStart; movieId <= taskEnd; movieId++) {
             //1. 拼写文件名
             String fileName = (new StringBuilder(entry.getValue()))
                 .append(StringUtil.alignRight(String.valueOf(movieId), 7, FileUtil.ZERO_PAD_CHAR))
@@ -69,24 +74,43 @@ public class NetflixCmpSimFileReader extends Thread {
                     //解析Rating文件，在抬头加上movieId
                     template.setTemplate((new StringBuilder()).append(movieId)
                         .append(Rating.ELEMENT_SEPERATOR).append(contents[i]).toString());
+                    //template.put(NetflixRatingTemplateParser.KEY_MOVIEID, String.valueOf(movieId));
                 }
-                template.put(NetflixRatingTemplateParser.KEY_MOVIEID, String.valueOf(movieId));
 
                 RatingVO rating = (RatingVO) entry.getKey().parser(template);
                 if (rating == null) {
                     //异常处理
                     continue;
                 }
+
+                if (ConfigurationConstant.IS_PERTURBATION) {
+                    //RP Algorithm
+                    rating.setRatingCmp((float) noise.perturb(rating.getRatingReal()));
+                }
                 singleItems.add(rating);
             }
 
             //4. 载入缓存
-            if (ConfigurationConstant.IS_PERTURBATION) {
-                SimilarityStreamCache.putAndDisguise(movieId, singleItems, noise);
-            } else {
-                SimilarityStreamCache.put(movieId, singleItems);
-            }
+            SimilarityStreamCache.put(movieId, singleItems);
         }
+    }
+
+    /**
+     * Setter method for property <tt>taskStart</tt>.
+     * 
+     * @param taskStart value to be assigned to property taskStart
+     */
+    public void setTaskStart(int taskStart) {
+        this.taskStart = taskStart;
+    }
+
+    /**
+     * Setter method for property <tt>taskEnd</tt>.
+     * 
+     * @param taskEnd value to be assigned to property taskEnd
+     */
+    public void setTaskEnd(int taskEnd) {
+        this.taskEnd = taskEnd;
     }
 
     /**

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import edu.tongji.model.Rating;
+import edu.tongji.thread.NetflixCmpSimPaillierRecorder;
 import edu.tongji.vo.RatingVO;
 
 /**
@@ -93,6 +94,47 @@ public final class ProcessorContextHelper {
             if (indexOfRatingsJ != null && indexOfRatingsJ > -1) {
                 ratingsValusOfItemI.add(rating.getRatingCmp());
                 ratingsValusOfItemJ.add(ratingsOfItemJ.get(indexOfRatingsJ).getRatingCmp());
+            }
+        }
+
+        //对齐内存
+        ((ArrayList<Number>) ratingsValusOfItemI).ensureCapacity(ratingsValusOfItemI.size());
+        ((ArrayList<Number>) ratingsValusOfItemJ).ensureCapacity(ratingsValusOfItemJ.size());
+    }
+
+    /**
+     * 根据评分Rating向量，转化为相应可以计算的Integer向量；
+     * <p>
+     *      非对称性的评分(存在有个用户每对改item评分)，不计算入内。
+     * </p>
+     * 
+     * @param ratingsOfItemI
+     * @param ratingsOfItemJ
+     * @param ratingsValusOfItemI
+     * @param ratingsValusOfItemJ
+     */
+    public static void forgeSymmetryChipherValues(List<RatingVO> ratingsOfItemI,
+                                                  List<RatingVO> ratingsOfItemJ,
+                                                  List<Number> ratingsValusOfItemI,
+                                                  List<Number> ratingsValusOfItemJ) {
+        //优化代码效率，使搜索复杂度为O(1)，但是提高了内存使用率
+        Map<Integer, Integer> usrIdOfItemJ = new HashMap<Integer, Integer>(ratingsOfItemJ.size());
+        for (int i = 0; i < ratingsOfItemJ.size(); i++) {
+            usrIdOfItemJ.put(ratingsOfItemJ.get(i).getUsrId(), i);
+        }
+
+        //扫描ratingsOfItemI所有元素
+        RatingVO rating = null;
+        Integer indexOfRatingsJ = -1;
+        for (int i = 0, j = ratingsOfItemI.size(); i < j; i++) {
+            rating = ratingsOfItemI.get(i);
+            indexOfRatingsJ = usrIdOfItemJ.get(rating.getUsrId());
+
+            if (indexOfRatingsJ != null && indexOfRatingsJ > -1) {
+                ratingsValusOfItemI.add(NetflixCmpSimPaillierRecorder.CHIPHER_CACHE[rating
+                    .getRatingCmp().intValue()]);
+                ratingsValusOfItemJ.add(NetflixCmpSimPaillierRecorder.CHIPHER_CACHE[ratingsOfItemJ
+                    .get(indexOfRatingsJ).getRatingCmp().intValue()]);
             }
         }
 
