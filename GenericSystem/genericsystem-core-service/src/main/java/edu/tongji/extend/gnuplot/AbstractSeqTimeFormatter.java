@@ -26,7 +26,7 @@ public abstract class AbstractSeqTimeFormatter implements FigureFormatter {
 
     /** logger */
     protected final static Logger logger        = Logger
-                                                    .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
+                                                    .getLogger(LoggerDefineConstant.SERVICE_CORE);
 
     /**
      * Getter method for property <tt>mean</tt>.

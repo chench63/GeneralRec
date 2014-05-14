@@ -11,7 +11,7 @@
 	<!-- ******************************************** 实验配置部分************************************************ -->
 	<bean class="edu.tongji.configure.ConfigurationConstant">
 		<!-- 主任务参数最大值 $Cache -->
-		<property name="TASK_SIZE" value="1777" />
+		<property name="TASK_SIZE" value="${TASK_SIZE}" />
 		<property name="SUB_TASK_SIZE" value="177" />
 		<property name="IS_HOMOMORPHIC_ENCRYPTION" value="true" />
 		<property name="PARSER_RATINGVO" value="false" />
@@ -20,7 +20,7 @@
 
 	<!-- ******************************************** 处理模板部分************************************************ -->
 	<bean id="engineForGeneratingSimilarity"
-		class="edu.tongji.engine.DBBasedMultiThreadRecommendationEngine">
+		class="edu.tongji.engine.recommendation.DefaultMultiThreadRcmdtnEngine">
 		<property name="reader" ref="NetflixCmpSimFileReader" />
 		<property name="recorder">
 			<list>
@@ -40,7 +40,7 @@
 		<property name="sourceEntity">
 			<util:map key-type="edu.tongji.parser.TemplateType">
 				<entry key="NETFLIX_RATINGVO_TEMPLATE"
-					value="C:/Users/ppiachen/Desktop/Desktop/DataSet/NetFlix/Netflix_Prize/training_set/mv_" />
+					value="${RATING_FILE_READ_PATH}" />
 			</util:map>
 		</property>
 	</bean>
@@ -57,8 +57,8 @@
 	<bean id="NetflixEvaPredctFileReader" class="edu.tongji.thread.NetflixEvaPredctFileReader">
 		<property name="sourceEntity">
 			<util:map key-type="edu.tongji.parser.TemplateType">
-				<entry key="SIMILARITY_TEMPLATE" value="src/test/resources/dataset/testcase/netflix/mv_" />
-				<entry key="NETFLIX_RATINGVO_TEMPLATE" value="src/test/resources/dataset/testcase/netflix/mv_" />
+				<entry key="SIMILARITY_TEMPLATE" value="${SIMILARITY_FILE_READ_PATH}" />
+				<entry key="NETFLIX_RATINGVO_TEMPLATE" value="${RATING_FILE_READ_PATH_WITH_RE}" />
 			</util:map>
 		</property>
 	</bean>
@@ -125,4 +125,13 @@
 		<property name="sqlMapClient" ref="sqlMapClient" />
 	</bean>
 
+
+	<!-- ******************************************** 外接属性配置文件 ************************************************ -->
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location">
+			<value>classpath:experiment/recommendation/netflix/z_netflix.properties
+			</value>
+		</property>
+	</bean>
 </beans>

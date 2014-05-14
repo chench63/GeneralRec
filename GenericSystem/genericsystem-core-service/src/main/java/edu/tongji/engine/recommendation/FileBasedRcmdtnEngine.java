@@ -2,7 +2,7 @@
  * Tongji Edu.
  * Copyright (c) 2004-2013 All Rights Reserved.
  */
-package edu.tongji.engine;
+package edu.tongji.engine.recommendation;
 
 import edu.tongji.function.Function;
 import edu.tongji.processor.RecommendationProcessor;
@@ -12,7 +12,7 @@ import edu.tongji.processor.RecommendationProcessor;
  * @author chench
  * @version $Id: RecommendationEngine.java, v 0.1 2013-9-7 下午9:44:35 chench Exp $
  */
-public class FileBasedRecommendationEngine extends RecommendationEngine {
+public class FileBasedRcmdtnEngine extends RcmdtnEngine {
 
     /** 
      * @see edu.tongji.engine.Engine#excute()

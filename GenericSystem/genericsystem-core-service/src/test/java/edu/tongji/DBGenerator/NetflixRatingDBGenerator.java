@@ -9,7 +9,7 @@ import java.util.Map;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import edu.tongji.dao.RatingDAO;
-import edu.tongji.engine.FileBasedRecommendationEngine;
+import edu.tongji.engine.recommendation.FileBasedRcmdtnEngine;
 import edu.tongji.model.Rating;
 import edu.tongji.orm.NetflixDataSource;
 import edu.tongji.util.ExceptionUtil;
@@ -31,7 +31,7 @@ public class NetflixRatingDBGenerator {
         try {
             ctx = new ClassPathXmlApplicationContext("META-INF/spring/netflix-single.xml");
 
-            FileBasedRecommendationEngine engine = (FileBasedRecommendationEngine) ctx
+            FileBasedRcmdtnEngine engine = (FileBasedRcmdtnEngine) ctx
                 .getBean("RecommendationEngine");
             RatingDAO ratingDao = (RatingDAO) ctx.getBean("ratingDAO");
             NetflixDataSource dataSource = (NetflixDataSource) engine.getDataSource();

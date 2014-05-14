@@ -5,7 +5,7 @@
     <artifactId>GenericSystem</artifactId>
     <version>1.0.0</version>
   </parent>
-  <artifactId>genericsystem-core-service</artifactId>
+  <artifactId>genericsystem-common-algorithm</artifactId>
   <dependencies>
   	<dependency>
   		<groupId>edu.tongji.genericsystem</groupId>
@@ -15,11 +15,6 @@
   	<dependency>
   		<groupId>edu.tongji.genericsystem</groupId>
   		<artifactId>genericsystem-common-lang</artifactId>
-  		<version>1.0.0</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>edu.tongji.genericsystem</groupId>
-  		<artifactId>genericsystem-common-algorithm</artifactId>
   		<version>1.0.0</version>
   	</dependency>
   </dependencies>

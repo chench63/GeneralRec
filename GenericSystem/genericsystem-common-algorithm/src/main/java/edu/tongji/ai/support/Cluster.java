@@ -2,7 +2,7 @@
  * Tongji Edu.
  * Copyright (c) 2004-2014 All Rights Reserved.
  */
-package edu.tongji.util.support;
+package edu.tongji.ai.support;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -17,11 +17,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.avalon.framework.activity.Initializable;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.springframework.util.StopWatch;
 
-import edu.tongji.engine.Initializable;
 import edu.tongji.exception.DataSourceErrorCode;
 import edu.tongji.exception.OwnedException;
 import edu.tongji.log4j.LoggerDefineConstant;
