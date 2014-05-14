@@ -2,7 +2,7 @@
  * Tongji Edu.
  * Copyright (c) 2004-2013 All Rights Reserved.
  */
-package edu.tongji.engine;
+package edu.tongji.engine.recommendation;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -20,7 +20,7 @@ import edu.tongji.util.LoggerUtil;
  * @author chench
  * @version $Id: NetflixSimlarityPerformanceMultiThreadEngine.java, v 0.1 2013-10-15 上午9:54:14 chench Exp $
  */
-public class DBBasedMultiThreadRecommendationEngine extends MultiThreadRecommendationEngine {
+public class DefaultMultiThreadRcmdtnEngine extends MultiThreadRcmdtnEngine {
 
     /** 数据读取*/
     private Thread              reader;

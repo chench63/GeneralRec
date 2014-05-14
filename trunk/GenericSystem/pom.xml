@@ -118,5 +118,7 @@
 		<module>genericsystem-core-service</module>
 		<module>genericsystem-common-dal</module>
 		<module>genericsystem-experiment-home</module>
+		
+		<module>genericsystem-common-algorithm</module>
 	</modules>
 </project>

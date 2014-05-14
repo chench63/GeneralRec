@@ -2,13 +2,14 @@
  * Tongji Edu.
  * Copyright (c) 2004-2014 All Rights Reserved.
  */
-package edu.tongji.util;
+package edu.tongji.ai.cluster;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.tongji.util.support.Cluster;
-import edu.tongji.util.support.Point;
+import edu.tongji.ai.support.Cluster;
+import edu.tongji.ai.support.Point;
+import edu.tongji.util.RandomUtil;
 
 /**
  * K-means 工具类，聚类算法

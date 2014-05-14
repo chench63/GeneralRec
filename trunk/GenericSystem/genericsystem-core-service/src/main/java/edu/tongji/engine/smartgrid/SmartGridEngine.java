@@ -15,6 +15,7 @@ import edu.tongji.engine.smartgrid.support.DataSetAssembler;
 import edu.tongji.engine.smartgrid.support.QuarterSeqDataSetAssembler;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.orm.SmartGridDataSource;
+import edu.tongji.util.LoggerUtil;
 import edu.tongji.vo.MeterReadingVO;
 
 /**
@@ -65,6 +66,7 @@ public abstract class SmartGridEngine implements Engine {
      */
     protected void loadDataSet() {
         dataSource.reload();
+        LoggerUtil.info(logger, "0. finish loading data set.");
     }
 
     /**
@@ -83,6 +85,7 @@ public abstract class SmartGridEngine implements Engine {
         SmartGridDataSource.meterContexts.clear();
 
         assembler.assemble(context, SmartGridDataSource.meterContexts);
+        LoggerUtil.info(logger, "1. finish assembling data set.");
     }
 
     /**

@@ -63,7 +63,7 @@ public final class WeatherCache {
      * 初始化缓存
      */
     protected static void initialize() {
-        String[] content = FileUtil.readLines(source);
+        String[] content = FileUtil.readLinesByPattern(source);
         for (String tempStr : content) {
             ParserTemplate template = new ParserTemplate();
             template.setTemplate(tempStr);

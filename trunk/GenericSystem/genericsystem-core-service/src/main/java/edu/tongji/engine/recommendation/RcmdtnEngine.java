@@ -2,12 +2,13 @@
  * Tongji Edu.
  * Copyright (c) 2004-2013 All Rights Reserved.
  */
-package edu.tongji.engine;
+package edu.tongji.engine.recommendation;
 
 import java.util.List;
 
 import edu.tongji.context.ContextEnvelope;
 import edu.tongji.context.ProcessorContext;
+import edu.tongji.engine.Engine;
 import edu.tongji.function.Function;
 import edu.tongji.orm.DataSource;
 import edu.tongji.processor.Processor;
@@ -17,7 +18,7 @@ import edu.tongji.processor.Processor;
  * @author chench
  * @version $Id: RecommendationEngine.java, v 0.1 16 Sep 2013 21:51:35 chench Exp $
  */
-public abstract class RecommendationEngine implements Engine {
+public abstract class RcmdtnEngine implements Engine {
     /** 数据源*/
     protected DataSource       dataSource;
 

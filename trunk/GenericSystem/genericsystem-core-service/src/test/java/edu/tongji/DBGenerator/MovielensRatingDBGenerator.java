@@ -7,10 +7,11 @@ package edu.tongji.DBGenerator;
 import java.util.Map;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+
 import edu.tongji.dao.MovieDAO;
 import edu.tongji.dao.RatingDAO;
 import edu.tongji.dao.UserDAO;
-import edu.tongji.engine.FileBasedRecommendationEngine;
+import edu.tongji.engine.recommendation.FileBasedRcmdtnEngine;
 import edu.tongji.model.Movie;
 import edu.tongji.model.Rating;
 import edu.tongji.model.User;
@@ -31,7 +32,7 @@ public class MovielensRatingDBGenerator {
         try {
             ctx = new ClassPathXmlApplicationContext("META-INF/spring/application-context.xml");
 
-            FileBasedRecommendationEngine engine = (FileBasedRecommendationEngine) ctx
+            FileBasedRcmdtnEngine engine = (FileBasedRcmdtnEngine) ctx
                 .getBean("RecommendationEngine");
             RatingDAO ratingDao = (RatingDAO) ctx.getBean("ratingDAO");
             MovielensDatasource dataSource = (MovielensDatasource) engine.getDataSource();
@@ -56,7 +57,7 @@ public class MovielensRatingDBGenerator {
         try {
             ctx = new ClassPathXmlApplicationContext("META-INF/spring/application-context.xml");
 
-            FileBasedRecommendationEngine engine = (FileBasedRecommendationEngine) ctx
+            FileBasedRcmdtnEngine engine = (FileBasedRcmdtnEngine) ctx
                 .getBean("RecommendationEngine");
             UserDAO userDao = (UserDAO) ctx.getBean("userDAO");
             MovielensDatasource dataSource = (MovielensDatasource) engine.getDataSource();
@@ -81,7 +82,7 @@ public class MovielensRatingDBGenerator {
         try {
             ctx = new ClassPathXmlApplicationContext("META-INF/spring/application-context.xml");
 
-            FileBasedRecommendationEngine engine = (FileBasedRecommendationEngine) ctx
+            FileBasedRcmdtnEngine engine = (FileBasedRcmdtnEngine) ctx
                 .getBean("RecommendationEngine");
             MovieDAO movieDao = (MovieDAO) ctx.getBean("movieDAO");
             MovielensDatasource dataSource = (MovielensDatasource) engine.getDataSource();
