@@ -13,6 +13,7 @@ import java.util.Map;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
+import edu.tongji.cache.WeatherCache;
 import edu.tongji.util.DateUtil;
 import edu.tongji.util.HashKeyUtil;
 import edu.tongji.util.LoggerUtil;
@@ -40,25 +41,26 @@ public class ExpectationSeqDayCracker extends ExpectationCracker {
         //1. 日子输出
         StringBuilder logMsg = new StringBuilder("ExpectationSeqDayCracker");
         for (int i = 0, j = baseElems.size(); i < j; i++) {
-            StringBuilder mean = (new StringBuilder())
+            String key = DateUtil.format(new Date(baseElems.get(i).getTimeVal()),
+                DateUtil.SHORT_FORMAT);
+            String temperature = String.format("%.0f", WeatherCache.get(key).getHighTemper());
+            String date = (new StringBuilder()).append(key).append(" (")
+                .append(StringUtil.alignRight(temperature, 2)).append(")").append(" W：")
+                .append(DateUtil.getDayOfWeek(baseElems.get(i).getTimeVal())).toString();
+            String mean = (new StringBuilder())
                 .append(String.format("%.2f", baseElems.get(i).getStats().getMean())).append(" (")
                 .append(String.format("%.2f", estimateElems.get(i).getStats().getMean()))
-                .append(")");
-            StringBuilder sd = (new StringBuilder())
-
+                .append(")").toString();
+            String sd = (new StringBuilder())
                 .append(String.format("%.2f", baseElems.get(i).getStats().getStandardDeviation()))
                 .append(" (")
                 .append(
                     String.format("%.2f", estimateElems.get(i).getStats().getStandardDeviation()))
-                .append(")");
-            logMsg
-                .append("\n T：")
-                .append(
-                    DateUtil.format(new Date(baseElems.get(i).getTimeVal()), DateUtil.LONG_FORMAT)
-                        .substring(2, 8)).append(" W：")
-                .append(DateUtil.getDayOfWeek(baseElems.get(i).getTimeVal())).append(" M：")
-                .append(StringUtil.alignRight(mean.toString(), 18)).append(" SD：")
-                .append(StringUtil.alignRight(sd.toString(), 18)).append(" S：")
+                .append(")").toString();
+
+            logMsg.append("\n T：").append(date).append(" M：")
+                .append(StringUtil.alignRight(mean.toString(), 16)).append(" SD：")
+                .append(StringUtil.alignRight(sd.toString(), 16)).append(" S：")
                 .append(String.format("%.2f", baseElems.get(i).getStats().getSum())).append(" (")
                 .append(String.format("%.2f", estimateElems.get(i).getStats().getSum()))
                 .append(")");

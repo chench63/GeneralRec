@@ -9,16 +9,6 @@
   <dependencies>
   	<dependency>
   		<groupId>edu.tongji.genericsystem</groupId>
-  		<artifactId>genericsystem-common-dal</artifactId>
-  		<version>1.0.0</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>edu.tongji.genericsystem</groupId>
-  		<artifactId>genericsystem-common-lang</artifactId>
-  		<version>1.0.0</version>
-  	</dependency>
-  	<dependency>
-  		<groupId>edu.tongji.genericsystem</groupId>
   		<artifactId>genericsystem-core-service</artifactId>
   		<version>1.0.0</version>
   	</dependency>
