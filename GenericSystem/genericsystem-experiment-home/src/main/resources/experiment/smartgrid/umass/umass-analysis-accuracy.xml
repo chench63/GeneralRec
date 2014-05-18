@@ -19,40 +19,16 @@
 	</bean>
 
 	<!-- Entity Manager -->
-	<bean id="engine" class="edu.tongji.engine.smartgrid.AnalysisPerturbationEngine">
+	<bean id="engine" class="edu.tongji.engine.smartgrid.AnalysisAccuracyEngine">
 		<property name="dataSource" ref="datasource" />
 		<!-- hourSeqDataSetAssembler | quarterSeqDataSetAssembler | wattQuarterSeqDataSetAssembler -->
 		<property name="assembler" ref="wattQuarterSeqDataSetAssembler" />
-		<property name="absolutePath" value="${GNUPLOT_SOURCEFILE_WRITE_PATH}" />
-		<property name="velocityContextHelper" ref="velocityContextHelper" />
-		<!-- emSeqHourFormatter | emSeqQuarterFormatter | meanSeqHourFormatter 
-			| meanSeqQuarterFormatter | maxSeqQuarterFormatter | specifiedDayFormatter -->
-		<!-- deviationSeqQuarterFormatter | deviationEmSeqQuarterFormatter -->
-		<property name="formatter" ref="meanSeqHourFormatter" />
-		<property name="assembleTemplate" ref="assembleTemplate" />
 		<!-- expectationSeqDayCracker | standardExpectationCracker | bayesianNetworksCracker 
 			| bayesianNetWorksWithEMCracker -->
 		<property name="cracker" ref="bayesianNetworksCracker" />
 		<!-- uniformNoise | normalDistri | gaussMixtureNoise -->
 		<property name="noise" ref="uniformNoise" />
 	</bean>
-
-	<bean id="assembleTemplate" class="edu.tongji.extend.gnuplot.support.AssembleTemplate">
-		<property name="mainTemplate" value="${GNUPLOT_TEMPLATE_VM}" />
-	</bean>
-
-
-	<!-- Velocity Set -->
-	<bean id="velocityContextHelper" class="edu.tongji.extend.gnuplot.support.VelocityContextHelper">
-		<property name="utilBeansMap">
-			<map>
-				<entry key="dateUtil" value-ref="dateUtil" />
-				<entry key="stringUtil" value-ref="stringUtil" />
-			</map>
-		</property>
-	</bean>
-	<bean id="dateUtil" class="edu.tongji.util.DateUtil" />
-	<bean id="stringUtil" class="edu.tongji.util.StringUtil" />
 
 	<!-- Crackers -->
 	<bean id="standardExpectationCracker" class="edu.tongji.crack.StandardExpectationCracker" />
@@ -125,42 +101,6 @@
 		<constructor-arg index="0" type="double" value="410.0" />
 		<constructor-arg index="1" type="double" value="205.891" />
 	</bean>
-
-
-
-	<!-- Formatter -->
-	<bean id="meanSeqHourFormatter" class="edu.tongji.extend.gnuplot.MeanSeqHourFormatter"
-		lazy-init="true" />
-	<bean id="meanSeqQuarterFormatter" class="edu.tongji.extend.gnuplot.MeanSeqQuarterFormatter"
-		lazy-init="true" />
-	<bean id="maxSeqQuarterFormatter" class="edu.tongji.extend.gnuplot.MaxSeqQuarterFormatter"
-		lazy-init="true" />
-	<bean id="emSeqHourFormatter" class="edu.tongji.extend.gnuplot.EmSeqHourFormatter"
-		lazy-init="true">
-		<property name="noise" ref="gaussMixtureNoise" />
-		<property name="maxIterations" value="30" />
-	</bean>
-	<bean id="emSeqQuarterFormatter" class="edu.tongji.extend.gnuplot.EmSeqQuarterFormatter"
-		lazy-init="true">
-		<property name="noise" ref="gaussMixtureNoise" />
-		<property name="maxIterations" value="30" />
-	</bean>
-	<bean id="specifiedDayFormatter" class="edu.tongji.extend.gnuplot.SpecifiedDayFormatter"
-		lazy-init="true">
-		<property name="specifiedDay" value="${SPECIFIED_DAY}" />
-	</bean>
-
-	<bean id="deviationSeqQuarterFormatter" class="edu.tongji.extend.gnuplot.MeanSeqQuarterFormatter"
-		lazy-init="true">
-		<property name="mean" value="false" />
-	</bean>
-	<bean id="deviationEmSeqQuarterFormatter" class="edu.tongji.extend.gnuplot.EmSeqQuarterFormatter"
-		lazy-init="true">
-		<property name="mean" value="false" />
-		<property name="noise" ref="gaussMixtureNoise" />
-		<property name="maxIterations" value="30" />
-	</bean>
-
 
 
 	<!-- Assembler -->

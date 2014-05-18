@@ -75,6 +75,14 @@ public class AnalysisPerturbationEngine extends SmartGridEngine {
         LoggerUtil.info(logger, "Meter Reading Mean：" + String.format("%.3f", statInner.getMean())
                                 + " SD：" + String.format("%.3f", statInner.getStandardDeviation()));
 
+        //1. 破解数据
+        crack();
+    }
+
+    /**
+     * 破解数据
+     */
+    protected void crack() {
         //1.在原始数据后，添加隐私保护的数据
         rowSize = SmartGridDataSource.meterContexts.size();
         StringBuilder loggerMsg = new StringBuilder("Privacy Preserving Procedure：");
@@ -106,6 +114,10 @@ public class AnalysisPerturbationEngine extends SmartGridEngine {
      */
     @Override
     protected void emulate() {
+        if (StringUtil.isBlank(absolutePath)) {
+            //无Gnuplot输出要求
+            return;
+        }
 
         //0. PRUtil
         int type = RuleBasedPRUtil.recognize(SmartGridDataSource.meterContexts.subList(rowSize,
@@ -116,7 +128,9 @@ public class AnalysisPerturbationEngine extends SmartGridEngine {
         String content = rendContent(rowSize, SmartGridDataSource.meterContexts.size() / rowSize);
         String fileAbsolutePath = (new StringBuilder(absolutePath)).append(
             DateUtil.formatCurrent(DateUtil.LONG_FORMAT)).toString();
-        FileUtil.write(fileAbsolutePath, content);
+        if (StringUtil.isNotBlank(fileAbsolutePath)) {
+            FileUtil.write(fileAbsolutePath, content);
+        }
     }
 
     /**

@@ -8,6 +8,9 @@ import java.util.List;
 
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 
+import edu.tongji.exception.FunctionErrorCode;
+import edu.tongji.exception.OwnedException;
+import edu.tongji.extend.noise.Noise;
 import edu.tongji.util.LoggerUtil;
 import edu.tongji.util.StringUtil;
 import edu.tongji.vo.MeterReadingVO;
@@ -99,6 +102,14 @@ public class LinearExpectationCracker extends ExpectationCracker {
                 .append("\tRMSE: ").append(String.format("%.4f", rmseValue));
             LoggerUtil.debug(logger, loggerMsg.toString());
         }
+    }
+
+    /** 
+     * @see edu.tongji.crack.PrivacyCracker#crackInnerNoise(edu.tongji.crack.CrackObject, edu.tongji.extend.noise.Noise)
+     */
+    @Override
+    public void crackInnerNoise(CrackObject object, Noise noise) {
+        throw new OwnedException(FunctionErrorCode.ILLEGAL_PARAMETER);
     }
 
     /**

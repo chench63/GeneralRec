@@ -32,9 +32,6 @@ public abstract class SmartGridEngine implements Engine {
     /** 数据汇总合并器, 默认按刻钟计算*/
     protected DataSetAssembler                assembler        = new QuarterSeqDataSetAssembler();
 
-    /** 保持逻辑数据集稳健*/
-    protected boolean                         keepSteady       = true;
-
     /** 测试需要，统计平均运行时间*/
     public final static DescriptiveStatistics STAT             = new DescriptiveStatistics();
 
@@ -65,6 +62,7 @@ public abstract class SmartGridEngine implements Engine {
      * 载入数据集
      */
     protected void loadDataSet() {
+        SmartGridDataSource.meterContexts.clear();
         dataSource.reload();
         LoggerUtil.info(logger, "0. finish loading data set.");
     }
@@ -73,11 +71,6 @@ public abstract class SmartGridEngine implements Engine {
      * 组装数据集
      */
     protected void assembleDataSet() {
-        //物理数据集为老数据集，
-        //逻辑数据集保持稳健
-        if (!dataSource.isFresh() && keepSteady) {
-            return;
-        }
 
         //交替上下文
         List<MeterReadingVO> context = new ArrayList<MeterReadingVO>();

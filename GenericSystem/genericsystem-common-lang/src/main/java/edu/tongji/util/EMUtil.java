@@ -37,10 +37,17 @@ public final class EMUtil {
      * @param maxIterations     最大迭代次数
      * @return
      */
-    public static double[] estimate(Noise noise, double[] samples, int maxIterations) {
+    public static double[] estimate(final Noise noise, double[] samples, int maxIterations) {
 
-        //获取GMM的参数
-        NormalNoise[] normalNoises = ((GaussMixtureNoise) noise).getNormalNoise();
+        //拷贝GMM的参数
+        NormalNoise[] sourceNoises = ((GaussMixtureNoise) noise).getNormalNoise();
+        int len = sourceNoises.length;
+        NormalNoise[] normalNoises = new NormalNoise[len];
+        for (int i = 0; i < len; i++) {
+            normalNoises[i] = new NormalNoise(sourceNoises[i].getMean(),
+                sourceNoises[i].getStandardDeviation());
+        }
+
         double[] weight = ((GaussMixtureNoise) noise).getWeight();
         double[][] possbltyOfHiddenVar = new double[samples.length][normalNoises.length];
 

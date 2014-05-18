@@ -30,12 +30,6 @@ import edu.tongji.vo.MeterReadingVO;
  */
 public class SmartGridDataSource implements DataSource {
 
-    /** 是否为本次加载*/
-    private boolean                          isFresh          = false;
-
-    /** 是否完成加载*/
-    private boolean                          isLoad           = false;
-
     /** 需要加载的文件  **/
     private Map<TemplateType, String>        sourceEntity;
 
@@ -83,15 +77,7 @@ public class SmartGridDataSource implements DataSource {
      */
     @Override
     public void reload() {
-        //完成加载且不需要修改，则返回
-        if (isLoad) {
-            isFresh = false;
-            return;
-        }
-
         load();
-        isFresh = true;
-        isLoad = true;
     }
 
     /** 
@@ -127,15 +113,6 @@ public class SmartGridDataSource implements DataSource {
      */
     public void setSourceEntity(Map<TemplateType, String> sourceEntity) {
         this.sourceEntity = sourceEntity;
-    }
-
-    /**
-     * Getter method for property <tt>isFresh</tt>.
-     * 
-     * @return property value of isFresh
-     */
-    public boolean isFresh() {
-        return isFresh;
     }
 
 }

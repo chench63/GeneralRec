@@ -6,6 +6,8 @@ package edu.tongji.extend.noise;
 
 import org.apache.commons.math3.distribution.UniformRealDistribution;
 
+import edu.tongji.extend.support.NoiseParamSupport;
+
 /**
  * 平均分布噪声
  * 
@@ -15,8 +17,31 @@ import org.apache.commons.math3.distribution.UniformRealDistribution;
 public class UniformNoise implements Noise {
 
     /** 平均分布*/
-    private final UniformRealDistribution uniformRealDistribution;
+    private UniformRealDistribution uniformRealDistribution;
 
+    /**
+     * 构造函数
+     */
+    public UniformNoise() {
+
+    }
+
+    /**
+     * 构造函数
+     * 
+     * @param noiseParamSupport
+     */
+    public UniformNoise(NoiseParamSupport noiseParamSupport) {
+        this.uniformRealDistribution = noiseParamSupport.uniform();
+
+    }
+
+    /**
+     * 构造函数
+     * 
+     * @param lower
+     * @param upper
+     */
     public UniformNoise(double lower, double upper) {
         uniformRealDistribution = new UniformRealDistribution(lower, upper);
     }

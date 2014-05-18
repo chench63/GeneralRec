@@ -8,11 +8,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.log4j.Logger;
+
+import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.parser.Parser;
 import edu.tongji.parser.ParserTemplate;
 import edu.tongji.parser.WeatherTemplateParser;
 import edu.tongji.util.DateUtil;
 import edu.tongji.util.FileUtil;
+import edu.tongji.util.LoggerUtil;
 import edu.tongji.vo.WeatherVO;
 
 /**
@@ -28,6 +32,10 @@ public final class WeatherCache {
 
     /** 缓存*/
     private final static Map<String, WeatherVO> reposity = new HashMap<String, WeatherVO>();
+
+    /** logger */
+    protected final static Logger               logger   = Logger
+                                                             .getLogger(LoggerDefineConstant.SERVICE_CACHE);
 
     /**
      * 获得天气信息
@@ -64,6 +72,7 @@ public final class WeatherCache {
      */
     protected static void initialize() {
         String[] content = FileUtil.readLinesByPattern(source);
+        float[] T = new float[4];
         for (String tempStr : content) {
             ParserTemplate template = new ParserTemplate();
             template.setTemplate(tempStr);
@@ -73,7 +82,25 @@ public final class WeatherCache {
 
             //装入缓存
             reposity.put(DateUtil.format(weather.getDay(), DateUtil.SHORT_FORMAT), weather);
+
+            //日志部分信息
+            int t = 0;
+            double temperature = weather.getHighTemper();
+            if (temperature >= 16.0d) {
+                t = temperature >= 28.0d ? 3 : ((Double) ((temperature - 16.0d) / 6 + 1))
+                    .intValue();
+            }
+            T[t] += 1;
         }
+
+        //输出日志
+        LoggerUtil.info(
+            logger,
+            (new StringBuilder()).append(FileUtil.BREAK_LINE).append("T[0]：")
+                .append(T[0] / reposity.size()).append(FileUtil.BREAK_LINE).append("T[1]：")
+                .append(T[1] / reposity.size()).append(FileUtil.BREAK_LINE).append("T[2]：")
+                .append(T[2] / reposity.size()).append(FileUtil.BREAK_LINE).append("T[3]：")
+                .append(T[3] / reposity.size()).append(FileUtil.BREAK_LINE));
     }
 
     /**

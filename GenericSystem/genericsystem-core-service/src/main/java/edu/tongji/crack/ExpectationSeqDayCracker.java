@@ -14,6 +14,9 @@ import java.util.Map;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import edu.tongji.cache.WeatherCache;
+import edu.tongji.exception.FunctionErrorCode;
+import edu.tongji.exception.OwnedException;
+import edu.tongji.extend.noise.Noise;
 import edu.tongji.util.DateUtil;
 import edu.tongji.util.HashKeyUtil;
 import edu.tongji.util.LoggerUtil;
@@ -27,6 +30,12 @@ import edu.tongji.vo.MeterReadingVO;
  */
 public class ExpectationSeqDayCracker extends ExpectationCracker {
 
+    /** 最低样本阈值*/
+    protected int                    SAMPLE_NUM_LIMITS = 84;
+
+    /** 结果集*/
+    public final static List<Double> CP_RESULT         = new ArrayList<Double>();
+
     /** 
      * @see edu.tongji.crack.PrivacyCracker#crack(edu.tongji.crack.CrackObject, int)
      */
@@ -38,7 +47,7 @@ public class ExpectationSeqDayCracker extends ExpectationCracker {
         List<ELement> baseElems = tabulate(content, 0, blockSize, blockSize);
         List<ELement> estimateElems = tabulate(content, blockSize, content.size(), blockSize);
 
-        //1. 日子输出
+        //1. 日志输出
         StringBuilder logMsg = new StringBuilder("ExpectationSeqDayCracker");
         for (int i = 0, j = baseElems.size(); i < j; i++) {
             String key = DateUtil.format(new Date(baseElems.get(i).getTimeVal()),
@@ -68,6 +77,23 @@ public class ExpectationSeqDayCracker extends ExpectationCracker {
         LoggerUtil.info(logger, logMsg);
     }
 
+    /** 
+     * @see edu.tongji.crack.PrivacyCracker#crackInnerNoise(edu.tongji.crack.CrackObject, edu.tongji.extend.noise.Noise)
+     */
+    @Override
+    public void crackInnerNoise(CrackObject object, Noise noise) {
+        throw new OwnedException(FunctionErrorCode.ILLEGAL_PARAMETER);
+    }
+
+    /**
+     * 汇总数据
+     * 
+     * @param content
+     * @param start
+     * @param end
+     * @param blockSize
+     * @return
+     */
     protected List<ELement> tabulate(List<MeterReadingVO> content, int start, int end, int blockSize) {
         Map<String, ELement> repo = new HashMap<String, ELement>();
         for (int i = start; i < end; i++) {
@@ -102,6 +128,15 @@ public class ExpectationSeqDayCracker extends ExpectationCracker {
     protected String generateKey(MeterReadingVO reading, int index, int rowSize) {
         return (new StringBuilder()).append(DateUtil.getDayOfYear(reading.getTimeVal()))
             .append(HashKeyUtil.ELEMENT_SEPERATOR).append(index / rowSize).toString();
+    }
+
+    /**
+     * Setter method for property <tt>sAMPLE_NUM_LIMITS</tt>.
+     * 
+     * @param SAMPLE_NUM_LIMITS value to be assigned to property sAMPLE_NUM_LIMITS
+     */
+    public void setSAMPLE_NUM_LIMITS(int sAMPLE_NUM_LIMITS) {
+        this.SAMPLE_NUM_LIMITS = sAMPLE_NUM_LIMITS;
     }
 
     /**
