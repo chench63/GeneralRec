@@ -6,6 +6,8 @@ package edu.tongji.extend.noise;
 
 import org.apache.commons.math3.distribution.NormalDistribution;
 
+import edu.tongji.extend.support.NoiseParamSupport;
+
 /**
  * 正态分布噪声类
  * 
@@ -30,6 +32,15 @@ public class NormalNoise implements Noise {
     /**
      * 构造函数
      * 
+     * @param noiseParamSupport
+     */
+    public NormalNoise(NoiseParamSupport noiseParamSupport) {
+        this.normal = noiseParamSupport.normal();
+    }
+
+    /**
+     * 构造函数
+     * 
      * @param mean                  均值
      * @param standardDeviation     标准差
      * @param domain                值域
@@ -38,6 +49,13 @@ public class NormalNoise implements Noise {
         this.normal = new NormalDistribution(mean, standardDeviation);
     }
 
+    /**
+     * 构造函数
+     * 
+     * @param mean
+     * @param standardDeviation
+     * @param probality
+     */
     public NormalNoise(double mean, double standardDeviation, double probality) {
         this.normal = new NormalDistribution(mean, standardDeviation);
         this.icf_limit = Double.valueOf(normal.inverseCumulativeProbability(probality))

@@ -26,15 +26,15 @@ public class TestParam {
     /** load monitoring 误差*/
     public double               alpha   = 0.01;
     /** 电表读数均值*/
-    public double               u_1     = 540;
+    public double               u_1     = 200;
     /** 电表读数标准方差*/
-    public double               sigma_1 = 600;
+    public double               sigma_1 = 200;
     /** 噪声均值*/
     public double               u_2     = 0;
     /** alpha误差下，置信概率*/
     public double               p       = 0.9;
 
-    //    @Test
+    @Test
     public void test() {
 
         NormalDistribution stat = new NormalDistribution(0, 1);
@@ -49,7 +49,7 @@ public class TestParam {
 
     }
 
-    @Test
+    //    @Test
     public void test2() {
         double param_alpha = 0.01d;
         double param_belta = 2.0d;

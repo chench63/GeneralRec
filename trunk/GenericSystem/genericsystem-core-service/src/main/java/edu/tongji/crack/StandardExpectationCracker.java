@@ -6,6 +6,9 @@ package edu.tongji.crack;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
+import edu.tongji.exception.FunctionErrorCode;
+import edu.tongji.exception.OwnedException;
+import edu.tongji.extend.noise.Noise;
 import edu.tongji.util.LoggerUtil;
 import edu.tongji.vo.MeterReadingVO;
 
@@ -54,5 +57,13 @@ public class StandardExpectationCracker extends ExpectationCracker {
         }
         LoggerUtil.info(logger, loggerMsg.toString());
 
+    }
+
+    /** 
+     * @see edu.tongji.crack.PrivacyCracker#crackInnerNoise(edu.tongji.crack.CrackObject, edu.tongji.extend.noise.Noise)
+     */
+    @Override
+    public void crackInnerNoise(CrackObject object, Noise noise) {
+        throw new OwnedException(FunctionErrorCode.ILLEGAL_PARAMETER);
     }
 }

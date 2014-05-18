@@ -4,6 +4,8 @@
  */
 package edu.tongji.crack;
 
+import edu.tongji.extend.noise.Noise;
+
 /**
  * 隐私破解器
  * 
@@ -18,4 +20,12 @@ public interface PrivacyCracker {
      * @param object
      */
     public void crack(CrackObject object, int blockSize);
+
+    /**
+     * 破解数组对象
+     * 
+     * @param object
+     * @param noise
+     */
+    public void crackInnerNoise(CrackObject object, Noise noise);
 }

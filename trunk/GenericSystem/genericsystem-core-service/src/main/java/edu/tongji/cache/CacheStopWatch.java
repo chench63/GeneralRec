@@ -37,6 +37,14 @@ public final class CacheStopWatch {
      * @param cacheHolder   通用信息载体
      */
     public void put(CacheHolder cacheHolder) {
+        if (stopWatchContext.isEmpty()) {
+            //初始化
+            for (int i = 0; i < ConfigurationConstant.TASK_SIZE
+                                / ConfigurationConstant.SUB_TASK_SIZE; i++) {
+                stopWatchContext.add(new DescriptiveStatistics());
+            }
+        }
+
         long elapse = (long) cacheHolder.get(CacheHolder.ELAPSE);
         int movieId = ((Integer) cacheHolder.get(CacheHolder.MOVIE_ID)).intValue();
         //movie_id [2, TASK_SIZE]
@@ -59,16 +67,26 @@ public final class CacheStopWatch {
             stat.addValue(stopWatchContext.get(indexOfContext - 1).getSum());
 
             //输出日志
-            LoggerUtil.info(logger,
-                (new StringBuilder("SubTask：")).append(indexOfContext).append(" Completes over：")
-                    .append(StringUtil.alignRight(String.valueOf((int) stat.getSum()), 15)));
+            LoggerUtil.info(
+                logger,
+                (new StringBuilder("SubTask："))
+                    .append(indexOfContext)
+                    .append(" Completes over：")
+                    .append(
+                        StringUtil.alignRight(
+                            String.valueOf(Double.valueOf(stat.getSum()).longValue()), 20)));
         } else if ((indexOfContext == 0)
                    && (stat.getN() == (ConfigurationConstant.SUB_TASK_SIZE - 1))) {
             //Movie_id [2, 1777] 段日志
             //输出日志
-            LoggerUtil.info(logger,
-                (new StringBuilder("SubTask：")).append(indexOfContext).append(" Completes over：")
-                    .append(StringUtil.alignRight(String.valueOf((int) stat.getSum()), 15)));
+            LoggerUtil.info(
+                logger,
+                (new StringBuilder("SubTask："))
+                    .append(indexOfContext)
+                    .append(" Completes over：")
+                    .append(
+                        StringUtil.alignRight(
+                            String.valueOf(Double.valueOf(stat.getSum()).longValue()), 20)));
         }
     }
 

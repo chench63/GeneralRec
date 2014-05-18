@@ -12,9 +12,11 @@
 	<bean class="edu.tongji.configure.ConfigurationConstant">
 		<!-- 主任务参数最大值 $Cache -->
 		<property name="TASK_SIZE" value="${TASK_SIZE}" />
-		<property name="SUB_TASK_SIZE" value="177" />
+		<property name="SUB_TASK_SIZE" value="1777" />
 		<property name="IS_HOMOMORPHIC_ENCRYPTION" value="true" />
 		<property name="PARSER_RATINGVO" value="false" />
+		
+		<property name="THREAD_FOR_STEP" value="400" />
 	</bean>
 
 
