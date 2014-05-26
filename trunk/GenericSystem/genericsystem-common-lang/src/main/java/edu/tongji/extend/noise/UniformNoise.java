@@ -63,6 +63,22 @@ public class UniformNoise implements Noise {
     }
 
     /** 
+     * @see edu.tongji.extend.noise.Noise#standardDeviation()
+     */
+    @Override
+    public double standardDeviation() {
+        return Math.sqrt(this.uniformRealDistribution.getNumericalVariance());
+    }
+
+    /** 
+     * @see edu.tongji.extend.noise.Noise#mean()
+     */
+    @Override
+    public double mean() {
+        return this.uniformRealDistribution.getNumericalMean();
+    }
+
+    /** 
      * @see edu.tongji.extend.noise.Noise#getName()
      */
     @Override

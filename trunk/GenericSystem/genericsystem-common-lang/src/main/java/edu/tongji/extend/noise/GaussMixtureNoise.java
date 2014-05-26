@@ -8,6 +8,7 @@ import org.apache.commons.math3.distribution.UniformRealDistribution;
 
 import edu.tongji.exception.FunctionErrorCode;
 import edu.tongji.exception.OwnedException;
+import edu.tongji.extend.support.NoiseParamSupport;
 
 /**
  * 高斯混合模型噪声 <br/>
@@ -27,6 +28,16 @@ public class GaussMixtureNoise implements Noise {
     /** 概率转盘[0,1]*/
     private final UniformRealDistribution uniform = new UniformRealDistribution();
 
+    /**
+     * 
+     * 
+     * @param noiseParamSupport
+     */
+    public GaussMixtureNoise(NoiseParamSupport noiseParamSupport) {
+        this.weight = noiseParamSupport.getWeighit();
+        this.normalNoise = noiseParamSupport.gmm();
+    }
+
     /** 
      * @see edu.tongji.extend.noise.Noise#random()
      */
@@ -41,11 +52,16 @@ public class GaussMixtureNoise implements Noise {
     @Override
     public double perturb(double input) {
         //1. 隐参数投点
-        double index = uniform.sample();
+        double index = uniform.sample() - weight[0];
+
         // Smart Grid应用中：K个Component,
+        //第1个为电表参数估计量
+        if (index <= 0) {
+            return input;
+        }
+
         // K-1个噪声，第K个为电表参数估计量
-        int numNoise = weight.length - 1;
-        for (int i = 0; i < numNoise; i++) {
+        for (int i = 1, numNoise = weight.length; i < numNoise; i++) {
 
             //2.  走轮盘，落点则返回
             if ((index -= weight[i]) < 0) {
@@ -53,8 +69,23 @@ public class GaussMixtureNoise implements Noise {
             }
 
         }
+        return normalNoise[weight.length - 1].random();
+    }
 
-        return input;
+    /** 
+     * @see edu.tongji.extend.noise.Noise#standardDeviation()
+     */
+    @Override
+    public double standardDeviation() {
+        return Double.NaN;
+    }
+
+    /** 
+     * @see edu.tongji.extend.noise.Noise#mean()
+     */
+    @Override
+    public double mean() {
+        return Double.NaN;
     }
 
     /** 

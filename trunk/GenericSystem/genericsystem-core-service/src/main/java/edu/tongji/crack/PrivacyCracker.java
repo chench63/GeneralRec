@@ -4,6 +4,7 @@
  */
 package edu.tongji.crack;
 
+import edu.tongji.crack.support.HashKeyCallBack;
 import edu.tongji.extend.noise.Noise;
 
 /**
@@ -15,17 +16,18 @@ import edu.tongji.extend.noise.Noise;
 public interface PrivacyCracker {
 
     /**
-     * 破解数组对象
+     * 破解对象，噪声有外部生成
      * 
      * @param object
      */
-    public void crack(CrackObject object, int blockSize);
+    public void crack(CrackObject object, int blockSize, HashKeyCallBack hashKyGen);
 
     /**
-     * 破解数组对象
+     * 破解对象,噪声有内部生成
      * 
-     * @param object
-     * @param noise
+     * @param object    破解对象
+     * @param noise     需要的噪声
+     * @param hashKyGen 哈希函数
      */
-    public void crackInnerNoise(CrackObject object, Noise noise);
+    public void crackInnerNoise(CrackObject object, Noise noise, HashKeyCallBack hashKyGen);
 }

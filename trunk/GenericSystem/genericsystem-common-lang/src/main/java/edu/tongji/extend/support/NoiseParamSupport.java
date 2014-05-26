@@ -8,6 +8,7 @@ import org.apache.commons.math3.distribution.NormalDistribution;
 import org.apache.commons.math3.distribution.UniformRealDistribution;
 import org.apache.log4j.Logger;
 
+import edu.tongji.extend.noise.NormalNoise;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.util.LoggerUtil;
 
@@ -43,6 +44,12 @@ public class NoiseParamSupport {
     /** GMM: belta参数*/
     private final double          param_belta = 2.0d;
 
+    /** GMM: 隐变量参数*/
+    private double[]              weighit;
+
+    /** GMM: 隐变量,MGC参数*/
+    private double                w_0;
+
     /** logger */
     protected final static Logger logger      = Logger.getLogger(LoggerDefineConstant.SERVICE_CORE);
 
@@ -74,7 +81,7 @@ public class NoiseParamSupport {
         return new NormalDistribution(u_2, Math.sqrt(sigma));
     }
 
-    public NormalDistribution[] gmm() {
+    public NormalNoise[] gmm() {
         // mu_1t = icdf( alpha, icdf(alpha, mu, sigma), belta * sigma )
         NormalDistribution gauss = new NormalDistribution(u_1, sigma_1);
         double icdf = gauss.inverseCumulativeProbability(param_alpha);
@@ -87,7 +94,15 @@ public class NoiseParamSupport {
         gauss = new NormalDistribution(icdf, param_belta * sigma_1);
         double mu_noise_2 = gauss.inverseCumulativeProbability(1 - param_alpha);
 
-        return null;
+        NormalNoise[] gmm = new NormalNoise[3];
+        gmm[0] = new NormalNoise(420, sigma_1);
+        gmm[1] = new NormalNoise(mu_noise_1, param_belta * sigma_1 );
+        gmm[2] = new NormalNoise(mu_noise_2, param_belta * sigma_1 );
+
+        //输出日志
+        LoggerUtil.info(logger, (new StringBuilder(" Gen: GMM：")).append(gmm[0]).append(", ")
+            .append(gmm[1]).append(", ").append(gmm[2]));
+        return gmm;
     }
 
     /**
@@ -228,6 +243,47 @@ public class NoiseParamSupport {
      */
     public double getParam_belta() {
         return param_belta;
+    }
+
+    /**
+     * Getter method for property <tt>weighit</tt>.
+     * 
+     * @return property value of weighit
+     */
+    public double[] getWeighit() {
+        return weighit;
+    }
+
+    /**
+     * Setter method for property <tt>weighit</tt>.
+     * 
+     * @param weighit value to be assigned to property weighit
+     */
+    public void setWeighit(double[] weighit) {
+        this.weighit = weighit;
+    }
+
+    /**
+     * Getter method for property <tt>w_0</tt>.
+     * 
+     * @return property value of w_0
+     */
+    public double getW_0() {
+        return w_0;
+    }
+
+    /**
+     * Setter method for property <tt>w_0</tt>.
+     * 
+     * @param w_0 value to be assigned to property w_0
+     */
+    public void setW_0(double w_0) {
+        weighit = new double[3];
+        double w_not_0 = (1 - w_0) / 2;
+        weighit[0] = w_0;
+        weighit[1] = w_not_0;
+        weighit[2] = w_not_0;
+        this.w_0 = w_0;
     }
 
 }

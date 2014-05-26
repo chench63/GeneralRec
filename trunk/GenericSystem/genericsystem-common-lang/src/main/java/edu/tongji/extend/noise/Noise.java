@@ -28,6 +28,21 @@ public interface Noise {
     public double perturb(double input);
 
     /**
+     * 获得标准差
+     * 
+     * @return
+     */
+
+    public double standardDeviation();
+
+    /**
+     * 获得均值期望
+     * 
+     * @return
+     */
+    public double mean();
+
+    /**
      * 噪声名称
      * 
      * @return

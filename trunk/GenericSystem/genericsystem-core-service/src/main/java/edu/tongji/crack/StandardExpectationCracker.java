@@ -4,12 +4,15 @@
  */
 package edu.tongji.crack;
 
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
-import edu.tongji.exception.FunctionErrorCode;
-import edu.tongji.exception.OwnedException;
+import edu.tongji.crack.support.HashKeyCallBack;
 import edu.tongji.extend.noise.Noise;
 import edu.tongji.util.LoggerUtil;
+import edu.tongji.util.StringUtil;
 import edu.tongji.vo.MeterReadingVO;
 
 /**
@@ -24,7 +27,7 @@ public class StandardExpectationCracker extends ExpectationCracker {
      * @see edu.tongji.crack.PrivacyCracker#crack(edu.tongji.crack.CrackObject)
      */
     @Override
-    public void crack(CrackObject object, int blockSize) {
+    public void crack(CrackObject object, int blockSize, HashKeyCallBack hashKyGen) {
         //1.获得列数
         int columnSeq = object.getTarget().size() / blockSize;
 
@@ -62,8 +65,33 @@ public class StandardExpectationCracker extends ExpectationCracker {
     /** 
      * @see edu.tongji.crack.PrivacyCracker#crackInnerNoise(edu.tongji.crack.CrackObject, edu.tongji.extend.noise.Noise)
      */
+    @SuppressWarnings("unchecked")
     @Override
-    public void crackInnerNoise(CrackObject object, Noise noise) {
-        throw new OwnedException(FunctionErrorCode.ILLEGAL_PARAMETER);
+    public void crackInnerNoise(CrackObject object, Noise noise, HashKeyCallBack hashKyGen) {
+        //0. 汇总数据
+        List<MeterReadingVO> content = object.getTarget();
+        List<ELement> baseElems = (hashKyGen == null) ? tabulate(content, 0, content.size(),
+            content.size()) : tabulate(content, 0, content.size(), content.size(), hashKyGen);
+
+        //1. 输出均值
+        Map<String, DescriptiveStatistics> cache = (Map<String, DescriptiveStatistics>) object
+            .get(CrackObject.STAT_CACHE);
+        for (ELement element : baseElems) {
+            String key = (hashKyGen == null) ? StringUtil.EMPTY_STRING : hashKyGen.key(element
+                .getTimeVal());
+
+            DescriptiveStatistics stat = cache.get(key);
+            if (stat == null) {
+                //初始值
+                stat = element.getStats();
+                cache.put(key, stat);
+            }
+
+            //循环输入
+            for (double value : element.getStats().getValues()) {
+                stat.addValue((noise == null) ? value : noise.perturb(value));
+            }
+
+        }
     }
 }

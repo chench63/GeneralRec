@@ -19,6 +19,9 @@ public final class HashKeyUtil {
     /** key分隔符号*/
     public final static char ELEMENT_SEPERATOR = '_';
 
+    /** key分隔符号*/
+    public final static char ELEMENT_DOT       = '.';
+
     /**
      * 生成Hash值
      * 

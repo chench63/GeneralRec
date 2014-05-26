@@ -105,7 +105,7 @@ public class AnalysisPerturbationEngine extends SmartGridEngine {
 
         //2.破解还原数据
         if (cracker != null) {
-            cracker.crack(new CrackObject(SmartGridDataSource.meterContexts), rowSize);
+            cracker.crack(new CrackObject(SmartGridDataSource.meterContexts), rowSize, null);
         }
     }
 

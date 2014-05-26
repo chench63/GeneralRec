@@ -4,7 +4,9 @@
  */
 package edu.tongji.crack;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 破解对象
@@ -16,13 +18,53 @@ public final class CrackObject {
 
     /** 数组对象对象*/
     @SuppressWarnings("rawtypes")
-    private List target;
+    private List                  target;
+
+    /** 属性集合*/
+    protected Map<String, Object> properties;
+
+    /** 均值统计器：键值*/
+    public final static String    MEAN_STAT  = "1";
+
+    /** 方差统计器：键值*/
+    public final static String    SD_STAT    = "2";
+
+    /** 多维度统计缓存：键值*/
+    public final static String    STAT_CACHE = "3";
 
     /**
      * 构造函数
      */
     public CrackObject() {
 
+    }
+
+    /**
+     * 添加属性
+     * 
+     * @param key
+     * @param value
+     */
+    public void put(String key, Object value) {
+        if (properties == null) {
+            properties = new HashMap<String, Object>();
+        }
+
+        properties.put(key, value);
+    }
+
+    /**
+     * 获得属性
+     * 
+     * @param key
+     * @return
+     */
+    public Object get(String key) {
+        if (properties == null) {
+            return null;
+        }
+
+        return properties.get(key);
     }
 
     /**
