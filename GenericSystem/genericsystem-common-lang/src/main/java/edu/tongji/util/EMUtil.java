@@ -71,8 +71,7 @@ public final class EMUtil {
                 logger,
                 (new StringBuilder()).append(String.format("%3d", iterations)).append("：")
                     .append("LogLikelihood：").append(String.format("%4f", logLikelihoodNew))
-                    .append(" Mean：")
-                    .append(String.format("%4f", normalNoises[normalNoises.length - 1].getMean()))
+                    .append(" Mean：").append(String.format("%4f", normalNoises[0].getMean()))
                     .toString());
 
             //停机条件：likelihood稳定 或者 超过最大迭代次数
@@ -81,8 +80,8 @@ public final class EMUtil {
 
         // 返回估计量
         double[] result = new double[2];
-        result[0] = normalNoises[normalNoises.length - 1].getMean();
-        result[1] = normalNoises[normalNoises.length - 1].getStandardDeviation();
+        result[0] = normalNoises[0].getMean();
+        result[1] = normalNoises[0].getStandardDeviation();
         return result;
     }
 
@@ -126,7 +125,6 @@ public final class EMUtil {
      */
     private static void mStep(NormalNoise[] components, double[] weights, double[] samples,
                               double[][] possbltyOfHiddenVar) {
-        int numComponents = components.length;
         int numSamples = samples.length;
 
         double sum = 0.0d;
@@ -135,20 +133,20 @@ public final class EMUtil {
 
         //计算mu
         for (int i = 0; i < numSamples; i++) {
-            mu += possbltyOfHiddenVar[i][numComponents - 1] * samples[i];
-            sum += possbltyOfHiddenVar[i][numComponents - 1];
+            mu += possbltyOfHiddenVar[i][0] * samples[i];
+            sum += possbltyOfHiddenVar[i][0];
         }
         mu /= sum;
 
         //计算sigma
         for (int i = 0; i < numSamples; i++) {
-            sigma += possbltyOfHiddenVar[i][numComponents - 1] * Math.pow(samples[i] - mu, 2);
+            sigma += possbltyOfHiddenVar[i][0] * Math.pow(samples[i] - mu, 2);
         }
         sigma /= sum;
 
         //更新估计量
-        NormalNoise estimation = components[numComponents - 1];
-        estimation.update(mu, Math.sqrt(sigma));
+        NormalNoise estimation = components[0];
+        estimation.update(mu, sigma > 0.0d ? Math.sqrt(sigma) : estimation.getStandardDeviation());
     }
 
     /**

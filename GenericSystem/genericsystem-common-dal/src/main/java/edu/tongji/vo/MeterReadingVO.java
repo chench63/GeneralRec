@@ -111,4 +111,13 @@ public class MeterReadingVO implements Statisticable, Comparable<MeterReadingVO>
         return (this.getTimeVal() - o.getTimeVal() > 0) ? 1 : -1;
     }
 
+    /** 
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return (new StringBuilder()).append(this.timeVal / 1000).append(' ').append(this.reading)
+            .toString();
+    }
+
 }

@@ -42,7 +42,12 @@ public class WeatherTemplateParser implements Parser {
         try {
             //解析模板
             String[] elements = context.split(SAPERATOR_EXPRESSION);
-            Date date = DateUtil.parse(elements[DAY_INDEX], DateUtil.WEB_FORMAT);
+
+            //23元素，按天计的天气信息
+            Date date = elements.length == 23 ? DateUtil.parse(elements[DAY_INDEX],
+                DateUtil.WEB_FORMAT) : DateUtil.parse(elements[elements.length - 1],
+                DateUtil.LONG_WEB_FORMAT);
+
             double highTemper = Double.valueOf(elements[HIGHT_INDEX]).doubleValue();
 
             WeatherVO weather = new WeatherVO();

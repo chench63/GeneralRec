@@ -64,7 +64,10 @@ public final class WeatherCache {
             initialize();
         }
 
-        return reposity.get(DateUtil.format(new Date(l1), DateUtil.SHORT_FORMAT));
+        WeatherVO weatherVO = null;
+        return (weatherVO = reposity.get(DateUtil.format(new Date(l1),
+            DateUtil.LONG_WEB_FORMAT_NO_SEC))) == null ? reposity.get(DateUtil.format(new Date(l1),
+            DateUtil.SHORT_FORMAT)) : weatherVO;
     }
 
     /**
@@ -82,6 +85,10 @@ public final class WeatherCache {
 
             //装入缓存
             reposity.put(DateUtil.format(weather.getDay(), DateUtil.SHORT_FORMAT), weather);
+            reposity.put(DateUtil.format(
+                new Date(weather.getDay().getTime()
+                         - DateUtil.getMinOfHour(weather.getDay().getTime()) * 60 * 1000),
+                DateUtil.LONG_WEB_FORMAT_NO_SEC), weather);
 
             //日志部分信息
             int t = 0;

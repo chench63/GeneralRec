@@ -5,19 +5,23 @@
 package edu.tongji.engine.smartgrid;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.log4j.Logger;
 
 import edu.tongji.crack.CrackObject;
-import edu.tongji.crack.ExpectationSeqDayCracker;
+import edu.tongji.crack.ExpectationCracker;
 import edu.tongji.crack.PrivacyCracker;
+import edu.tongji.crack.support.HashKeyCallBack;
 import edu.tongji.extend.noise.Noise;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.orm.SmartGridDataSource;
 import edu.tongji.parser.TemplateType;
 import edu.tongji.util.LoggerUtil;
+import edu.tongji.util.StringUtil;
 import edu.tongji.vo.MeterReadingVO;
 
 /**
@@ -29,26 +33,35 @@ import edu.tongji.vo.MeterReadingVO;
 public class AnalysisAccuracyEngine extends SmartGridEngine {
 
     /** 高斯噪声产生范围*/
-    private Noise                                   noise;
+    private Noise                                           noise         = null;
+
+    /** 哈希函数*/
+    private HashKeyCallBack                                 hashKyGen     = null;
 
     /** 隐私破解器*/
-    private PrivacyCracker                          cracker;
+    private PrivacyCracker                                  cracker       = null;
+
+    /** 重复实验次数*/
+    private int                                             ROUND         = 10000;
 
     /** 第一类错误统计器*/
-    private final static DescriptiveStatistics      FAULT_I_STAT  = new DescriptiveStatistics();
+    public final static DescriptiveStatistics               FAULT_I_STAT  = new DescriptiveStatistics();
 
     /** 第二类错误统计器*/
-    private final static DescriptiveStatistics      FAULT_II_STAT = new DescriptiveStatistics();
+    public final static DescriptiveStatistics               FAULT_II_STAT = new DescriptiveStatistics();
 
-    /** 第二类错误统计器*/
-    private final static DescriptiveStatistics      STAT          = new DescriptiveStatistics();
+    /** 全局统计器*/
+    public final static DescriptiveStatistics               STAT          = new DescriptiveStatistics();
 
     /** 缓存*/
-    private final static List<List<MeterReadingVO>> cache         = new ArrayList<List<MeterReadingVO>>();
+    private final static List<List<MeterReadingVO>>         cache         = new ArrayList<List<MeterReadingVO>>();
+
+    /** 多维度统计缓存*/
+    private final static Map<String, DescriptiveStatistics> STAT_CACHE    = new HashMap<String, DescriptiveStatistics>();
 
     /** logger */
-    protected final static Logger                   logger        = Logger
-                                                                      .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
+    protected final static Logger                           logger        = Logger
+                                                                              .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
 
     /** 
      * @see edu.tongji.engine.smartgrid.SmartGridEngine#loadDataSet()
@@ -60,11 +73,15 @@ public class AnalysisAccuracyEngine extends SmartGridEngine {
             //0. 读取文件
             String file = (new StringBuilder(dir)).append("H").append(i).append("_.*").toString();
             dataSource.getSourceEntity().put(TemplateType.REDD_SMART_GRID_TEMPLATE, file);
+            SmartGridDataSource.meterContexts.clear();
             dataSource.reload();
             //1. 整理数据集
             super.assembleDataSet();
             //2. 载入缓存
             cache.add(new ArrayList<MeterReadingVO>(SmartGridDataSource.meterContexts));
+            //3. 输出日志
+            LoggerUtil.info(logger, "Load file: " + file + " Size: "
+                                    + SmartGridDataSource.meterContexts.size());
         }
         SmartGridDataSource.meterContexts.clear();
     }
@@ -83,19 +100,46 @@ public class AnalysisAccuracyEngine extends SmartGridEngine {
     @Override
     protected void emulate() {
 
-        for (int round = 0; round < 1000; round++) {
-            ExpectationSeqDayCracker.CP_RESULT.clear();
+        for (int round = 0; round < ROUND; round++) {
+            ExpectationCracker.CP_RESULT.clear();
             for (List<MeterReadingVO> context : cache) {
-                cracker.crackInnerNoise(new CrackObject(context), noise);
+                CrackObject target = new CrackObject(context);
+                target.put(CrackObject.MEAN_STAT, FAULT_I_STAT);
+                target.put(CrackObject.SD_STAT, FAULT_II_STAT);
+                target.put(CrackObject.STAT_CACHE, STAT_CACHE);
+                cracker.crackInnerNoise(target, noise, hashKyGen);
             }
-            accuracy();
+
+            if (!ExpectationCracker.CP_RESULT.isEmpty()) {
+                accuracy();
+            }
         }
 
         LoggerUtil.info(
             logger,
             (new StringBuilder("Final: I: ")).append(String.format("%.6f", FAULT_I_STAT.getMean()))
-                .append(" II: ").append(String.format("%.6f", FAULT_II_STAT.getMean()))
-                .append(" A: ").append(String.format("%.6f", STAT.getMean())));
+                .append("(").append(FAULT_I_STAT.getStandardDeviation()).append(")")
+                .append(" II: ").append(String.format("%.6f", FAULT_II_STAT.getMean())).append("(")
+                .append(FAULT_II_STAT.getStandardDeviation()).append(")").append(" A: ")
+                .append(String.format("%.6f", STAT.getMean())).append("(")
+                .append(STAT.getStandardDeviation()).append(")"));
+
+        if (!STAT_CACHE.isEmpty()) {
+            StringBuilder logMsg = new StringBuilder();
+
+            for (String key : hashKyGen.keyArr()) {
+                DescriptiveStatistics stat = STAT_CACHE.get(key);
+
+                if (stat == null) {
+                    //为空，返回
+                    continue;
+                }
+                logMsg.append(StringUtil.BREAK_LINE).append(key).append('\t')
+                    .append(stat.getMean()).append('\t').append(stat.getStandardDeviation());
+            }
+
+            LoggerUtil.info(logger, logMsg);
+        }
 
     }
 
@@ -104,34 +148,39 @@ public class AnalysisAccuracyEngine extends SmartGridEngine {
      * 硬编码，风格很烂
      */
     protected void accuracy() {
+        if (ExpectationCracker.CP_RESULT.isEmpty()) {
+            //无数据返回
+            return;
+        }
+
         int faultTypeI = 0;
         int faultTypeII = 0;
 
         //计算第一类错误
         // 36 + 11 + 2 = 49
         for (int i = 9; i < 45; i++) {
-            if (ExpectationSeqDayCracker.CP_RESULT.get(i) > 0.5) {
+            if (ExpectationCracker.CP_RESULT.get(i) > 0.5) {
                 faultTypeI++;
             }
         }
         for (int i = 46; i < 57; i++) {
-            if (ExpectationSeqDayCracker.CP_RESULT.get(i) > 0.5) {
+            if (ExpectationCracker.CP_RESULT.get(i) > 0.5) {
                 faultTypeI++;
             }
         }
         for (int i = 71; i < 73; i++) {
-            if (ExpectationSeqDayCracker.CP_RESULT.get(i) > 0.5) {
+            if (ExpectationCracker.CP_RESULT.get(i) > 0.5) {
                 faultTypeI++;
             }
         }
 
         //计算第二类错误
         // 1 + 5 = 6
-        if (ExpectationSeqDayCracker.CP_RESULT.get(45) < 0.5) {
+        if (ExpectationCracker.CP_RESULT.get(45) < 0.5) {
             faultTypeII++;
         }
         for (int i = 66; i < 71; i++) {
-            if (ExpectationSeqDayCracker.CP_RESULT.get(i) < 0.5) {
+            if (ExpectationCracker.CP_RESULT.get(i) < 0.5) {
                 faultTypeII++;
             }
         }
@@ -184,6 +233,24 @@ public class AnalysisAccuracyEngine extends SmartGridEngine {
      */
     public void setCracker(PrivacyCracker cracker) {
         this.cracker = cracker;
+    }
+
+    /**
+     * Setter method for property <tt>hashKyGen</tt>.
+     * 
+     * @param hashKyGen value to be assigned to property hashKyGen
+     */
+    public void setHashKyGen(HashKeyCallBack hashKyGen) {
+        this.hashKyGen = hashKyGen;
+    }
+
+    /**
+     * Setter method for property <tt>rOUND</tt>.
+     * 
+     * @param ROUND value to be assigned to property rOUND
+     */
+    public void setROUND(int rOUND) {
+        ROUND = rOUND;
     }
 
 }

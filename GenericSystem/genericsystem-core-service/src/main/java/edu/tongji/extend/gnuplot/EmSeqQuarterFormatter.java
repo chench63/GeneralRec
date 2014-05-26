@@ -69,10 +69,10 @@ public class EmSeqQuarterFormatter extends EmSeqHourFormatter {
                         //判断输出为均值还是标准差
                         if (mean) {
                             matrics[row * QUARTER_RANGE + quarter][column] = String.format("%.2f",
-                                EMUtil.estimate(noise, samp, 100)[0]);
+                                EMUtil.estimate(noise, samp, 30)[0]);
                         } else {
                             matrics[row * QUARTER_RANGE + quarter][column] = String.format("%.2f",
-                                EMUtil.estimate(noise, samp, 100)[1]);
+                                EMUtil.estimate(noise, samp, 30)[1]);
                         }
                     }
                 }

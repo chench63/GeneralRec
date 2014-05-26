@@ -28,13 +28,13 @@
 		<!-- emSeqHourFormatter | emSeqQuarterFormatter | meanSeqHourFormatter 
 			| meanSeqQuarterFormatter | maxSeqQuarterFormatter | specifiedDayFormatter -->
 		<!-- deviationSeqQuarterFormatter | deviationEmSeqQuarterFormatter -->
-		<property name="formatter" ref="meanSeqHourFormatter" />
+		<property name="formatter" ref="specifiedDayFormatter" />
 		<property name="assembleTemplate" ref="assembleTemplate" />
 		<!-- expectationSeqDayCracker | standardExpectationCracker | bayesianNetworksCracker 
 			| bayesianNetWorksWithEMCracker -->
 		<property name="cracker" ref="bayesianNetworksCracker" />
 		<!-- uniformNoise | normalDistri | gaussMixtureNoise -->
-		<property name="noise" ref="uniformNoise" />
+		<property name="noise" ref="normalDistri" />
 	</bean>
 
 	<bean id="assembleTemplate" class="edu.tongji.extend.gnuplot.support.AssembleTemplate">
@@ -80,6 +80,8 @@
 	<!-- Noise Entity -->
 	<bean id="noiseParamSupport" class="edu.tongji.extend.support.NoiseParamSupport">
 		<property name="n" value="${RESIDENTAL_POPULATION}" />
+		<property name="w_0" value="${PARAM_MAIN_GASSIAN_COMPONENT_WEIGHT}" />
+
 	</bean>
 	<bean id="normalDistri" class="edu.tongji.extend.noise.NormalNoise"
 		lazy-init="true">
@@ -93,37 +95,8 @@
 	</bean>
 	<bean id="gaussMixtureNoise" class="edu.tongji.extend.noise.GaussMixtureNoise"
 		lazy-init="true">
-		<!-- 混合高斯分布隐变量参数 -->
-		<property name="weight">
-			<list>
-				<value>0.1</value>
-				<value>0.1</value>
-				<value>0.8</value>
-			</list>
-		</property>
-		<!-- 混合高斯分布隐变量参数 -->
-		<property name="normalNoise">
-			<list>
-				<ref bean="normalGMM1"></ref>
-				<ref bean="normalGMM2"></ref>
-				<ref bean="normalEsti"></ref>
-			</list>
-		</property>
-	</bean>
-	<bean id="normalGMM1" class="edu.tongji.extend.noise.NormalNoise"
-		scope="prototype">
-		<constructor-arg index="0" type="double" value="-3647.426173273514" />
-		<constructor-arg index="1" type="double" value="60.40" />
-	</bean>
-	<bean id="normalGMM2" class="edu.tongji.extend.noise.NormalNoise"
-		scope="prototype">
-		<constructor-arg index="0" type="double" value="4727.426173273514" />
-		<constructor-arg index="1" type="double" value="68.756" />
-	</bean>
-	<bean id="normalEsti" class="edu.tongji.extend.noise.NormalNoise"
-		scope="prototype">
-		<constructor-arg index="0" type="double" value="410.0" />
-		<constructor-arg index="1" type="double" value="205.891" />
+		<constructor-arg type="edu.tongji.extend.support.NoiseParamSupport"
+			ref="noiseParamSupport" />
 	</bean>
 
 

@@ -85,11 +85,36 @@ public class NormalNoise implements Noise {
     }
 
     /** 
+     * @see edu.tongji.extend.noise.Noise#standardDeviation()
+     */
+    @Override
+    public double standardDeviation() {
+        return this.normal.getStandardDeviation();
+    }
+
+    /** 
+     * @see edu.tongji.extend.noise.Noise#mean()
+     */
+    @Override
+    public double mean() {
+        return this.normal.getMean();
+    }
+
+    /** 
      * @see edu.tongji.extend.noise.Noise#getName()
      */
     @Override
     public String getName() {
         return "正态分布。";
+    }
+
+    /** 
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        return (new StringBuilder("N[")).append(this.mean()).append(", ")
+            .append(this.getDeviation()).append("] ").toString();
     }
 
     /**

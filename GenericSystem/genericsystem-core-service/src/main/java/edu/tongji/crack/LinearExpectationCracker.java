@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 
+import edu.tongji.crack.support.HashKeyCallBack;
 import edu.tongji.exception.FunctionErrorCode;
 import edu.tongji.exception.OwnedException;
 import edu.tongji.extend.noise.Noise;
@@ -28,7 +29,7 @@ public class LinearExpectationCracker extends ExpectationCracker {
      */
     @SuppressWarnings("unchecked")
     @Override
-    public void crack(CrackObject object, int blockSize) {
+    public void crack(CrackObject object, int blockSize, HashKeyCallBack hashKyGen) {
         //1.获得列数
         int columnSeq = object.getTarget().size() / blockSize;
 
@@ -108,7 +109,7 @@ public class LinearExpectationCracker extends ExpectationCracker {
      * @see edu.tongji.crack.PrivacyCracker#crackInnerNoise(edu.tongji.crack.CrackObject, edu.tongji.extend.noise.Noise)
      */
     @Override
-    public void crackInnerNoise(CrackObject object, Noise noise) {
+    public void crackInnerNoise(CrackObject object, Noise noise, HashKeyCallBack hashKyGen) {
         throw new OwnedException(FunctionErrorCode.ILLEGAL_PARAMETER);
     }
 
