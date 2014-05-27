@@ -2,13 +2,13 @@
  * Tongji Edu.
  * Copyright (c) 2004-2014 All Rights Reserved.
  */
-package edu.tongji.extend.noise;
+package edu.tongji.noise;
 
 import org.apache.commons.math3.distribution.UniformRealDistribution;
 
 import edu.tongji.exception.FunctionErrorCode;
 import edu.tongji.exception.OwnedException;
-import edu.tongji.extend.support.NoiseParamSupport;
+import edu.tongji.noise.support.NoiseParamSupport;
 
 /**
  * 高斯混合模型噪声 <br/>
@@ -39,7 +39,7 @@ public class GaussMixtureNoise implements Noise {
     }
 
     /** 
-     * @see edu.tongji.extend.noise.Noise#random()
+     * @see edu.tongji.noise.Noise#random()
      */
     @Override
     public double random() {
@@ -47,7 +47,7 @@ public class GaussMixtureNoise implements Noise {
     }
 
     /** 
-     * @see edu.tongji.extend.noise.Noise#perturb(double)
+     * @see edu.tongji.noise.Noise#perturb(double)
      */
     @Override
     public double perturb(double input) {
@@ -73,7 +73,7 @@ public class GaussMixtureNoise implements Noise {
     }
 
     /** 
-     * @see edu.tongji.extend.noise.Noise#standardDeviation()
+     * @see edu.tongji.noise.Noise#standardDeviation()
      */
     @Override
     public double standardDeviation() {
@@ -81,7 +81,7 @@ public class GaussMixtureNoise implements Noise {
     }
 
     /** 
-     * @see edu.tongji.extend.noise.Noise#mean()
+     * @see edu.tongji.noise.Noise#mean()
      */
     @Override
     public double mean() {
@@ -89,7 +89,7 @@ public class GaussMixtureNoise implements Noise {
     }
 
     /** 
-     * @see edu.tongji.extend.noise.Noise#getName()
+     * @see edu.tongji.noise.Noise#getName()
      */
     @Override
     public String getName() {

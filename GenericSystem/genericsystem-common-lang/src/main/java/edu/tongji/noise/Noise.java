@@ -2,7 +2,7 @@
  * Tongji Edu.
  * Copyright (c) 2004-2014 All Rights Reserved.
  */
-package edu.tongji.extend.noise;
+package edu.tongji.noise;
 
 /**
  * 噪声

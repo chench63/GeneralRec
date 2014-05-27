@@ -17,8 +17,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.apache.log4j.Logger;
 
 import edu.tongji.configure.ConfigurationConstant;
-import edu.tongji.extend.noise.Noise;
 import edu.tongji.log4j.LoggerDefineConstant;
+import edu.tongji.noise.Noise;
 import edu.tongji.util.FileUtil;
 import edu.tongji.util.LoggerUtil;
 import edu.tongji.util.StringUtil;

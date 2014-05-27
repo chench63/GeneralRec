@@ -12,7 +12,6 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.springframework.util.StopWatch;
 
 import edu.tongji.encryption.EncryptionContext;
-import edu.tongji.extend.statistics.StatisticianFactory;
 import edu.tongji.orm.SmartGridDataSource;
 import edu.tongji.util.LoggerUtil;
 import edu.tongji.util.OneTimePadUtil;
@@ -29,16 +28,13 @@ import edu.tongji.vo.MeterReadingVO;
 public class AnalysisPerformanceEngine extends SmartGridEngine {
 
     /** 密钥长度*/
-    protected int                 keyLens;
+    protected int    keyLens;
 
     /** 质数长度*/
-    protected int                 primeLens;
+    protected int    primeLens;
 
     /** 测试名称*/
-    protected String              testName;
-
-    /** 统计器*/
-    protected StatisticianFactory statisticianFactory;
+    protected String testName;
 
     /** 
      * @see edu.tongji.engine.smartgrid.SmartGridEngine#emulate()
@@ -284,24 +280,6 @@ public class AnalysisPerformanceEngine extends SmartGridEngine {
      */
     public void setTestName(String testName) {
         this.testName = testName;
-    }
-
-    /**
-     * Getter method for property <tt>statisticianFactory</tt>.
-     * 
-     * @return property value of statisticianFactory
-     */
-    public StatisticianFactory getStatisticianFactory() {
-        return statisticianFactory;
-    }
-
-    /**
-     * Setter method for property <tt>statisticianFactory</tt>.
-     * 
-     * @param statisticianFactory value to be assigned to property statisticianFactory
-     */
-    public void setStatisticianFactory(StatisticianFactory statisticianFactory) {
-        this.statisticianFactory = statisticianFactory;
     }
 
 }

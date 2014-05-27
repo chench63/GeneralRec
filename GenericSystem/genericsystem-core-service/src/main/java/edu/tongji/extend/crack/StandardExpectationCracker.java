@@ -2,41 +2,43 @@
  * Tongji Edu.
  * Copyright (c) 2004-2014 All Rights Reserved.
  */
-package edu.tongji.crack;
+package edu.tongji.extend.crack;
 
 import java.sql.Date;
 import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import edu.tongji.cache.WeatherCache;
-import edu.tongji.crack.support.HashKeyCallBack;
-import edu.tongji.exception.FunctionErrorCode;
-import edu.tongji.exception.OwnedException;
-import edu.tongji.extend.noise.Noise;
+import edu.tongji.extend.crack.support.HashKeyCallBack;
+import edu.tongji.noise.Noise;
 import edu.tongji.util.DateUtil;
 import edu.tongji.util.LoggerUtil;
 import edu.tongji.util.StringUtil;
 import edu.tongji.vo.MeterReadingVO;
 
 /**
+ * 列均值破解器
  * 
  * @author chench
- * @version $Id: ExpectationSeqDayCracker.java, v 0.1 15 Apr 2014 15:33:44 chench Exp $
+ * @version $Id: StandardExpectationCracker.java, v 0.1 2014-2-20 上午9:51:28 chench Exp $
  */
-public class ExpectationSeqDayCracker extends ExpectationCracker {
+public class StandardExpectationCracker extends ExpectationCracker {
 
     /** 
-     * @see edu.tongji.crack.PrivacyCracker#crack(edu.tongji.crack.CrackObject, int)
+     * @see edu.tongji.extend.crack.PrivacyCracker#crack(edu.tongji.extend.crack.CrackObject)
      */
     @SuppressWarnings("unchecked")
     @Override
-    public void crack(CrackObject object, int blockSize, HashKeyCallBack hashKyGen) {
+    public void crack(CrackObject object, int blockSize, Noise noise, HashKeyCallBack hashKyGen) {
         //0. 汇总数据
         List<MeterReadingVO> content = object.getTarget();
         List<ELement> baseElems = tabulate(content, 0, blockSize, blockSize);
         List<ELement> estimateElems = tabulate(content, blockSize, content.size(), blockSize);
 
         //1. 日志输出
-        StringBuilder logMsg = new StringBuilder("ExpectationSeqDayCracker");
+        StringBuilder logMsg = new StringBuilder("StandardExpectationCracker");
         for (int i = 0, j = baseElems.size(); i < j; i++) {
             String key = DateUtil.format(new Date(baseElems.get(i).getTimeVal()),
                 DateUtil.SHORT_FORMAT);
@@ -67,11 +69,35 @@ public class ExpectationSeqDayCracker extends ExpectationCracker {
     }
 
     /** 
-     * @see edu.tongji.crack.PrivacyCracker#crackInnerNoise(edu.tongji.crack.CrackObject, edu.tongji.extend.noise.Noise)
+     * @see edu.tongji.extend.crack.PrivacyCracker#crackInnerNoise(edu.tongji.extend.crack.CrackObject, edu.tongji.noise.Noise)
      */
+    @SuppressWarnings("unchecked")
     @Override
     public void crackInnerNoise(CrackObject object, Noise noise, HashKeyCallBack hashKyGen) {
-        throw new OwnedException(FunctionErrorCode.ILLEGAL_PARAMETER);
-    }
+        //0. 汇总数据
+        List<MeterReadingVO> content = object.getTarget();
+        List<ELement> baseElems = (hashKyGen == null) ? tabulate(content, 0, content.size(),
+            content.size()) : tabulate(content, 0, content.size(), hashKyGen);
 
+        //1. 输出均值
+        Map<String, DescriptiveStatistics> cache = (Map<String, DescriptiveStatistics>) object
+            .get(CrackObject.STAT_CACHE);
+        for (ELement element : baseElems) {
+            String key = (hashKyGen == null) ? StringUtil.EMPTY_STRING : hashKyGen.key(element
+                .getTimeVal());
+
+            DescriptiveStatistics stat = cache.get(key);
+            if (stat == null) {
+                //初始值
+                stat = element.getStats();
+                cache.put(key, stat);
+            }
+
+            //循环输入
+            for (double value : element.getStats().getValues()) {
+                stat.addValue((noise == null) ? value : noise.perturb(value));
+            }
+
+        }
+    }
 }

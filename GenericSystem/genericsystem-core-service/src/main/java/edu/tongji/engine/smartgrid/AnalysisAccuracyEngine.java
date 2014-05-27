@@ -12,12 +12,12 @@ import java.util.Map;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.log4j.Logger;
 
-import edu.tongji.crack.CrackObject;
-import edu.tongji.crack.ExpectationCracker;
-import edu.tongji.crack.PrivacyCracker;
-import edu.tongji.crack.support.HashKeyCallBack;
-import edu.tongji.extend.noise.Noise;
+import edu.tongji.extend.crack.CrackObject;
+import edu.tongji.extend.crack.ExpectationCracker;
+import edu.tongji.extend.crack.PrivacyCracker;
+import edu.tongji.extend.crack.support.HashKeyCallBack;
 import edu.tongji.log4j.LoggerDefineConstant;
+import edu.tongji.noise.Noise;
 import edu.tongji.orm.SmartGridDataSource;
 import edu.tongji.parser.TemplateType;
 import edu.tongji.util.LoggerUtil;

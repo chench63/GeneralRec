@@ -2,14 +2,14 @@
  * Tongji Edu.
  * Copyright (c) 2004-2014 All Rights Reserved.
  */
-package edu.tongji.extend.support;
+package edu.tongji.noise.support;
 
 import org.apache.commons.math3.distribution.NormalDistribution;
 import org.apache.commons.math3.distribution.UniformRealDistribution;
 import org.apache.log4j.Logger;
 
-import edu.tongji.extend.noise.NormalNoise;
 import edu.tongji.log4j.LoggerDefineConstant;
+import edu.tongji.noise.NormalNoise;
 import edu.tongji.util.LoggerUtil;
 
 /**
@@ -96,8 +96,8 @@ public class NoiseParamSupport {
 
         NormalNoise[] gmm = new NormalNoise[3];
         gmm[0] = new NormalNoise(420, sigma_1);
-        gmm[1] = new NormalNoise(mu_noise_1, param_belta * sigma_1 );
-        gmm[2] = new NormalNoise(mu_noise_2, param_belta * sigma_1 );
+        gmm[1] = new NormalNoise(mu_noise_1, param_belta * sigma_1 * 0.2);
+        gmm[2] = new NormalNoise(mu_noise_2, param_belta * sigma_1 * 0.2);
 
         //输出日志
         LoggerUtil.info(logger, (new StringBuilder(" Gen: GMM：")).append(gmm[0]).append(", ")

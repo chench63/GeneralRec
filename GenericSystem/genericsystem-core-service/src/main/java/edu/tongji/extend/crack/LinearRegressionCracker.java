@@ -2,16 +2,19 @@
  * Tongji Edu.
  * Copyright (c) 2004-2014 All Rights Reserved.
  */
-package edu.tongji.crack;
+package edu.tongji.extend.crack;
 
 import java.util.List;
 
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
+import org.apache.log4j.Logger;
 
-import edu.tongji.crack.support.HashKeyCallBack;
 import edu.tongji.exception.FunctionErrorCode;
 import edu.tongji.exception.OwnedException;
-import edu.tongji.extend.noise.Noise;
+import edu.tongji.extend.crack.support.HashKeyCallBack;
+import edu.tongji.log4j.LoggerDefineConstant;
+import edu.tongji.noise.Noise;
 import edu.tongji.util.LoggerUtil;
 import edu.tongji.util.StringUtil;
 import edu.tongji.vo.MeterReadingVO;
@@ -22,51 +25,33 @@ import edu.tongji.vo.MeterReadingVO;
  * @author chench
  * @version $Id: LinearExpectationCracker.java, v 0.1 2014-2-22 下午12:00:04 chench Exp $
  */
-public class LinearExpectationCracker extends ExpectationCracker {
+public class LinearRegressionCracker implements PrivacyCracker {
+
+    /** logger */
+    protected final static Logger logger = Logger.getLogger(LoggerDefineConstant.SERVICE_CORE);
 
     /** 
-     * @see edu.tongji.crack.PrivacyCracker#crack(edu.tongji.crack.CrackObject, int)
+     * @see edu.tongji.extend.crack.PrivacyCracker#crack(edu.tongji.extend.crack.CrackObject, int)
      */
     @SuppressWarnings("unchecked")
     @Override
-    public void crack(CrackObject object, int blockSize, HashKeyCallBack hashKyGen) {
+    public void crack(CrackObject object, int blockSize, Noise noise, HashKeyCallBack hashKyGen) {
         //1.获得列数
-        int columnSeq = object.getTarget().size() / blockSize;
+        List<MeterReadingVO> content = object.getTarget();
+        int columnSeq = content.size() / blockSize;
 
-        //2.计算各列的均值（期望）
-        //For each column：
-        //  行总值 / 行数量
-        double[] expectations = new double[columnSeq];
-        double sum = 0.0;
-        for (int index = 0, len = object.getTarget().size(); index < len; index++) {
-            //完成一列和的计算，计算均值
-            if ((index % blockSize == 0) && index != 0) {
-                expectations[index / blockSize - 1] = sum / blockSize;
-                sum = 0.0;
-            }
-
-            //执行单列数据求和
-            MeterReadingVO reading = (MeterReadingVO) object.getTarget().get(index);
-            sum += reading.getReading();
-
-            //最后一列特殊处理
-            if (index == (len - 1)) {
-                expectations[columnSeq - 1] = sum / blockSize;
-            }
-        }
-
-        //3.执行破解部分逻辑
+        //2.执行破解逻辑
         //根据期望的偏差，对各个数据进行修正
         for (int column = 1; column < columnSeq; column++) {
 
             //线性回归，计算截距intercept和斜率slope
-            SimpleRegression regression = regression(object.getTarget().subList(0, blockSize),
-                object.getTarget().subList(column * blockSize, (column + 1) * blockSize));
+            SimpleRegression regression = regression(content.subList(0, blockSize),
+                content.subList(column * blockSize, (column + 1) * blockSize));
 
             //恢复加密数据
             for (int index = column * blockSize; index < (column + 1) * blockSize; index++) {
                 //修正数值，List保存引用，所以不用set回List对象
-                MeterReadingVO reading = (MeterReadingVO) object.getTarget().get(index);
+                MeterReadingVO reading = content.get(index);
                 double readingValue = regression.predict(reading.getReading());
                 readingValue = readingValue < 0 ? 0.0 : readingValue;
 
@@ -85,17 +70,19 @@ public class LinearExpectationCracker extends ExpectationCracker {
                         .append(StringUtil.alignRight(crackStr, 8));
                     LoggerUtil.debug(logger, loggerMsg.toString());
                 }
-
                 reading.setReading(readingValue);
             }
 
             //统计处理
-            double mseValue = (Double) statisticianFactory.getBean("mse").calculate(
-                object.getTarget().subList(0, blockSize),
-                object.getTarget().subList(blockSize * column, blockSize * (column + 1)));
-            double rmseValue = (Double) statisticianFactory.getBean("rmse").calculate(
-                object.getTarget().subList(0, blockSize),
-                object.getTarget().subList(blockSize * column, blockSize * (column + 1)));
+            DescriptiveStatistics stats = new DescriptiveStatistics();
+            for (int i = 0; i < blockSize; i++) {
+                stats.addValue(Math.abs(content.get(i).getReading()
+                                        - content.get(i + blockSize).getReading()));
+            }
+
+            double mseValue = stats.getMean();
+            double rmseValue = Math.sqrt(Math.pow(stats.getStandardDeviation(), 2.0)
+                                         + Math.pow(mseValue, 2.0d));
             StringBuilder loggerMsg = (new StringBuilder()).append("Regression: Y = ")
                 .append(String.format("%.4f", regression.getSlope())).append("X + ")
                 .append(String.format("%.4f", regression.getIntercept()))
@@ -106,7 +93,7 @@ public class LinearExpectationCracker extends ExpectationCracker {
     }
 
     /** 
-     * @see edu.tongji.crack.PrivacyCracker#crackInnerNoise(edu.tongji.crack.CrackObject, edu.tongji.extend.noise.Noise)
+     * @see edu.tongji.extend.crack.PrivacyCracker#crackInnerNoise(edu.tongji.extend.crack.CrackObject, edu.tongji.noise.Noise)
      */
     @Override
     public void crackInnerNoise(CrackObject object, Noise noise, HashKeyCallBack hashKyGen) {

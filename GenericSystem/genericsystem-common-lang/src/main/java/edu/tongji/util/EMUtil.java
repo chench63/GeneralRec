@@ -6,10 +6,10 @@ package edu.tongji.util;
 
 import org.apache.log4j.Logger;
 
-import edu.tongji.extend.noise.GaussMixtureNoise;
-import edu.tongji.extend.noise.Noise;
-import edu.tongji.extend.noise.NormalNoise;
 import edu.tongji.log4j.LoggerDefineConstant;
+import edu.tongji.noise.GaussMixtureNoise;
+import edu.tongji.noise.Noise;
+import edu.tongji.noise.NormalNoise;
 
 /**
  * ExpectationMaximization 工具类

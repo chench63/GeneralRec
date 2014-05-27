@@ -2,10 +2,10 @@
  * Tongji Edu.
  * Copyright (c) 2004-2014 All Rights Reserved.
  */
-package edu.tongji.crack;
+package edu.tongji.extend.crack;
 
-import edu.tongji.crack.support.HashKeyCallBack;
-import edu.tongji.extend.noise.Noise;
+import edu.tongji.extend.crack.support.HashKeyCallBack;
+import edu.tongji.noise.Noise;
 
 /**
  * 隐私破解器
@@ -20,7 +20,7 @@ public interface PrivacyCracker {
      * 
      * @param object
      */
-    public void crack(CrackObject object, int blockSize, HashKeyCallBack hashKyGen);
+    public void crack(CrackObject object, int blockSize, Noise noise, HashKeyCallBack hashKyGen);
 
     /**
      * 破解对象,噪声有内部生成
