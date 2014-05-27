@@ -13,9 +13,9 @@ import org.apache.log4j.Logger;
 
 import edu.tongji.cache.SimilarityStreamCache;
 import edu.tongji.configure.ConfigurationConstant;
-import edu.tongji.extend.noise.Noise;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.model.Rating;
+import edu.tongji.noise.Noise;
 import edu.tongji.parser.ParserTemplate;
 import edu.tongji.parser.TemplateType;
 import edu.tongji.util.FileUtil;

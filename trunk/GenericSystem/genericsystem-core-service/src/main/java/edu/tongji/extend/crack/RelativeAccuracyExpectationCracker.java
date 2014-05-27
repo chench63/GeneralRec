@@ -2,17 +2,17 @@
  * Tongji Edu.
  * Copyright (c) 2004-2014 All Rights Reserved.
  */
-package edu.tongji.crack;
+package edu.tongji.extend.crack;
 
 import java.util.List;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
-import edu.tongji.crack.support.HashKeyCallBack;
 import edu.tongji.exception.FunctionErrorCode;
 import edu.tongji.exception.OwnedException;
-import edu.tongji.extend.noise.GaussMixtureNoise;
-import edu.tongji.extend.noise.Noise;
+import edu.tongji.extend.crack.support.HashKeyCallBack;
+import edu.tongji.noise.GaussMixtureNoise;
+import edu.tongji.noise.Noise;
 import edu.tongji.util.EMUtil;
 import edu.tongji.vo.MeterReadingVO;
 
@@ -24,22 +24,22 @@ import edu.tongji.vo.MeterReadingVO;
 public class RelativeAccuracyExpectationCracker extends ExpectationCracker {
 
     /** 
-     * @see edu.tongji.crack.PrivacyCracker#crack(edu.tongji.crack.CrackObject, int, edu.tongji.crack.support.HashKeyCallBack)
+     * @see edu.tongji.extend.crack.PrivacyCracker#crack(edu.tongji.extend.crack.CrackObject, int, edu.tongji.extend.crack.support.HashKeyCallBack)
      */
     @Override
-    public void crack(CrackObject object, int blockSize, HashKeyCallBack hashKyGen) {
+    public void crack(CrackObject object, int blockSize, Noise noise, HashKeyCallBack hashKyGen) {
         throw new OwnedException(FunctionErrorCode.ILLEGAL_PARAMETER);
     }
 
     /** 
-     * @see edu.tongji.crack.PrivacyCracker#crackInnerNoise(edu.tongji.crack.CrackObject, edu.tongji.extend.noise.Noise, edu.tongji.crack.support.HashKeyCallBack)
+     * @see edu.tongji.extend.crack.PrivacyCracker#crackInnerNoise(edu.tongji.extend.crack.CrackObject, edu.tongji.noise.Noise, edu.tongji.extend.crack.support.HashKeyCallBack)
      */
     @SuppressWarnings("unchecked")
     @Override
     public void crackInnerNoise(CrackObject object, Noise noise, HashKeyCallBack hashKyGen) {
         //0. 汇总数据
         List<MeterReadingVO> content = object.getTarget();
-        List<ELement> baseElems = tabulate(content, 0, content.size(), content.size());
+        List<ELement> baseElems = tabulate(content, 0, content.size(), hashKyGen);
 
         //1. 计算条件概率
         //   日志输出

@@ -12,14 +12,15 @@ import org.apache.log4j.Logger;
 import org.apache.velocity.VelocityContext;
 
 import edu.tongji.ai.cluster.RuleBasedPRUtil;
-import edu.tongji.crack.CrackObject;
-import edu.tongji.crack.PrivacyCracker;
+import edu.tongji.extend.crack.CrackObject;
+import edu.tongji.extend.crack.PrivacyCracker;
+import edu.tongji.extend.crack.support.HashKeyCallBack;
 import edu.tongji.extend.gnuplot.FigureFormatter;
 import edu.tongji.extend.gnuplot.support.AssembleTemplate;
 import edu.tongji.extend.gnuplot.support.GenericMessage;
 import edu.tongji.extend.gnuplot.support.VelocityContextHelper;
-import edu.tongji.extend.noise.Noise;
 import edu.tongji.log4j.LoggerDefineConstant;
+import edu.tongji.noise.Noise;
 import edu.tongji.orm.SmartGridDataSource;
 import edu.tongji.util.DateUtil;
 import edu.tongji.util.FileUtil;
@@ -38,6 +39,9 @@ public class AnalysisPerturbationEngine extends SmartGridEngine {
 
     /** 高斯噪声产生范围*/
     private Noise                 noise;
+
+    /** 哈希函数*/
+    private HashKeyCallBack       hashKyGen  = null;
 
     /** 数据文件存储绝对地址 */
     private String                absolutePath;
@@ -105,7 +109,8 @@ public class AnalysisPerturbationEngine extends SmartGridEngine {
 
         //2.破解还原数据
         if (cracker != null) {
-            cracker.crack(new CrackObject(SmartGridDataSource.meterContexts), rowSize, null);
+            cracker.crack(new CrackObject(SmartGridDataSource.meterContexts), rowSize, noise,
+                hashKyGen);
         }
     }
 
@@ -141,7 +146,8 @@ public class AnalysisPerturbationEngine extends SmartGridEngine {
      */
     protected String rendContent(int rowSize, int columnSize) {
         //格式化数据
-        String[][] matrics = formatter.formatToArrs(SmartGridDataSource.meterContexts, rowSize);
+        String[][] matrics = formatter.formatToArrs(SmartGridDataSource.meterContexts, rowSize,
+            hashKyGen);
 
         try {
             //1. 填充VelocityContext，准备基础数据
@@ -267,6 +273,15 @@ public class AnalysisPerturbationEngine extends SmartGridEngine {
      */
     public void setNoise(Noise noise) {
         this.noise = noise;
+    }
+
+    /**
+     * Setter method for property <tt>hashKyGen</tt>.
+     * 
+     * @param hashKyGen value to be assigned to property hashKyGen
+     */
+    public void setHashKyGen(HashKeyCallBack hashKyGen) {
+        this.hashKyGen = hashKyGen;
     }
 
 }

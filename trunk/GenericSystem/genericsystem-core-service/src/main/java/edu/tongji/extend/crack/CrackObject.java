@@ -2,7 +2,7 @@
  * Tongji Edu.
  * Copyright (c) 2004-2014 All Rights Reserved.
  */
-package edu.tongji.crack;
+package edu.tongji.extend.crack;
 
 import java.util.HashMap;
 import java.util.List;

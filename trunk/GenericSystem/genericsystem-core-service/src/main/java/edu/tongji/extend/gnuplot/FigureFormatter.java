@@ -6,6 +6,8 @@ package edu.tongji.extend.gnuplot;
 
 import java.util.List;
 
+import edu.tongji.extend.crack.support.HashKeyCallBack;
+
 /**
  * 图像格式器。讲实验数据格式化，并在图像中展示
  * 
@@ -15,28 +17,12 @@ import java.util.List;
 public interface FigureFormatter {
 
     /**
-     * 判断是否需要行号
-     * 
-     * @return
-     */
-    public boolean needRowNum();
-
-    /**
      * 格式化数据，符合图像格式
      * 
      * @param context
      * @return
      */
     @SuppressWarnings("rawtypes")
-    public List<String> format(List context, int rowSize);
-
-    /**
-     * 格式化数据，符合图像格式
-     * 
-     * @param context
-     * @return
-     */
-    @SuppressWarnings("rawtypes")
-    public String[][] formatToArrs(List context, int rowSize);
+    public String[][] formatToArrs(List context, int rowSize, HashKeyCallBack hashKyGen);
 
 }

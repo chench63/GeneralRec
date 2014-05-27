@@ -2,7 +2,7 @@
  * Tongji Edu.
  * Copyright (c) 2004-2014 All Rights Reserved.
  */
-package edu.tongji.crack;
+package edu.tongji.extend.crack;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,8 +13,7 @@ import java.util.Map;
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 import org.apache.log4j.Logger;
 
-import edu.tongji.crack.support.HashKeyCallBack;
-import edu.tongji.extend.statistics.StatisticianFactory;
+import edu.tongji.extend.crack.support.HashKeyCallBack;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.util.DateUtil;
 import edu.tongji.util.HashKeyUtil;
@@ -37,9 +36,6 @@ public abstract class ExpectationCracker implements PrivacyCracker {
     /** logger */
     protected final static Logger    logger            = Logger
                                                            .getLogger(LoggerDefineConstant.SERVICE_CORE);
-
-    /** 统计器*/
-    protected StatisticianFactory    statisticianFactory;
 
     /**
      * 汇总数据
@@ -79,16 +75,15 @@ public abstract class ExpectationCracker implements PrivacyCracker {
      * @param content
      * @param start
      * @param end
-     * @param blockSize
      * @return
      */
     protected List<ELement> tabulate(List<MeterReadingVO> content, int start, int end,
-                                     int blockSize, HashKeyCallBack hashKyGen) {
+                                     HashKeyCallBack hashKyGen) {
         Map<String, ELement> repo = new HashMap<String, ELement>();
         for (int i = start; i < end; i++) {
             MeterReadingVO reading = content.get(i);
             //使用map整理数据
-            String key = hashKyGen.key(reading.getTimeVal(), i, blockSize);
+            String key = hashKyGen.key(reading.getTimeVal());
 
             ELement element = repo.get(key);
             if (element == null) {
@@ -187,24 +182,6 @@ public abstract class ExpectationCracker implements PrivacyCracker {
             return (this.getTimeVal() - o.getTimeVal() > 0) ? 1 : -1;
         }
 
-    }
-
-    /**
-     * Getter method for property <tt>statisticianFactory</tt>.
-     * 
-     * @return property value of statisticianFactory
-     */
-    public StatisticianFactory getStatisticianFactory() {
-        return statisticianFactory;
-    }
-
-    /**
-     * Setter method for property <tt>statisticianFactory</tt>.
-     * 
-     * @param statisticianFactory value to be assigned to property statisticianFactory
-     */
-    public void setStatisticianFactory(StatisticianFactory statisticianFactory) {
-        this.statisticianFactory = statisticianFactory;
     }
 
 }

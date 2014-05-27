@@ -9,24 +9,18 @@ import org.apache.log4j.Logger;
 import edu.tongji.log4j.LoggerDefineConstant;
 
 /**
+ * Gnuploat直方图抽象类
  * 
  * @author chench
  * @version $Id: AbstractSeqTimeFormatter.java, v 0.1 15 Apr 2014 09:24:07 chench Exp $
  */
 public abstract class AbstractSeqTimeFormatter implements FigureFormatter {
 
-    /** 总小时数*/
-    protected final static int    HOUR_RANGE    = 24;
-
-    /** 总时刻数*/
-    protected final static int    QUARTER_RANGE = 4;
-
     /** 是否输出均值*/
-    protected boolean             mean          = true;
+    protected boolean             mean   = true;
 
     /** logger */
-    protected final static Logger logger        = Logger
-                                                    .getLogger(LoggerDefineConstant.SERVICE_CORE);
+    protected final static Logger logger = Logger.getLogger(LoggerDefineConstant.SERVICE_CORE);
 
     /**
      * Getter method for property <tt>mean</tt>.

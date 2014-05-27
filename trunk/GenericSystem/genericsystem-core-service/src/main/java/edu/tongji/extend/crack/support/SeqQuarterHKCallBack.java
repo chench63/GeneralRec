@@ -2,7 +2,7 @@
  * Tongji Edu.
  * Copyright (c) 2004-2014 All Rights Reserved.
  */
-package edu.tongji.crack.support;
+package edu.tongji.extend.crack.support;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ import edu.tongji.util.HashKeyUtil;
 public class SeqQuarterHKCallBack implements HashKeyCallBack {
 
     /** 
-     * @see edu.tongji.crack.support.HashKeyCallBack#key(java.lang.Object[])
+     * @see edu.tongji.extend.crack.support.HashKeyCallBack#key(java.lang.Object[])
      */
     @Override
     public String key(Object... object) {
@@ -31,13 +31,13 @@ public class SeqQuarterHKCallBack implements HashKeyCallBack {
     }
 
     /** 
-     * @see edu.tongji.crack.support.HashKeyCallBack#keyArr()
+     * @see edu.tongji.extend.crack.support.HashKeyCallBack#keyArr()
      */
     @Override
     public String[] keyArr() {
         List<String> keyArr = new ArrayList<String>();
 
-        for (int hour = 0; hour < 25; hour++) {
+        for (int hour = 0; hour < 24; hour++) {
             for (int quater = 0; quater < 4; quater++) {
                 keyArr.add((new StringBuilder()).append(hour).append(HashKeyUtil.ELEMENT_DOT)
                     .append(quater * 25).toString());

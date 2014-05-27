@@ -2,7 +2,7 @@
  * Tongji Edu.
  * Copyright (c) 2004-2014 All Rights Reserved.
  */
-package edu.tongji.crack.support;
+package edu.tongji.extend.crack.support;
 
 /**
  * 哈希函数，键生成接口
