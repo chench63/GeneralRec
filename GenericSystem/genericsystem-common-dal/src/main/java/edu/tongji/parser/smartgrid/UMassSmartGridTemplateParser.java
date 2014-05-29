@@ -2,8 +2,10 @@
  * Tongji Edu.
  * Copyright (c) 2004-2013 All Rights Reserved.
  */
-package edu.tongji.parser;
+package edu.tongji.parser.smartgrid;
 
+import edu.tongji.parser.Parser;
+import edu.tongji.parser.ParserTemplate;
 import edu.tongji.util.ExceptionUtil;
 import edu.tongji.util.StringUtil;
 import edu.tongji.vo.MeterReadingVO;

@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.parser.Parser;
 import edu.tongji.parser.ParserTemplate;
-import edu.tongji.parser.WeatherTemplateParser;
+import edu.tongji.parser.smartgrid.WeatherTemplateParser;
 import edu.tongji.util.DateUtil;
 import edu.tongji.util.FileUtil;
 import edu.tongji.util.LoggerUtil;
@@ -65,7 +65,8 @@ public final class WeatherCache {
         }
 
         WeatherVO weatherVO = null;
-        return (weatherVO = reposity.get(DateUtil.format(new Date(l1),
+        return (weatherVO = reposity.get(DateUtil.format(new Date(l1 - DateUtil.getMinOfHour(l1)
+                                                                  * 60 * 1000),
             DateUtil.LONG_WEB_FORMAT_NO_SEC))) == null ? reposity.get(DateUtil.format(new Date(l1),
             DateUtil.SHORT_FORMAT)) : weatherVO;
     }
@@ -115,7 +116,7 @@ public final class WeatherCache {
      * 
      * @param source value to be assigned to property source
      */
-    public void setSource(String source) {
+    public static void setSource(String source) {
         WeatherCache.source = source;
     }
 

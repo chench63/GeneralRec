@@ -2,10 +2,12 @@
  * Tongji Edu.
  * Copyright (c) 2004-2014 All Rights Reserved.
  */
-package edu.tongji.parser;
+package edu.tongji.parser.smartgrid;
 
 import java.util.Date;
 
+import edu.tongji.parser.Parser;
+import edu.tongji.parser.ParserTemplate;
 import edu.tongji.util.DateUtil;
 import edu.tongji.util.ExceptionUtil;
 import edu.tongji.util.StringUtil;

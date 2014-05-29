@@ -26,39 +26,34 @@ public final class BayesianNetworkPRUtil {
     protected static final float[]     I      = new float[2];
 
     static {
-        //1. 初始化  P[ O=on | H,I ]
-        //      当indoor = 1时
+        //1. 代码自动生成部分
         p_O_TI[0][0][1] = 1.0f;
+        p_O_TI[0][1][1] = 0.9625f;
+        p_O_TI[0][2][1] = 0.88076925f;
+        p_O_TI[0][3][1] = 1.0f;
         p_O_TI[1][0][1] = 0.0f;
-        p_O_TI[0][1][1] = 1.0f;
-        p_O_TI[1][1][1] = 0.0f;
-        p_O_TI[0][2][1] = 5.0f / 6;
-        p_O_TI[1][2][1] = 1.0f - 5.0f / 6;
-        p_O_TI[0][3][1] = 1.0f / 2;
-        p_O_TI[1][3][1] = 1.0f - 1.0f / 2;
-        //      当indoor = 0时
+        p_O_TI[1][1][1] = 0.0375f;
+        p_O_TI[1][2][1] = 0.11923077f;
+        p_O_TI[1][3][1] = 0.0f;
         p_O_TI[0][0][0] = 1.0f;
         p_O_TI[0][1][0] = 1.0f;
         p_O_TI[0][2][0] = 1.0f;
         p_O_TI[0][3][0] = 1.0f;
 
-        //2. 初始化  P[P | O]
-        //      当On = 0时
-        p_P_O[0][0] = 8.0f / 17;
-        p_P_O[1][0] = 5.0f / 17;
-        p_P_O[2][0] = 3.0f / 17;
-        p_P_O[3][0] = 1.0f / 17;
-        //      当On = 1时
+        p_P_O[0][0] = 0.9452174f;
         p_P_O[0][1] = 0.0f;
-        p_P_O[1][1] = 0.0f;
-        p_P_O[2][1] = 1.0f / 3;
-        p_P_O[3][1] = 2.0f / 3;
+        p_P_O[1][0] = 0.03652174f;
+        p_P_O[1][1] = 0.26086956f;
+        p_P_O[2][0] = 0.010434783f;
+        p_P_O[2][1] = 0.32608697f;
+        p_P_O[3][0] = 0.007826087f;
+        p_P_O[3][1] = 0.41304347f;
 
-        //3. 初始化  P[I]
+        //2. 初始化  P[I]
         I[0] = 0.0f;
         I[1] = 1.0f;
 
-        //4. 初始化  P[T]
+        //3. 初始化  P[T]
         T[0] = 0.30769232f;
         T[1] = 0.32967034f;
         T[2] = 0.21978022f;
@@ -78,19 +73,51 @@ public final class BayesianNetworkPRUtil {
         int i = indoor;
         //2. 温度信息
         //  离散化: (--, 16), [16, 22), [22, 28), [28, ++)
-        int t = 0;
-        if (temperature >= 16.0d) {
-            t = temperature >= 28.0d ? 3 : ((Double) ((temperature - 16.0d) / 6 + 1)).intValue();
-        }
+        int t = hotType(Double.valueOf(temperature).floatValue());
         //3.  功率信息
         //  离散化: (--, 16), [16, 22), [22, 28), [28, ++)
-        int p = 0;
-        if (power >= 150) {
-            p = power >= 250.0d ? 3 : ((Double) ((power - 150.0d) / 50 + 1)).intValue();
-        }
+        int p = powerType(Double.valueOf(power).floatValue());
 
         double numerator = p_P_O[p][1] * p_O_TI[1][t][i] * T[t] * I[i];
         double denominator = numerator + p_P_O[p][0] * p_O_TI[0][t][i] * T[t] * I[i];
         return numerator / denominator;
+    }
+
+    /**
+     * 离散化温度值<br/>
+     * (-,16)      : 0<br/>
+     * [16, 22)    : 1<br/>
+     * [22, 28)    : 2<br/>
+     * [28, +)     : 3<br/>
+     * 
+     * @param hot
+     * @return
+     */
+    protected static int hotType(float hot) {
+        if (hot < 16.0f) {
+            return 0;
+        }
+
+        int type = 1;
+        return (type += Float.valueOf((hot - 16) / 6).intValue()) > 3 ? 3 : type;
+    }
+
+    /**
+     * 离散化能耗值<br/>
+     * 0: (-, 400）<br/>
+     * 1： [400， 800）<br/>
+     * 2: [800, 1200)<br/>
+     * 3: [1200, +)<br/>
+     * 
+     * @param power
+     * @return
+     */
+    protected static int powerType(float power) {
+        if (power < 400) {
+            return 0;
+        }
+
+        int type = 1;
+        return (type += Float.valueOf((power - 400) / 400).intValue()) > 3 ? 3 : type;
     }
 }

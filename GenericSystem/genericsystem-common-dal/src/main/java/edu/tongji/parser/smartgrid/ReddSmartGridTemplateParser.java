@@ -2,8 +2,10 @@
  * Tongji Edu.
  * Copyright (c) 2004-2014 All Rights Reserved.
  */
-package edu.tongji.parser;
+package edu.tongji.parser.smartgrid;
 
+import edu.tongji.parser.Parser;
+import edu.tongji.parser.ParserTemplate;
 import edu.tongji.util.ExceptionUtil;
 import edu.tongji.util.StringUtil;
 import edu.tongji.vo.MeterReadingVO;
@@ -11,12 +13,12 @@ import edu.tongji.vo.MeterReadingVO;
 /**
  * 
  * @author chench
- * @version $Id: UMass2SmartGridTemplateParser.java, v 0.1 8 Apr 2014 17:58:00 chench Exp $
+ * @version $Id: ReddSmartGridTemplateParser.java, v 0.1 15 Apr 2014 10:05:46 chench Exp $
  */
-public class UMassSmartGrid2TemplateParser implements Parser {
+public class ReddSmartGridTemplateParser implements Parser {
 
     /** 分隔符正则表达式 */
-    private final static String SAPERATOR_EXPRESSION = "\\,";
+    private final static String SAPERATOR_EXPRESSION = "\\ ";
 
     /** 
      * @see edu.tongji.parser.Parser#parser(edu.tongji.parser.ParserTemplate)
