@@ -13,7 +13,10 @@ import org.apache.log4j.Logger;
 import edu.tongji.engine.Engine;
 import edu.tongji.engine.smartgrid.support.DataSetAssembler;
 import edu.tongji.engine.smartgrid.support.QuarterSeqDataSetAssembler;
+import edu.tongji.extend.crack.PrivacyCracker;
+import edu.tongji.extend.crack.support.HashKeyCallBack;
 import edu.tongji.log4j.LoggerDefineConstant;
+import edu.tongji.noise.Noise;
 import edu.tongji.orm.SmartGridDataSource;
 import edu.tongji.util.LoggerUtil;
 import edu.tongji.vo.MeterReadingVO;
@@ -30,17 +33,23 @@ public abstract class SmartGridEngine implements Engine {
     protected SmartGridDataSource             dataSource;
 
     /** 数据汇总合并器, 默认按刻钟计算*/
-    protected DataSetAssembler                assembler        = new QuarterSeqDataSetAssembler();
+    protected DataSetAssembler                assembler = new QuarterSeqDataSetAssembler();
 
     /** 测试需要，统计平均运行时间*/
-    public final static DescriptiveStatistics STAT             = new DescriptiveStatistics();
+    public final static DescriptiveStatistics STAT      = new DescriptiveStatistics();
 
-    /** 间隔读数*/
-    public final static long                  READING_INTERVAL = 15 * 60 * 1000;
+    /** 高斯噪声产生范围*/
+    protected Noise                           noise     = null;
+
+    /** 哈希函数*/
+    protected HashKeyCallBack                 hashKyGen = null;
+
+    /** 隐私破解器*/
+    protected PrivacyCracker                  cracker   = null;
 
     /** logger */
-    protected final static Logger             logger           = Logger
-                                                                   .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
+    protected final static Logger             logger    = Logger
+                                                            .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
 
     /** 
      * @see edu.tongji.engine.Engine#excute()
@@ -122,6 +131,60 @@ public abstract class SmartGridEngine implements Engine {
      */
     public void setAssembler(DataSetAssembler assembler) {
         this.assembler = assembler;
+    }
+
+    /**
+     * Getter method for property <tt>noise</tt>.
+     * 
+     * @return property value of noise
+     */
+    public Noise getNoise() {
+        return noise;
+    }
+
+    /**
+     * Setter method for property <tt>noise</tt>.
+     * 
+     * @param noise value to be assigned to property noise
+     */
+    public void setNoise(Noise noise) {
+        this.noise = noise;
+    }
+
+    /**
+     * Getter method for property <tt>hashKyGen</tt>.
+     * 
+     * @return property value of hashKyGen
+     */
+    public HashKeyCallBack getHashKyGen() {
+        return hashKyGen;
+    }
+
+    /**
+     * Setter method for property <tt>hashKyGen</tt>.
+     * 
+     * @param hashKyGen value to be assigned to property hashKyGen
+     */
+    public void setHashKyGen(HashKeyCallBack hashKyGen) {
+        this.hashKyGen = hashKyGen;
+    }
+
+    /**
+     * Getter method for property <tt>cracker</tt>.
+     * 
+     * @return property value of cracker
+     */
+    public PrivacyCracker getCracker() {
+        return cracker;
+    }
+
+    /**
+     * Setter method for property <tt>cracker</tt>.
+     * 
+     * @param cracker value to be assigned to property cracker
+     */
+    public void setCracker(PrivacyCracker cracker) {
+        this.cracker = cracker;
     }
 
 }

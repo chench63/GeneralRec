@@ -4,24 +4,21 @@
  */
 package edu.tongji.engine.smartgrid;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-import org.apache.log4j.Logger;
-
-import edu.tongji.extend.crack.CrackObject;
-import edu.tongji.extend.crack.ExpectationCracker;
-import edu.tongji.extend.crack.PrivacyCracker;
-import edu.tongji.extend.crack.support.HashKeyCallBack;
-import edu.tongji.log4j.LoggerDefineConstant;
-import edu.tongji.noise.Noise;
-import edu.tongji.orm.SmartGridDataSource;
+import edu.tongji.extend.crack.support.PrivacyCrackObject;
+import edu.tongji.parser.ParserTemplate;
 import edu.tongji.parser.TemplateType;
+import edu.tongji.util.FileUtil;
 import edu.tongji.util.LoggerUtil;
 import edu.tongji.util.StringUtil;
+import edu.tongji.vo.BayesianEventVO;
 import edu.tongji.vo.MeterReadingVO;
 
 /**
@@ -32,36 +29,29 @@ import edu.tongji.vo.MeterReadingVO;
  */
 public class AnalysisAccuracyEngine extends SmartGridEngine {
 
-    /** 高斯噪声产生范围*/
-    private Noise                                           noise         = null;
-
-    /** 哈希函数*/
-    private HashKeyCallBack                                 hashKyGen     = null;
-
-    /** 隐私破解器*/
-    private PrivacyCracker                                  cracker       = null;
-
     /** 重复实验次数*/
-    private int                                             ROUND         = 10000;
+    private int                                               ROUND                         = 10000;
 
     /** 第一类错误统计器*/
-    public final static DescriptiveStatistics               FAULT_I_STAT  = new DescriptiveStatistics();
+    protected final static DescriptiveStatistics              FAULT_I_STAT                  = new DescriptiveStatistics();
 
     /** 第二类错误统计器*/
-    public final static DescriptiveStatistics               FAULT_II_STAT = new DescriptiveStatistics();
+    protected final static DescriptiveStatistics              FAULT_II_STAT                 = new DescriptiveStatistics();
 
     /** 全局统计器*/
-    public final static DescriptiveStatistics               STAT          = new DescriptiveStatistics();
+    protected final static DescriptiveStatistics              STAT                          = new DescriptiveStatistics();
 
-    /** 缓存*/
-    private final static List<List<MeterReadingVO>>         cache         = new ArrayList<List<MeterReadingVO>>();
+    /** 电表读数缓存*/
+    protected final static List<List<MeterReadingVO>>         CONTEXT_CACHE                 = new ArrayList<List<MeterReadingVO>>();
+
+    /** 贝叶斯网络事件缓存，用于计算精确度*/
+    protected final static List<List<BayesianEventVO>>        ACCURACY_CACHE                = new ArrayList<List<BayesianEventVO>>();
+
+    /** 贝叶斯网络识别结果集合*/
+    protected final static List<List<BayesianEventVO>>        BAYESIAN_NETWORK_RESULT_CACHE = new ArrayList<List<BayesianEventVO>>();
 
     /** 多维度统计缓存*/
-    private final static Map<String, DescriptiveStatistics> STAT_CACHE    = new HashMap<String, DescriptiveStatistics>();
-
-    /** logger */
-    protected final static Logger                           logger        = Logger
-                                                                              .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
+    protected final static Map<String, DescriptiveStatistics> STAT_CACHE                    = new HashMap<String, DescriptiveStatistics>();
 
     /** 
      * @see edu.tongji.engine.smartgrid.SmartGridEngine#loadDataSet()
@@ -69,29 +59,30 @@ public class AnalysisAccuracyEngine extends SmartGridEngine {
     @Override
     protected void loadDataSet() {
         String dir = this.dataSource.getSourceEntity().get(TemplateType.REDD_SMART_GRID_TEMPLATE);
-        for (int i = 1; i <= 6; i++) {
+        File[] sources = FileUtil.parserFilesByPattern(dir);
+
+        for (File fileHandler : sources) {
             //0. 读取文件
-            String file = (new StringBuilder(dir)).append("H").append(i).append("_.*").toString();
-            dataSource.getSourceEntity().put(TemplateType.REDD_SMART_GRID_TEMPLATE, file);
-            SmartGridDataSource.meterContexts.clear();
-            dataSource.reload();
+            String file = fileHandler.getPath();
+            String[] lines = FileUtil.readLines(file);
+            List<MeterReadingVO> source = new ArrayList<MeterReadingVO>();
+            for (String line : lines) {
+                if (StringUtil.isBlank(line)) {
+                    continue;
+                }
+
+                source.add((MeterReadingVO) TemplateType.REDD_SMART_GRID_TEMPLATE
+                    .parser(new ParserTemplate(line)));
+            }
+
             //1. 整理数据集
-            super.assembleDataSet();
+            List<MeterReadingVO> target = new ArrayList<MeterReadingVO>();
+            super.assembler.assemble(source, target);
             //2. 载入缓存
-            cache.add(new ArrayList<MeterReadingVO>(SmartGridDataSource.meterContexts));
+            CONTEXT_CACHE.add(target);
             //3. 输出日志
-            LoggerUtil.info(logger, "Load file: " + file + " Size: "
-                                    + SmartGridDataSource.meterContexts.size());
+            LoggerUtil.info(logger, "Load file: " + file + " Size: " + target.size());
         }
-        SmartGridDataSource.meterContexts.clear();
-    }
-
-    /** 
-     * @see edu.tongji.engine.smartgrid.SmartGridEngine#assembleDataSet()
-     */
-    @Override
-    protected void assembleDataSet() {
-
     }
 
     /** 
@@ -101,16 +92,18 @@ public class AnalysisAccuracyEngine extends SmartGridEngine {
     protected void emulate() {
 
         for (int round = 0; round < ROUND; round++) {
-            ExpectationCracker.CP_RESULT.clear();
-            for (List<MeterReadingVO> context : cache) {
-                CrackObject target = new CrackObject(context);
-                target.put(CrackObject.MEAN_STAT, FAULT_I_STAT);
-                target.put(CrackObject.SD_STAT, FAULT_II_STAT);
-                target.put(CrackObject.STAT_CACHE, STAT_CACHE);
+            BAYESIAN_NETWORK_RESULT_CACHE.clear();
+            for (List<MeterReadingVO> context : CONTEXT_CACHE) {
+                PrivacyCrackObject target = new PrivacyCrackObject(context);
+                target.put(PrivacyCrackObject.MEAN_STAT, FAULT_I_STAT);
+                target.put(PrivacyCrackObject.SD_STAT, FAULT_II_STAT);
+                target.put(PrivacyCrackObject.STAT_CACHE, STAT_CACHE);
+                target.put(PrivacyCrackObject.RESULT_CACHE, BAYESIAN_NETWORK_RESULT_CACHE);
+
                 cracker.crackInnerNoise(target, noise, hashKyGen);
             }
 
-            if (!ExpectationCracker.CP_RESULT.isEmpty()) {
+            if (!BAYESIAN_NETWORK_RESULT_CACHE.isEmpty()) {
                 accuracy();
             }
         }
@@ -148,100 +141,94 @@ public class AnalysisAccuracyEngine extends SmartGridEngine {
      * 硬编码，风格很烂
      */
     protected void accuracy() {
-        if (ExpectationCracker.CP_RESULT.isEmpty()) {
+        if (BAYESIAN_NETWORK_RESULT_CACHE.isEmpty()) {
             //无数据返回
             return;
         }
 
-        int faultTypeI = 0;
-        int faultTypeII = 0;
-
-        //计算第一类错误
-        // 36 + 11 + 2 = 49
-        for (int i = 9; i < 45; i++) {
-            if (ExpectationCracker.CP_RESULT.get(i) > 0.5) {
-                faultTypeI++;
-            }
-        }
-        for (int i = 46; i < 57; i++) {
-            if (ExpectationCracker.CP_RESULT.get(i) > 0.5) {
-                faultTypeI++;
-            }
-        }
-        for (int i = 71; i < 73; i++) {
-            if (ExpectationCracker.CP_RESULT.get(i) > 0.5) {
-                faultTypeI++;
-            }
+        if (ACCURACY_CACHE.isEmpty()) {
+            //初始化
+            loadBayesianEventCache();
         }
 
-        //计算第二类错误
-        // 1 + 5 = 6
-        if (ExpectationCracker.CP_RESULT.get(45) < 0.5) {
-            faultTypeII++;
+        if (ACCURACY_CACHE.size() != BAYESIAN_NETWORK_RESULT_CACHE.size()) {
+            LoggerUtil.warn(logger, "RESULT CACHE DIDNT CORRESPOND WITH ACCURACY CACHE!");
+            return;
         }
-        for (int i = 66; i < 71; i++) {
-            if (ExpectationCracker.CP_RESULT.get(i) < 0.5) {
-                faultTypeII++;
+
+        float faultTypeI = 0;
+        float faultTypeII = 0;
+        int testCaseNum = 0;
+
+        for (int dataSetIndex = 0; dataSetIndex < BAYESIAN_NETWORK_RESULT_CACHE.size(); dataSetIndex++) {
+            List<BayesianEventVO> dataSet = BAYESIAN_NETWORK_RESULT_CACHE.get(dataSetIndex);
+            List<BayesianEventVO> standardSet = ACCURACY_CACHE.get(dataSetIndex);
+            testCaseNum += dataSet.size();
+
+            for (int index = 0; index < dataSet.size(); index++) {
+                //检查是否匹配
+                if (standardSet.get(index).getTimeVal() != dataSet.get(index).getTimeVal()) {
+                    throw new RuntimeException(
+                        "RESULT ELEMENT DIDNT CORRESPOND WITH ACCURACY ELEMENT! ARRAY: "
+                                + dataSetIndex);
+                }
+
+                //计算第一类错误
+                if (standardSet.get(index).getAc() == 0 && dataSet.get(index).getAc() == 1) {
+                    faultTypeI++;
+                    continue;
+                }
+
+                //计算第二类错误
+                if (standardSet.get(index).getAc() == 1 && dataSet.get(index).getAc() == 0) {
+                    faultTypeII++;
+                }
             }
         }
 
         //计算准确度
-        FAULT_I_STAT.addValue(faultTypeI / 49.0);
-        FAULT_II_STAT.addValue(faultTypeII / 6.0);
-        STAT.addValue(1 - (faultTypeI + faultTypeII) / 55.0);
+        FAULT_I_STAT.addValue(faultTypeI / testCaseNum);
+        FAULT_II_STAT.addValue(faultTypeII / testCaseNum);
+        STAT.addValue(1 - (faultTypeI + faultTypeII) / testCaseNum);
 
         //输出日志
         LoggerUtil.info(
             logger,
-            (new StringBuilder("I: ")).append(faultTypeI / 49.0).append(" II: ")
-                .append(faultTypeII / 6.0).append(" A: ")
-                .append(1 - (faultTypeI + faultTypeII) / 55.0));
+            (new StringBuilder("I: ")).append(faultTypeI / testCaseNum).append(" II: ")
+                .append(faultTypeII / testCaseNum).append(" A: ")
+                .append(1 - (faultTypeI + faultTypeII) / testCaseNum));
 
     }
 
     /**
-     * Getter method for property <tt>noise</tt>.
-     * 
-     * @return property value of noise
+     * 初始化 贝叶斯网络事件缓存
      */
-    public Noise getNoise() {
-        return noise;
-    }
+    protected void loadBayesianEventCache() {
+        String dir = this.dataSource.getSourceEntity().get(TemplateType.BAYESIAN_EVENT_TEMPLATE);
+        File[] sources = FileUtil.parserFilesByPattern(dir);
 
-    /**
-     * Setter method for property <tt>noise</tt>.
-     * 
-     * @param noise value to be assigned to property noise
-     */
-    public void setNoise(Noise noise) {
-        this.noise = noise;
-    }
+        for (File fileHandler : sources) {
+            //0. 读取文件
+            String file = fileHandler.getPath();
+            String[] lines = FileUtil.readLines(file);
 
-    /**
-     * Getter method for property <tt>cracker</tt>.
-     * 
-     * @return property value of cracker
-     */
-    public PrivacyCracker getCracker() {
-        return cracker;
-    }
+            //1. 解析内容
+            List<BayesianEventVO> array = new ArrayList<BayesianEventVO>();
+            for (String line : lines) {
+                if (StringUtil.isBlank(line)) {
+                    continue;
+                }
 
-    /**
-     * Setter method for property <tt>cracker</tt>.
-     * 
-     * @param cracker value to be assigned to property cracker
-     */
-    public void setCracker(PrivacyCracker cracker) {
-        this.cracker = cracker;
-    }
+                array.add((BayesianEventVO) TemplateType.BAYESIAN_EVENT_TEMPLATE
+                    .parser(new ParserTemplate(line)));
+            }
 
-    /**
-     * Setter method for property <tt>hashKyGen</tt>.
-     * 
-     * @param hashKyGen value to be assigned to property hashKyGen
-     */
-    public void setHashKyGen(HashKeyCallBack hashKyGen) {
-        this.hashKyGen = hashKyGen;
+            //2. 按升序排序
+            Collections.sort(array);
+
+            //3. 加入缓存
+            ACCURACY_CACHE.add(array);
+        }
     }
 
     /**

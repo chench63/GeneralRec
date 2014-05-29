@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 
 import edu.tongji.exception.FunctionErrorCode;
 import edu.tongji.exception.OwnedException;
+import edu.tongji.extend.crack.support.PrivacyCrackObject;
 import edu.tongji.extend.crack.support.HashKeyCallBack;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.noise.Noise;
@@ -31,11 +32,11 @@ public class LinearRegressionCracker implements PrivacyCracker {
     protected final static Logger logger = Logger.getLogger(LoggerDefineConstant.SERVICE_CORE);
 
     /** 
-     * @see edu.tongji.extend.crack.PrivacyCracker#crack(edu.tongji.extend.crack.CrackObject, int)
+     * @see edu.tongji.extend.crack.PrivacyCracker#crack(edu.tongji.extend.crack.support.PrivacyCrackObject, int)
      */
     @SuppressWarnings("unchecked")
     @Override
-    public void crack(CrackObject object, int blockSize, Noise noise, HashKeyCallBack hashKyGen) {
+    public void crack(PrivacyCrackObject object, int blockSize, Noise noise, HashKeyCallBack hashKyGen) {
         //1.获得列数
         List<MeterReadingVO> content = object.getTarget();
         int columnSeq = content.size() / blockSize;
@@ -93,10 +94,10 @@ public class LinearRegressionCracker implements PrivacyCracker {
     }
 
     /** 
-     * @see edu.tongji.extend.crack.PrivacyCracker#crackInnerNoise(edu.tongji.extend.crack.CrackObject, edu.tongji.noise.Noise)
+     * @see edu.tongji.extend.crack.PrivacyCracker#crackInnerNoise(edu.tongji.extend.crack.support.PrivacyCrackObject, edu.tongji.noise.Noise)
      */
     @Override
-    public void crackInnerNoise(CrackObject object, Noise noise, HashKeyCallBack hashKyGen) {
+    public void crackInnerNoise(PrivacyCrackObject object, Noise noise, HashKeyCallBack hashKyGen) {
         throw new OwnedException(FunctionErrorCode.ILLEGAL_PARAMETER);
     }
 

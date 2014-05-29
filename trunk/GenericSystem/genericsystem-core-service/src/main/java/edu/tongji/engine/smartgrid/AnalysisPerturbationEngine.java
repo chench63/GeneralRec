@@ -12,15 +12,12 @@ import org.apache.log4j.Logger;
 import org.apache.velocity.VelocityContext;
 
 import edu.tongji.ai.cluster.RuleBasedPRUtil;
-import edu.tongji.extend.crack.CrackObject;
-import edu.tongji.extend.crack.PrivacyCracker;
-import edu.tongji.extend.crack.support.HashKeyCallBack;
+import edu.tongji.extend.crack.support.PrivacyCrackObject;
 import edu.tongji.extend.gnuplot.FigureFormatter;
 import edu.tongji.extend.gnuplot.support.AssembleTemplate;
 import edu.tongji.extend.gnuplot.support.GenericMessage;
 import edu.tongji.extend.gnuplot.support.VelocityContextHelper;
 import edu.tongji.log4j.LoggerDefineConstant;
-import edu.tongji.noise.Noise;
 import edu.tongji.orm.SmartGridDataSource;
 import edu.tongji.util.DateUtil;
 import edu.tongji.util.FileUtil;
@@ -37,20 +34,11 @@ import edu.tongji.vo.MeterReadingVO;
  */
 public class AnalysisPerturbationEngine extends SmartGridEngine {
 
-    /** 高斯噪声产生范围*/
-    private Noise                 noise;
-
-    /** 哈希函数*/
-    private HashKeyCallBack       hashKyGen  = null;
-
     /** 数据文件存储绝对地址 */
     private String                absolutePath;
 
     /** 格式器*/
     private FigureFormatter       formatter;
-
-    /** 隐私破解器*/
-    private PrivacyCracker        cracker;
 
     /** 数据集组合模板*/
     private AssembleTemplate      assembleTemplate;
@@ -109,8 +97,8 @@ public class AnalysisPerturbationEngine extends SmartGridEngine {
 
         //2.破解还原数据
         if (cracker != null) {
-            cracker.crack(new CrackObject(SmartGridDataSource.meterContexts), rowSize, noise,
-                hashKyGen);
+            cracker.crack(new PrivacyCrackObject(SmartGridDataSource.meterContexts), rowSize,
+                noise, hashKyGen);
         }
     }
 
@@ -184,24 +172,6 @@ public class AnalysisPerturbationEngine extends SmartGridEngine {
     }
 
     /**
-     * Getter method for property <tt>cracker</tt>.
-     * 
-     * @return property value of cracker
-     */
-    public PrivacyCracker getCracker() {
-        return cracker;
-    }
-
-    /**
-     * Setter method for property <tt>cracker</tt>.
-     * 
-     * @param cracker value to be assigned to property cracker
-     */
-    public void setCracker(PrivacyCracker cracker) {
-        this.cracker = cracker;
-    }
-
-    /**
      * Getter method for property <tt>assembleTemplate</tt>.
      * 
      * @return property value of assembleTemplate
@@ -255,33 +225,6 @@ public class AnalysisPerturbationEngine extends SmartGridEngine {
      */
     public void setFormatter(FigureFormatter formatter) {
         this.formatter = formatter;
-    }
-
-    /**
-     * Getter method for property <tt>noise</tt>.
-     * 
-     * @return property value of noise
-     */
-    public Noise getNoise() {
-        return noise;
-    }
-
-    /**
-     * Setter method for property <tt>noise</tt>.
-     * 
-     * @param noise value to be assigned to property noise
-     */
-    public void setNoise(Noise noise) {
-        this.noise = noise;
-    }
-
-    /**
-     * Setter method for property <tt>hashKyGen</tt>.
-     * 
-     * @param hashKyGen value to be assigned to property hashKyGen
-     */
-    public void setHashKyGen(HashKeyCallBack hashKyGen) {
-        this.hashKyGen = hashKyGen;
     }
 
 }

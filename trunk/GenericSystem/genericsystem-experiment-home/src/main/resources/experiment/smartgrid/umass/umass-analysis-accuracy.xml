@@ -14,6 +14,7 @@
 			<util:map key-type="edu.tongji.parser.TemplateType">
 				<!-- refrigerator | main | air_conditioning -->
 				<entry key="REDD_SMART_GRID_TEMPLATE" value="${SMARTGRID_DATASET_READ_PATH}" />
+				<entry key="BAYESIAN_EVENT_TEMPLATE" value="${SMARTGRID_BAYESIAN_EVENT_READ_PATH}" />
 			</util:map>
 		</property>
 	</bean>
@@ -28,7 +29,7 @@
 			| standardExpectationCracker | bayesianNetworksCracker -->
 		<property name="cracker" ref="bayesianNetworksCracker" />
 		<!-- uniformNoise | normalDistri | gaussMixtureNoise -->
-		<property name="noise" ref="gaussMixtureNoise" />
+		<property name="noise" ref="normalDistri" />
 		<!-- seqQuarterHKCallBack | seqDayHKCallBack | seqHourHKCallBack -->
 		<property name="hashKyGen" ref="seqDayHKCallBack" />
 	</bean>
@@ -60,7 +61,7 @@
 	</bean>
 	<bean id="uniformNoise" class="edu.tongji.noise.UniformNoise"
 		lazy-init="true">
-		<constructor-arg type="edu.tongji.extend.support.NoiseParamSupport"
+		<constructor-arg type="edu.tongji.noise.support.NoiseParamSupport"
 			ref="noiseParamSupport" />
 	</bean>
 	<bean id="gaussMixtureNoise" class="edu.tongji.noise.GaussMixtureNoise"

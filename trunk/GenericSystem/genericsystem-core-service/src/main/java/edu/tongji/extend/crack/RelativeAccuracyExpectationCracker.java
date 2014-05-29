@@ -10,6 +10,7 @@ import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import edu.tongji.exception.FunctionErrorCode;
 import edu.tongji.exception.OwnedException;
+import edu.tongji.extend.crack.support.PrivacyCrackObject;
 import edu.tongji.extend.crack.support.HashKeyCallBack;
 import edu.tongji.noise.GaussMixtureNoise;
 import edu.tongji.noise.Noise;
@@ -24,27 +25,27 @@ import edu.tongji.vo.MeterReadingVO;
 public class RelativeAccuracyExpectationCracker extends ExpectationCracker {
 
     /** 
-     * @see edu.tongji.extend.crack.PrivacyCracker#crack(edu.tongji.extend.crack.CrackObject, int, edu.tongji.extend.crack.support.HashKeyCallBack)
+     * @see edu.tongji.extend.crack.PrivacyCracker#crack(edu.tongji.extend.crack.support.PrivacyCrackObject, int, edu.tongji.extend.crack.support.HashKeyCallBack)
      */
     @Override
-    public void crack(CrackObject object, int blockSize, Noise noise, HashKeyCallBack hashKyGen) {
+    public void crack(PrivacyCrackObject object, int blockSize, Noise noise, HashKeyCallBack hashKyGen) {
         throw new OwnedException(FunctionErrorCode.ILLEGAL_PARAMETER);
     }
 
     /** 
-     * @see edu.tongji.extend.crack.PrivacyCracker#crackInnerNoise(edu.tongji.extend.crack.CrackObject, edu.tongji.noise.Noise, edu.tongji.extend.crack.support.HashKeyCallBack)
+     * @see edu.tongji.extend.crack.PrivacyCracker#crackInnerNoise(edu.tongji.extend.crack.support.PrivacyCrackObject, edu.tongji.noise.Noise, edu.tongji.extend.crack.support.HashKeyCallBack)
      */
     @SuppressWarnings("unchecked")
     @Override
-    public void crackInnerNoise(CrackObject object, Noise noise, HashKeyCallBack hashKyGen) {
+    public void crackInnerNoise(PrivacyCrackObject object, Noise noise, HashKeyCallBack hashKyGen) {
         //0. 汇总数据
         List<MeterReadingVO> content = object.getTarget();
         List<ELement> baseElems = tabulate(content, 0, content.size(), hashKyGen);
 
         //1. 计算条件概率
         //   日志输出
-        DescriptiveStatistics meanStat = (DescriptiveStatistics) object.get(CrackObject.MEAN_STAT);
-        DescriptiveStatistics sdStat = (DescriptiveStatistics) object.get(CrackObject.SD_STAT);
+        DescriptiveStatistics meanStat = (DescriptiveStatistics) object.get(PrivacyCrackObject.MEAN_STAT);
+        DescriptiveStatistics sdStat = (DescriptiveStatistics) object.get(PrivacyCrackObject.SD_STAT);
         for (int i = 0, j = baseElems.size(); i < j; i++) {
             if (baseElems.get(i).getStats().getN() < SAMPLE_NUM_LIMITS) {
                 //数据不全返回

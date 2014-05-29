@@ -27,15 +27,15 @@
 		<property name="velocityContextHelper" ref="velocityContextHelper" />
 		<!-- meanSeqTimeFormatter | meanEmSeqTimeFormatter | specifiedDayFormatter 
 			| deviationSeqTimeFormatter | deviationEmTimeFormatter -->
-		<property name="formatter" ref="meanSeqTimeFormatter" />
+		<property name="formatter" ref="specifiedDayFormatter" />
 		<property name="assembleTemplate" ref="assembleTemplate" />
 		<!-- linearRegressionCracker |standardExpectationCracker | bayesianNetworksCracker 
 			| bayesianNetWorksWithEMCracker -->
 		<property name="cracker" ref="standardExpectationCracker" />
 		<!-- uniformNoise | normalDistri | gaussMixtureNoise -->
 		<property name="noise" ref="normalDistri" />
-		<!-- seqHourHKCallBack | seqQuarterHKCallBack -->
-		<property name="hashKyGen" ref="seqQuarterHKCallBack" />
+		<!-- seqHourHKCallBack | seqQuarterHKCallBack | seqDayHKCallBack -->
+		<property name="hashKyGen" ref="seqDayHKCallBack" />
 	</bean>
 
 	<bean id="assembleTemplate" class="edu.tongji.extend.gnuplot.support.AssembleTemplate">
@@ -82,7 +82,7 @@
 	</bean>
 	<bean id="uniformNoise" class="edu.tongji.noise.UniformNoise"
 		lazy-init="true">
-		<constructor-arg type="edu.tongji.extend.support.NoiseParamSupport"
+		<constructor-arg type="edu.tongji.noise.support.NoiseParamSupport"
 			ref="noiseParamSupport" />
 	</bean>
 	<bean id="gaussMixtureNoise" class="edu.tongji.noise.GaussMixtureNoise"
