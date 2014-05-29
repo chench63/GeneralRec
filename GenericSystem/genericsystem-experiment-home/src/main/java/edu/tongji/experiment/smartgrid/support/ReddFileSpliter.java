@@ -26,13 +26,13 @@ import edu.tongji.vo.MeterReadingVO;
  * @author chench
  * @version $Id: ReddTabulator.java, v 0.1 2014-5-19 下午3:52:54 chench Exp $
  */
-public final class ReddTabulator {
+public final class ReddFileSpliter {
 
     /** 文件路径*/
-    protected final static String            SOURCE_FILE    = "E:/H3_C.*";
+    protected final static String            SOURCE_FILE    = "E:/H6_MIX_[1,2]";
 
     /** 文件路径*/
-    protected final static String            TARGET_FILE    = "E:/H3_C101";
+    protected final static String            TARGET_FILE    = "E:/H4_MIX";
 
     /** logger */
     private final static Logger              logger         = Logger
@@ -58,8 +58,8 @@ public final class ReddTabulator {
 
         try {
             //修正波士顿时差 UTC-5
-            low_bound = DateUtil.parse("20110423", DateUtil.SHORT_FORMAT).getTime();
-            upper_bound = DateUtil.parse("20110429", DateUtil.SHORT_FORMAT).getTime();
+            low_bound = DateUtil.parse("20110128", DateUtil.SHORT_FORMAT).getTime();
+            upper_bound = DateUtil.parse("20110727", DateUtil.SHORT_FORMAT).getTime();
         } catch (ParseException e) {
             ExceptionUtil.caught(e, "Parse Error.");
         }

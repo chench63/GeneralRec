@@ -15,6 +15,7 @@ import org.junit.Test;
 
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.model.Rating;
+import edu.tongji.parser.smartgrid.WeatherTemplateParser;
 import edu.tongji.util.LoggerUtil;
 import edu.tongji.vo.WeatherVO;
 

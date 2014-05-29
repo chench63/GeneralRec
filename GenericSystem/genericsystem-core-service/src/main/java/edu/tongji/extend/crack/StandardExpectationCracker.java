@@ -4,13 +4,11 @@
  */
 package edu.tongji.extend.crack;
 
-import java.sql.Date;
 import java.util.List;
 import java.util.Map;
-
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-
 import edu.tongji.cache.WeatherCache;
+import edu.tongji.extend.crack.support.PrivacyCrackObject;
 import edu.tongji.extend.crack.support.HashKeyCallBack;
 import edu.tongji.noise.Noise;
 import edu.tongji.util.DateUtil;
@@ -27,21 +25,21 @@ import edu.tongji.vo.MeterReadingVO;
 public class StandardExpectationCracker extends ExpectationCracker {
 
     /** 
-     * @see edu.tongji.extend.crack.PrivacyCracker#crack(edu.tongji.extend.crack.CrackObject)
+     * @see edu.tongji.extend.crack.PrivacyCracker#crack(edu.tongji.extend.crack.support.PrivacyCrackObject)
      */
     @SuppressWarnings("unchecked")
     @Override
-    public void crack(CrackObject object, int blockSize, Noise noise, HashKeyCallBack hashKyGen) {
+    public void crack(PrivacyCrackObject object, int blockSize, Noise noise, HashKeyCallBack hashKyGen) {
         //0. 汇总数据
         List<MeterReadingVO> content = object.getTarget();
-        List<ELement> baseElems = tabulate(content, 0, blockSize, blockSize);
-        List<ELement> estimateElems = tabulate(content, blockSize, content.size(), blockSize);
+        List<ELement> baseElems = tabulate(content, 0, blockSize, hashKyGen);
+        List<ELement> estimateElems = tabulate(content, blockSize, 2 * blockSize, hashKyGen);
 
         //1. 日志输出
         StringBuilder logMsg = new StringBuilder("StandardExpectationCracker");
         for (int i = 0, j = baseElems.size(); i < j; i++) {
-            String key = DateUtil.format(new Date(baseElems.get(i).getTimeVal()),
-                DateUtil.SHORT_FORMAT);
+            String key = hashKyGen.key(baseElems.get(i).getTimeVal());
+
             String temperature = String.format("%.0f",
                 WeatherCache.get(baseElems.get(i).getTimeVal()).getHighTemper());
             String date = (new StringBuilder()).append(key).append(" (")
@@ -69,19 +67,18 @@ public class StandardExpectationCracker extends ExpectationCracker {
     }
 
     /** 
-     * @see edu.tongji.extend.crack.PrivacyCracker#crackInnerNoise(edu.tongji.extend.crack.CrackObject, edu.tongji.noise.Noise)
+     * @see edu.tongji.extend.crack.PrivacyCracker#crackInnerNoise(edu.tongji.extend.crack.support.PrivacyCrackObject, edu.tongji.noise.Noise)
      */
     @SuppressWarnings("unchecked")
     @Override
-    public void crackInnerNoise(CrackObject object, Noise noise, HashKeyCallBack hashKyGen) {
+    public void crackInnerNoise(PrivacyCrackObject object, Noise noise, HashKeyCallBack hashKyGen) {
         //0. 汇总数据
         List<MeterReadingVO> content = object.getTarget();
-        List<ELement> baseElems = (hashKyGen == null) ? tabulate(content, 0, content.size(),
-            content.size()) : tabulate(content, 0, content.size(), hashKyGen);
+        List<ELement> baseElems = tabulate(content, 0, content.size(), hashKyGen);
 
         //1. 输出均值
         Map<String, DescriptiveStatistics> cache = (Map<String, DescriptiveStatistics>) object
-            .get(CrackObject.STAT_CACHE);
+            .get(PrivacyCrackObject.STAT_CACHE);
         for (ELement element : baseElems) {
             String key = (hashKyGen == null) ? StringUtil.EMPTY_STRING : hashKyGen.key(element
                 .getTimeVal());
