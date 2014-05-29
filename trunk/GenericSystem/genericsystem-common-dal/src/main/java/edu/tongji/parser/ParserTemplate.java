@@ -25,6 +25,21 @@ public class ParserTemplate {
     }
 
     /**
+     * 构造函数
+     */
+    public ParserTemplate() {
+        super();
+    }
+
+    /**
+     * @param template
+     */
+    public ParserTemplate(String template) {
+        super();
+        this.template = template;
+    }
+
+    /**
      * 存储属性
      * 
      * @param key
