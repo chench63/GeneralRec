@@ -38,7 +38,7 @@ public final class WeatherCache {
                                                              .getLogger(LoggerDefineConstant.SERVICE_CACHE);
 
     /**
-     * 获得天气信息
+     * 获得天气信息，非线程安全
      * 
      * @param key   yyyyMMdd
      * @return
@@ -53,7 +53,7 @@ public final class WeatherCache {
     }
 
     /**
-     * 获得天气信息
+     * 获得天气信息，非线程安全
      * 
      * @param l1
      * @return
@@ -74,7 +74,7 @@ public final class WeatherCache {
     /**
      * 初始化缓存
      */
-    protected static void initialize() {
+    public static void initialize() {
         String[] content = FileUtil.readLinesByPattern(source);
         float[] T = new float[4];
         for (String tempStr : content) {
