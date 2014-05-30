@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
+import edu.tongji.cache.WeatherCache;
 import edu.tongji.engine.smartgrid.thread.AcurcyCalcltor;
 import edu.tongji.parser.ParserTemplate;
 import edu.tongji.parser.TemplateType;
@@ -72,6 +73,10 @@ public class AnalysisAccuracyEngine extends SmartGridEngine {
 
         //2. 加载 贝叶斯网络事件缓存
         this.loadBayesianEventCache();
+
+        //3. 加载天气缓存，保证多线程安全使用
+        WeatherCache.initialize();
+
     }
 
     /** 
@@ -162,6 +167,15 @@ public class AnalysisAccuracyEngine extends SmartGridEngine {
             //3. 输出日志
             LoggerUtil.info(logger, "Load file: " + file + " Size: " + target.size());
         }
+
+        DescriptiveStatistics stat = new DescriptiveStatistics();
+        for (List<MeterReadingVO> readings : CONTEXT_CACHE) {
+            for (MeterReadingVO reading : readings) {
+                stat.addValue(reading.getReading());
+            }
+        }
+        LoggerUtil.info(logger,
+            "Data Mean: " + stat.getMean() + " SD: " + stat.getStandardDeviation());
     }
 
     /**

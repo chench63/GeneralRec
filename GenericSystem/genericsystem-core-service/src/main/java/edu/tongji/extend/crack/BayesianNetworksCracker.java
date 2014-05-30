@@ -132,9 +132,8 @@ public class BayesianNetworksCracker extends ExpectationCracker {
             }
 
             //2. 计算条件概率
-            String key = hashKyGen.key(baseElems.get(i).getTimeVal());
-            double cpVal = BayesianNetworkPRUtil.cp(1, WeatherCache.get(key).getHighTemper(),
-                meanEstmt);
+            double cpVal = BayesianNetworkPRUtil.cp(1,
+                WeatherCache.get(baseElems.get(i).getTimeVal()).getHighTemper(), meanEstmt);
 
             resultArr.add(new BayesianEventVO(baseElems.get(i).getTimeVal(),
                 (short) (cpVal > 0.5 ? 1 : 0)));
