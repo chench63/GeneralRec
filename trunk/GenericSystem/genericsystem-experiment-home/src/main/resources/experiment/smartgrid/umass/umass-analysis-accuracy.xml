@@ -29,10 +29,33 @@
 			| standardExpectationCracker | bayesianNetworksCracker -->
 		<property name="cracker" ref="bayesianNetworksCracker" />
 		<!-- uniformNoise | normalDistri | gaussMixtureNoise -->
-		<property name="noise" ref="normalDistri" />
+		<property name="noise" ref="uniformNoise" />
 		<!-- seqQuarterHKCallBack | seqDayHKCallBack | seqHourHKCallBack -->
 		<property name="hashKyGen" ref="seqDayHKCallBack" />
+		<property name="calculator">
+			<list>
+				<ref bean="BayesianAcurcyCalcltor"></ref>
+				<ref bean="BayesianAcurcyCalcltor"></ref>
+				<ref bean="BayesianAcurcyCalcltor"></ref>
+				<ref bean="BayesianAcurcyCalcltor"></ref>
+			</list>
+		</property>
 	</bean>
+
+
+
+	<!-- ******************************************** 多线程部分************************************************ -->
+	<bean id="BayesianAcurcyCalcltor"
+		class="edu.tongji.engine.smartgrid.thread.BayesianAcurcyCalcltor"
+		scope="prototype" />
+
+	<bean id="ErrorAcurcyCalcltor" class="edu.tongji.engine.smartgrid.thread.ErrorAcurcyCalcltor"
+		scope="prototype" />
+
+
+
+
+
 
 	<!-- Crackers -->
 	<bean id="standardExpectationCracker" class="edu.tongji.extend.crack.StandardExpectationCracker" />

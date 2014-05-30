@@ -55,7 +55,8 @@
 
 	<!-- ******************************************** 多线程部分************************************************ -->
 	<!-- 相似度计算域 -->
-	<bean id="NetflixCmpSimFileReader" class="edu.tongji.thread.NetflixCmpSimFileReader">
+	<bean id="NetflixCmpSimFileReader"
+		class="edu.tongji.engine.recommendation.thread.NetflixCmpSimFileReader">
 		<!--uniformNoise_0_50 | uniformNoise_0_95 -->
 		<property name="noise" ref="uniformNoise_0_50" />
 		<property name="sourceEntity">
@@ -64,18 +65,21 @@
 			</util:map>
 		</property>
 	</bean>
-	<bean id="NetflixCmpSimRecorder" class="edu.tongji.thread.NetflixCmpSimRecorder"
+	<bean id="NetflixCmpSimRecorder"
+		class="edu.tongji.engine.recommendation.thread.NetflixCmpSimRecorder"
 		scope="prototype">
 		<property name="similarityFunction" ref="AccCorrelationBasedSimularityFunction" />
 	</bean>
-	<bean id="NetflixCmpSimPaillierRecorder" class="edu.tongji.thread.NetflixCmpSimPaillierRecorder"
+	<bean id="NetflixCmpSimPaillierRecorder"
+		class="edu.tongji.engine.recommendation.thread.NetflixCmpSimPaillierRecorder"
 		scope="prototype">
 		<property name="similarityFunction" ref="AccCorrelationBasedSimularityFunction" />
 		<property name="valueOfItemsDAO" ref="valueOfItemsDAOImpl" />
 	</bean>
 
 	<!-- 推荐结果计算域 -->
-	<bean id="NetflixEvaPredctFileReader" class="edu.tongji.thread.NetflixEvaPredctFileReader">
+	<bean id="NetflixEvaPredctFileReader"
+		class="edu.tongji.engine.recommendation.thread.NetflixEvaPredctFileReader">
 		<property name="sourceEntity">
 			<util:map key-type="edu.tongji.parser.TemplateType">
 				<entry key="SIMILARITY_TEMPLATE" value="${SIMILARITY_FILE_READ_PATH}" />
@@ -83,7 +87,8 @@
 			</util:map>
 		</property>
 	</bean>
-	<bean id="NetflixEvaPredctRecorder" class="edu.tongji.thread.NetflixEvaPredctRecorder"
+	<bean id="NetflixEvaPredctRecorder"
+		class="edu.tongji.engine.recommendation.thread.NetflixEvaPredctRecorder"
 		scope="prototype">
 		<property name="predictor" ref="predictor" />
 	</bean>

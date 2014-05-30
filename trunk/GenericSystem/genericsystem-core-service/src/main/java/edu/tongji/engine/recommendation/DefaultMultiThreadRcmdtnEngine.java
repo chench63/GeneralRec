@@ -11,6 +11,7 @@ import java.util.concurrent.Executors;
 import org.apache.log4j.Logger;
 
 import edu.tongji.configure.ConfigurationConstant;
+import edu.tongji.engine.Engine;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.util.ExceptionUtil;
 import edu.tongji.util.LoggerUtil;
@@ -20,7 +21,7 @@ import edu.tongji.util.LoggerUtil;
  * @author chench
  * @version $Id: NetflixSimlarityPerformanceMultiThreadEngine.java, v 0.1 2013-10-15 上午9:54:14 chench Exp $
  */
-public class DefaultMultiThreadRcmdtnEngine extends MultiThreadRcmdtnEngine {
+public class DefaultMultiThreadRcmdtnEngine implements Engine {
 
     /** 数据读取*/
     private Thread              reader;

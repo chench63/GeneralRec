@@ -28,14 +28,11 @@ import edu.tongji.vo.MeterReadingVO;
 public abstract class ExpectationCracker implements PrivacyCracker {
 
     /** 最低样本阈值*/
-    public int                       SAMPLE_NUM_LIMITS = 84;
-
-    /** 结果集*/
-    public final static List<Double> CP_RESULT         = new ArrayList<Double>();
+    public int                    SAMPLE_NUM_LIMITS = 84;
 
     /** logger */
-    protected final static Logger    logger            = Logger
-                                                           .getLogger(LoggerDefineConstant.SERVICE_CORE);
+    protected final static Logger logger            = Logger
+                                                        .getLogger(LoggerDefineConstant.SERVICE_CORE);
 
     /**
      * 汇总数据
