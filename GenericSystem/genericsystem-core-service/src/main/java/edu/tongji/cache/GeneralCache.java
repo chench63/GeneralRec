@@ -15,8 +15,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.apache.log4j.Logger;
 
 import edu.tongji.configure.ConfigurationConstant;
+import edu.tongji.engine.recommendation.thread.NetflixEvaPredctFileReader;
 import edu.tongji.log4j.LoggerDefineConstant;
-import edu.tongji.thread.NetflixEvaPredctFileReader;
 import edu.tongji.util.FileUtil;
 import edu.tongji.util.LoggerUtil;
 import edu.tongji.vo.SimilarityVO;

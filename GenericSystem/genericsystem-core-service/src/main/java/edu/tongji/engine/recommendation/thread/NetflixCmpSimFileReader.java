@@ -2,7 +2,7 @@
  * Tongji Edu.
  * Copyright (c) 2004-2014 All Rights Reserved.
  */
-package edu.tongji.thread;
+package edu.tongji.engine.recommendation.thread;
 
 import java.util.ArrayList;
 import java.util.List;

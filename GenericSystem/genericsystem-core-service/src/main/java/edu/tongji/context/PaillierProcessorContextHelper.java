@@ -7,8 +7,8 @@ package edu.tongji.context;
 import java.math.BigInteger;
 import java.util.List;
 
+import edu.tongji.engine.recommendation.thread.NetflixCmpSimPaillierRecorder;
 import edu.tongji.function.FunctionHelper;
-import edu.tongji.thread.NetflixCmpSimPaillierRecorder;
 import edu.tongji.util.PaillierUtil;
 
 /**

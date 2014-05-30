@@ -9,8 +9,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import edu.tongji.engine.recommendation.thread.NetflixCmpSimPaillierRecorder;
 import edu.tongji.model.Rating;
-import edu.tongji.thread.NetflixCmpSimPaillierRecorder;
 import edu.tongji.vo.RatingVO;
 
 /**

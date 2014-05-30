@@ -24,6 +24,9 @@ public final class LoggerDefineConstant {
     /** [核心引擎]日志*/
     public final static String SERVICE_CORE   = "SERVICE-CORE";
 
+    /** [多线程部分]日志*/
+    public final static String SERVICE_THREAD = "SERVICE-THREAD";
+
     /** [测试环境]日志*/
     public final static String SERVICE_TEST   = "SERVICE-TEST";
 
