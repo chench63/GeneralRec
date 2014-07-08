@@ -60,7 +60,8 @@
 	<bean id="standardExpectationCracker" class="edu.tongji.extend.crack.StandardExpectationCracker" />
 	<bean id="relativeAccuracyExpectationCracker"
 		class="edu.tongji.extend.crack.RelativeAccuracyExpectationCracker" />
-	<bean id="meanAbsoluteErrorSeqDayCracker" class="edu.tongji.extend.crack.MeanAbsoluteErrorSeqDayCracker" />
+	<bean id="meanAbsoluteErrorExpectationCracker"
+		class="edu.tongji.extend.crack.MeanAbsoluteErrorExpectationCracker" />
 	<bean id="linearRegressionCracker" class="edu.tongji.extend.crack.LinearRegressionCracker" />
 	<bean id="bayesianNetworksCracker" class="edu.tongji.extend.crack.BayesianNetworksCracker" />
 

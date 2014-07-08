@@ -27,10 +27,10 @@ public class NoiseParamSupport {
     private double                alpha       = 0.01d;
 
     /** 电表读数均值*/
-    private double                u_1         = 200;
+    private double                u_1         = 196.6368841498821;
 
     /** 电表读数标准方差*/
-    private double                sigma_1     = 250;
+    private double                sigma_1     = 264.23609122693205;
 
     /** 噪声均值*/
     private double                u_2         = 0;
@@ -96,8 +96,8 @@ public class NoiseParamSupport {
 
         NormalNoise[] gmm = new NormalNoise[3];
         gmm[0] = new NormalNoise(420, sigma_1);
-        gmm[1] = new NormalNoise(mu_noise_1, param_belta * sigma_1 * 0.2);
-        gmm[2] = new NormalNoise(mu_noise_2, param_belta * sigma_1 * 0.2);
+        gmm[1] = new NormalNoise(mu_noise_1, param_belta * sigma_1);
+        gmm[2] = new NormalNoise(mu_noise_2, param_belta * sigma_1);
 
         //输出日志
         LoggerUtil.info(logger, (new StringBuilder(" Gen: GMM：")).append(gmm[0]).append(", ")

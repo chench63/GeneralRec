@@ -20,7 +20,7 @@ public class NormalNoise implements Noise {
     protected NormalDistribution normal;
 
     /** 默认icf(1)对应的值*/
-    protected float              icf_limit = Float.MAX_VALUE;
+    protected double             icf_limit = Double.MAX_VALUE;
 
     /**
      * 构造函数
@@ -68,7 +68,7 @@ public class NormalNoise implements Noise {
     @Override
     public double random() {
         double sample = 0.0d;
-        while (Math.abs(sample = normal.sample()) > icf_limit)
+        while ((Math.abs(sample = normal.sample()) > icf_limit) || Double.isNaN(sample))
             ;
         return sample;
     }
@@ -79,8 +79,9 @@ public class NormalNoise implements Noise {
     @Override
     public double perturb(double input) {
         double sample = 0.0d;
-        while (Math.abs(sample = normal.sample()) > icf_limit)
+        while ((Math.abs(sample = normal.sample()) > icf_limit) || Double.isNaN(sample))
             ;
+
         return sample + input;
     }
 
