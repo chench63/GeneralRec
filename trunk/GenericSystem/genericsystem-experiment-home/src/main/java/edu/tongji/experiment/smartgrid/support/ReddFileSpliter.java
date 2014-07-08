@@ -29,10 +29,10 @@ import edu.tongji.vo.MeterReadingVO;
 public final class ReddFileSpliter {
 
     /** 文件路径*/
-    protected final static String            SOURCE_FILE    = "E:/H6_MIX_[1,2]";
+    protected final static String            SOURCE_FILE    = "E:/H6_M[1,2]";
 
     /** 文件路径*/
-    protected final static String            TARGET_FILE    = "E:/H4_MIX";
+    protected final static String            TARGET_FILE    = "E:/H6_MIX";
 
     /** logger */
     private final static Logger              logger         = Logger
@@ -58,8 +58,8 @@ public final class ReddFileSpliter {
 
         try {
             //修正波士顿时差 UTC-5
-            low_bound = DateUtil.parse("20110128", DateUtil.SHORT_FORMAT).getTime();
-            upper_bound = DateUtil.parse("20110727", DateUtil.SHORT_FORMAT).getTime();
+            low_bound = DateUtil.parse("20100128", DateUtil.SHORT_FORMAT).getTime();
+            upper_bound = DateUtil.parse("20130727", DateUtil.SHORT_FORMAT).getTime();
         } catch (ParseException e) {
             ExceptionUtil.caught(e, "Parse Error.");
         }

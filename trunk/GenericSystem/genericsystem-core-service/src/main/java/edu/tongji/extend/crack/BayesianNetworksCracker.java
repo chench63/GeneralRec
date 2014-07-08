@@ -7,11 +7,7 @@ package edu.tongji.extend.crack;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
 import edu.tongji.ai.pr.BayesianNetworkPRUtil;
 import edu.tongji.cache.WeatherCache;
@@ -43,8 +39,8 @@ public class BayesianNetworksCracker extends ExpectationCracker {
                       HashKeyCallBack hashKyGen) {
         //0. 汇总数据
         List<MeterReadingVO> content = object.getTarget();
-        List<ELement> baseElems = tabulate(content, 0, blockSize, blockSize);
-        List<ELement> estimateElems = tabulate(content, blockSize, content.size(), blockSize);
+        List<ELement> baseElems = tabulate(content, 0, content.size(), hashKyGen);
+        List<ELement> estimateElems = tabulate(content, 0, content.size(), hashKyGen);
 
         //1. 日志输出
         StringBuilder logMsg = new StringBuilder("BayesianNetworksCracker");
@@ -101,7 +97,7 @@ public class BayesianNetworksCracker extends ExpectationCracker {
     public void crackInnerNoise(PrivacyCrackObject object, Noise noise, HashKeyCallBack hashKyGen) {
         //0. 汇总数据
         List<MeterReadingVO> content = object.getTarget();
-        List<ELement> baseElems = tabulate(content, 0, content.size(), hashKyGen);
+        List<ELement> baseElems = tabulateWithOneDay(content, hashKyGen);
 
         //1. 计算条件概率
         List<BayesianEventVO> resultArr = new ArrayList<BayesianEventVO>();
@@ -165,57 +161,6 @@ public class BayesianNetworksCracker extends ExpectationCracker {
         Collections.sort(resultArr);
         resultCache.add(resultArr);
         LoggerUtil.debug(logger, logMsg);
-    }
-
-    /** 
-     * @see edu.tongji.extend.crack.ExpectationCracker#tabulate(java.util.List, int, int, edu.tongji.extend.crack.support.HashKeyCallBack)
-     */
-    @Override
-    protected List<ELement> tabulate(List<MeterReadingVO> content, int start, int end,
-                                     HashKeyCallBack hashKyGen) {
-
-        //1. 规整数据,按天合并数据
-        Map<String, List<MeterReadingVO>> cache = new HashMap<String, List<MeterReadingVO>>();
-        for (int i = start; i < end; i++) {
-            MeterReadingVO reading = content.get(i);
-            String key = hashKyGen.key(reading.getTimeVal());
-
-            List<MeterReadingVO> arr = cache.get(key);
-            if (arr == null) {
-                arr = new ArrayList<MeterReadingVO>();
-                cache.put(key, arr);
-            }
-
-            arr.add(reading);
-        }
-
-        //2. 生成事件集合
-        List<ELement> result = new ArrayList<ELement>();
-        for (List<MeterReadingVO> arr : cache.values()) {
-
-            if (arr.size() != 4 * 24) {
-                continue;
-            }
-
-            //升序排序
-            Collections.sort(arr);
-
-            for (int i = 0, j = arr.size(); i < j - 1 * 4; i++) {
-                //a. 获取时间撮
-                long timeVal = arr.get(i).getTimeVal();
-
-                //e. 获取功耗
-                DescriptiveStatistics stats = new DescriptiveStatistics();
-                for (int ele = i; ele < i + 4; ele++) {
-                    stats.addValue(arr.get(ele).getReading());
-                }
-
-                result.add(new ELement(stats, timeVal));
-            }
-
-        }
-
-        return result;
     }
 
 }

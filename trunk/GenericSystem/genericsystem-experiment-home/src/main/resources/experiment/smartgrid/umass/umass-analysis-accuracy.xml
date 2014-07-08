@@ -25,19 +25,18 @@
 		<property name="ROUND" value="${ROUND}" />
 		<!-- hourSeqDataSetAssembler | quarterSeqDataSetAssembler | wattQuarterSeqDataSetAssembler -->
 		<property name="assembler" ref="wattQuarterSeqDataSetAssembler" />
-		<!-- relativeAccuracyExpectationCracker | meanAbsoluteErrorSeqDayCracker 
+		<!-- relativeAccuracyExpectationCracker | meanAbsoluteErrorExpectationCracker 
 			| standardExpectationCracker | bayesianNetworksCracker -->
-		<property name="cracker" ref="bayesianNetworksCracker" />
+		<property name="cracker" ref="relativeAccuracyExpectationCracker" />
 		<!-- uniformNoise | normalDistri | gaussMixtureNoise -->
-		<property name="noise" ref="uniformNoise" />
+		<property name="noise" ref="gaussMixtureNoise" />
 		<!-- seqQuarterHKCallBack | seqDayHKCallBack | seqHourHKCallBack -->
 		<property name="hashKyGen" ref="seqDayHKCallBack" />
 		<property name="calculator">
 			<list>
-				<ref bean="BayesianAcurcyCalcltor"></ref>
-				<ref bean="BayesianAcurcyCalcltor"></ref>
-				<ref bean="BayesianAcurcyCalcltor"></ref>
-				<ref bean="BayesianAcurcyCalcltor"></ref>
+				<ref bean="ErrorAcurcyCalcltor"></ref>
+				<ref bean="ErrorAcurcyCalcltor"></ref>
+				<ref bean="ErrorAcurcyCalcltor"></ref>
 			</list>
 		</property>
 	</bean>
@@ -61,7 +60,8 @@
 	<bean id="standardExpectationCracker" class="edu.tongji.extend.crack.StandardExpectationCracker" />
 	<bean id="relativeAccuracyExpectationCracker"
 		class="edu.tongji.extend.crack.RelativeAccuracyExpectationCracker" />
-	<bean id="meanAbsoluteErrorSeqDayCracker" class="edu.tongji.extend.crack.MeanAbsoluteErrorSeqDayCracker" />
+	<bean id="meanAbsoluteErrorExpectationCracker"
+		class="edu.tongji.extend.crack.MeanAbsoluteErrorExpectationCracker" />
 	<bean id="linearRegressionCracker" class="edu.tongji.extend.crack.LinearRegressionCracker" />
 	<bean id="bayesianNetworksCracker" class="edu.tongji.extend.crack.BayesianNetworksCracker" />
 

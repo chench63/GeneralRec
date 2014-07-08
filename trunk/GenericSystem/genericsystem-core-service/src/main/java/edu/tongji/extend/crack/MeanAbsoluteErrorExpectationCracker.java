@@ -23,7 +23,7 @@ import edu.tongji.vo.MeterReadingVO;
  * @author chench
  * @version $Id: MeanAbsoluteErrorSeqDayCracker.java, v 0.1 2014-5-21 下午3:57:19 chench Exp $
  */
-public class MeanAbsoluteErrorSeqDayCracker extends ExpectationCracker {
+public class MeanAbsoluteErrorExpectationCracker extends ExpectationCracker {
 
     /** 
      * @see edu.tongji.extend.crack.PrivacyCracker#crack(edu.tongji.extend.crack.support.PrivacyCrackObject, int)
@@ -42,7 +42,7 @@ public class MeanAbsoluteErrorSeqDayCracker extends ExpectationCracker {
     public void crackInnerNoise(PrivacyCrackObject object, Noise noise, HashKeyCallBack hashKyGen) {
         //0. 汇总数据
         List<MeterReadingVO> content = object.getTarget();
-        List<ELement> baseElems = tabulate(content, 0, content.size(), hashKyGen);
+        List<ELement> baseElems = tabulateWithOneDay(content, hashKyGen);
 
         //1. 计算条件概率
         //   日志输出
@@ -51,7 +51,7 @@ public class MeanAbsoluteErrorSeqDayCracker extends ExpectationCracker {
         DescriptiveStatistics sdStat = (DescriptiveStatistics) object
             .get(PrivacyCrackObject.SD_STAT);
         for (int i = 0, j = baseElems.size(); i < j; i++) {
-            if (baseElems.get(i).getStats().getN() < SAMPLE_NUM_LIMITS) {
+            if (baseElems.get(i).getStats().getN() != 4) {
                 //数据不全返回
                 continue;
             }

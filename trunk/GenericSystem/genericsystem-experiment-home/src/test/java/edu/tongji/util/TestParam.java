@@ -22,19 +22,19 @@ public class TestParam {
     private static final Logger logger  = Logger.getLogger(LoggerDefineConstant.SERVICE_TEST);
 
     /** 样本数量*/
-    public double               n       = 1000;
+    public double               n       = 10000;
     /** load monitoring 误差*/
     public double               alpha   = 0.01;
     /** 电表读数均值*/
-    public double               u_1     = 200;
+    public double               u_1     = 196.6368841498821;
     /** 电表读数标准方差*/
-    public double               sigma_1 = 200;
+    public double               sigma_1 = 264.23609122693205;
     /** 噪声均值*/
     public double               u_2     = 0;
     /** alpha误差下，置信概率*/
     public double               p       = 0.9;
 
-    @Test
+    //    @Test
     public void test() {
 
         NormalDistribution stat = new NormalDistribution(0, 1);
@@ -49,9 +49,9 @@ public class TestParam {
 
     }
 
-    //    @Test
+    @Test
     public void test2() {
-        double param_alpha = 0.01d;
+        double param_alpha = 0.001d;
         double param_belta = 2.0d;
 
         // mu_1t = icdf( alpha, icdf(alpha, mu, sigma), belta * sigma )
@@ -66,7 +66,16 @@ public class TestParam {
         gauss = new NormalDistribution(icdf, param_belta * sigma_1);
         double mu_noise_2 = gauss.inverseCumulativeProbability(1 - param_alpha);
 
-        LoggerUtil.info(logger, "mu_1t：" + mu_noise_1 + " mu_2t：" + mu_noise_2);
+        // omega_0
+        NormalDistribution normal = new NormalDistribution();
+        double phi = normal.inverseCumulativeProbability((1 + p) / 2);
+        double numerator = Math.pow(sigma_1 * phi, 2.0d);
+        double omega = numerator
+                       / (Math.pow(param_alpha * u_1, 2.0d) * n + (1 - param_alpha * param_alpha)
+                                                                  * numerator);
+
+        LoggerUtil.info(logger, "n：" + n + " mu_1t：" + mu_noise_1 + " mu_2t：" + mu_noise_2
+                                + " omega：" + omega);
 
     }
 }

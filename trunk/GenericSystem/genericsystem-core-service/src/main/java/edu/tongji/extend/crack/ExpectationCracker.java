@@ -15,8 +15,6 @@ import org.apache.log4j.Logger;
 
 import edu.tongji.extend.crack.support.HashKeyCallBack;
 import edu.tongji.log4j.LoggerDefineConstant;
-import edu.tongji.util.DateUtil;
-import edu.tongji.util.HashKeyUtil;
 import edu.tongji.vo.MeterReadingVO;
 
 /**
@@ -33,38 +31,6 @@ public abstract class ExpectationCracker implements PrivacyCracker {
     /** logger */
     protected final static Logger logger            = Logger
                                                         .getLogger(LoggerDefineConstant.SERVICE_CORE);
-
-    /**
-     * 汇总数据
-     * 
-     * @param content
-     * @param start
-     * @param end
-     * @param blockSize
-     * @return
-     */
-    protected List<ELement> tabulate(List<MeterReadingVO> content, int start, int end, int blockSize) {
-        Map<String, ELement> repo = new HashMap<String, ELement>();
-        for (int i = start; i < end; i++) {
-            MeterReadingVO reading = content.get(i);
-            //使用map整理数据
-            String key = generateKey(reading, i, blockSize);
-
-            ELement element = repo.get(key);
-            if (element == null) {
-                element = new ELement(new DescriptiveStatistics(), reading.getTimeVal());
-            }
-            element.getStats().addValue(reading.getReading());
-
-            repo.put(key, element);
-        }
-
-        //对结果集合，按时间排序
-        List<ELement> result = new ArrayList<ELement>();
-        Collections.synchronizedList(result).addAll(repo.values());
-        Collections.sort(result);
-        return result;
-    }
 
     /**
      * 汇总数据
@@ -99,16 +65,60 @@ public abstract class ExpectationCracker implements PrivacyCracker {
     }
 
     /**
-     * Map生成Key方法 KEY = [Day]_[COLUMN_SEQ]
+     * 汇总数据
      * 
-     * @param reading   实体对象
-     * @param index     序列号
-     * @param rowSize   行数
+     * @param content
+     * @param hashKyGen
      * @return
      */
-    protected String generateKey(MeterReadingVO reading, int index, int rowSize) {
-        return (new StringBuilder()).append(DateUtil.getDayOfYear(reading.getTimeVal()))
-            .append(HashKeyUtil.ELEMENT_SEPERATOR).append(index / rowSize).toString();
+    protected List<ELement> tabulateWithOneDay(List<MeterReadingVO> content,
+                                               HashKeyCallBack hashKyGen) {
+        //0. 参数初始化
+        int start = 0;
+        int end = content.size();
+
+        //1. 规整数据,按天合并数据
+        Map<String, List<MeterReadingVO>> cache = new HashMap<String, List<MeterReadingVO>>();
+        for (int i = start; i < end; i++) {
+            MeterReadingVO reading = content.get(i);
+            String key = hashKyGen.key(reading.getTimeVal());
+
+            List<MeterReadingVO> arr = cache.get(key);
+            if (arr == null) {
+                arr = new ArrayList<MeterReadingVO>();
+                cache.put(key, arr);
+            }
+
+            arr.add(reading);
+        }
+
+        //2. 生成事件集合
+        List<ELement> result = new ArrayList<ELement>();
+        for (List<MeterReadingVO> arr : cache.values()) {
+
+            if (arr.size() != 4 * 24) {
+                continue;
+            }
+
+            //升序排序
+            Collections.sort(arr);
+
+            for (int i = 0, j = arr.size(); i < j - 1 * 4; i++) {
+                //a. 获取时间撮
+                long timeVal = arr.get(i).getTimeVal();
+
+                //e. 获取功耗
+                DescriptiveStatistics stats = new DescriptiveStatistics();
+                for (int ele = i; ele < i + 4; ele++) {
+                    stats.addValue(arr.get(ele).getReading());
+                }
+
+                result.add(new ELement(stats, timeVal));
+            }
+
+        }
+
+        return result;
     }
 
     /**

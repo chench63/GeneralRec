@@ -28,7 +28,8 @@ public class RelativeAccuracyExpectationCracker extends ExpectationCracker {
      * @see edu.tongji.extend.crack.PrivacyCracker#crack(edu.tongji.extend.crack.support.PrivacyCrackObject, int, edu.tongji.extend.crack.support.HashKeyCallBack)
      */
     @Override
-    public void crack(PrivacyCrackObject object, int blockSize, Noise noise, HashKeyCallBack hashKyGen) {
+    public void crack(PrivacyCrackObject object, int blockSize, Noise noise,
+                      HashKeyCallBack hashKyGen) {
         throw new OwnedException(FunctionErrorCode.ILLEGAL_PARAMETER);
     }
 
@@ -40,14 +41,16 @@ public class RelativeAccuracyExpectationCracker extends ExpectationCracker {
     public void crackInnerNoise(PrivacyCrackObject object, Noise noise, HashKeyCallBack hashKyGen) {
         //0. 汇总数据
         List<MeterReadingVO> content = object.getTarget();
-        List<ELement> baseElems = tabulate(content, 0, content.size(), hashKyGen);
+        List<ELement> baseElems = tabulateWithOneDay(content, hashKyGen);
 
         //1. 计算条件概率
         //   日志输出
-        DescriptiveStatistics meanStat = (DescriptiveStatistics) object.get(PrivacyCrackObject.MEAN_STAT);
-        DescriptiveStatistics sdStat = (DescriptiveStatistics) object.get(PrivacyCrackObject.SD_STAT);
+        DescriptiveStatistics meanStat = (DescriptiveStatistics) object
+            .get(PrivacyCrackObject.MEAN_STAT);
+        DescriptiveStatistics sdStat = (DescriptiveStatistics) object
+            .get(PrivacyCrackObject.SD_STAT);
         for (int i = 0, j = baseElems.size(); i < j; i++) {
-            if (baseElems.get(i).getStats().getN() < SAMPLE_NUM_LIMITS) {
+            if (baseElems.get(i).getStats().getN() != 4) {
                 //数据不全返回
                 continue;
             }
