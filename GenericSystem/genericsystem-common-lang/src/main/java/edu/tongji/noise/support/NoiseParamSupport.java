@@ -23,8 +23,11 @@ public class NoiseParamSupport {
     /** 样本数量*/
     private double                n           = 1000;
 
-    /** load monitoring 误差比例*/
-    private double                alpha       = 0.01d;
+    /** load monitoring 精度参数*/
+    private double                alpha       = 0.99d;
+
+    /** load monitoring 鲁棒性参数*/
+    private double                belta       = 0.9d;
 
     /** 电表读数均值*/
     private double                u_1         = 196.6368841498821;
@@ -34,9 +37,6 @@ public class NoiseParamSupport {
 
     /** 噪声均值*/
     private double                u_2         = 0;
-
-    /** alpha误差下，置信概率*/
-    private double                p           = 0.9d;
 
     /** GMM: alpha参数*/
     private final double          param_alpha = 0.01d;
@@ -94,14 +94,29 @@ public class NoiseParamSupport {
         gauss = new NormalDistribution(icdf, param_belta * sigma_1);
         double mu_noise_2 = gauss.inverseCumulativeProbability(1 - param_alpha);
 
+        // omega_0
+        NormalDistribution normal = new NormalDistribution();
+        double phi = normal.inverseCumulativeProbability((1 + belta) / 2);
+        double numerator = Math.pow(sigma_1 * phi, 2.0d);
+        this.w_0 = numerator
+                   / (Math.pow((1 - alpha) * u_1, 2.0d) * n + (2 - alpha) * alpha * numerator);
+
+        // weight[0,2]
+        weighit = new double[3];
+        double w_not_0 = (1 - this.w_0) / 2;
+        weighit[0] = this.w_0;
+        weighit[1] = w_not_0;
+        weighit[2] = w_not_0;
+
         NormalNoise[] gmm = new NormalNoise[3];
         gmm[0] = new NormalNoise(420, sigma_1);
         gmm[1] = new NormalNoise(mu_noise_1, param_belta * sigma_1);
         gmm[2] = new NormalNoise(mu_noise_2, param_belta * sigma_1);
 
         //输出日志
-        LoggerUtil.info(logger, (new StringBuilder(" Gen: GMM：")).append(gmm[0]).append(", ")
-            .append(gmm[1]).append(", ").append(gmm[2]));
+        LoggerUtil.info(logger, (new StringBuilder(" Gen: GMM：")).append(gmm[0]).append("  (")
+            .append(weighit[0]).append("), ").append(gmm[1]).append("  (").append(weighit[1])
+            .append("), ").append(gmm[2]).append("  (").append(weighit[2]).append("), "));
         return gmm;
     }
 
@@ -112,10 +127,10 @@ public class NoiseParamSupport {
      */
     private double sigma() {
         //噪声方差
-        double phi = (p + 1) / 2;
         NormalDistribution stat = new NormalDistribution(0, 1);
-        double sigma_2 = Math.pow((alpha * u_1 - u_2) / stat.inverseCumulativeProbability(phi),
-            2.0d) * n - Math.pow(alpha * sigma_1, 2.0d);
+        double phi = stat.inverseCumulativeProbability((belta + 1) / 2);
+        double sigma_2 = Math.pow(((1 - alpha) * u_1) / phi, 2.0d) * n
+                         - Math.pow((1 - alpha) * sigma_1, 2.0d);
         return sigma_2;
     }
 
@@ -138,12 +153,12 @@ public class NoiseParamSupport {
     }
 
     /**
-     * Getter method for property <tt>alpha</tt>.
+     * Getter method for property <tt>weighit</tt>.
      * 
-     * @return property value of alpha
+     * @return property value of weighit
      */
-    public double getAlpha() {
-        return alpha;
+    public double[] getWeighit() {
+        return weighit;
     }
 
     /**
@@ -156,134 +171,12 @@ public class NoiseParamSupport {
     }
 
     /**
-     * Getter method for property <tt>u_1</tt>.
+     * Setter method for property <tt>belta</tt>.
      * 
-     * @return property value of u_1
+     * @param belta value to be assigned to property belta
      */
-    public double getU_1() {
-        return u_1;
-    }
-
-    /**
-     * Setter method for property <tt>u_1</tt>.
-     * 
-     * @param u_1 value to be assigned to property u_1
-     */
-    public void setU_1(double u_1) {
-        this.u_1 = u_1;
-    }
-
-    /**
-     * Getter method for property <tt>sigma_1</tt>.
-     * 
-     * @return property value of sigma_1
-     */
-    public double getSigma_1() {
-        return sigma_1;
-    }
-
-    /**
-     * Setter method for property <tt>sigma_1</tt>.
-     * 
-     * @param sigma_1 value to be assigned to property sigma_1
-     */
-    public void setSigma_1(double sigma_1) {
-        this.sigma_1 = sigma_1;
-    }
-
-    /**
-     * Getter method for property <tt>u_2</tt>.
-     * 
-     * @return property value of u_2
-     */
-    public double getU_2() {
-        return u_2;
-    }
-
-    /**
-     * Setter method for property <tt>u_2</tt>.
-     * 
-     * @param u_2 value to be assigned to property u_2
-     */
-    public void setU_2(double u_2) {
-        this.u_2 = u_2;
-    }
-
-    /**
-     * Getter method for property <tt>p</tt>.
-     * 
-     * @return property value of p
-     */
-    public double getP() {
-        return p;
-    }
-
-    /**
-     * Setter method for property <tt>p</tt>.
-     * 
-     * @param p value to be assigned to property p
-     */
-    public void setP(double p) {
-        this.p = p;
-    }
-
-    /**
-     * Getter method for property <tt>param_alpha</tt>.
-     * 
-     * @return property value of param_alpha
-     */
-    public double getParam_alpha() {
-        return param_alpha;
-    }
-
-    /**
-     * Getter method for property <tt>param_belta</tt>.
-     * 
-     * @return property value of param_belta
-     */
-    public double getParam_belta() {
-        return param_belta;
-    }
-
-    /**
-     * Getter method for property <tt>weighit</tt>.
-     * 
-     * @return property value of weighit
-     */
-    public double[] getWeighit() {
-        return weighit;
-    }
-
-    /**
-     * Setter method for property <tt>weighit</tt>.
-     * 
-     * @param weighit value to be assigned to property weighit
-     */
-    public void setWeighit(double[] weighit) {
-        this.weighit = weighit;
-    }
-
-    /**
-     * Getter method for property <tt>w_0</tt>.
-     * 
-     * @return property value of w_0
-     */
-    public double getW_0() {
-        return w_0;
-    }
-
-    /**
-     * Setter method for property <tt>w_0</tt>.
-     * 
-     * @param w_0 value to be assigned to property w_0
-     */
-    public void setW_0(double w_0) {
-        weighit = new double[3];
-        double w_not_0 = (1 - w_0) / 2;
-        weighit[0] = w_0;
-        weighit[1] = w_not_0;
-        weighit[2] = w_not_0;
-        this.w_0 = w_0;
+    public void setBelta(double belta) {
+        this.belta = belta;
     }
 
 }
