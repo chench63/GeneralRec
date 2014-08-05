@@ -34,8 +34,8 @@ public class GaussMixtureNoise implements Noise {
      * @param noiseParamSupport
      */
     public GaussMixtureNoise(NoiseParamSupport noiseParamSupport) {
-        this.weight = noiseParamSupport.getWeighit();
         this.normalNoise = noiseParamSupport.gmm();
+        this.weight = noiseParamSupport.getWeighit();
     }
 
     /** 

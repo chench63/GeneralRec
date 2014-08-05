@@ -145,6 +145,11 @@ public final class EMUtil {
         sigma /= sum;
 
         //更新估计量
+        if (sum <= 0.01) {
+            //数据集中不含此类样本
+            return;
+        }
+
         NormalNoise estimation = components[0];
         estimation.update(mu, sigma > 0.0d ? Math.sqrt(sigma) : estimation.getStandardDeviation());
     }
