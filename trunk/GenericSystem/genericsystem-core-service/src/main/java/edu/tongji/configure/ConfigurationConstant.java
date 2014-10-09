@@ -59,6 +59,15 @@ public final class ConfigurationConstant {
     /** 解析RatingVO相关文件*/
     public static boolean PARSER_RATINGVO           = true;
 
+    /** 划分行数*/
+    public static int     ROW                       = 2;
+
+    /** 划分列数*/
+    public static int     COLUMN                    = 2;
+
+    /** 子矩阵的rank*/
+    public static int     PARAM_K                   = 2;
+
     /**
      * Setter method for property <tt>iS_HOMOMORPHIC_ENCRYPTION</tt>.
      * 
@@ -192,6 +201,33 @@ public final class ConfigurationConstant {
      */
     public static void setNUMERIC_CACHE_LIMIT_GB(float nUMERIC_CACHE_LIMIT_GB) {
         NUMERIC_CACHE_LIMIT_GB = nUMERIC_CACHE_LIMIT_GB * 1024 * 1024 * 1024;
+    }
+
+    /**
+     * Setter method for property <tt>rOW</tt>.
+     * 
+     * @param ROW value to be assigned to property rOW
+     */
+    public static void setROW(int rOW) {
+        ROW = rOW;
+    }
+
+    /**
+     * Setter method for property <tt>cOLUMN</tt>.
+     * 
+     * @param COLUMN value to be assigned to property cOLUMN
+     */
+    public static void setCOLUMN(int cOLUMN) {
+        COLUMN = cOLUMN;
+    }
+
+    /**
+     * Setter method for property <tt>pARAM_K</tt>.
+     * 
+     * @param PARAM_K value to be assigned to property pARAM_K
+     */
+    public static void setPARAM_K(int pARAM_K) {
+        PARAM_K = pARAM_K;
     }
 
 }

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.2.xsd
+		http://www.springframework.org/schema/util
+		http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+	<!-- ******************************************** 实验配置部分************************************************ -->
+	<bean class="edu.tongji.configure.ConfigurationConstant">
+		<property name="ROW" value="${BLOCK_ROW}" />
+		<property name="COLUMN" value="${BLOCK_COL}" />
+		<property name="PARAM_K" value="${RANK_K}" />
+	</bean>
+
+
+	<!-- ******************************************** 处理模板部分************************************************ -->
+	<bean id="engineForGeneratingRecommendations"
+		class="edu.tongji.engine.recommendation.SnglrValuDecmpsRcmdEngine">
+		<property name="reader" ref="MovieLensMatrixReader" />
+		<property name="svdDecmposr">
+			<list>
+				<ref bean="MatrixSnglrValDecmposr"></ref>
+			</list>
+		</property>
+		<property name="testingDataSet" value="${RATING_TESTINGSET_READ_PATH}" />
+	</bean>
+
+	<!-- ******************************************** 多线程部分************************************************ -->
+	<bean id="MovieLensMatrixReader"
+		class="edu.tongji.engine.recommendation.thread.MovieLensMatrixReader">
+		<property name="sourceEntity">
+			<util:map key-type="edu.tongji.parser.TemplateType">
+				<entry key="MOVIELENS_RATING_TEMPLATE" value="${RATING_TRAININGSET_READ_PATH}" />
+			</util:map>
+		</property>
+	</bean>
+
+	<bean id="MatrixSnglrValDecmposr"
+		class="edu.tongji.engine.recommendation.thread.MatrixSnglrValDecmposr">
+	</bean>
+
+
+	<!-- ******************************************** 外接属性配置文件 ************************************************ -->
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location">
+			<value>
+				classpath:experiment/recommendation/movielens/z_movielens.properties
+			</value>
+		</property>
+	</bean>
+
+</beans>
