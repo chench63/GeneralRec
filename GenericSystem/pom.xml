@@ -111,6 +111,13 @@
 			<artifactId>commons-math3</artifactId>
 			<version>3.2</version>
 		</dependency>
+		<dependency>
+			<groupId>
+				com.googlecode.efficient-java-matrix-library
+			</groupId>
+			<artifactId>ejml</artifactId>
+			<version>0.25</version>
+		</dependency>
 	</dependencies>
 	<packaging>pom</packaging>
 	<modules>

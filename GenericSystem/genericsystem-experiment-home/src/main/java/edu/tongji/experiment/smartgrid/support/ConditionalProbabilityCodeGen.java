@@ -28,7 +28,7 @@ import edu.tongji.vo.BayesianEventVO;
 public final class ConditionalProbabilityCodeGen {
 
     /** 原始文件*/
-    private final static String   SOURCE = "E:/H[1,6]_EVNT";
+    private final static String   SOURCE = "E:/H[1,6]_EVNT_TRAININGSET";
 
     /** 目标文件*/
     private final static String[] TARGET = { "E:/H16_CP_AHI", "E:/H16_CP_PA" };
@@ -106,7 +106,10 @@ public final class ConditionalProbabilityCodeGen {
                 String key = (new StringBuilder("p_O_TI[")).append(ac).append("][").append(hot)
                     .append("][").append(indoor).append("]=").toString();
                 Float prob = probblties.get(key);
-                prob = (prob == null) ? 0.0f : prob / numOfConditions[hot][indoor];
+
+                //laplace smooth
+                prob = (prob == null) ? 1.0f : (prob + 1.0f);
+                prob /= (numOfConditions[hot][indoor] + 2);
 
                 //加入文件
                 content.append(key).append(prob).append("f;").append(FileUtil.BREAK_LINE);
@@ -164,7 +167,11 @@ public final class ConditionalProbabilityCodeGen {
                 String key = (new StringBuilder("p_P_O[")).append(power).append("][").append(ac)
                     .append("]=").toString();
                 Float prob = probblties.get(key);
-                prob = (prob == null) ? 0.0f : prob / numOfConditions[ac];
+
+                //laplace smooth
+                prob = (prob == null) ? 1.0f : (prob + 1.0f);
+                prob /= (numOfConditions[ac] + 4);
+
                 //加入文件
                 content.append(key).append(prob).append("f;").append(FileUtil.BREAK_LINE);
             }
