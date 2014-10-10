@@ -13,7 +13,7 @@ import edu.tongji.util.HashKeyUtil;
 /**
  * 按时刻输出内容
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: SeqQuarterHKCallBack.java, v 0.1 2014-5-21 下午6:33:10 chench Exp $
  */
 public class SeqQuarterHKCallBack implements HashKeyCallBack {

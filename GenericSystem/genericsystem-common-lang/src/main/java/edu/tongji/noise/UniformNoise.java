@@ -11,7 +11,7 @@ import edu.tongji.noise.support.NoiseParamSupport;
 /**
  * 平均分布噪声
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: UniformNoise.java, v 0.1 2 Apr 2014 17:42:51 chench Exp $
  */
 public class UniformNoise implements Noise {

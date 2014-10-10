@@ -22,7 +22,7 @@ import edu.tongji.vo.WeatherVO;
 /**
  * WeatherVO为元素，提供天气查询
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: WeatherCache.java, v 0.1 18 Apr 2014 16:32:59 chench Exp $
  */
 public final class WeatherCache {

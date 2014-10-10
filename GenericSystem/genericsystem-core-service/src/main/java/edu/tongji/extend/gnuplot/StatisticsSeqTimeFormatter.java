@@ -17,7 +17,7 @@ import edu.tongji.vo.MeterReadingVO;
  * 均值vs小时，格式化生成器<br/>
  * 数据按小时汇总并计算均值.
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: HistographFormatter.java, v 0.1 2014-2-18 下午2:05:52 chench Exp $
  */
 public class StatisticsSeqTimeFormatter extends AbstractSeqTimeFormatter {

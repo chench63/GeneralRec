@@ -16,7 +16,7 @@ import edu.tongji.vo.MeterReadingVO;
 /**
  * 智能电网，模拟处理过程,使用同态加密机制
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: HomomorphicEngine.java, v 0.1 2013-12-18 上午11:03:34 chench Exp
  *          $
  */

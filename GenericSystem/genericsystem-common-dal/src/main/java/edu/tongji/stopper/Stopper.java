@@ -6,7 +6,7 @@ package edu.tongji.stopper;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: Stopper.java, v 0.1 2013-9-18 上午11:19:58 chench Exp $
  */
 public interface Stopper {

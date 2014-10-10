@@ -7,7 +7,7 @@ package edu.tongji.extend.gnuplot.support;
 /**
  * 标准的Velocity模板通用参数的数据结构
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: SuperMessage.java, v 0.1 1 Apr 2014 19:19:04 chench Exp $
  */
 public class GenericMessage {

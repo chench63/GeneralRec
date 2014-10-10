@@ -25,7 +25,7 @@ import edu.tongji.vo.RatingVO;
 /**
  * 文件中读取数据。
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: NetflixCmpSimFileReader.java, v 0.1 2014-4-22 上午10:26:58 chench Exp $
  */
 public class NetflixCmpSimFileReader extends Thread {

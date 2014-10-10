@@ -20,7 +20,7 @@ import edu.tongji.vo.MeterReadingVO;
 /**
  * 准确度分析所用线程抽象类
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: AcurcyCalcltor.java, v 0.1 2014-5-30 上午9:56:49 chench Exp $
  */
 public abstract class AcurcyCalcltor extends Thread {

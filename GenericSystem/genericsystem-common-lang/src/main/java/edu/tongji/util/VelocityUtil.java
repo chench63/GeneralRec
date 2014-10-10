@@ -16,7 +16,7 @@ import org.apache.velocity.app.Velocity;
  * Velocity 渲染工具类，模板本地载入<br>
  * 底层工具类不消灭异常，由上层显式处理
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: VelocityUtil.java, v 0.1 1 Apr 2014 17:49:17 chench Exp $
  */
 public final class VelocityUtil {

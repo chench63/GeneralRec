@@ -14,7 +14,7 @@ import edu.tongji.noise.NormalNoise;
 /**
  * ExpectationMaximization 工具类
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: EMUtil.java, v 0.1 2 Apr 2014 20:05:30 chench Exp $
  */
 public final class EMUtil {

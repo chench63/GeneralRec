@@ -26,7 +26,7 @@ import edu.tongji.vo.RatingVO;
 /**
  * GeneralCache获得任务，并计算特定用户的所有评分，记录MAE.
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: NetflixSimularityRecorder.java, v 0.1 31 Oct 2013 22:24:34
  *          chench Exp $
  */
@@ -131,7 +131,7 @@ public class NetflixEvaPredctRecorder extends Thread {
     /**
      * 
      * 
-     * @author chench
+     * @author Hanke Chen
      * @version $Id: NetflixEvaPredctRecorder.java, v 0.1 2014-4-30 下午7:59:28 chench Exp $
      */
     protected static class StatisticsGlobalInner {
@@ -198,7 +198,7 @@ public class NetflixEvaPredctRecorder extends Thread {
     /**
      * 简化统计内部类，节约内存
      * 
-     * @author chench
+     * @author Hanke Chen
      * @version $Id: NetflixEvaPredctRecorder.java, v 0.1 24 Apr 2014 19:48:23
      *          chench Exp $
      */

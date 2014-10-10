@@ -14,7 +14,7 @@ import org.apache.velocity.VelocityContext;
 /**
  * Velocity 工具类，初始化上下文和工具注入
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: VelocityContextHelper.java, v 0.1 1 Apr 2014 17:38:05 chench Exp $
  */
 public class VelocityContextHelper {

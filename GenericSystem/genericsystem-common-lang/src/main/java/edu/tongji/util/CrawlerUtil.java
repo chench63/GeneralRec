@@ -17,7 +17,7 @@ import edu.tongji.util.support.UrlGen;
 /**
  * 网页爬虫工具
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: CrawlerUtil.java, v 0.1 2014-5-26 上午10:04:47 chench Exp $
  */
 public final class CrawlerUtil {

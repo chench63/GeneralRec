@@ -15,7 +15,7 @@ import edu.tongji.parser.smartgrid.UMassSmartGridTemplateParser;
 /**
  * 解析模板
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: TemplateParserType.java, v 0.1 2013-9-6 下午6:31:41 chench Exp $
  */
 public enum TemplateType implements Parser, Filter {

@@ -12,7 +12,7 @@ import edu.tongji.util.PaillierUtil;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: Rating.java, v 0.1 2013-9-6 下午3:42:30 chench Exp $
  */
 public class Rating implements Serializable {

@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * 加密协议所需密钥
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: Key.java, v 0.1 2013-12-17 上午11:14:44 chench Exp $
  */
 public class EncryptionContext {

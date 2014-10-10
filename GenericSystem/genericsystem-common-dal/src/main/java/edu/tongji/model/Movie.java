@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: Movie.java, v 0.1 2013-9-6 下午3:42:42 chench Exp $
  */
 public class Movie implements Serializable{

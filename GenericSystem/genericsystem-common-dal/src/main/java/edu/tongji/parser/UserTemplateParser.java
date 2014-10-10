@@ -9,7 +9,7 @@ import edu.tongji.util.StringUtil;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: UserTemplateParser.java, v 0.1 2013-9-6 下午4:22:44 chench Exp $
  */
 public class UserTemplateParser implements Parser {

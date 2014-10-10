@@ -9,7 +9,7 @@ import edu.tongji.util.StringUtil;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: MovieTemplateParser.java, v 0.1 2013-9-6 下午4:36:31 chench Exp $
  */
 public class MovieTemplateParser implements Parser {

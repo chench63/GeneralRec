@@ -23,7 +23,7 @@ import edu.tongji.vo.MeterReadingVO;
 /**
  * 线性拟合破解器
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: LinearExpectationCracker.java, v 0.1 2014-2-22 下午12:00:04 chench Exp $
  */
 public class LinearRegressionCracker implements PrivacyCracker {

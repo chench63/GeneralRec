@@ -15,7 +15,7 @@ import edu.tongji.util.LoggerUtil;
 /**
  * 噪声参数确定支持类
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: NoiseParamSupport.java, v 0.1 16 May 2014 10:46:49 chench Exp $
  */
 public class NoiseParamSupport {

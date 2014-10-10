@@ -9,7 +9,7 @@ package edu.tongji.parser;
  * <b>
  *  防止样本规模过大，导致内存溢出。
  * </b>
- * @author chench
+ * @author Hanke Chen
  * @version $Id: Filter.java, v 0.1 2013-9-6 下午7:24:11 chench Exp $
  */
 public interface Filter {

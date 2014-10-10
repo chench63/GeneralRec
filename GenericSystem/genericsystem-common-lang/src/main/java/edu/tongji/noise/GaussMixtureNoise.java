@@ -14,7 +14,7 @@ import edu.tongji.noise.support.NoiseParamSupport;
  * 高斯混合模型噪声 <br/>
  * Smart Grid应用中：K个Component, K-1个噪声，第K个为估计量
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: GaussMixtureNoise.java, v 0.1 2 Apr 2014 17:21:25 chench Exp $
  */
 public class GaussMixtureNoise implements Noise {

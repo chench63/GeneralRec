@@ -13,7 +13,7 @@ import edu.tongji.util.PaillierUtil;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: PaillierProcessorContextHelper.java, v 0.1 2013-10-18 下午1:45:38 chench Exp $
  */
 public final class PaillierProcessorContextHelper {

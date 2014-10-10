@@ -25,7 +25,7 @@ import edu.tongji.vo.MeterReadingVO;
 /**
  * 基于贝叶斯网络的破解器
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: BayesianNetworksCracker.java, v 0.1 16 May 2014 09:46:27 chench Exp $
  */
 public class BayesianNetworksCracker extends ExpectationCracker {

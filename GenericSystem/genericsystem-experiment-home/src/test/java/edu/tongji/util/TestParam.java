@@ -13,7 +13,7 @@ import edu.tongji.log4j.LoggerDefineConstant;
 /**
  * 正态分布参数计算
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: TestParam.java, v 0.1 9 Apr 2014 15:23:18 chench Exp $
  */
 public class TestParam {

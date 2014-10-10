@@ -8,7 +8,7 @@ import java.sql.Timestamp;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: TimestampStopper.java, v 0.1 2013-9-18 上午11:33:20 chench Exp $
  */
 public class TimestampStopper implements Stopper {

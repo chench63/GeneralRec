@@ -11,7 +11,7 @@ import edu.tongji.vo.MeterReadingVO;
 /**
  * Map中自定义索引键工具类
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: HashKeyUtil.java, v 0.1 2013-9-9 下午3:06:03 chench Exp $
  */
 public final class HashKeyUtil {

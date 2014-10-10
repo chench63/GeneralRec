@@ -27,7 +27,7 @@ import edu.tongji.vo.SimilarityVO;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: NetflixSimularityPerformancePaillierRecorder.java, v 0.1 2013-10-18 下午2:41:08 chench Exp $
  */
 public class NetflixCmpSimPaillierRecorder implements Runnable {

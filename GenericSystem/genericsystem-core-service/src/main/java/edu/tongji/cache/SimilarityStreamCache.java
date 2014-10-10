@@ -26,7 +26,7 @@ import edu.tongji.vo.RatingVO;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: SimularityStreamCache.java, v 0.1 2013-10-12 下午2:53:34 chench Exp $
  */
 public final class SimilarityStreamCache extends Observable {

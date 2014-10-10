@@ -6,7 +6,7 @@ package edu.tongji.exception;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: ExceptionType.java, v 0.1 2013-9-7 下午4:02:46 chench Exp $
  */
 public enum ExceptionType {

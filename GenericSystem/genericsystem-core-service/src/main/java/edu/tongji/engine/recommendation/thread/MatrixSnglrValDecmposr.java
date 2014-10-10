@@ -20,7 +20,7 @@ import edu.tongji.util.LoggerUtil;
 /**
  * 矩阵奇异值分解线程
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: MatrixSnglrValDecmposr.java, v 0.1 2014-10-8 下午1:43:52 chench Exp $
  */
 public class MatrixSnglrValDecmposr implements Runnable {

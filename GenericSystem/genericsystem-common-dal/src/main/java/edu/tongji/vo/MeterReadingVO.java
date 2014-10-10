@@ -9,7 +9,7 @@ import java.sql.Timestamp;
 /**
  * 电表读数VO类
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: MeterReading.java, v 0.1 2013-12-17 下午3:54:54 chench Exp $
  */
 public class MeterReadingVO implements Comparable<MeterReadingVO> {

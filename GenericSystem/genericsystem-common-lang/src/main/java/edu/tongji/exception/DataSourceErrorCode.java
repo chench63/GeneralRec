@@ -6,7 +6,7 @@ package edu.tongji.exception;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: DataSourceErrorCode.java, v 0.1 2013-9-16 下午2:28:59 chench Exp $
  */
 public enum DataSourceErrorCode implements ErrorCode {

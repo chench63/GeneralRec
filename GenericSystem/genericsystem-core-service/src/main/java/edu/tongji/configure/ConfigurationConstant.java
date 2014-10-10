@@ -12,7 +12,7 @@ package edu.tongji.configure;
  *      主任务参数[I, TASK_SIZE)<br>
  * </p>
  *  
- * @author chench
+ * @author Hanke Chen
  * @version $Id: ConfigurationConstant.java, v 0.1 2013-10-16 上午10:51:00 chench Exp $
  */
 public final class ConfigurationConstant {

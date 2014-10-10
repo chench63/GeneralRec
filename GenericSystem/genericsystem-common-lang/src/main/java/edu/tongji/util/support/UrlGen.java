@@ -10,7 +10,7 @@ import java.util.Iterator;
 /**
  * 网页爬虫所用URL生成器
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: UrlIterator.java, v 0.1 2014-5-26 上午10:28:04 chench Exp $
  */
 public interface UrlGen {

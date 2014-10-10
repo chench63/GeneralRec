@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * 破解对象
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: CrackObject.java, v 0.1 2014-2-20 上午9:47:57 chench Exp $
  */
 public final class PrivacyCrackObject {

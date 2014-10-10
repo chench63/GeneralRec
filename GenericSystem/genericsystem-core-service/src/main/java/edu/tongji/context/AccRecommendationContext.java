@@ -19,7 +19,7 @@ import edu.tongji.util.StringUtil;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: MultipartSecureRecommendationContext.java, v 0.1 16 Sep 2013 21:30:44 chench Exp $
  */
 public class AccRecommendationContext implements ProcessorContext {

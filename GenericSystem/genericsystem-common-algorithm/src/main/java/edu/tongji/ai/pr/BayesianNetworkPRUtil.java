@@ -8,7 +8,7 @@ package edu.tongji.ai.pr;
  * 贝叶斯网络识别网络;<br/>
  * 采取硬编码
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: BayesianNetworkPRUtil.java, v 0.1 15 May 2014 21:58:58 chench Exp $
  */
 public final class BayesianNetworkPRUtil {

@@ -29,7 +29,7 @@ import edu.tongji.vo.MeterReadingVO;
 /**
  * 针对 扰动型隐私保护算法的分析引擎
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: AnalysisEngine.java, v 0.1 2014-2-14 下午12:42:00 chench Exp $
  */
 public class AnalysisPerturbationEngine extends SmartGridEngine {

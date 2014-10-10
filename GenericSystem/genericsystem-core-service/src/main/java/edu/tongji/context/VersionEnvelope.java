@@ -8,7 +8,7 @@ package edu.tongji.context;
  * 版本控制信息记录板，
  * 提高服务器端计算相似度的速度。
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: VersionEnvelope.java, v 0.1 17 Sep 2013 12:57:19 chench Exp $
  */
 public class VersionEnvelope {

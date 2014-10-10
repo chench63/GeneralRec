@@ -26,7 +26,7 @@ import edu.tongji.vo.SimilarityVO;
  * 从文件中读取相似度信息，<br/>
  * 按RE规则，读取用户集
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: NetFlixSimularityDBReader.java, v 0.1 31 Oct 2013 19:42:33 chench Exp $
  */
 public class NetflixEvaPredctFileReader extends Thread {

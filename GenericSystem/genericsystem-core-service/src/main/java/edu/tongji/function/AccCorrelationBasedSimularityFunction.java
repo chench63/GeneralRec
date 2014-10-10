@@ -13,7 +13,7 @@ import edu.tongji.exception.OwnedException;
  * 累计pearson系数计算函数。
  *  估计算法运行效率时，计算pearson的累加时间值
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: AccCorrelationBasedSimularityFunction.java, v 0.1 17 Sep 2013 12:41:56 chench Exp $
  */
 public class AccCorrelationBasedSimularityFunction implements Function {

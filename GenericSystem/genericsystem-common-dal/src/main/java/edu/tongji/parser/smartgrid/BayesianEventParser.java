@@ -12,7 +12,7 @@ import edu.tongji.vo.BayesianEventVO;
 
 /**
  *  贝叶斯网络，概率事件解析器 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: BayesianEventParser.java, v 0.1 2014-5-28 下午4:45:13 chench Exp $
  */
 public class BayesianEventParser implements Parser {

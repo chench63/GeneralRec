@@ -16,7 +16,7 @@ import edu.tongji.vo.WeatherVO;
 /**
  * 天气模板解析类
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: WeatherTemplateParser.java, v 0.1 18 Apr 2014 15:13:03 chench Exp $
  */
 public class WeatherTemplateParser implements Parser {

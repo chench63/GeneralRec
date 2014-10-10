@@ -10,7 +10,7 @@ import edu.tongji.util.DateUtil;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: SeqDayHKCallBack.java, v 0.1 2014-5-26 下午9:44:12 chench Exp $
  */
 public class SeqDayHKCallBack implements HashKeyCallBack {

@@ -19,7 +19,7 @@ import edu.tongji.vo.MeterReadingVO;
  * ExpectationMaximization估计均值 格式化生成器
  * 
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: EmSeqHourFormatter.java, v 0.1 4 Apr 2014 10:51:46 chench Exp $
  */
 public class EmSeqTimeFormatter extends AbstractSeqTimeFormatter {

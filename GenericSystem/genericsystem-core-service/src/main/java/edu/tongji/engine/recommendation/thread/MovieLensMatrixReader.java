@@ -22,7 +22,7 @@ import edu.tongji.util.FileUtil;
 /**
  * 文件中读取数据
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: MovieLensMatrixReader.java, v 0.1 2014-10-7 下午7:38:27 chench Exp $
  */
 public final class MovieLensMatrixReader extends Thread {

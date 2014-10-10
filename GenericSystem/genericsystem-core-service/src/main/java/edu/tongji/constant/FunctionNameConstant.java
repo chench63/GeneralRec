@@ -6,7 +6,7 @@ package edu.tongji.constant;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: FunctionNameConstant.java, v 0.1 2013-11-1 下午4:42:23 chench Exp $
  */
 public final class FunctionNameConstant {

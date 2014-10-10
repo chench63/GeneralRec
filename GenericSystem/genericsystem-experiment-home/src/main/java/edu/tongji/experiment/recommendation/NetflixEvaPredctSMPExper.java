@@ -12,7 +12,7 @@ import edu.tongji.util.ExceptionUtil;
 /**
  * CMP对应，生成评分启动器
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: NetflixEvaPredctCMPExper.java, v 0.1 25 Apr 2014 11:40:20 chench Exp $
  */
 public final class NetflixEvaPredctSMPExper {

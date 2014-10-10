@@ -14,7 +14,7 @@ import edu.tongji.vo.MeterReadingVO;
 /**
  * 按小時汇总合并数据
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: HourSeqDataSetAssembler.java, v 0.1 5 Apr 2014 12:25:40 chench Exp $
  */
 public class HourSeqDataSetAssembler implements DataSetAssembler {

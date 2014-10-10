@@ -12,7 +12,7 @@ import edu.tongji.model.Rating;
  *      命名规则：<br/>
  *      <b>[类名]_BEAN</b>
  * </p>
- * @author chench
+ * @author Hanke Chen
  * @version $Id: SerialableBeanType.java, v 0.1 2013-9-9 下午2:44:57 chench Exp $
  */
 @SuppressWarnings("rawtypes")

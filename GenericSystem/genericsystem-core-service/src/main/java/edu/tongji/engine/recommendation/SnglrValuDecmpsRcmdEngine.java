@@ -24,7 +24,7 @@ import edu.tongji.util.StringUtil;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: SnglrValuDecmpsRcmdEngine.java, v 0.1 2014-10-8 上午9:03:36 chench Exp $
  */
 public class SnglrValuDecmpsRcmdEngine extends RcmdtnEngine {

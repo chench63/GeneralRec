@@ -7,7 +7,7 @@ package edu.tongji.extend.crack.support;
 /**
  * 哈希函数，键生成接口
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: HashKeyGen.java, v 0.1 2014-5-21 下午4:15:06 chench Exp $
  */
 public interface HashKeyCallBack {

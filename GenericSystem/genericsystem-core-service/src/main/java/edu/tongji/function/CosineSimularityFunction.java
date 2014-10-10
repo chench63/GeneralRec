@@ -16,7 +16,7 @@ import edu.tongji.util.LoggerUtil;
 /**
  * Cosine相似度计算函数
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: CosineSimularityFunction.java, v 0.1 2013-9-7 下午4:21:23 chench Exp $
  */
 public class CosineSimularityFunction implements Function {

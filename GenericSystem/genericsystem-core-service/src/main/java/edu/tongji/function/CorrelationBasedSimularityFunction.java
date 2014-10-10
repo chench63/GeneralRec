@@ -16,7 +16,7 @@ import edu.tongji.util.LoggerUtil;
 /**
  * 皮尔森r相似度计算函数
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: CorrelationBasedSimularityFunction.java, v 0.1 2013-9-7 下午5:01:36 chench Exp $
  */
 public class CorrelationBasedSimularityFunction implements Function {

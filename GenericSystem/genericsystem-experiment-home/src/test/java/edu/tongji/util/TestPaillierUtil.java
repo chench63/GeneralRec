@@ -19,7 +19,7 @@ import edu.tongji.util.PaillierUtil;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: TestHomoEncr.java, v 0.1 2013-10-10 下午5:22:16 chench Exp $
  */
 public class TestPaillierUtil {

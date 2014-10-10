@@ -11,7 +11,7 @@ import edu.tongji.noise.Noise;
 /**
  * 隐私破解器
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: CrackPrivacy.java, v 0.1 2014-2-20 上午9:47:29 chench Exp $
  */
 public interface PrivacyCracker {

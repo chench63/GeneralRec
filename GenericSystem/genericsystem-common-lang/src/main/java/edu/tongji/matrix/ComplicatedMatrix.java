@@ -9,7 +9,7 @@ import org.ejml.data.DenseMatrix64F;
 /**
  * 符合矩阵
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: ComplicatedMatrix.java, v 0.1 2014-10-8 下午8:26:21 chench Exp $
  */
 public class ComplicatedMatrix {

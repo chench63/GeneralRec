@@ -17,7 +17,7 @@ import edu.tongji.vo.MeterReadingVO;
 /**
  * 按刻汇总合并数据
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: QuarterSeqDataSetAssembler.java, v 0.1 5 Apr 2014 12:30:50 chench Exp $
  */
 public class QuarterSeqDataSetAssembler implements DataSetAssembler {

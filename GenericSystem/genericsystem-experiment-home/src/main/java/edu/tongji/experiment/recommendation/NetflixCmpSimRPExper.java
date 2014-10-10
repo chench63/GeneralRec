@@ -11,7 +11,7 @@ import edu.tongji.util.ExceptionUtil;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: NetflixSimlarityPerformanceMainThread.java, v 0.1 2013-10-15 上午10:23:03 chench Exp $
  */
 public final class NetflixCmpSimRPExper {
