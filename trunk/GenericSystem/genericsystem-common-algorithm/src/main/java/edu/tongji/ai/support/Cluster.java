@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * 类簇
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: Cluster.java, v 0.1 10 Apr 2014 11:17:20 chench Exp $
  */
 public final class Cluster {

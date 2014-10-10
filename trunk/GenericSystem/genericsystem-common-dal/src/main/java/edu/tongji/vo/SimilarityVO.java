@@ -7,7 +7,7 @@ package edu.tongji.vo;
 /**
  * 相似度实体类
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: SimilarityVO.java, v 0.1 23 Apr 2014 15:56:34 chench Exp $
  */
 public final class SimilarityVO {

@@ -12,7 +12,7 @@ import edu.tongji.util.ExceptionUtil;
 /**
  * UMass数据分析
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: UMassAnalysisExper.java, v 0.1 2014-2-15 下午2:28:35 chench Exp $
  */
 public final class UMassAnalysisPerturbationExper {

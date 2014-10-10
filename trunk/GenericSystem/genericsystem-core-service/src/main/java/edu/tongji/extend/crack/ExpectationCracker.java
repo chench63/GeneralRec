@@ -20,7 +20,7 @@ import edu.tongji.vo.MeterReadingVO;
 /**
  * 期望累破解器抽象类
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: ExpectationCracker.java, v 0.1 2014-2-22 下午12:39:58 chench Exp $
  */
 public abstract class ExpectationCracker implements PrivacyCracker {
@@ -124,7 +124,7 @@ public abstract class ExpectationCracker implements PrivacyCracker {
     /**
      * 内部类，数据承载类
      * 
-     * @author chench
+     * @author Hanke Chen
      * @version $Id: ExpectationSeqDayCracker.java, v 0.1 15 Apr 2014 17:29:37 chench Exp $
      */
     class ELement implements Comparable<ELement> {

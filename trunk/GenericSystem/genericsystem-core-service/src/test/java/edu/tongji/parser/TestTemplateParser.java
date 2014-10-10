@@ -21,7 +21,7 @@ import edu.tongji.vo.WeatherVO;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: TestRatingTemplateParser.java, v 0.1 2013-9-6 下午4:44:29 chench Exp $
  */
 public class TestTemplateParser {

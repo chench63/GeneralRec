@@ -24,7 +24,7 @@ import edu.tongji.vo.SimilarityVO;
 /**
  * 泛型数据缓存，通过CacheHolder与具体应用场景数据类型解耦。
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: GeneralCache.java, v 0.1 2013-10-31 下午4:32:59 chench Exp $
  */
 public final class GeneralCache {
@@ -221,7 +221,7 @@ public final class GeneralCache {
     /**
      * 内存访问频次管理工具
      * 
-     * @author chench
+     * @author Hanke Chen
      * @version $Id: GeneralCache.java, v 0.1 26 Apr 2014 16:28:40 chench Exp $
      */
     protected static class FrequencyUtil {
@@ -419,7 +419,7 @@ public final class GeneralCache {
 /**
  * 访问频数
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: GeneralCache.java, v 0.1 26 Apr 2014 16:49:22 chench Exp $
  */
 class Frequency implements Comparable<Frequency> {
@@ -501,7 +501,7 @@ class Frequency implements Comparable<Frequency> {
 /**
  * 数值序列内部类
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: GeneralCache.java, v 0.1 26 Apr 2014 21:04:34 chench Exp $
  */
 class NumberSeq {

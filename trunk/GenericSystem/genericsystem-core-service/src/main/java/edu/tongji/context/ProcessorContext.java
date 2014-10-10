@@ -7,7 +7,7 @@ package edu.tongji.context;
 /**
  * 处理器上下文环境
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: ProcessorContext.java, v 0.1 2013-9-6 下午9:12:49 chench Exp $
  */
 public interface ProcessorContext {

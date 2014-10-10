@@ -25,7 +25,7 @@ import edu.tongji.vo.MeterReadingVO;
 /**
  * SmartGrid数据集适配的数据源
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: UMassSmartGridDataSource.java, v 0.1 2013-12-17 下午4:29:27 chench Exp $
  */
 public class SmartGridDataSource implements DataSource {

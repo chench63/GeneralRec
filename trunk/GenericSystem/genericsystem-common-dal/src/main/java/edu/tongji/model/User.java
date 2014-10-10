@@ -8,7 +8,7 @@ import java.io.Serializable;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: User.java, v 0.1 2013-9-6 下午3:41:20 chench Exp $
  */
 public class User implements Serializable{

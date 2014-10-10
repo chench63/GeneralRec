@@ -11,7 +11,7 @@ import edu.tongji.noise.support.NoiseParamSupport;
 /**
  * 正态分布噪声类
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: NormalDistributionNoise.java, v 0.1 2014-2-24 下午4:18:10 chench Exp $
  */
 public class NormalNoise implements Noise {

@@ -11,7 +11,7 @@ import edu.tongji.util.ExceptionUtil;
 
 /**
  * Homomorphic encryption 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: NetflixCmpSimHEExper.java, v 0.1 27 Apr 2014 22:38:29 chench Exp $
  */
 public class NetflixCmpSimHEExper {

@@ -18,7 +18,7 @@ import edu.tongji.vo.MeterReadingVO;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: WattQuarterSeqDataSetAssembler.java, v 0.1 8 Apr 2014 21:25:56 chench Exp $
  */
 public class WattQuarterSeqDataSetAssembler implements DataSetAssembler {

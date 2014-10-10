@@ -27,7 +27,7 @@ import edu.tongji.vo.BayesianEventVO;
 /**
  * 读取REDD数据，转化为计算条件概率的Event文件
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: ConditionalProbabilityFileTransformer.java, v 0.1 2014-5-27 下午6:10:49 chench Exp $
  */
 public final class ConditionalProbabilityFileTransformer {

@@ -9,7 +9,7 @@ import edu.tongji.context.ProcessorContext;
 /**
  * [处理器}: 业务逻辑处理模板 
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: Processor.java, v 0.1 2013-9-6 下午9:12:58 chench Exp $
  */
 public interface Processor {

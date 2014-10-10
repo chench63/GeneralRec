@@ -22,7 +22,7 @@ import edu.tongji.util.LoggerUtil;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: RecommendationEngine.java, v 0.1 16 Sep 2013 21:51:35 chench Exp $
  */
 public abstract class RcmdtnEngine implements Engine {

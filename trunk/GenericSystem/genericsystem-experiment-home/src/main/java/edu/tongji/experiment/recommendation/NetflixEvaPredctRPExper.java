@@ -12,7 +12,7 @@ import edu.tongji.util.ExceptionUtil;
 /**
  * RP对应，生成评分启动器
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: NetflixEvaPredctRPExper.java, v 0.1 25 Apr 2014 11:40:43 chench Exp $
  */
 public final class NetflixEvaPredctRPExper {

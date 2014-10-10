@@ -11,7 +11,7 @@ import edu.tongji.log4j.LoggerDefineConstant;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: TestFileUtil.java, v 0.1 2014-2-16 下午10:41:27 chench Exp $
  */
 public class TestFileUtil {

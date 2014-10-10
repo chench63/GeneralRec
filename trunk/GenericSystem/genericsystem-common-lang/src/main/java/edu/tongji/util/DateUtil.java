@@ -13,7 +13,7 @@ import java.util.Locale;
 /**
  * 常用的日期处理工具
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: DateUtil.java, v 0.1 16 Sep 2013 21:01:38 chench Exp $
  */
 public final class DateUtil {

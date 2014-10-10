@@ -7,7 +7,7 @@ package edu.tongji.noise;
 /**
  * 噪声
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: Noise.java, v 0.1 2014-2-24 下午4:17:13 chench Exp $
  */
 public interface Noise {

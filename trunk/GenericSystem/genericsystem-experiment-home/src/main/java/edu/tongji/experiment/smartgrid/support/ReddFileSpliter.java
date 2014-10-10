@@ -23,7 +23,7 @@ import edu.tongji.vo.MeterReadingVO;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: ReddTabulator.java, v 0.1 2014-5-19 下午3:52:54 chench Exp $
  */
 public final class ReddFileSpliter {

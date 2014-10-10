@@ -6,7 +6,7 @@ package edu.tongji.exception;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: OwnedException.java, v 0.1 2013-9-7 下午4:17:01 chench Exp $
  */
 public class OwnedException extends RuntimeException {

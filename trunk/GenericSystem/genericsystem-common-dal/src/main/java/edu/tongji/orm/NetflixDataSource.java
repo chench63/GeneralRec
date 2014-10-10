@@ -35,7 +35,7 @@ import edu.tongji.util.StringUtil;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: NetflixDataSource.java, v 0.1 2013-9-16 下午1:50:34 chench Exp $
  */
 public class NetflixDataSource implements DataSource {

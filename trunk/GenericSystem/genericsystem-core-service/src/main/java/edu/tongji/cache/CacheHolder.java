@@ -9,7 +9,7 @@ import java.util.Map;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: CacheHolder.java, v 0.1 2013-10-22 下午12:00:14 chench Exp $
  */
 public final class CacheHolder {

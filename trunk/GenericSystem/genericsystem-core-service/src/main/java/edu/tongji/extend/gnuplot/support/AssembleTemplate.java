@@ -7,7 +7,7 @@ package edu.tongji.extend.gnuplot.support;
 /**
  * Gnuplot数据文件模板
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: AssembleTemplate.java, v 0.1 1 Apr 2014 17:41:39 chench Exp $
  */
 public class AssembleTemplate {

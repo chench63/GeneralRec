@@ -11,7 +11,7 @@ import edu.tongji.log4j.LoggerDefineConstant;
 /**
  * Gnuploat直方图抽象类
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: AbstractSeqTimeFormatter.java, v 0.1 15 Apr 2014 09:24:07 chench Exp $
  */
 public abstract class AbstractSeqTimeFormatter implements FigureFormatter {

@@ -18,7 +18,7 @@ import edu.tongji.vo.RatingVO;
 /**
  * 常规评分推荐类
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: GeneralPredictor.java, v 0.1 2013-10-31 下午4:30:10 chench Exp $
  */
 public class GeneralPredictor implements Predictor {

@@ -7,7 +7,7 @@ package edu.tongji.exception;
 /**
  * DataSource表示式相关错误代码
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: ExpressionErrorCode.java, v 0.1 2013-9-9 下午3:38:10 chench Exp $
  */
 public enum ExpressionErrorCode implements ErrorCode {

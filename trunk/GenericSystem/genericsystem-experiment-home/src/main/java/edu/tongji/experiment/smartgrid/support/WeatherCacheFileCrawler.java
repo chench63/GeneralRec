@@ -9,7 +9,7 @@ import edu.tongji.util.support.DateSeqUrlGen;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: WeatherCacheFileCrawler.java, v 0.1 2014-5-26 下午12:02:44 chench Exp $
  */
 public final class WeatherCacheFileCrawler {

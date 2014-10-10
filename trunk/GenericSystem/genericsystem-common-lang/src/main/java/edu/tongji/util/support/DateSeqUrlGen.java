@@ -23,7 +23,7 @@ import edu.tongji.util.StringUtil;
  * 按日期为索引，构造页面 <br/>
  * wunderground.com
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: DateSeqUrlGen.java, v 0.1 2014-5-26 上午10:42:55 chench Exp $
  */
 public class DateSeqUrlGen implements UrlGen {

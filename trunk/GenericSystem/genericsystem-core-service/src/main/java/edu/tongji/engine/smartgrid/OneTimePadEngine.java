@@ -15,7 +15,7 @@ import edu.tongji.vo.MeterReadingVO;
 /**
  * 智能电网，模拟处理过程,使用one-time pad加密机制
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: SmartGridEngine.java, v 0.1 17 Dec 2013 20:08:27 chench Exp $
  */
 public class OneTimePadEngine extends SmartGridEngine {

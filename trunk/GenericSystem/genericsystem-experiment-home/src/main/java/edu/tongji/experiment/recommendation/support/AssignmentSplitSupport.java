@@ -19,7 +19,7 @@ import edu.tongji.util.LoggerUtil;
  * 推荐系统产生评分过程，对UserSeq文件汇总至不同文件夹，
  * 拆分ur_/d{12}.txt任务文件;
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: AssignmentSplitSupport.java, v 0.1 25 Apr 2014 12:42:12 chench Exp $
  */
 public class AssignmentSplitSupport {

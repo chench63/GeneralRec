@@ -16,7 +16,7 @@ import edu.tongji.vo.MeterReadingVO;
 /**
  * 智能电网格式化工具，汇总数据帮助类
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: SmartGridFormatterHelper.java, v 0.1 21 Apr 2014 15:31:03 chench Exp $
  */
 public final class SmartGridFormatterHelper {

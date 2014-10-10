@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  * 预测类，数据mode载体
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: PredictorHolder.java, v 0.1 31 Oct 2013 18:50:38 chench Exp $
  */
 public class PredictorHolder {

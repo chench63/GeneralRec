@@ -10,7 +10,7 @@ import java.text.SimpleDateFormat;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: BeanUtil.java, v 0.1 2013-10-8 下午2:59:49 chench Exp $
  */
 public final class BeanUtil {

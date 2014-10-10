@@ -20,7 +20,7 @@ import edu.tongji.vo.WeatherVO;
 /**
  * 基于规则的模式识别工具
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: RuleBasedPRUtil.java, v 0.1 21 Apr 2014 14:59:42 chench Exp $
  */
 public final class RuleBasedPRUtil {

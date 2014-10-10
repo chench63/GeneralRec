@@ -19,7 +19,7 @@ import edu.tongji.vo.MeterReadingVO;
 /**
  * 列均值破解器
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: StandardExpectationCracker.java, v 0.1 2014-2-20 上午9:51:28 chench Exp $
  */
 public class StandardExpectationCracker extends ExpectationCracker {

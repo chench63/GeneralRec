@@ -14,7 +14,7 @@ import edu.tongji.util.RandomUtil;
 /**
  * K-means 工具类，聚类算法
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: KMeansUtil.java, v 0.1 10 Apr 2014 10:32:28 chench Exp $
  */
 public final class KMeansUtil {

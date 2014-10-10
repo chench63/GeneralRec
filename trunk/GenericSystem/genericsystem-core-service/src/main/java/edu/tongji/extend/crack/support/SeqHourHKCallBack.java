@@ -12,7 +12,7 @@ import edu.tongji.util.DateUtil;
 /**
  * 按小时输出内容
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: SeqHourHKCallBack.java, v 0.1 2014-5-27 上午9:14:22 chench Exp $
  */
 public class SeqHourHKCallBack implements HashKeyCallBack {

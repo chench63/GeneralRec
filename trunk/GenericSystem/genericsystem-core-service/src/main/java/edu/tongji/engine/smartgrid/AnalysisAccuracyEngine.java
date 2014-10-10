@@ -30,7 +30,7 @@ import edu.tongji.vo.MeterReadingVO;
 /**
  * 准确度分析引擎
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: AnalysisAccuracyEngine.java, v 0.1 18 May 2014 17:06:06 chench Exp $
  */
 public class AnalysisAccuracyEngine extends SmartGridEngine {

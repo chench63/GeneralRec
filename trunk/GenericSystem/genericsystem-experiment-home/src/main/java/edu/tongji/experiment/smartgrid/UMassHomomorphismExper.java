@@ -15,7 +15,7 @@ import edu.tongji.util.LoggerUtil;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: UMassHomomorphismExper.java, v 0.1 2013-12-18 上午11:16:53 chench Exp $
  */
 public class UMassHomomorphismExper {

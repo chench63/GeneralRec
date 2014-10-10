@@ -13,7 +13,7 @@ import edu.tongji.exception.OwnedException;
 /**
  * 多维空间点
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: Point.java, v 0.1 10 Apr 2014 10:35:11 chench Exp $
  */
 public final class Point {

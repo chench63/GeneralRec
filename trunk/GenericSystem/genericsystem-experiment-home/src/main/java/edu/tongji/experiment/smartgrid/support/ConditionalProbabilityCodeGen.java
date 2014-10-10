@@ -22,7 +22,7 @@ import edu.tongji.vo.BayesianEventVO;
 /**
  * 根据Redd Event文件，输出java版本的贝叶斯网络CP代码
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: ConditionalProbabilityCodeGen.java, v 0.1 2014-5-27 下午9:06:18 chench Exp $
  */
 public final class ConditionalProbabilityCodeGen {

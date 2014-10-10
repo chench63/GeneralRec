@@ -11,7 +11,7 @@ import edu.tongji.util.DateUtil;
 /**
  *  REDD 时间类 
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: ReddEvent.java, v 0.1 2014-5-27 下午6:25:25 chench Exp $
  */
 public final class BayesianEventVO implements Comparable<BayesianEventVO> {

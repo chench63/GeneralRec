@@ -20,7 +20,7 @@ import edu.tongji.vo.MeterReadingVO;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: SpecifiedDayFormatter.java, v 0.1 21 Apr 2014 12:03:35 chench Exp $
  */
 public class SpecifiedDayFormatter extends AbstractSeqTimeFormatter {

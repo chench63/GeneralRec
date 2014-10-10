@@ -9,7 +9,7 @@ import java.util.Date;
 /**
  * 天气数据VO类
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: WeatherVO.java, v 0.1 18 Apr 2014 14:46:54 chench Exp $
  */
 public final class WeatherVO {

@@ -15,7 +15,7 @@ import edu.tongji.vo.MeterReadingVO;
 /**
  * 准确度分析计算器线程
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: AnalysisAccuracyCalculator.java, v 0.1 2014-5-30 上午8:55:45 chench Exp $
  */
 public class BayesianAcurcyCalcltor extends AcurcyCalcltor {

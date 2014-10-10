@@ -24,7 +24,7 @@ import edu.tongji.vo.MeterReadingVO;
 /**
  * 智能电网抽象类
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: SmartGridEngine.java, v 0.1 2013-12-18 上午11:05:23 chench Exp $
  */
 public abstract class SmartGridEngine implements Engine {

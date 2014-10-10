@@ -22,7 +22,7 @@ import edu.tongji.vo.RatingVO;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: MoiveSeqSupport.java, v 0.1 2014-5-1 上午10:38:03 chench Exp $
  */
 public class MoiveSeqSupport {

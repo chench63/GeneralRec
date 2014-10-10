@@ -29,7 +29,7 @@ import edu.tongji.vo.SimilarityVO;
  * 针对netflix数据集，计算相似度并持久化至文件
  * 
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: NetflixSimularityPerformanceRecorder.java, v 0.1 2013-10-12 下午2:51:12 chench Exp $
  */
 public class NetflixCmpSimRecorder implements Runnable {

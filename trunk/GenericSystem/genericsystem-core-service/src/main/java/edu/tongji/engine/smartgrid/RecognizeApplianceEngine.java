@@ -13,7 +13,7 @@ import edu.tongji.vo.MeterReadingVO;
 /**
  * 识别特定家用电器模型
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: RecognizeApplianceEngine.java, v 0.1 21 Apr 2014 14:39:20 chench Exp $
  */
 public class RecognizeApplianceEngine extends SmartGridEngine {

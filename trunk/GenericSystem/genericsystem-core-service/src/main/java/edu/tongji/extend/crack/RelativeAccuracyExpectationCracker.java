@@ -19,7 +19,7 @@ import edu.tongji.vo.MeterReadingVO;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: RelativeAccuracyExpectationCracker.java, v 0.1 2014-5-22 下午2:26:16 chench Exp $
  */
 public class RelativeAccuracyExpectationCracker extends ExpectationCracker {

@@ -11,7 +11,7 @@ import java.util.Map;
 /**
  * 数据源
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: DataSource.java, v 0.1 2013-9-6 下午3:54:59 chench Exp $
  */
 public interface DataSource {

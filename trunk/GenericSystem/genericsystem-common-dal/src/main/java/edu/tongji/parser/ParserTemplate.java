@@ -9,7 +9,7 @@ import java.util.Map;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: ParserTemplate.java, v 0.1 2013-9-6 下午4:19:59 chench Exp $
  */
 public class ParserTemplate {

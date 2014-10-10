@@ -22,7 +22,7 @@ import edu.tongji.vo.MeterReadingVO;
 /**
  * 功能测试引擎
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: AnalysisPerformanceEngine.java, v 0.1 2014-3-18 上午9:52:16 chench Exp $
  */
 public class AnalysisPerformanceEngine extends SmartGridEngine {

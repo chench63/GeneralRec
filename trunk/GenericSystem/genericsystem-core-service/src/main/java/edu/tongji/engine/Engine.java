@@ -10,7 +10,7 @@ package edu.tongji.engine;
  *      多线程环境和单线程环境，采用不同的编码结构。
  * </p>
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: Engine.java, v 0.1 2013-9-7 下午7:22:53 chench Exp $
  */
 public interface Engine {

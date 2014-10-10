@@ -12,7 +12,7 @@ import edu.tongji.model.Rating;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: RatingHistoryVO.java, v 0.1 2013-9-23 下午4:46:19 chench Exp $
  */
 public class RatingHistoryVO {

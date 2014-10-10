@@ -13,7 +13,7 @@ import edu.tongji.vo.SimilarityVO;
 /**
  * 相似度解析类
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: SimilarityTemplateParser.java, v 0.1 23 Apr 2014 15:54:13 chench Exp $
  */
 public class SimilarityTemplateParser implements Parser {

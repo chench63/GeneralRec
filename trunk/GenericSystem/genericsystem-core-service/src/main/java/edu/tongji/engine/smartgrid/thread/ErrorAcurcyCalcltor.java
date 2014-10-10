@@ -17,7 +17,7 @@ import edu.tongji.vo.MeterReadingVO;
 /**
  * 误差分析线程
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: ErrorAcurcyCalcltor.java, v 0.1 2014-5-30 上午9:47:18 chench Exp $
  */
 public class ErrorAcurcyCalcltor extends AcurcyCalcltor {

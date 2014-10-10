@@ -12,7 +12,7 @@ import edu.tongji.vo.MeterReadingVO;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: ReddSmartGridTemplateParser.java, v 0.1 15 Apr 2014 10:05:46 chench Exp $
  */
 public class ReddSmartGridTemplateParser implements Parser {

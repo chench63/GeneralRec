@@ -11,7 +11,7 @@ import edu.tongji.util.ExceptionUtil;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: MoiveLensStandardSVDExper.java, v 0.1 2014-10-7 下午7:52:08 chench Exp $
  */
 public final class MoiveLensStandardSVDExper {

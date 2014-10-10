@@ -17,7 +17,7 @@ import edu.tongji.util.LoggerUtil;
 /**
  * MovieLens 数据集拆分为：Training dataset and Testing dataset
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: MovieLensDataSetSpliter.java, v 0.1 2014-10-8 上午10:37:12 chench Exp $
  */
 public class MovieLensDataSetSpliter {

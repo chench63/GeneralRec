@@ -9,7 +9,7 @@ import java.util.Map;
 
 /**
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: DataStreamTask.java, v 0.1 2013-10-8 下午1:21:11 chench Exp $
  */
 public class CacheTask {

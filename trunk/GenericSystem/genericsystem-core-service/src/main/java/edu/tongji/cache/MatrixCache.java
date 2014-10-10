@@ -15,7 +15,7 @@ import org.ejml.ops.CommonOps;
  *  {@code DenseMatrix64F}线程安全版本
  * 
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: MatrixCache.java, v 0.1 2014-10-7 下午6:47:30 chench Exp $
  */
 public final class MatrixCache {

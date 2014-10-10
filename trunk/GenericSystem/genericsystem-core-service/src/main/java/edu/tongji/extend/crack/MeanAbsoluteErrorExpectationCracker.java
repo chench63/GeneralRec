@@ -20,7 +20,7 @@ import edu.tongji.vo.MeterReadingVO;
 /**
  * 计算Mean和SD的MAE误差
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: MeanAbsoluteErrorSeqDayCracker.java, v 0.1 2014-5-21 下午3:57:19 chench Exp $
  */
 public class MeanAbsoluteErrorExpectationCracker extends ExpectationCracker {

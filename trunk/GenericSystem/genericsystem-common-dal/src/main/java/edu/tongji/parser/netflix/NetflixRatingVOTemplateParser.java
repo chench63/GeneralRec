@@ -13,7 +13,7 @@ import edu.tongji.vo.RatingVO;
 /**
  * RatingVO解析模板，向上兼容Rating模板
  * 
- * @author chench
+ * @author Hanke Chen
  * @version $Id: NetflixRatingVOTemplateParser.java, v 0.1 23 Apr 2014 13:21:00
  *          chench Exp $
  */
