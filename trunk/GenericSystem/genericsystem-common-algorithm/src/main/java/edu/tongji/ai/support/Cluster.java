@@ -4,70 +4,72 @@
  */
 package edu.tongji.ai.support;
 
-import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
+import edu.tongji.matrix.SparseVector;
+
 /**
- * 类簇
+ * The class is used in the K-means algorithm, which 
+ * present a set of points.
  * 
  * @author Hanke Chen
  * @version $Id: Cluster.java, v 0.1 10 Apr 2014 11:17:20 chench Exp $
  */
-public final class Cluster {
+public final class Cluster implements Iterable<SparseVector> {
 
-    /** 点集，记录样本索引号，节省空间*/
-    private final List<Integer> points = new ArrayList<Integer>();
-
-    /** 点集的几何中心*/
-    private Point               centroid;
+    /** the set of points*/
+    private final List<SparseVector> vectors = new LinkedList<SparseVector>();
 
     /**
-     * 添加点到本类
+     * add point to this cluster
      * 
      * @param pposition
      */
-    public void put(int position) {
-        points.add(position);
+    public void put(SparseVector vect) {
+        vectors.add(vect);
     }
 
     /**
-     * 计算几何中心
+     * remove all the points
      */
-    public void centroid(List<Point> samples) {
-        if (points.isEmpty()) {
-            return;
-        }
-
-        //计算几何中心
-        centroid = new Point();
-        int dimension = samples.get(0).dimension();
-        for (int axis = 0; axis < dimension; axis++) {
-
-            //计算单维度上的均值
-            double sum = 0.0d;
-            for (Integer position : points) {
-                sum += samples.get(position).dimensionValue(axis);
-            }
-            centroid.addAxis(sum / points.size());
-        }
+    public void clear() {
+        vectors.clear();
     }
 
     /**
-     * 计算点到几何中心的距离
-     * 
-     * @param p
-     * @return
-     */
-    public double distance(Point p) {
-        return centroid.distance(p);
-    }
-
-    /**
-     * 返回值集合
+     * return the number of points in this cluster
      * 
      * @return
      */
-    public Integer[] values() {
-        return (Integer[]) points.toArray();
+    public int size() {
+        return vectors.size();
+    }
+
+    /**
+     * return an array of the vectors
+     * 
+     * @return the array of the vectors
+     */
+    @Override
+    public Iterator<SparseVector> iterator() {
+        return vectors.iterator();
+    }
+
+    /**
+     * calculate the centroid point
+     */
+    public SparseVector centroid() {
+        if (vectors.isEmpty()) {
+            return null;
+        }
+
+        SparseVector result = new SparseVector(vectors.get(0).length());
+        for (SparseVector vect : vectors) {
+            result = result.plus(vect);
+        }
+
+        return result.scale(1.0 / vectors.size());
     }
 }

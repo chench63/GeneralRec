@@ -4,10 +4,8 @@
  */
 package edu.tongji.parser;
 
-import java.sql.Timestamp;
-
-import edu.tongji.model.Rating;
 import edu.tongji.util.StringUtil;
+import edu.tongji.vo.RatingVO;
 
 /**
  * 
@@ -18,9 +16,6 @@ public class MovielensRatingTemplateParser implements Parser {
 
     /** 分隔符正则表达式 */
     private static String SAPERATOR_EXPRESSION = "\\::";
-
-    /** 转化为毫秒所需权重 */
-    private static long   SEC_TO_MILSEC        = 1000;
 
     /** 
      * @see edu.tongji.parser.Parser#parser(edu.tongji.parser.ParserTemplate)
@@ -33,13 +28,25 @@ public class MovielensRatingTemplateParser implements Parser {
             return null;
         }
 
-        Rating rating = new Rating();
+        RatingVO rating = new RatingVO();
         String[] elements = context.split(SAPERATOR_EXPRESSION);
         rating.setUsrId(Integer.valueOf(elements[0]));
         rating.setMovieId(Integer.valueOf(elements[1]));
-        rating.setRating(Integer.valueOf(elements[2]));
-        rating.setTime(new Timestamp(Long.valueOf(elements[3]) * SEC_TO_MILSEC));
+        rating.setRatingReal(Float.valueOf(elements[2]));
 
+        return rating;
+    }
+
+    /** 
+     * @see edu.tongji.parser.Parser#parse(java.lang.String)
+     */
+    @Override
+    public Object parse(String template) {
+        RatingVO rating = new RatingVO();
+        String[] elements = template.split(SAPERATOR_EXPRESSION);
+        rating.setUsrId(Integer.valueOf(elements[0]));
+        rating.setMovieId(Integer.valueOf(elements[1]));
+        rating.setRatingReal(Float.valueOf(elements[2]));
         return rating;
     }
 

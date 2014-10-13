@@ -4,125 +4,164 @@
  */
 package edu.tongji.ai.cluster;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.apache.commons.math3.distribution.UniformRealDistribution;
+import org.apache.log4j.Logger;
 
 import edu.tongji.ai.support.Cluster;
-import edu.tongji.ai.support.Point;
-import edu.tongji.util.RandomUtil;
+import edu.tongji.log4j.LoggerDefineConstant;
+import edu.tongji.matrix.SparseMatrix;
+import edu.tongji.matrix.SparseVector;
+import edu.tongji.util.LoggerUtil;
 
 /**
- * K-means 工具类，聚类算法
+ * Clustering algorithm: basic K-means algorithm
  * 
  * @author Hanke Chen
  * @version $Id: KMeansUtil.java, v 0.1 10 Apr 2014 10:32:28 chench Exp $
  */
 public final class KMeansUtil {
 
-    /** CLusters*/
-    private final static List<Cluster> clusters = new ArrayList<Cluster>();
+    //===================================
+    //  Distance type
+    //===================================
+    /** L2 norm */
+    public static final int       EUCLIDEAN_DISTANCE = 201;
+    /** cosine distance*/
+    public static final int       CONSINE_DISTANCE   = 202;
+
+    /** logger */
+    protected final static Logger logger             = Logger
+                                                         .getLogger(LoggerDefineConstant.SERVICE_CORE);
 
     /**
-     * 禁用构造函数
+     * forbid construction
      */
     private KMeansUtil() {
 
     }
 
     /**
-     * 聚类
+     * divide points into k clusters
      * 
-     * @param samples
-     * @param k
+     * @param trnMatrix         the rows to cluster
+     * @param K                 the number of clusters
+     * @param maxIterations     the max iterations
+     * @param type              the type of distance to use
      * @return
      */
-    public static List<Cluster> clustering(List<Point> samples, int k) {
-        clusters.clear();
+    public static Cluster[] cluster(SparseMatrix trnMatrix, final int K, final int maxIterations,
+                                    final int type) {
+        // number of clusters has to be smaller or equal the number of data points
+        if (trnMatrix == null | (trnMatrix.length())[0] < K) {
+            throw new RuntimeException(
+                "number of clusters has to be smaller or equal the number of data points !");
+        }
 
-        //0. 初始化类簇
-        initializeClusters(samples, k);
+        // create the initial clusters
+        int pointCount = trnMatrix.length()[0];
+        int[] assignments = new int[pointCount];
+        Cluster[] resultSet = chooseInitialCenters(trnMatrix, assignments, K);
 
-        boolean isChanged = true;
-        do {
-            //1. 计算几何中心
-            centroidStep(samples);
+        //iterate through updating the centers until we're done
+        int round = 1;
+        while (round <= maxIterations) {
 
-            //.2 重新聚合
-            repartionStep(samples, k, isChanged);
+            // calculator centroind of each cluster
+            SparseVector[] centroids = new SparseVector[K];
+            for (int k = 0; k < K; k++) {
+                centroids[k] = resultSet[k].centroid();
+                resultSet[k].clear();
+            }
 
-        } while (isChanged);
+            //assign every point to nearest centroid
+            int change = 0;
+            double SSE = 0.0d;
+            for (int i = 0; i < pointCount; i++) {
+                SparseVector point = trnMatrix.getRowRef(i);
+
+                int pivot = -1;
+                double min = Double.MAX_VALUE;
+                for (int k = 0; k < K; k++) {
+                    double distns = distance(centroids[k], point, type);
+                    if (distns < min) {
+                        min = distns;
+                        pivot = k;
+                    }
+                }
+
+                if (pivot != assignments[i]) {
+                    LoggerUtil.debug(logger, " \tExchang: " + assignments[i] + "\t" + pivot);
+
+                    assignments[i] = pivot;
+                    change++;
+                }
+                resultSet[pivot].put(point);
+                SSE += min;
+            }
+            LoggerUtil.info(logger, round + " \t" + SSE);
+            round++;
+
+            // if there were no more changes in the point-to-cluster assignment
+            // and there are no empty clusters left, return the current clusters
+            if (change == 0) {
+                return resultSet;
+            }
+        }
+
+        return resultSet;
+    }
+
+    /**
+     * Use K-means to choose the initial centers.
+     * 
+     * @param points     the points to choose the initial centers from
+     * @param K          the number of clusters
+     * @return
+     */
+    private static Cluster[] chooseInitialCenters(SparseMatrix points, int[] assignments, int K) {
+        Cluster[] clusters = new Cluster[K];
+        for (int k = 0; k < K; k++) {
+            clusters[k] = new Cluster();
+        }
+
+        int rowCount = points.length()[0];
+        UniformRealDistribution uniform = new UniformRealDistribution(0, K);
+        for (int i = 0; i < rowCount; i++) {
+            SparseVector Ai = points.getRowRef(i);
+
+            int k = (int) uniform.sample();
+            clusters[k].put(Ai);
+            assignments[i] = k;
+
+        }
 
         return clusters;
     }
 
     /**
-     * 初始化类簇
+     * calculate the distance given two points
      * 
-     * @param samples
-     * @param k
+     * @param vct1      given point
+     * @param vct2      given point
+     * @param type      the type of the distance to calculate
+     * @return
      */
-    public static void initializeClusters(List<Point> samples, int k) {
-
-        //初始化类簇 
-        for (int i = 0; i < k; i++) {
-            clusters.add(new Cluster());
+    public static double distance(SparseVector vct1, SparseVector vct2, int type) {
+        if (vct1 == null | vct2 == null) {
+            return 0.0d;
         }
 
-        //随机聚合样本
-        int numSample = samples.size();
-        for (int i = 0; i < numSample; i++) {
-            clusters.get(RandomUtil.nextInt(0, k)).put(i);
-        }
-
-    }
-
-    /**
-     * 计算几何中心
-     */
-    public static void centroidStep(List<Point> samples) {
-        for (Cluster cluster : clusters) {
-            cluster.centroid(samples);
-        }
-    }
-
-    /**
-     * 重新聚合
-     */
-    public static void repartionStep(List<Point> samples, int k, boolean isChanged) {
-
-        //为判别变化情况，建立原始聚类镜像
-        int[] positionMirror = new int[samples.size()];
-        for (int i = 0; i < k; i++) {
-            for (Integer pos : clusters.get(i).values()) {
-                positionMirror[pos] = i;
-            }
-        }
-
-        //重新聚合
-        int numSample = samples.size();
-        for (int i = 0; i < numSample; i++) {
-            Point sample = samples.get(i);
-
-            //计算样本到各个几何中心的最小距离
-            int index = 0;
-            double min = Double.MAX_VALUE;
-            for (int clusterId = 0; clusterId < k; clusterId++) {
-                double distance = clusters.get(clusterId).distance(sample);
-
-                if (min > distance) {
-                    index = clusterId;
-                    min = distance;
+        switch (type) {
+            case EUCLIDEAN_DISTANCE:
+                SparseVector minus = vct1.minus(vct2);
+                return minus.norm();
+            case CONSINE_DISTANCE:
+                if (vct1.itemCount() == 0 | vct2.itemCount() == 0) {
+                    return 0.0d;
                 }
-            }
-
-            //将原本分类至最小距离的几何中心类簇中
-            clusters.get(index).put(i);
-
-            //未改变且位置发生改变，设置标志位为改变
-            if (!isChanged & positionMirror[i] != index) {
-                isChanged = true;
-            }
+                return vct1.innerProduct(vct2) / (vct1.norm() * vct2.norm());
+            default:
+                return 0.0d;
         }
     }
-
 }

@@ -45,4 +45,12 @@ public class UMassSmartGridTemplateParser implements Parser {
         return null;
     }
 
+    /** 
+     * @see edu.tongji.parser.Parser#parse(java.lang.String)
+     */
+    @Override
+    public Object parse(String template) {
+        return null;
+    }
+
 }

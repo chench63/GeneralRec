@@ -14,11 +14,19 @@ package edu.tongji.parser;
 public interface Parser {
 
     /**
-     * 解析
+     * Parse the content in dataset
      * 
      * @param line
      * @return
      */
     public Object parser(ParserTemplate template);
-    
+
+    /**
+     * Parse the content in dataset
+     * 
+     * @param line
+     * @return
+     */
+    public Object parse(String template);
+
 }

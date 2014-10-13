@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import org.apache.commons.math3.distribution.UniformRealDistribution;
 import org.apache.log4j.Logger;
 
 import edu.tongji.log4j.LoggerDefineConstant;
@@ -15,23 +16,23 @@ import edu.tongji.util.FileUtil;
 import edu.tongji.util.LoggerUtil;
 
 /**
- * MovieLens 数据集拆分为：Training dataset and Testing dataset
+ * Split dataset into Training dataset and Testing dataset
  * 
  * @author Hanke Chen
  * @version $Id: MovieLensDataSetSpliter.java, v 0.1 2014-10-8 上午10:37:12 chench Exp $
  */
-public class MovieLensDataSetSpliter {
+public class SimpleSplit {
 
-    /** 数据集载入文件*/
-    protected final static String FILENAME              = "E:/MovieLens/ml-1m/ratings.dat";
+    /** source dataset file input path*/
+    protected final static String FILENAME              = "E:/MovieLens/ml-10M100K/ratings.dat";
 
-    /** 训练集输出文件*/
-    protected final static String TRAINING_DATASET_FILE = "E:/MovieLens/ml-1m/trainingset.dat";
+    /** training dataset file output path*/
+    protected final static String TRAINING_DATASET_FILE = "E:/MovieLens/ml-10M100K/trainingset.dat";
 
-    /** 测试集输出文件*/
-    protected final static String TESTING_DATASET_FILE  = "E:/MovieLens/ml-1m/testingset.dat";
+    /** testing dataset file output path*/
+    protected final static String TESTING_DATASET_FILE  = "E:/MovieLens/ml-10M100K/testingset.dat";
 
-    /** 训练数据与测试数据比*/
+    /** training data/ total data   */
     protected final static float  RATIO                 = 0.9f;
 
     /** logger */
@@ -54,10 +55,12 @@ public class MovieLensDataSetSpliter {
         StringBuilder testingSet = new StringBuilder();
         int totalNum = contents.size();
         int testingNum = 0;
+
+        UniformRealDistribution uniform = new UniformRealDistribution(0, 1.0);
         while (!contents.isEmpty()) {
             String content = contents.poll();
 
-            if (Math.random() > RATIO) {
+            if (uniform.sample() >= RATIO) {
                 testingNum++;
                 testingSet.append(content).append(FileUtil.BREAK_LINE);
             } else {

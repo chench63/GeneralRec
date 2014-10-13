@@ -50,4 +50,25 @@ public class NetflixRatingVOTemplateParser implements Parser {
         return null;
     }
 
+    /** 
+     * @see edu.tongji.parser.Parser#parse(java.lang.String)
+     */
+    @Override
+    public Object parse(String template) {
+
+        try {
+            String[] elements = template.split(SAPERATOR_EXPRESSION);
+            int movieId = Integer.valueOf(elements[0]).intValue();
+            int userId = Integer.valueOf(elements[1]).intValue();
+            Float ratingReal = Float.valueOf(elements[2]);
+            Float ratingCmp = (elements.length == 5 && StringUtil.isNotBlank(elements[4])) ? Float
+                .valueOf(elements[4]) : ratingReal;
+            return new RatingVO(userId, movieId, ratingCmp, ratingReal);
+        } catch (Exception e) {
+            ExceptionUtil.caught(e, "解析ParserTemplate错误，内容: " + template);
+        }
+
+        return null;
+    }
+
 }
