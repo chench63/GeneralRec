@@ -4,7 +4,6 @@
  */
 package edu.tongji.parser;
 
-import edu.tongji.parser.netflix.NetflixRatingTemplateParser;
 import edu.tongji.parser.netflix.NetflixRatingVOTemplateParser;
 import edu.tongji.parser.netflix.SimilarityTemplateParser;
 import edu.tongji.parser.smartgrid.BayesianEventParser;
@@ -20,15 +19,9 @@ import edu.tongji.parser.smartgrid.UMassSmartGridTemplateParser;
  */
 public enum TemplateType implements Parser, Filter {
 
-    /** 用户解析处理模板 */
-    USER_TEMPLATE(new UserTemplateParser(), new DefaultTemplateFilter()),
-    /** 电影解析处理模板 */
-    MOVIE_TEMPLATE(new MovieTemplateParser(), new DefaultTemplateFilter()),
     /** 评分解析处理模板 */
     MOVIELENS_RATING_TEMPLATE(new MovielensRatingTemplateParser(), new DefaultTemplateFilter()),
 
-    /** NetFlix评分解析处理模板 */
-    NETFLIX_RATING_TEMPLATE(new NetflixRatingTemplateParser(), new DefaultTemplateFilter()),
     /** NetFlix评分解析处理模板 */
     NETFLIX_RATINGVO_TEMPLATE(new NetflixRatingVOTemplateParser(), new DefaultTemplateFilter()),
     /** 相似度解析处理模板 */
@@ -69,6 +62,14 @@ public enum TemplateType implements Parser, Filter {
     @Override
     public boolean isFiler(ParserTemplate template) {
         return this.filter.isFiler(template);
+    }
+
+    /** 
+     * @see edu.tongji.parser.Parser#parse(java.lang.String)
+     */
+    @Override
+    public Object parse(String template) {
+        return this.parser.parse(template);
     }
 
 }

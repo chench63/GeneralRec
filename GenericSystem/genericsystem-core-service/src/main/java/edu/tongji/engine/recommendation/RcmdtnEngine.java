@@ -27,8 +27,8 @@ import edu.tongji.util.LoggerUtil;
  */
 public abstract class RcmdtnEngine implements Engine {
 
-    /** 数据读取*/
-    protected Thread              reader;
+    /** thread to store the dataset in memory*/
+    protected Thread              loader;
 
     /** 数据记录*/
     protected List<Runnable>      recorder;
@@ -48,14 +48,8 @@ public abstract class RcmdtnEngine implements Engine {
     /** 原始数据集*/
     protected ContextEnvelope     contextEnvelope;
 
-    protected String              testingDataSet;
-
     /** logger */
-    protected final static Logger logger     = Logger
-                                                 .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
-
-    /** logger */
-    protected final static Logger loggerCore = Logger.getLogger(LoggerDefineConstant.SERVICE_CORE);
+    protected final static Logger logger = Logger.getLogger(LoggerDefineConstant.SERVICE_NORMAL);
 
     /** 
      * @see edu.tongji.engine.Engine#excute()
@@ -79,8 +73,8 @@ public abstract class RcmdtnEngine implements Engine {
         LoggerUtil.info(logger, "1. loading data set.");
 
         try {
-            reader.start();
-            reader.join();
+            loader.start();
+            loader.join();
         } catch (InterruptedException e) {
             ExceptionUtil.caught(e, "NetflixSimularityPerformanceRecorder 线程等待join异常");
         }
@@ -104,24 +98,6 @@ public abstract class RcmdtnEngine implements Engine {
             exec.execute(runnable);
         }
         exec.shutdown();
-    }
-
-    /**
-     * Getter method for property <tt>testingDataSet</tt>.
-     * 
-     * @return property value of testingDataSet
-     */
-    public String getTestingDataSet() {
-        return testingDataSet;
-    }
-
-    /**
-     * Setter method for property <tt>testingDataSet</tt>.
-     * 
-     * @param testingDataSet value to be assigned to property testingDataSet
-     */
-    public void setTestingDataSet(String testingDataSet) {
-        this.testingDataSet = testingDataSet;
     }
 
     /**
@@ -215,12 +191,12 @@ public abstract class RcmdtnEngine implements Engine {
     }
 
     /**
-     * Setter method for property <tt>reader</tt>.
+     * Setter method for property <tt>loader</tt>.
      * 
-     * @param reader value to be assigned to property reader
+     * @param loader value to be assigned to property loader
      */
-    public void setReader(Thread reader) {
-        this.reader = reader;
+    public void setLoader(Thread loader) {
+        this.loader = loader;
     }
 
     /**

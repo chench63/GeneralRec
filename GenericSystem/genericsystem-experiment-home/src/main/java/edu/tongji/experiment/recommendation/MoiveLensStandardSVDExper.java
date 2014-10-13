@@ -24,7 +24,7 @@ public final class MoiveLensStandardSVDExper {
         ClassPathXmlApplicationContext ctx = null;
         try {
             ctx = new ClassPathXmlApplicationContext(
-                "experiment/recommendation/movielens/standard_svd.xml");
+                "experiment/recommendation/movielens/snglrValuDecmpsRcmd.xml");
             Engine engine = (Engine) ctx.getBean("engineForGeneratingRecommendations");
             engine.excute();
         } catch (Exception e) {

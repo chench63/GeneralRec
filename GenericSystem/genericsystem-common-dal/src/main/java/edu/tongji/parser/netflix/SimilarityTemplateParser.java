@@ -46,4 +46,23 @@ public class SimilarityTemplateParser implements Parser {
         return null;
     }
 
+    /** 
+     * @see edu.tongji.parser.Parser#parse(java.lang.String)
+     */
+    @Override
+    public Object parse(String template) {
+
+        try {
+            String[] elements = template.split(SAPERATOR_EXPRESSION);
+            int i = Integer.valueOf(elements[0]).intValue();
+            int j = Integer.valueOf(elements[1]).intValue();
+            float similarity = Float.valueOf(elements[2]).floatValue();
+            return new SimilarityVO(i, j, similarity);
+        } catch (Exception e) {
+            ExceptionUtil.caught(e, "解析ParserTemplate错误，内容: " + template);
+        }
+
+        return null;
+    }
+
 }
