@@ -4,10 +4,8 @@
  */
 package edu.tongji.engine.recommendation;
 
-import prea.util.EvaluationMetrics;
 import edu.tongji.matrix.ComplicatedMatrix;
 import edu.tongji.matrix.SparseMatrix;
-import edu.tongji.ml.matrix.MatrixFactorizationRecommender;
 import edu.tongji.util.LoggerUtil;
 
 /**
@@ -17,23 +15,14 @@ import edu.tongji.util.LoggerUtil;
  */
 public class SnglrValuDecmpsRcmdEngine extends RcmdtnEngine {
 
-    /** 优化行矩阵线程*/
-    protected Runnable                     rowPrmutatnOptmzr;
-
-    /** 优化列矩阵线程*/
-    protected Runnable                     colPrmutatnOptmzr;
-
     /** 目标子矩阵群*/
-    public static ComplicatedMatrix        rateBlockes;
+    public static ComplicatedMatrix rateBlockes;
 
     /** The rating matrix with train data.*/
-    public static SparseMatrix             rateMatrix;
+    public static SparseMatrix      rateMatrix;
 
     /** The rating matrix with test data.*/
-    public static SparseMatrix             testMatrix;
-
-    /** Regularized SVD recomemder*/
-    private MatrixFactorizationRecommender recommender;
+    public static SparseMatrix      testMatrix;
 
     /** 
      * @see edu.tongji.engine.recommendation.RcmdtnEngine#excuteInner()
@@ -53,36 +42,7 @@ public class SnglrValuDecmpsRcmdEngine extends RcmdtnEngine {
      * SVD，求解最优rank k的Matrix Decomposition
      */
     protected void blockSVDInner() {
-        recommender.buildModel(rateMatrix);
-        EvaluationMetrics metric = recommender.evaluate(testMatrix);
-        LoggerUtil.info(logger, metric.printOneLine());
-    }
 
-    /**
-     * Setter method for property <tt>rowPrmutatnOptmzr</tt>.
-     * 
-     * @param rowPrmutatnOptmzr value to be assigned to property rowPrmutatnOptmzr
-     */
-    public void setRowPrmutatnOptmzr(Runnable rowPrmutatnOptmzr) {
-        this.rowPrmutatnOptmzr = rowPrmutatnOptmzr;
-    }
-
-    /**
-     * Setter method for property <tt>colPrmutatnOptmzr</tt>.
-     * 
-     * @param colPrmutatnOptmzr value to be assigned to property colPrmutatnOptmzr
-     */
-    public void setColPrmutatnOptmzr(Runnable colPrmutatnOptmzr) {
-        this.colPrmutatnOptmzr = colPrmutatnOptmzr;
-    }
-
-    /**
-     * Setter method for property <tt>recommender</tt>.
-     * 
-     * @param recommender value to be assigned to property recommender
-     */
-    public void setRecommender(MatrixFactorizationRecommender recommender) {
-        this.recommender = recommender;
     }
 
 }
