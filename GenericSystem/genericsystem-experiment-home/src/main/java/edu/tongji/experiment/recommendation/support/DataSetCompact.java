@@ -7,8 +7,8 @@ package edu.tongji.experiment.recommendation.support;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.tongji.matrix.SparseMatrix;
-import edu.tongji.matrix.SparseVector;
+import edu.tongji.data.SparseMatrix;
+import edu.tongji.data.SparseVector;
 import edu.tongji.parser.MovielensRatingTemplateParser;
 import edu.tongji.parser.Parser;
 import edu.tongji.util.FileUtil;

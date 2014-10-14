@@ -1,5 +1,6 @@
-package edu.tongji.matrix;
+package edu.tongji.data;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,11 +11,11 @@ import java.util.Map;
  * @since 2012. 4. 20
  * @version 1.1
  */
-public class SparseVector {
+public class SparseVector implements Serializable {
+    private static final long    serialVersionUID = 8002;
 
     /** The length (maximum number of items to be stored) of sparse vector. */
     private int                  N;
-
     /** Data map for <index, value> pairs. */
     private Map<Integer, Double> map;
 
@@ -27,7 +28,7 @@ public class SparseVector {
      */
     public SparseVector() {
         this.N = 0;
-        this.map = new HashMap<Integer, Double>();
+        this.map = new HashMap<Integer, Double>(0);
     }
 
     /**
@@ -218,7 +219,7 @@ public class SparseVector {
         SparseVector c = new SparseVector(N);
 
         for (int i : a.map.keySet()) {
-            c.setValue(i, alpha - a.getValue(i));
+            c.setValue(i, a.getValue(i) - alpha);
         }
 
         return c;
@@ -441,8 +442,8 @@ public class SparseVector {
      */
     public SparseVector commonMinus(SparseVector b) {
         SparseVector a = this;
-        //      if (a.N != b.N)
-        //          throw new RuntimeException("Vector lengths disagree");
+        //		if (a.N != b.N)
+        //			throw new RuntimeException("Vector lengths disagree");
 
         SparseVector c = new SparseVector(N);
         if (a.itemCount() <= b.itemCount()) {
