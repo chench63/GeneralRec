@@ -416,6 +416,20 @@ public class SparseMatrix implements Serializable {
     }
 
     /**
+     * transpose on the matrix itself.
+     * This is used for minimizing memory usage.
+     */
+    public void selfTranspose() {
+        int N = this.N;
+        this.N = this.M;
+        this.M = N;
+
+        SparseVector[] rows = this.rows;
+        this.rows = this.cols;
+        this.cols = rows;
+    }
+
+    /**
      * Matrix-vector product (b = Ax)
      * 
      * @param x The vector to be multiplied to this matrix.
