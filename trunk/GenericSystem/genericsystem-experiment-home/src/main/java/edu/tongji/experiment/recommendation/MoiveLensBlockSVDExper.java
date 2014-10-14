@@ -12,9 +12,9 @@ import edu.tongji.util.ExceptionUtil;
 /**
  * 
  * @author Hanke Chen
- * @version $Id: MoiveLensStandardSVDExper.java, v 0.1 2014-10-7 下午7:52:08 chench Exp $
+ * @version $Id: MoiveLensBlockSVDExper.java, v 0.1 2014-10-13 下午10:32:29 chench Exp $
  */
-public final class MoiveLensStandardSVDExper {
+public class MoiveLensBlockSVDExper {
 
     /**
      * 
@@ -25,7 +25,7 @@ public final class MoiveLensStandardSVDExper {
         try {
             ctx = new ClassPathXmlApplicationContext(
                 "experiment/recommendation/movielens/snglrValuDecmpsRcmd.xml");
-            Engine engine = (Engine) ctx.getBean("stdSVD");
+            Engine engine = (Engine) ctx.getBean("blockSVD");
             engine.excute();
         } catch (Exception e) {
             ExceptionUtil.caught(e, MoiveLensStandardSVDExper.class + " 发生致命错误");

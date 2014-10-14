@@ -409,6 +409,19 @@ public class SparseMatrix {
     }
 
     /**
+     * Transpose on the matrix itself.
+     */
+    public void selfTranspose() {
+        int temp = this.N;
+        this.N = this.M;
+        this.M = temp;
+
+        SparseVector[] vct = this.rows;
+        this.rows = this.cols;
+        this.cols = vct;
+    }
+
+    /**
      * Matrix-vector product (b = Ax)
      * 
      * @param x The vector to be multiplied to this matrix.

@@ -6,7 +6,7 @@ package edu.tongji.engine.recommendation.thread;
 
 import org.apache.log4j.Logger;
 
-import edu.tongji.engine.recommendation.SnglrValuDecmpsRcmdEngine;
+import edu.tongji.engine.recommendation.BlockSnglrValuDecmpsRcmdEngine;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.matrix.ComplicatedMatrix;
 import edu.tongji.matrix.SparseMatrix;
@@ -57,28 +57,28 @@ public class BlockMatrixDataSetLoader extends Thread {
         }
         elements = contents[1].split("\\,");
         int[] boundCol = new int[elements.length];
-        for (int i = 0; i < boundRow.length; i++) {
+        for (int i = 0; i < boundCol.length; i++) {
             boundCol[i] = Integer.valueOf(elements[i]);
         }
 
         //1. store training dataset into memory
-        SnglrValuDecmpsRcmdEngine.rateBlockes = new ComplicatedMatrix(boundRow, boundCol);
+        BlockSnglrValuDecmpsRcmdEngine.rateBlockes = new ComplicatedMatrix(boundRow, boundCol);
         contents = FileUtil.readLines(trainingSetFile);
         for (String content : contents) {
             RatingVO rating = (RatingVO) parser.parse(content);
             if (rating != null) {
-                SnglrValuDecmpsRcmdEngine.rateBlockes.setValue(rating.getUsrId(),
+                BlockSnglrValuDecmpsRcmdEngine.rateBlockes.setValue(rating.getUsrId(),
                     rating.getMovieId(), rating.getRatingReal());
             }
         }
 
         //2. store testing dataset into memory
-        SnglrValuDecmpsRcmdEngine.testMatrix = new SparseMatrix(userCount + 1, itemCount + 1);
+        BlockSnglrValuDecmpsRcmdEngine.testMatrix = new SparseMatrix(userCount + 1, itemCount + 1);
         contents = FileUtil.readLines(testingSetFile);
         for (String content : contents) {
             RatingVO rating = (RatingVO) parser.parse(content);
             if (rating != null) {
-                SnglrValuDecmpsRcmdEngine.testMatrix.setValue(rating.getUsrId(),
+                BlockSnglrValuDecmpsRcmdEngine.testMatrix.setValue(rating.getUsrId(),
                     rating.getMovieId(), rating.getRatingReal());
             }
         }

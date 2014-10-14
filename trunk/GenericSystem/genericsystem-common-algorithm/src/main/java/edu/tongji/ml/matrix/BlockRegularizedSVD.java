@@ -4,6 +4,10 @@
  */
 package edu.tongji.ml.matrix;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
 import org.apache.log4j.Logger;
 
 import prea.util.EvaluationMetrics;
@@ -11,6 +15,8 @@ import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.matrix.ComplicatedMatrix;
 import edu.tongji.matrix.SparseMatrix;
 import edu.tongji.matrix.SparseVector;
+import edu.tongji.ml.matrix.thread.BlockMatrixSVDDecompose;
+import edu.tongji.util.ExceptionUtil;
 
 /**
  * 
@@ -52,8 +58,12 @@ public class BlockRegularizedSVD {
     /** the corresponding recommender w.r.t the blocks in ComplicateMatrix*/
     MatrixFactorizationRecommender[][] recommender;
 
+    /** the number of threads*/
+    public final static int            THREAD_NUMBER = 4;
+
     /** logger */
-    protected final static Logger      logger = Logger.getLogger(LoggerDefineConstant.SERVICE_CORE);
+    protected final static Logger      logger        = Logger
+                                                         .getLogger(LoggerDefineConstant.SERVICE_CORE);
 
     /*========================================
      * Constructors
@@ -95,17 +105,30 @@ public class BlockRegularizedSVD {
 
         int rowCount = rateBlockes.getRowCount();
         int colCount = rateBlockes.getColCount();
-        recommender = new MatrixFactorizationRecommender[rowCount][colCount];
+        recommender = new RegularizedSVD[rowCount][colCount];
         for (int i = 0; i < rowCount; i++) {
             for (int j = 0; j < colCount; j++) {
                 SparseMatrix rateMatrix = rateBlockes.getBlock(i, j);
                 int userCount = rateMatrix.length()[0] - 1;
-                int itemCount = rateMatrix.length()[1];
+                int itemCount = rateMatrix.length()[1] - 1;
 
                 recommender[i][j] = new RegularizedSVD(userCount, itemCount, maxValue, minValue,
                     featureCount, learningRate, regularizer, momentum, maxIter);
-                recommender[i][j].buildModel(rateMatrix);
+                //                recommender[i][j].buildModel(rateMatrix);
             }
+        }
+
+        try {
+            BlockMatrixSVDDecompose.rateBlockes = rateBlockes;
+            BlockMatrixSVDDecompose.recommender = recommender;
+            ExecutorService exec = Executors.newCachedThreadPool();
+            for (int i = 0; i < THREAD_NUMBER; i++) {
+                exec.execute(new BlockMatrixSVDDecompose());
+            }
+            exec.shutdown();
+            exec.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
+        } catch (InterruptedException e) {
+            ExceptionUtil.caught(e, "BlockRegularizedSVD Crashed");
         }
     }
 

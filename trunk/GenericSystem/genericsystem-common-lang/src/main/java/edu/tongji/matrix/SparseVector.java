@@ -37,7 +37,7 @@ public class SparseVector {
      */
     public SparseVector(int n) {
         this.N = n;
-        this.map = new HashMap<Integer, Double>();
+        this.map = new HashMap<Integer, Double>(0);
     }
 
     /*========================================

@@ -90,7 +90,8 @@ public class RegularizedSVD extends MatrixFactorizationRecommender {
             round++;
 
             //show log
-            LoggerUtil.info(logger, round + " \t" + currErr);
+            LoggerUtil
+                .info(logger, Thread.currentThread().getId() + "\t" + round + " \t" + currErr);
 
         }
     }

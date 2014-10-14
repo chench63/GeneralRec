@@ -35,11 +35,16 @@
 
 
 	<!-- ******************************************** Engine Setting************************************************ -->
-	<bean id="engineForGeneratingRecommendations"
-		class="edu.tongji.engine.recommendation.SnglrValuDecmpsRcmdEngine">
+	<bean id="blockSVD"
+		class="edu.tongji.engine.recommendation.BlockSnglrValuDecmpsRcmdEngine">
 		<property name="loader" ref="blockMatrixDatasetLoader" />
-		<property name="recommender" ref="regulrzdSVD" />
 		<property name="blockRecommender" ref="blockRegulrzdSVD" />
+	</bean>
+
+	<bean id="stdSVD"
+		class="edu.tongji.engine.recommendation.SnglrValuDecmpsRcmdEngine">
+		<property name="loader" ref="sparseMatrixDatasetLoader" />
+		<property name="recommender" ref="regulrzdSVD" />
 	</bean>
 
 
