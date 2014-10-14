@@ -41,9 +41,10 @@ public class KMeansUtil {
     /**
      * divide the samples into K classes
      * 
-     * @param points    the sample to be clustered, which every row is a sample
-     * @param K         the number of classes
-     * @param type      the type of distance involved
+     * @param points        the sample to be clustered, which every row is a sample
+     * @param K             the number of classes
+     * @param maxIteration  the maximum number of iterations
+     * @param type          the type of distance involved
      * @return
      */
     public static Cluster[] divide(final SparseMatrix points, final int K, final int maxIteration,
@@ -88,11 +89,16 @@ public class KMeansUtil {
                 }
                 err += min;
 
+                if (pivot == -1) {
+                    throw new RuntimeException("pivot equals -1. a:\n" + a);
+                }
+                //check change
                 if (pivot != assigmnt[i]) {
-                    assigmnt[i] = pivot;
-                    result[pivot].add(i);
                     changes++;
                 }
+
+                assigmnt[i] = pivot;
+                result[pivot].add(i);
             }
 
             //if no change, then exist
@@ -135,6 +141,15 @@ public class KMeansUtil {
                     existEmptyCluster = true;
                     break;
                 }
+            }
+
+            //check loss
+            int realCount = 0;
+            for (Cluster cluster : clusters) {
+                realCount += cluster.getList().size();
+            }
+            if (realCount != pointCount) {
+                throw new RuntimeException("Elements lost during initialization.");
             }
 
         } while (existEmptyCluster);

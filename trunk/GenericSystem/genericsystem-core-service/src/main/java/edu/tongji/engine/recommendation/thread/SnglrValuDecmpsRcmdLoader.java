@@ -41,18 +41,18 @@ public class SnglrValuDecmpsRcmdLoader extends Thread {
         String[] lines = FileUtil.readLines(trainingSetFile);
         for (String line : lines) {
             RatingVO rating = (RatingVO) parser.parse(line);
-            //            rateMatrix.setValue(rating.getUsrId(), rating.getMovieId(), rating.getRatingReal());
-            rateMatrix.setValue(rating.getUsrId() - 1, rating.getMovieId() - 1,
-                rating.getRatingReal());
+            rateMatrix.setValue(rating.getUsrId(), rating.getMovieId(), rating.getRatingReal());
+            //            rateMatrix.setValue(rating.getUsrId() - 1, rating.getMovieId() - 1,
+            //                rating.getRatingReal());
         }
 
         //reading testing data
         lines = FileUtil.readLines(testingSetFile);
         for (String line : lines) {
             RatingVO rating = (RatingVO) parser.parse(line);
-            //            testMatrix.setValue(rating.getUsrId(), rating.getMovieId(), rating.getRatingReal());
-            testMatrix.setValue(rating.getUsrId() - 1, rating.getMovieId() - 1,
-                rating.getRatingReal());
+            testMatrix.setValue(rating.getUsrId(), rating.getMovieId(), rating.getRatingReal());
+            //            testMatrix.setValue(rating.getUsrId() - 1, rating.getMovieId() - 1,
+            //                rating.getRatingReal());
         }
 
     }

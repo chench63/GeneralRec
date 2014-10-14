@@ -23,7 +23,7 @@ import edu.tongji.vo.RatingVO;
  * @author Hanke Chen
  * @version $Id: DataSetCompact.java, v 0.1 2014-10-13 下午8:53:18 chench Exp $
  */
-public class DataSetCompact {
+public class DatasetCompact {
 
     //==========================
     //      Common variable
