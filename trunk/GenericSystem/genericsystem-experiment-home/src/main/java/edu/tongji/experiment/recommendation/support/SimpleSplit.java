@@ -24,7 +24,7 @@ import edu.tongji.util.LoggerUtil;
 public class SimpleSplit {
 
     /** source dataset file input path*/
-    protected final static String FILENAME              = "E:/MovieLens/ml-1m/ratings.dat";
+    protected final static String FILENAME              = "E:/MovieLens/ml-1m/r/ratings.dat";
 
     /** training dataset file output path*/
     protected final static String TRAINING_DATASET_FILE = "E:/MovieLens/ml-1m/trainingset.dat";

@@ -21,53 +21,34 @@
 		<constructor-arg index="8" type="int" value="${MAX_ITERATION}" />
 	</bean>
 
-	<bean id="blockRegulrzdSVD" class="edu.tongji.ml.matrix.BlockRegularizedSVD">
-		<constructor-arg index="0" type="int" value="${USER_COUNT}" />
-		<constructor-arg index="1" type="int" value="${ITEM_COUNT}" />
-		<constructor-arg index="2" type="double" value="${MAX_RATING}" />
-		<constructor-arg index="3" type="double" value="${MIN_RATING}" />
-		<constructor-arg index="4" type="int" value="${FEATURE_COUNT}" />
-		<constructor-arg index="5" type="double" value="${LEARNING_RATE}" />
-		<constructor-arg index="6" type="double" value="${REGULARIZED_PARAM}" />
-		<constructor-arg index="7" type="double" value="${MOMENTUM}" />
-		<constructor-arg index="8" type="int" value="${MAX_ITERATION}" />
-	</bean>
-
-
 	<!-- ******************************************** Engine Setting************************************************ -->
-	<bean id="blockSVD"
-		class="edu.tongji.engine.recommendation.BlockSnglrValuDecmpsRcmdEngine">
-		<property name="loader" ref="blockMatrixDatasetLoader" />
-		<property name="blockRecommender" ref="blockRegulrzdSVD" />
-	</bean>
-
 	<bean id="stdSVD"
 		class="edu.tongji.engine.recommendation.SnglrValuDecmpsRcmdEngine">
-		<property name="loader" ref="sparseMatrixDatasetLoader" />
+		<property name="loader" ref="snglrValuDecmpsRcmdLoader" />
 		<property name="recommender" ref="regulrzdSVD" />
+		<property name="rateMatrix" ref="rateMatrix" />
+		<property name="testMatrix" ref="testMatrix" />
 	</bean>
 
+	<!-- ******************************************** Matrix Setting************************************************ -->
+	<bean id="rateMatrix" class="edu.tongji.data.SparseMatrix">
+		<constructor-arg index="0" type="int" value="${USER_COUNT}" />
+		<constructor-arg index="1" type="int" value="${ITEM_COUNT}" />
+	</bean>
 
-
+	<bean id="testMatrix" class="edu.tongji.data.SparseMatrix">
+		<constructor-arg index="0" type="int" value="${USER_COUNT}" />
+		<constructor-arg index="1" type="int" value="${ITEM_COUNT}" />
+	</bean>
 
 	<!-- ******************************************** Thread Setting************************************************ -->
-	<bean id="blockMatrixDatasetLoader"
-		class="edu.tongji.engine.recommendation.thread.BlockMatrixDataSetLoader">
-		<property name="parser" ref="movielensRatingTemplateParser" />
-		<property name="settingFile" value="${SETTING_READ_PATH}" />
-		<property name="trainingSetFile" value="${TRAININGSET_READ_PATH}" />
-		<property name="testingSetFile" value="${TESTINGSET_READ_PATH}" />
-		<property name="userCount" value="${USER_COUNT}" />
-		<property name="itemCount" value="${ITEM_COUNT}" />
-	</bean>
-
-	<bean id="sparseMatrixDatasetLoader"
-		class="edu.tongji.engine.recommendation.thread.SparseMatrixDatasetLoader">
+	<bean id="snglrValuDecmpsRcmdLoader"
+		class="edu.tongji.engine.recommendation.thread.SnglrValuDecmpsRcmdLoader">
 		<property name="parser" ref="movielensRatingTemplateParser" />
 		<property name="trainingSetFile" value="${TRAININGSET_READ_PATH}" />
 		<property name="testingSetFile" value="${TESTINGSET_READ_PATH}" />
-		<property name="userCount" value="${USER_COUNT}" />
-		<property name="itemCount" value="${ITEM_COUNT}" />
+		<property name="rateMatrix" ref="rateMatrix" />
+		<property name="testMatrix" ref="testMatrix" />
 	</bean>
 
 	<bean id="movielensRatingTemplateParser" class="edu.tongji.parser.MovielensRatingTemplateParser" />
