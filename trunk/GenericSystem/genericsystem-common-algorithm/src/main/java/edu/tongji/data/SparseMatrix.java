@@ -1,4 +1,6 @@
-package edu.tongji.matrix;
+package edu.tongji.data;
+
+import java.io.Serializable;
 
 /**
  * This class implements sparse matrix, containing empty values for most space.
@@ -7,16 +9,17 @@ package edu.tongji.matrix;
  * @since 2012. 4. 20
  * @version 1.1
  */
-public class SparseMatrix {
+public class SparseMatrix implements Serializable {
+    private static final long serialVersionUID = 8003;
 
     /** The number of rows. */
-    private int            M;
+    private int               M;
     /** The number of columns. */
-    private int            N;
+    private int               N;
     /** The array of row references. */
-    private SparseVector[] rows;
+    private SparseVector[]    rows;
     /** The array of column references. */
-    private SparseVector[] cols;
+    private SparseVector[]    cols;
 
     /*========================================
      * Constructors
@@ -82,7 +85,7 @@ public class SparseMatrix {
      * @param value The value to store.
      */
     public void setValue(int i, int j, double value) {
-        if (value == 0.0d) {
+        if (value == 0.0) {
             rows[i].remove(j);
             cols[j].remove(i);
         } else {
@@ -110,7 +113,9 @@ public class SparseMatrix {
      * @return A reference to the designated row.
      */
     public SparseVector getRow(int index) {
-        return rows[index].copy();
+        SparseVector newVector = this.rows[index].copy();
+
+        return newVector;
     }
 
     /**
@@ -132,7 +137,9 @@ public class SparseMatrix {
      * @return A reference to the designated column.
      */
     public SparseVector getCol(int index) {
-        return cols[index].copy();
+        SparseVector newVector = this.cols[index].copy();
+
+        return newVector;
     }
 
     /*========================================
@@ -409,19 +416,6 @@ public class SparseMatrix {
     }
 
     /**
-     * Transpose on the matrix itself.
-     */
-    public void selfTranspose() {
-        int temp = this.N;
-        this.N = this.M;
-        this.M = temp;
-
-        SparseVector[] vct = this.rows;
-        this.rows = this.cols;
-        this.cols = vct;
-    }
-
-    /**
      * Matrix-vector product (b = Ax)
      * 
      * @param x The vector to be multiplied to this matrix.
@@ -548,9 +542,10 @@ public class SparseMatrix {
         if (this.M != this.N)
             throw new RuntimeException("Dimensions disagree");
 
-        int n = this.M;
         SparseMatrix original = this;
-        SparseMatrix newMatrix = makeIdentity(n);
+        SparseMatrix newMatrix = makeIdentity(this.M);
+
+        int n = this.M;
 
         if (n == 1) {
             newMatrix.setValue(0, 0, 1 / original.getValue(0, 0));
@@ -558,25 +553,26 @@ public class SparseMatrix {
         }
 
         SparseMatrix b = new SparseMatrix(original);
+
         for (int i = 0; i < n; i++) {
-            //find pivot, which is the max element of column i
+            // find pivot:
             double mag = 0;
             int pivot = -1;
 
             for (int j = i; j < n; j++) {
                 double mag2 = Math.abs(b.getValue(j, i));
-                if (mag < mag2) {
+                if (mag2 > mag) {
                     mag = mag2;
                     pivot = j;
                 }
             }
 
-            //no pivot error, e.g., the matrix is singular
-            if (pivot == -1 | mag == 0) {
+            // no pivot (error):
+            if (pivot == -1 || mag == 0) {
                 return newMatrix;
             }
 
-            //interchange row[i] and row[pivot]
+            // move pivot row into position:
             if (pivot != i) {
                 double temp;
                 for (int j = i; j < n; j++) {
@@ -584,6 +580,7 @@ public class SparseMatrix {
                     b.setValue(i, j, b.getValue(pivot, j));
                     b.setValue(pivot, j, temp);
                 }
+
                 for (int j = 0; j < n; j++) {
                     temp = newMatrix.getValue(i, j);
                     newMatrix.setValue(i, j, newMatrix.getValue(pivot, j));
@@ -591,7 +588,7 @@ public class SparseMatrix {
                 }
             }
 
-            //normalize pivot row
+            // normalize pivot row:
             mag = b.getValue(i, i);
             for (int j = i; j < n; j++) {
                 b.setValue(i, j, b.getValue(i, j) / mag);
@@ -600,22 +597,21 @@ public class SparseMatrix {
                 newMatrix.setValue(i, j, newMatrix.getValue(i, j) / mag);
             }
 
-            //eliminate other rows except the pivot row
+            // eliminate pivot row component from other rows:
             for (int k = 0; k < n; k++) {
                 if (k == i)
                     continue;
 
                 double mag2 = b.getValue(k, i);
+
                 for (int j = i; j < n; j++) {
                     b.setValue(k, j, b.getValue(k, j) - mag2 * b.getValue(i, j));
                 }
-
                 for (int j = 0; j < n; j++) {
                     newMatrix.setValue(k, j,
                         newMatrix.getValue(k, j) - mag2 * newMatrix.getValue(i, j));
                 }
             }
-
         }
 
         return newMatrix;
@@ -791,5 +787,4 @@ public class SparseMatrix {
 
         return s;
     }
-
 }
