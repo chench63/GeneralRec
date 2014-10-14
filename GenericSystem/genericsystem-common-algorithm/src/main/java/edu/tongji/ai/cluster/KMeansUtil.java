@@ -46,19 +46,20 @@ public final class KMeansUtil {
      * @param trnMatrix         the rows to cluster
      * @param K                 the number of clusters
      * @param maxIterations     the max iterations
+     * @param isRow             isRow = 1, rows to be clustered
      * @param type              the type of distance to use
      * @return
      */
-    public static Cluster[] cluster(SparseMatrix trnMatrix, final int K, final int maxIterations,
-                                    final int type) {
+    public static Cluster[] cluster(final SparseMatrix trnMatrix, final int K,
+                                    final int maxIterations, final int type) {
         // number of clusters has to be smaller or equal the number of data points
-        if (trnMatrix == null | (trnMatrix.length())[0] < K) {
+        int pointCount = trnMatrix.length()[0];
+        if (trnMatrix == null | pointCount < K) {
             throw new RuntimeException(
                 "number of clusters has to be smaller or equal the number of data points !");
         }
 
         // create the initial clusters
-        int pointCount = trnMatrix.length()[0];
         int[] assignments = new int[pointCount];
         Cluster[] resultSet = chooseInitialCenters(trnMatrix, assignments, K);
 
@@ -69,7 +70,7 @@ public final class KMeansUtil {
             // calculator centroind of each cluster
             SparseVector[] centroids = new SparseVector[K];
             for (int k = 0; k < K; k++) {
-                centroids[k] = resultSet[k].centroid();
+                centroids[k] = resultSet[k].centroid(trnMatrix);
                 resultSet[k].clear();
             }
 
@@ -90,12 +91,10 @@ public final class KMeansUtil {
                 }
 
                 if (pivot != assignments[i]) {
-                    LoggerUtil.debug(logger, " \tExchang: " + assignments[i] + "\t" + pivot);
-
                     assignments[i] = pivot;
                     change++;
                 }
-                resultSet[pivot].put(point);
+                resultSet[pivot].put(i);
                 SSE += min;
             }
             LoggerUtil.info(logger, round + " \t" + SSE);
@@ -124,15 +123,12 @@ public final class KMeansUtil {
             clusters[k] = new Cluster();
         }
 
-        int rowCount = points.length()[0];
+        int pointCount = assignments.length;
         UniformRealDistribution uniform = new UniformRealDistribution(0, K);
-        for (int i = 0; i < rowCount; i++) {
-            SparseVector Ai = points.getRowRef(i);
-
+        for (int i = 0; i < pointCount; i++) {
             int k = (int) uniform.sample();
-            clusters[k].put(Ai);
+            clusters[k].put(i);
             assignments[i] = k;
-
         }
 
         return clusters;

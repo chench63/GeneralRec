@@ -9,7 +9,6 @@ import org.apache.log4j.Logger;
 import edu.tongji.engine.recommendation.SnglrValuDecmpsRcmdEngine;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.matrix.SparseMatrix;
-import edu.tongji.model.Rating;
 import edu.tongji.parser.Parser;
 import edu.tongji.util.FileUtil;
 import edu.tongji.vo.RatingVO;
@@ -60,10 +59,10 @@ public final class SparseMatrixDatasetLoader extends Thread {
         SnglrValuDecmpsRcmdEngine.testMatrix = new SparseMatrix(userCount + 1, itemCount + 1);
         contents = FileUtil.readLines(testingSetFile);
         for (String content : contents) {
-            Rating rating = (Rating) parser.parse(content);
+            RatingVO rating = (RatingVO) parser.parse(content);
             if (rating != null) {
                 SnglrValuDecmpsRcmdEngine.testMatrix.setValue(rating.getUsrId(),
-                    rating.getMovieId(), rating.getRating());
+                    rating.getMovieId(), rating.getRatingReal());
             }
         }
 

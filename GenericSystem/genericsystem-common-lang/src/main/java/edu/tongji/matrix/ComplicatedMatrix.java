@@ -111,6 +111,10 @@ public class ComplicatedMatrix {
      * @return
      */
     public SparseMatrix getBlock(int i, int j) {
+        if (i >= rowCount | j >= colCount) {
+            return null;
+        }
+
         return matrices[i][j];
     }
 
