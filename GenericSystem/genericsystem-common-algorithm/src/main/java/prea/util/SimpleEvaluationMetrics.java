@@ -100,7 +100,7 @@ public class SimpleEvaluationMetrics {
         int userCount = (testMatrix.length())[0] - 1;
         int testItemCount = 0;
 
-        for (int u = 1; u <= userCount; u++) {
+        for (int u = 0; u <= userCount; u++) {
             SparseVector predictedRateList = predicted.getRowRef(u);
 
             if (predictedRateList.itemCount() > 0) {

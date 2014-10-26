@@ -36,18 +36,21 @@ public abstract class RcmdtnEngine implements Engine {
      */
     @Override
     public void excute() {
-        //1. 载入数据集
+        //1. loading dataset
         loadDataSet();
 
-        //2. 组装数据集
+        //2. preprocess data
         assembleDataSet();
 
-        //3. 处理业务逻辑
+        //3. buiding model
         excuteInner();
+
+        //4. evaluate the prediction
+        evaluate();
     }
 
     /**
-     * 载入数据集
+     * loading dataset
      */
     protected void loadDataSet() {
         LoggerUtil.info(logger, "1. loading data set.");
@@ -61,14 +64,14 @@ public abstract class RcmdtnEngine implements Engine {
     }
 
     /**
-     * 组装数据集
+     * preprocess data
      */
     protected void assembleDataSet() {
         LoggerUtil.info(logger, "2. assembling data set.");
     }
 
     /**
-     * 处理业务逻辑
+     * buiding model
      */
     protected void excuteInner() {
         LoggerUtil.info(logger, "3. initializing working threads.");
@@ -78,6 +81,13 @@ public abstract class RcmdtnEngine implements Engine {
             exec.execute(runnable);
         }
         exec.shutdown();
+    }
+
+    /**
+     * evaluate the prediction
+     */
+    protected void evaluate() {
+        LoggerUtil.info(logger, "4. evaluate the prediction.");
     }
 
     /**

@@ -2,7 +2,7 @@
  * Tongji Edu.
  * Copyright (c) 2004-2014 All Rights Reserved.
  */
-package edu.tongji.data;
+package edu.tongji.ml;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,6 +11,9 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.util.Assert;
 
+import edu.tongji.data.Cluster;
+import edu.tongji.data.SparseMatrix;
+import edu.tongji.data.SparseVector;
 import edu.tongji.ml.KMeansUtil;
 
 /**

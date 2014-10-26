@@ -21,11 +21,14 @@ import edu.tongji.util.LoggerUtil;
  */
 public class KMeansUtil {
 
-    /** cosine distance*/
+    /** sine distance*/
     public final static int     SINE_DISTANCE              = 201;
-
     /** square error*/
     public final static int     SQUARE_ROOT_ERROR_DISTANCE = 202;
+    /** cosine distance*/
+    public final static int     COSINE_DISTANCE            = 203;
+    /** sine distance*/
+    public final static int     ANGLE_DISTANCE             = 204;
 
     /** logger */
     private final static Logger logger                     = Logger
@@ -58,6 +61,82 @@ public class KMeansUtil {
         Cluster[] result = new Cluster[K];
         int[] assigmnt = new int[pointCount];
         chosenInitilization(result, assigmnt, pointCount, K);
+
+        //converge to a minimun
+        SparseVector[] centroids = new SparseVector[K];
+        int round = 0;
+        while (round < maxIteration) {
+
+            //centroid
+            for (int k = 0; k < K; k++) {
+                centroids[k] = result[k].centroid(points);
+                result[k].clear();
+            }
+
+            //minimize the sum of distance
+            int changes = 0;
+            double err = 0.0d;
+            for (int i = 0; i < pointCount; i++) {
+                int pivot = -1;
+                double min = Double.MAX_VALUE;
+
+                SparseVector a = points.getRow(i);
+                for (int k = 0; k < K; k++) {
+                    SparseVector b = centroids[k];
+                    double distnce = distance(a, b, type);
+
+                    if (min > distnce) {
+                        min = distnce;
+                        pivot = k;
+                    }
+                }
+                err += min;
+
+                if (pivot == -1) {
+                    throw new RuntimeException("pivot equals -1. a:\n" + a);
+                }
+                //check change
+                if (pivot != assigmnt[i]) {
+                    changes++;
+                }
+
+                assigmnt[i] = pivot;
+                result[pivot].add(i);
+            }
+
+            //if no change, then exist
+            if (changes == 0) {
+                break;
+            } else {
+                round++;
+                LoggerUtil.info(logger, round + "\t" + err);
+            }
+
+        }
+
+        return result;
+    }
+
+    /**
+     * divide the samples into K classes
+     * 
+     * @param points        the sample to be clustered, which every row is a sample
+     * @param K             the number of classes
+     * @param maxIteration  the maximum number of iterations
+     * @param type          the type of distance involved
+     * @return
+     */
+    public static Cluster[] divide(final SparseMatrix points, final int K, final int[] originators,
+                                   final int maxIteration, final int type) {
+        int pointCount = points.length()[0];
+        if (pointCount < K) {
+            throw new RuntimeException("Number of samples is less than the number of classes.");
+        }
+
+        //make a initial division
+        Cluster[] result = new Cluster[K];
+        int[] assigmnt = new int[pointCount];
+        initialzeAsKNN(result, originators, assigmnt, pointCount, K, points, type);
 
         //converge to a minimun
         SparseVector[] centroids = new SparseVector[K];
@@ -155,6 +234,36 @@ public class KMeansUtil {
         } while (existEmptyCluster);
     }
 
+    public static void initialzeAsKNN(Cluster[] clusters, int[] originators, int[] assigmnt,
+                                      int pointCount, final int K, final SparseMatrix points,
+                                      final int type) {
+        if (originators.length != K) {
+            throw new RuntimeException("The given originator is not consistent with K.");
+        }
+
+        SparseVector[] centroids = new SparseVector[K];
+        for (int k = 0; k < K; k++) {
+            clusters[k] = new Cluster();
+            centroids[k] = points.getRow(originators[k]);
+        }
+
+        for (int sample = 0; sample < pointCount; sample++) {
+            int pivot = -1;
+            double min = Double.MAX_VALUE;
+
+            SparseVector a = points.getRowRef(sample);
+            for (int k = 0; k < K; k++) {
+                double val = distance(centroids[k], a, type);
+                if (min > val) {
+                    min = val;
+                    pivot = k;
+                }
+            }
+            clusters[pivot].add(sample);
+            assigmnt[sample] = pivot;
+        }
+    }
+
     /**
      * calculate the distance between two vectors
      *  
@@ -167,10 +276,16 @@ public class KMeansUtil {
 
         switch (type) {
             case SINE_DISTANCE:
-                double cos = a.innerProduct(b) / (a.norm() * b.norm());// a*b / (|a|*|b|)
-                return Math.sqrt(1 - cos * cos);
+                double cosine = a.innerProduct(b) / (a.norm() * b.norm());// a*b / (|a|*|b|)
+                return Math.sqrt(1 - cosine * cosine);
             case SQUARE_ROOT_ERROR_DISTANCE:
                 return (a.minus(b)).norm(); // |a-b|
+            case COSINE_DISTANCE:
+                return a.innerProduct(b) / (a.norm() * b.norm());
+            case ANGLE_DISTANCE:
+                double cos = a.innerProduct(b) / (a.norm() * b.norm());// a*b / (|a|*|b|)
+                cos = (cos > 1.0) ? 1.0 : cos;
+                return Math.acos(cos);
             default:
                 throw new RuntimeException("Wrong Distance Type! ");
         }

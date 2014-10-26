@@ -33,34 +33,40 @@
 		<constructor-arg index="8" type="int" value="${MAX_ITERATION}" />
 	</bean>
 
-
 	<!-- ******************************************** Engine Setting************************************************ -->
-	<bean id="stdSVD"
-		class="edu.tongji.engine.recommendation.SnglrValuDecmpsRcmdEngine">
-		<property name="loader" ref="snglrValuDecmpsRcmdLoader" />
-		<property name="recommender" ref="weigtedRSVD" />
-		<property name="rateMatrix" ref="rateMatrix" />
+	<bean id="blraRcmd" class="edu.tongji.engine.recommendation.BLRARcmdEngine">
+		<property name="rateMatrixes" ref="rateMatrixes" />
+		<property name="testMatrixes" ref="testMatrixes" />
 		<property name="testMatrix" ref="testMatrix" />
+		<property name="loader" ref="blockLowRankApproximationRcmdLoader" />
+		<property name="maxValue" value="${MAX_RATING}" />
+		<property name="minValue" value="${MIN_RATING}" />
+		<property name="featureCount" value="${FEATURE_COUNT}" />
+		<property name="learningRate" value="${LEARNING_RATE}" />
+		<property name="regularizer" value="${REGULARIZED_PARAM}" />
+		<property name="momentum" value="${MOMENTUM}" />
+		<property name="maxIter" value="${MAX_ITERATION}" />
 	</bean>
 
 	<!-- ******************************************** Matrix Setting************************************************ -->
-	<bean id="rateMatrix" class="edu.tongji.data.SparseMatrix">
-		<constructor-arg index="0" type="int" value="${USER_COUNT}" />
-		<constructor-arg index="1" type="int" value="${ITEM_COUNT}" />
+	<bean id="rateMatrixes" class="edu.tongji.data.BlockMatrix">
 	</bean>
-
+	<bean id="testMatrixes" class="edu.tongji.data.BlockMatrix">
+	</bean>
 	<bean id="testMatrix" class="edu.tongji.data.SparseMatrix">
 		<constructor-arg index="0" type="int" value="${USER_COUNT}" />
 		<constructor-arg index="1" type="int" value="${ITEM_COUNT}" />
 	</bean>
 
 	<!-- ******************************************** Thread Setting************************************************ -->
-	<bean id="snglrValuDecmpsRcmdLoader"
-		class="edu.tongji.engine.recommendation.thread.SnglrValuDecmpsRcmdLoader">
+	<bean id="blockLowRankApproximationRcmdLoader"
+		class="edu.tongji.engine.recommendation.thread.BlockLowRankApproximationRcmdLoader">
 		<property name="parser" ref="movielensRatingTemplateParser" />
 		<property name="trainingSetFile" value="${TRAININGSET_READ_PATH}" />
 		<property name="testingSetFile" value="${TESTINGSET_READ_PATH}" />
-		<property name="rateMatrix" ref="rateMatrix" />
+		<property name="settingFile" value="${SETTING_READ_PATH}" />
+		<property name="rateMatrixes" ref="rateMatrixes" />
+		<property name="testMatrixes" ref="testMatrixes" />
 		<property name="testMatrix" ref="testMatrix" />
 	</bean>
 
@@ -72,7 +78,7 @@
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="location">
 			<value>
-				classpath:experiment/recommendation/movielens/z_movielens.properties
+				classpath:experiment/recommendation/lowrank/z_blraRcmd.properties
 			</value>
 		</property>
 	</bean>

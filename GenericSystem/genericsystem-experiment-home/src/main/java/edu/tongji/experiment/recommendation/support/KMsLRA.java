@@ -29,25 +29,25 @@ public class KMsLRA {
     //      Common variable
     //==========================
     /** file to store the original data, make sure the data is compact.*/
-    public final static String  SOURCE_FILE      = "E:/MovieLens/ml-1m/ratings.dat";
+    public final static String  SOURCE_FILE      = "E:/MovieLens/ml-10M100K/ratings.dat";
 
     /** file to persist the new data */
-    public final static String  ROW_CLUSTER_FILE = "E:/MovieLens/ml-1m/ratings_RowC.dat";
+    public final static String  ROW_CLUSTER_FILE = "E:/MovieLens/ml-10M100K/ratings_RowC.dat";
 
     /** file to persist the new data */
-    public final static String  COMPLETE_FILE    = "E:/MovieLens/ml-1m/ratings_Complete.dat";
+    public final static String  COMPLETE_FILE    = "E:/MovieLens/ml-10M100K/ratings_Complete.dat";
 
     /** file to persist the setting data */
-    public final static String  SETTING_FILE     = "E:/MovieLens/ml-1m/ratings_Setting.dat";
+    public final static String  SETTING_FILE     = "E:/MovieLens/ml-10M100K/ratings_Setting.dat";
 
     /** The parser to parse the dataset file  **/
     public final static Parser  parser           = new MovielensRatingTemplateParser();
 
     /** the number of rows*/
-    public final static int     rowCount         = 6040;
+    public final static int     rowCount         = 69878;
 
     /** the number of columns*/
-    public final static int     colCount         = 3706;
+    public final static int     colCount         = 10677;
 
     /** the type of distance involved*/
     public final static int     DISTANCE_TYPE    = KMeansUtil.SINE_DISTANCE;

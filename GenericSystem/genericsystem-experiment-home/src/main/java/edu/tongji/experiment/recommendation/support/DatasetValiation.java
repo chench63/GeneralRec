@@ -29,35 +29,35 @@ public class DatasetValiation {
     //==========================
 
     /** file to store the original data*/
-    //  public final static String  ORIGINAL_FILE  = "E:/MovieLens/ml-1m/r/ratings.dat"; //compact
-        public final static String  ORIGINAL_FILE  = "E:/MovieLens/ml-1m/ratings.dat";//rowCluster
-//    public final static String  ORIGINAL_FILE  = "E:/MovieLens/ml-1m/ratings_RowC.dat";          //  colCluster
+    public final static String  ORIGINAL_FILE  = "E:/MovieLens/ml-1m/r/ratings.dat";             //compact
+                                                                                                  //        public final static String  ORIGINAL_FILE  = "E:/MovieLens/ml-1m/ratings.dat";//rowCluster
+                                                                                                  //    public final static String  ORIGINAL_FILE  = "E:/MovieLens/ml-1m/ratings_RowC.dat";          //  colCluster
 
     /** file to persist the new data */
-    //    public final static String  ORIGINAL_FILE  = "E:/MovieLens/ml-1m/ratings.dat";//compact
-        public final static String  VARIATION_FILE = "E:/MovieLens/ml-1m/ratings_RowC.dat";//rowCluster
-//    public final static String  VARIATION_FILE = "E:/MovieLens/ml-1m/ratings_Complete.dat";      // colCluster
+    public final static String  VARIATION_FILE = "E:/MovieLens/ml-1m/ratings.dat";               //compact
+                                                                                                  //        public final static String  VARIATION_FILE = "E:/MovieLens/ml-1m/ratings_RowC.dat";//rowCluster
+                                                                                                  //    public final static String  VARIATION_FILE = "E:/MovieLens/ml-1m/ratings_Complete.dat";      // colCluster
 
     /** The parser to parse the dataset file  **/
     public final static Parser  parser         = new MovielensRatingTemplateParser();
 
     /** the number of rows*/
-    public final static int     rowCount       = 10000;
+    public final static int     rowCount       = 169878;
 
     /** the number of columns*/
-    public final static int     colCount       = 10000;
+    public final static int     colCount       = 110677;
 
     /** the dimention of the compact row or column*/
-//    public final static int     compactCount   = 6040 - 1;//compact or colCluster
-        public final static int     compactCount   = 3706 - 1;// rowCluster
+    public final static int     compactCount   = 6040 - 1;                                      //compact or colCluster
+                                                                                                  //        public final static int     compactCount   = 3706 - 1;// rowCluster
 
     /** row is unchanged during the tranformation*/
-//    public final static boolean rowStable      = true;
-        public final static boolean rowStable      = false;
+        public final static boolean rowStable      = true;
+//    public final static boolean rowStable      = false;
 
     /** the offset during the transformation, Orignal[i] = Variation[i - offset]*/
-    //    public final static int     offset         = 1;//compact
-    public final static int     offset         = 0;                                              //KMsLRA clustering
+            public final static int     offset         = 1;//compact
+//    public final static int     offset         = 0;                                              //KMsLRA clustering
 
     /** logger */
     private final static Logger logger         = Logger
