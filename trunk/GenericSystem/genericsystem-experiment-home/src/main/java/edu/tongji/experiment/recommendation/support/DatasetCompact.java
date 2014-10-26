@@ -30,10 +30,10 @@ public class DatasetCompact {
     //==========================
 
     /** file to store the original data*/
-    public final static String  SOURCE_FILE = "E:/MovieLens/ml-1m/r/ratings.dat";
+    public final static String  SOURCE_FILE = "E:/MovieLens/ml-10M100K/r/ratings.dat";
 
     /** file to persist the new data */
-    public final static String  OUTPUT_FILE = "E:/MovieLens/ml-1m/ratings.dat";
+    public final static String  OUTPUT_FILE = "E:/MovieLens/ml-10M100K/ratings.dat";
 
     /** The parser to parse the dataset file  **/
     public final static Parser  parser      = new MovielensRatingTemplateParser();
@@ -58,9 +58,7 @@ public class DatasetCompact {
         String[] lines = FileUtil.readLines(SOURCE_FILE);
 
         int nextRow = 0;
-        int nextCol = 0;
         Map<Integer, Integer> rowAssig = new HashMap<Integer, Integer>();
-        Map<Integer, Integer> colAssig = new HashMap<Integer, Integer>();
         for (String line : lines) {
             RatingVO rating = (RatingVO) parser.parse(line);
             int row = rating.getUsrId();
@@ -72,8 +70,15 @@ public class DatasetCompact {
                 rowAssig.put(row, nextRow);
                 nextRow++;
             }
-            if (!colAssig.containsKey(col)) {
-                colAssig.put(col, nextCol);
+        }
+
+        int nextCol = 0;
+        Map<Integer, Integer> colAssig = new HashMap<Integer, Integer>();
+        for (int i = 0; i < maxCol; i++) {
+            SparseVector col = matrix.getColRef(i);
+
+            if (col.indexList() != null) {
+                colAssig.put(i, nextCol);
                 nextCol++;
             }
         }

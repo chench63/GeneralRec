@@ -4,6 +4,9 @@
  */
 package edu.tongji.engine.recommendation;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import prea.util.SimpleEvaluationMetrics;
 import edu.tongji.data.SparseMatrix;
 import edu.tongji.ml.matrix.MatrixFactorizationRecommender;
@@ -33,8 +36,52 @@ public class SnglrValuDecmpsRcmdEngine extends RcmdtnEngine {
     protected void excuteInner() {
         LoggerUtil.info(logger, "3. initializing working threads.");
         recommender.buildModel(rateMatrix);
+
+    }
+
+    /** 
+     * @see edu.tongji.engine.recommendation.RcmdtnEngine#evaluate()
+     */
+    @Override
+    protected void evaluate() {
         SimpleEvaluationMetrics metrics = recommender.evaluate(testMatrix);
         LoggerUtil.info(logger, metrics.printOneLine());
+
+        //iterate testMatrix
+        Map<Double, Double> MSE = new HashMap<Double, Double>();
+        int[] COUNT = new int[12];
+        double totalMSE = 0.0d;
+        for (int u = 0; u < recommender.userCount; u++) {
+            int[] testItems = testMatrix.getRowRef(u).indexList();
+
+            if (testItems != null) {
+                for (int t = 0; t < testItems.length; t++) {
+                    int i = testItems[t];
+                    double prediction = recommender.getU().getRowRef(u)
+                        .innerProduct(recommender.getV().getColRef(testItems[t]));
+
+                    double realVal = testMatrix.getValue(u, i);
+                    Double localMse = MSE.get(realVal);
+                    if (localMse == null) {
+                        localMse = 0.0d;
+                    }
+                    localMse += Math.pow(realVal - prediction, 2.0);
+                    totalMSE += Math.pow(realVal - prediction, 2.0);
+                    MSE.put(realVal, localMse);
+                    COUNT[Double.valueOf(realVal / 0.5).intValue()]++;
+                }
+            }
+        }
+        //calculate error distribution
+        for (int i = 1; i < 12; i++) {
+            Double localMse = MSE.get(i * 0.5);
+            if (localMse == null) {
+                continue;
+            }
+            LoggerUtil.info(logger,
+                i * 0.5 + "\t" + localMse / totalMSE + "\t" + Math.sqrt(localMse / COUNT[i]));
+        }
+
     }
 
     /**

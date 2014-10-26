@@ -24,13 +24,13 @@ import edu.tongji.util.LoggerUtil;
 public class SimpleSplit {
 
     /** source dataset file input path*/
-    protected final static String FILENAME              = "E:/MovieLens/ml-1m/ratings_Complete.dat";
+    protected final static String FILENAME              = "E:/MovieLens/ml-10M100K/ratings.dat";
 
     /** training dataset file output path*/
-    protected final static String TRAINING_DATASET_FILE = "E:/MovieLens/ml-1m/trainingset.dat";
+    protected final static String TRAINING_DATASET_FILE = "E:/MovieLens/ml-10M100K/trainingset.dat";
 
     /** testing dataset file output path*/
-    protected final static String TESTING_DATASET_FILE  = "E:/MovieLens/ml-1m/testingset.dat";
+    protected final static String TESTING_DATASET_FILE  = "E:/MovieLens/ml-10M100K/testingset.dat";
 
     /** training data/ total data   */
     protected final static float  RATIO                 = 0.9f;
