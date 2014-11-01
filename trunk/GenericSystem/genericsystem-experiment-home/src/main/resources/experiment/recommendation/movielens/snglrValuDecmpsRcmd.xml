@@ -41,6 +41,7 @@
 		<property name="recommender" ref="weigtedRSVD" />
 		<property name="rateMatrix" ref="rateMatrix" />
 		<property name="testMatrix" ref="testMatrix" />
+		<property name="predictionFile" value="${PREDICTION_READ_PATH}" />
 	</bean>
 
 	<!-- ******************************************** Matrix Setting************************************************ -->

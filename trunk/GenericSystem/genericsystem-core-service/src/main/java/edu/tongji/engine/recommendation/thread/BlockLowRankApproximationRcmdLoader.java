@@ -4,8 +4,12 @@
  */
 package edu.tongji.engine.recommendation.thread;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 
+import prea.util.MatrixInformationUtil;
 import edu.tongji.data.BlockMatrix;
 import edu.tongji.data.SparseMatrix;
 import edu.tongji.log4j.LoggerDefineConstant;
@@ -34,6 +38,12 @@ public class BlockLowRankApproximationRcmdLoader extends Thread {
     /** file with setting data*/
     private String              settingFile;
 
+    /** file with row mapping data*/
+    private String              rowMappingFile;
+
+    /** file with column mapping data*/
+    private String              colMappingFile;
+
     /** file with training data*/
     private String              trainingSetFile;
 
@@ -54,45 +64,62 @@ public class BlockLowRankApproximationRcmdLoader extends Thread {
 
         //read setting file
         String[] lines = FileUtil.readLines(settingFile);
-        String[] elemnts = lines[0].split("\\,");
-        int[] rowBound = new int[elemnts.length];
-        int indx = 0;
-        for (String elemnt : elemnts) {
-            rowBound[indx] = Integer.valueOf(elemnt);
-            indx++;
+        int[] rowBound = new int[lines.length];
+        int[][] coclusterStructure = new int[lines.length][0];
+        for (int i = 0; i < lines.length; i++) {
+            String[] rc = lines[i].split("\\:");
+            rowBound[i] = Integer.valueOf(rc[0].trim());
+
+            String[] cs = rc[1].split("\\,");
+            int[] rowStructure = new int[cs.length];
+            for (int j = 0; j < cs.length; j++) {
+                rowStructure[j] = Integer.valueOf(cs[j].trim());
+            }
+            coclusterStructure[i] = rowStructure;
         }
-        elemnts = lines[1].split("\\,");
-        int[] colBound = new int[elemnts.length];
-        indx = 0;
-        for (String elemnt : elemnts) {
-            colBound[indx] = Integer.valueOf(elemnt);
-            indx++;
+
+        //read row mapping file
+        lines = FileUtil.readLines(rowMappingFile);
+        Map<Integer, Integer> rowAssig = new HashMap<Integer, Integer>();
+        for (String line : lines) {
+            String[] elmnts = line.split("\\:");
+            int key = Integer.valueOf(elmnts[0].trim());
+            int val = Integer.valueOf(elmnts[1].trim());
+            rowAssig.put(key, val);
+        }
+
+        //read col mapping file
+        lines = FileUtil.readLines(colMappingFile);
+        Map<Integer, Integer> colAssig = new HashMap<Integer, Integer>();
+        for (String line : lines) {
+            String[] elmnts = line.split("\\:");
+            int key = Integer.valueOf(elmnts[0].trim());
+            int val = Integer.valueOf(elmnts[1].trim());
+            colAssig.put(key, val);
         }
 
         //reading training file
-        rateMatrixes.initialize(rowBound, colBound);
+        rateMatrixes.initialize(rowBound, coclusterStructure);
         lines = FileUtil.readLines(trainingSetFile);
         for (String line : lines) {
             RatingVO rating = (RatingVO) parser.parse(line);
-            rateMatrixes.setValue(rating.getUsrId(), rating.getMovieId(), rating.getRatingReal());
+            int row = rowAssig.get(rating.getUsrId());
+            int col = colAssig.get(rating.getMovieId());
+
+            rateMatrixes.setValue(row, col, rating.getRatingReal());
         }
-        LoggerUtil.info(logger, "==========================================");
-        int[] bound = rateMatrixes.bound();
-        for (int i = 0; i < bound[0]; i++) {
-            for (int j = 0; j < bound[1]; j++) {
-                LoggerUtil.info(logger,
-                    "Matrix[" + i + ", " + j + "] : " + rateMatrixes.getSparsity(i, j));
-            }
-        }
-        LoggerUtil.info(logger, "Block Matrix : " + rateMatrixes.getSparsity());
+        LoggerUtil.info(logger, MatrixInformationUtil.sparsity(rateMatrixes));
 
         //reading testing file
-        testMatrixes.initialize(rowBound, colBound);
+        testMatrixes.initialize(rowBound, coclusterStructure);
         lines = FileUtil.readLines(testingSetFile);
         for (String line : lines) {
             RatingVO rating = (RatingVO) parser.parse(line);
-            testMatrixes.setValue(rating.getUsrId(), rating.getMovieId(), rating.getRatingReal());
-            testMatrix.setValue(rating.getUsrId(), rating.getMovieId(), rating.getRatingReal());
+            int row = rowAssig.get(rating.getUsrId());
+            int col = colAssig.get(rating.getMovieId());
+
+            testMatrixes.setValue(row, col, rating.getRatingReal());
+            testMatrix.setValue(row, col, rating.getRatingReal());
         }
     }
 
@@ -130,6 +157,24 @@ public class BlockLowRankApproximationRcmdLoader extends Thread {
      */
     public void setSettingFile(String settingFile) {
         this.settingFile = settingFile;
+    }
+
+    /**
+     * Setter method for property <tt>rowMappingFile</tt>.
+     * 
+     * @param rowMappingFile value to be assigned to property rowMappingFile
+     */
+    public void setRowMappingFile(String rowMappingFile) {
+        this.rowMappingFile = rowMappingFile;
+    }
+
+    /**
+     * Setter method for property <tt>colMappingFile</tt>.
+     * 
+     * @param colMappingFile value to be assigned to property colMappingFile
+     */
+    public void setColMappingFile(String colMappingFile) {
+        this.colMappingFile = colMappingFile;
     }
 
     /**

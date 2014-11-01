@@ -7,6 +7,8 @@ package edu.tongji.engine.recommendation;
 import java.util.HashMap;
 import java.util.Map;
 
+import prea.util.MatrixFileUtil;
+import prea.util.MatrixInformationUtil;
 import prea.util.SimpleEvaluationMetrics;
 import edu.tongji.data.BlockMatrix;
 import edu.tongji.data.SparseMatrix;
@@ -63,23 +65,51 @@ public class BLRARcmdEngine extends RcmdtnEngine {
     protected void excuteInner() {
         LoggerUtil.info(logger, "3. initializing working threads.");
 
-        int[] bound = rateMatrixes.bound();
-        int rowCount = bound[0];
-        int colCount = bound[1];
-
-        recommender = new WeigtedRSVD[rowCount][colCount];
-        for (int i = 0; i < rowCount; i++) {
-            for (int j = 0; j < colCount; j++) {
+        //initial WeigtedRSVD
+        float[][] b1 = new float[2][2];
+        float[] b11 = { 1.45f, 1.45f };
+        b1[0] = b11;
+        b1[1] = b11;
+        float[][] b2 = new float[2][2];
+        float[] b21 = { 0.5f, 0.5f };
+        b2[0] = b21;
+        b2[1] = b21;
+        int[][] structure = rateMatrixes.structure();
+        recommender = new WeigtedRSVD[structure.length][0];
+        for (int i = 0; i < structure.length; i++) {
+            WeigtedRSVD[] rcmdrs = new WeigtedRSVD[structure[i].length];
+            for (int j = 0; j < structure[i].length; j++) {
                 SparseMatrix rateMatrix = rateMatrixes.getBlock(i, j);
                 int userCount = rateMatrix.length()[0];
                 int itemCount = rateMatrix.length()[1];
-                recommender[i][j] = new WeigtedRSVD(userCount, itemCount, maxValue, minValue,
-                    featureCount, learningRate, regularizer, momentum, maxIter);
-                recommender[i][j].buildModel(rateMatrix);
+                rcmdrs[j] = new WeigtedRSVD(userCount, itemCount, maxValue, minValue, featureCount,
+                    learningRate, regularizer, momentum, maxIter, b1[i][j], b2[i][j]);
+                //                rcmdrs[j] = new WeigtedRSVD(userCount, itemCount, maxValue, minValue, featureCount,
+                //                    learningRate, regularizer, momentum, maxIter);
+            }
+            recommender[i] = rcmdrs;
+        }
 
+        //build model
+        for (int i = 0; i < structure.length; i++) {
+            for (int j = 0; j < structure[i].length; j++) {
+                SparseMatrix rateMatrix = rateMatrixes.getBlock(i, j);
+                recommender[i][j].buildModel(rateMatrix);
                 SparseMatrix testMatrix = testMatrixes.getBlock(i, j);
-                LoggerUtil.info(logger, i + " ," + j + " "
-                                        + recommender[i][j].evaluate(testMatrix).printOneLine());
+
+                SimpleEvaluationMetrics metrics = recommender[i][j].evaluate(testMatrix);
+                LoggerUtil.info(
+                    logger,
+                    "["
+                            + i
+                            + ", "
+                            + j
+                            + "] : "
+                            + metrics.printOneLine()
+                            + "\n"
+                            + MatrixInformationUtil.RMSEAnalysis(testMatrix,
+                                metrics.getPrediction()));
+
             }
         }
 
@@ -145,6 +175,7 @@ public class BLRARcmdEngine extends RcmdtnEngine {
         SimpleEvaluationMetrics metrics = new SimpleEvaluationMetrics(testMatrix, predicted,
             maxValue, minValue);
         LoggerUtil.info(logger, metrics.printOneLine());
+        MatrixFileUtil.write("E:/MovieLens/ml-10M100K/3/KMeans/LeastSquare/prediction", predicted);
 
         //calculate error distribution
         for (int i = 1; i < 12; i++) {

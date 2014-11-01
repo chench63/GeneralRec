@@ -78,6 +78,18 @@ public final class Cluster implements Iterable<Integer> {
             result = result.plus(a);
         }
         return result.scale(1.0 / elements.size());
+
+//        int dimension = matrix.length()[1];
+//        SparseVector result = new SparseVector(dimension);
+//        int sampleCount = this.elements.size();
+//        for (int i = 0; i < dimension; i++) {
+//            double val = 0.0d;
+//            for (int j = 0; j < sampleCount; j++) {
+//                val += matrix.getValue(i, j);
+//            }
+//            result.setValue(i, val / sampleCount);
+//        }
+//        return result;
     }
 
     /** 
