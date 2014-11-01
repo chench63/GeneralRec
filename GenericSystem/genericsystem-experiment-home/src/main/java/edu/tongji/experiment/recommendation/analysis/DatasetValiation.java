@@ -2,7 +2,7 @@
  * Tongji Edu.
  * Copyright (c) 2004-2014 All Rights Reserved.
  */
-package edu.tongji.experiment.recommendation.support;
+package edu.tongji.experiment.recommendation.analysis;
 
 import org.apache.commons.math3.distribution.UniformIntegerDistribution;
 import org.apache.log4j.Logger;

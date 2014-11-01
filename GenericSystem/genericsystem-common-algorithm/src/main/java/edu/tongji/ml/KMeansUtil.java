@@ -32,7 +32,7 @@ public class KMeansUtil {
 
     /** logger */
     private final static Logger logger                     = Logger
-                                                               .getLogger(LoggerDefineConstant.SERVICE_CORE);
+                                                               .getLogger(LoggerDefineConstant.SERVICE_THREAD);
 
     /**
      * forbid construction
@@ -52,7 +52,7 @@ public class KMeansUtil {
      */
     public static Cluster[] divide(final SparseMatrix points, final int K, final int maxIteration,
                                    final int type) {
-        int pointCount = points.length()[0];
+        final int pointCount = points.length()[0];
         if (pointCount < K) {
             throw new RuntimeException("Number of samples is less than the number of classes.");
         }
@@ -77,13 +77,12 @@ public class KMeansUtil {
             int changes = 0;
             double err = 0.0d;
             for (int i = 0; i < pointCount; i++) {
+                //choose optimal centroid
+                SparseVector a = points.getRow(i);
                 int pivot = -1;
                 double min = Double.MAX_VALUE;
-
-                SparseVector a = points.getRow(i);
                 for (int k = 0; k < K; k++) {
-                    SparseVector b = centroids[k];
-                    double distnce = distance(a, b, type);
+                    double distnce = distance(a, centroids[k], type);
 
                     if (min > distnce) {
                         min = distnce;

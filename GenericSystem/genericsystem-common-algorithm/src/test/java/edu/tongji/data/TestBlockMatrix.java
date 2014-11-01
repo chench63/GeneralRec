@@ -18,7 +18,10 @@ public class TestBlockMatrix {
     @Test
     public void testlocate() {
         int[] rowBound = { 100, 300 };
-        int[] colBound = { 200, 500 };
+        int[][] colBound = new int[2][2];
+        int[] col = { 200, 500 };
+        colBound[0] = col;
+        colBound[1] = col;
         BlockMatrix blockMatrix = new BlockMatrix(rowBound, colBound);
 
         int[] p1 = blockMatrix.locate(23, 45);
@@ -97,12 +100,44 @@ public class TestBlockMatrix {
     }
 
     @Test
-    public void testSetValue() {
-        int[] rowBound = { 100, 300 };
-        int[] colBound = { 200, 500 };
+    public void testGlobal() {
+        int[] rowBound = { 100, 500 };
+        int[][] colBound = new int[2][2];
+        int[] col1 = { 200, 500 };
+        int[] col2 = { 400, 500 };
+        colBound[0] = col1;
+        colBound[1] = col2;
+
         BlockMatrix blockMatrix = new BlockMatrix(rowBound, colBound);
 
-        int testTimes = 1000;
+        UniformIntegerDistribution random = new UniformIntegerDistribution(0, 499);
+        int round = 0;
+        while (round < 10000) {
+
+            int i = random.sample();
+            int j = random.sample();
+            int[] local = blockMatrix.locate(i, j);
+            int[] global = blockMatrix.global(local);
+
+            Assert.isTrue(global[0] == i);
+            Assert.isTrue(global[1] == j);
+
+            round++;
+        }
+    }
+
+    @Test
+    public void testSetValue() {
+        int[] rowBound = { 100, 300 };
+        int[][] colBound = new int[2][2];
+        int[] col1 = { 200, 500 };
+        int[] col2 = { 400, 500 };
+        colBound[0] = col1;
+        colBound[1] = col2;
+
+        BlockMatrix blockMatrix = new BlockMatrix(rowBound, colBound);
+
+        int testTimes = 10000;
         UniformIntegerDistribution random = new UniformIntegerDistribution(0, 500);
         int round = 0;
         while (round < testTimes) {
@@ -120,11 +155,14 @@ public class TestBlockMatrix {
     @Test
     public void testCommonProperties() {
         int[] rowBound = { 100, 300 };
-        int[] colBound = { 200, 400 };
+        int[][] colBound = new int[2][2];
+        int[] col = { 200, 500 };
+        colBound[0] = col;
+        colBound[1] = col;
         BlockMatrix blockMatrix = new BlockMatrix(rowBound, colBound);
 
         int[] length = blockMatrix.length();
-        Assert.isTrue(length[0] == 300 && length[1] == 400);
+        Assert.isTrue(length[0] == 300 && length[1] == 500);
 
     }
 }

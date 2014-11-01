@@ -65,6 +65,8 @@
 		<property name="trainingSetFile" value="${TRAININGSET_READ_PATH}" />
 		<property name="testingSetFile" value="${TESTINGSET_READ_PATH}" />
 		<property name="settingFile" value="${SETTING_READ_PATH}" />
+		<property name="rowMappingFile" value="${RM_READ_PATH}" />
+		<property name="colMappingFile" value="${CM_READ_PATH}" />
 		<property name="rateMatrixes" ref="rateMatrixes" />
 		<property name="testMatrixes" ref="testMatrixes" />
 		<property name="testMatrix" ref="testMatrix" />

@@ -143,6 +143,13 @@ public abstract class MatrixFactorizationRecommender implements Serializable {
                     double prediction = this.offset
                                         + userFeatures.getRowRef(u).innerProduct(
                                             itemFeatures.getColRef(testItems[t]));
+
+                    if (prediction > maxValue) {
+                        prediction = maxValue;
+                    } else if (prediction < minValue) {
+                        prediction = minValue;
+                    }
+
                     predicted.setValue(u, i, prediction);
                 }
             }

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.math3.distribution.UniformRealDistribution;
 import org.junit.Test;
 import org.springframework.util.Assert;
 
@@ -46,7 +47,7 @@ public class TestKMeansUtil {
         KMeansUtil.divide(matrix, K, maxIteration, KMeansUtil.SINE_DISTANCE);
     }
 
-    @Test
+//    @Test
     public void testChosenInitilization() {
         int K = 200;
         int pointCount = 3000;
@@ -74,23 +75,26 @@ public class TestKMeansUtil {
     @Test
     public void testDistance() {
         SparseVector a = new SparseVector(3);
-        a.setValue(0, 1);
-        a.setValue(1, 3);
-        a.setValue(2, 5);
-
         SparseVector b = new SparseVector(3);
-        b.setValue(0, 4);
-        b.setValue(1, 7);
-        b.setValue(2, 5);
+        UniformRealDistribution uniform = new UniformRealDistribution(0.0, 200);
 
-        SparseVector c = new SparseVector(3);
-        c.setValue(0, -3);
-        c.setValue(1, 1);
-        c.setValue(2, 0);
+        int round = 0;
+        while (round < 1000) {
+            for (int i = 0; i < 3; i++) {
+                a.setValue(i, uniform.sample());
+                b.setValue(i, uniform.sample());
+            }
 
-        Assert.isTrue(KMeansUtil.distance(a, b, KMeansUtil.SQUARE_ROOT_ERROR_DISTANCE) == 5);
-        Assert.isTrue(KMeansUtil.distance(a, a.scale(1254), KMeansUtil.SINE_DISTANCE) == 0);
-        Assert.isTrue(KMeansUtil.distance(a, c, KMeansUtil.SINE_DISTANCE) == 1);
+            double euclidean = 0.0d;
+            for (int i = 0; i < 3; i++) {
+                euclidean += Math.pow(a.getValue(i) - b.getValue(i), 2.0d);
+            }
+            euclidean = Math.sqrt(euclidean);
+            Assert.isTrue(Math.round(KMeansUtil.distance(a, b,
+                KMeansUtil.SQUARE_ROOT_ERROR_DISTANCE)) == Math.round(euclidean));
+
+            round++;
+        }
 
     }
 

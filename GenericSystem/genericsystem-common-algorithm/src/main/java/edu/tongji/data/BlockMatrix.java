@@ -19,7 +19,10 @@ public class BlockMatrix implements Serializable {
     private int[]             rowBound;
 
     /** the bounds of columns*/
-    private int[]             colBound;
+    //    private int[]             colBound;
+
+    /** the structure of the block matrix*/
+    private int[][]           coclusterStructure;
 
     /** The number of rows. */
     private int               M;
@@ -44,41 +47,51 @@ public class BlockMatrix implements Serializable {
      * @param rowBound          the bounds of rows
      * @param colBound          the bounds of cols
      */
-    public BlockMatrix(int[] rowBound, int[] colBound) {
-        initialize(rowBound, colBound);
+    public BlockMatrix(int[] rowBound, int[][] coclusterStructure) {
+        initialize(rowBound, coclusterStructure);
     }
 
     /**
      * initialize the block matrix
      * 
-     * @param rowBound          the bounds of rows
-     * @param colBound          the bounds of cols
+     * @param rowBound
+     * @param coclusterStructure
      */
-    public void initialize(int[] rowBound, int[] colBound) {
+    public void initialize(int[] rowBound, int[][] coclusterStructure) {
+        //primary parameters
         this.rowBound = rowBound;
-        int rowsCount = rowBound.length;
-        this.colBound = colBound;
-        int colsCount = colBound.length;
+        this.coclusterStructure = coclusterStructure;
+        this.M = rowBound[rowBound.length - 1];
+        this.N = coclusterStructure[0][coclusterStructure[0].length - 1];
 
-        M = rowBound[rowsCount - 1];
-        N = colBound[colsCount - 1];
-
-        int[] rowNum = new int[rowsCount];
-        rowNum[0] = rowBound[0];
-        for (int i = 1; i < rowsCount; i++) {
-            rowNum[i] = rowBound[i] - rowBound[i - 1];
-        }
-        int[] colNum = new int[colsCount];
-        colNum[0] = colBound[0];
-        for (int i = 1; i < colsCount; i++) {
-            colNum[i] = colBound[i] - colBound[i - 1];
+        //matrix part
+        int rowStrucCount = rowBound.length;
+        int[] colStrucCount = new int[rowStrucCount];
+        for (int i = 0; i < rowStrucCount; i++) {
+            colStrucCount[i] = coclusterStructure[i].length;
         }
 
-        rateMatrices = new SparseMatrix[rowsCount][colsCount];
-        for (int i = 0; i < rowsCount; i++) {
-            for (int j = 0; j < colsCount; j++) {
-                rateMatrices[i][j] = new SparseMatrix(rowNum[i], colNum[j]);
+        //first row
+        rateMatrices = new SparseMatrix[rowStrucCount][0];
+        SparseMatrix[] firstRowMatrixes = new SparseMatrix[colStrucCount[0]];
+        firstRowMatrixes[0] = new SparseMatrix(rowBound[0], coclusterStructure[0][0]);
+        for (int j = 1; j < colStrucCount[0]; j++) {
+            int rowCount = rowBound[0];
+            int colCount = coclusterStructure[0][j] - coclusterStructure[0][j - 1];
+            firstRowMatrixes[j] = new SparseMatrix(rowCount, colCount);
+        }
+        rateMatrices[0] = firstRowMatrixes;
+        //other rowes
+        for (int i = 1; i < rowStrucCount; i++) {
+            SparseMatrix[] ithRowMatrixes = new SparseMatrix[colStrucCount[i]];
+
+            int rowCount = rowBound[i] - rowBound[i - 1];
+            ithRowMatrixes[0] = new SparseMatrix(rowCount, coclusterStructure[i][0]);
+            for (int j = 1; j < colStrucCount[i]; j++) {
+                int colCount = coclusterStructure[i][j] - coclusterStructure[i][j - 1];
+                ithRowMatrixes[j] = new SparseMatrix(rowCount, colCount);
             }
+            rateMatrices[i] = ithRowMatrixes;
         }
     }
 
@@ -144,14 +157,15 @@ public class BlockMatrix implements Serializable {
         }
 
         //column information
-        if (j < colBound[0]) {
+        int rowMatrix = position[0];
+        if (j < coclusterStructure[rowMatrix][0]) {
             position[1] = 0;
             position[3] = j;
         } else {
-            for (int indx = 1; indx < colBound.length; indx++) {
-                if (j < colBound[indx]) {
+            for (int indx = 1; indx < coclusterStructure[rowMatrix].length; indx++) {
+                if (j < coclusterStructure[rowMatrix][indx]) {
                     position[1] = indx;
-                    position[3] = j - colBound[indx - 1];
+                    position[3] = j - coclusterStructure[rowMatrix][indx - 1];
                     break;
                 }
             }
@@ -159,6 +173,23 @@ public class BlockMatrix implements Serializable {
 
         return position;
 
+    }
+
+    /**
+     * transfer local index to global index
+     * 
+     * @param position  the local index to transform
+     * @return  the global index, index 0 contains the row index, whereas index 1 is the column index.
+     */
+    public int[] global(int[] position) {
+
+        int rowBase = (position[0] == 0) ? 0 : rowBound[position[0] - 1];
+        int colBase = (position[1] == 0) ? 0 : coclusterStructure[position[0]][position[1] - 1];
+
+        int[] result = new int[2];
+        result[0] = rowBase + position[2];
+        result[1] = colBase + position[3];
+        return result;
     }
 
     /**
@@ -203,7 +234,7 @@ public class BlockMatrix implements Serializable {
     public int itemCount() {
         int itemCount = 0;
         for (int i = 0; i < rowBound.length; i++) {
-            for (int j = 0; j < colBound.length; j++) {
+            for (int j = 0; j < coclusterStructure[i].length; j++) {
                 itemCount += rateMatrices[i][j].itemCount();
             }
         }
@@ -230,19 +261,12 @@ public class BlockMatrix implements Serializable {
     }
 
     /**
-     * the bounds of the rowBound and colBound
+     * return the structure of the block matrix
      * 
-     * @return the bounds of the rowBound and colBound.
-     * Index 0 contains the number of rowBound, while index 1 contains
-     * the number of colBound.
+     * @return
      */
-    public int[] bound() {
-        int[] lengthArray = new int[2];
-
-        lengthArray[0] = this.rowBound.length;
-        lengthArray[1] = this.colBound.length;
-
-        return lengthArray;
+    public int[][] structure() {
+        return this.coclusterStructure;
     }
 
 }
