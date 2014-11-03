@@ -261,6 +261,23 @@ public class BlockMatrix implements Serializable {
     }
 
     /**
+     * compute the number of sub-matrix in the integrated matrix
+     * 
+     * @return the number of blocks
+     */
+    public int blockNum() {
+        int blockNum = 0;
+        for (int i = 0; i < coclusterStructure.length; i++) {
+            blockNum += coclusterStructure[i].length;
+        }
+        return blockNum;
+    }
+
+    public int[] rowBound() {
+        return rowBound;
+    }
+
+    /**
      * return the structure of the block matrix
      * 
      * @return
