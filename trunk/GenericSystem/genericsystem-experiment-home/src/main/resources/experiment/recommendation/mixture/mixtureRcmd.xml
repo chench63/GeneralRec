@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.2.xsd
+		http://www.springframework.org/schema/util
+		http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+	<!-- ******************************************** Algorithm Setting ************************************************ -->
+	<bean id="model" class="edu.tongji.data.Model" scope="prototype">
+		<constructor-arg index="0" type="int" value="${USER_COUNT}" />
+		<constructor-arg index="1" type="int" value="${ITEM_COUNT}" />
+		<constructor-arg index="2" type="double" value="${MAX_RATING}" />
+		<constructor-arg index="3" type="double" value="${MIN_RATING}" />
+		<constructor-arg index="4" type="int" value="${FEATURE_COUNT}" />
+		<constructor-arg index="5" type="double" value="${LEARNING_RATE}" />
+		<constructor-arg index="6" type="double" value="${REGULARIZED_PARAM}" />
+		<constructor-arg index="7" type="double" value="${MOMENTUM}" />
+		<constructor-arg index="8" type="int" value="${MAX_ITERATION}" />
+		<constructor-arg index="9" type="float" value="${B1}" />
+		<constructor-arg index="10" type="float" value="${B2}" />
+	</bean>
+
+	<!-- ******************************************** Engine Setting************************************************ -->
+	<bean id="mixtureRcmd" class="edu.tongji.engine.recommendation.MixtureWLRARcmdEngine">
+		<property name="trainingSetFile" value="${TRAININGSET_READ_PATH}" />
+		<property name="testingSetFile" value="${TESTINGSET_READ_PATH}" />
+		<property name="userCount" value="${USER_COUNT}" />
+		<property name="itemCount" value="${ITEM_COUNT}" />
+		<property name="parser" ref="movielensRatingTemplateParser" />
+		<property name="clusters">
+			<list>
+				<ref bean="kmean_ls"></ref>
+				<ref bean="kmean_f20"></ref>
+				<ref bean="global"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<!-- ********************* K-Means-least-squares Cocluster Setting************************************************ -->
+	<bean id="kmean_ls" class="edu.tongji.data.Cocluster">
+		<property name="settingFile"
+			value="E:/MovieLens/ml-10M100K/3/KMeans/LeastSquare/SETTING" />
+		<property name="rowMappingFile"
+			value="E:/MovieLens/ml-10M100K/3/KMeans/LeastSquare/RM" />
+		<property name="colMappingFile"
+			value="E:/MovieLens/ml-10M100K/3/KMeans/LeastSquare/CM" />
+		<property name="models">
+			<list>
+				<ref bean="kmls1"></ref>
+				<ref bean="model"></ref>
+				<ref bean="model"></ref>
+				<ref bean="model"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="kmls1" class="edu.tongji.data.Model">
+		<constructor-arg index="0" type="int" value="${USER_COUNT}" />
+		<constructor-arg index="1" type="int" value="${ITEM_COUNT}" />
+		<constructor-arg index="2" type="double" value="${MAX_RATING}" />
+		<constructor-arg index="3" type="double" value="${MIN_RATING}" />
+		<constructor-arg index="4" type="int" value="${FEATURE_COUNT}" />
+		<constructor-arg index="5" type="double" value="${LEARNING_RATE}" />
+		<constructor-arg index="6" type="double" value="${REGULARIZED_PARAM}" />
+		<constructor-arg index="7" type="double" value="${MOMENTUM}" />
+		<constructor-arg index="8" type="int" value="60" />
+		<constructor-arg index="9" type="float" value="${B1}" />
+		<constructor-arg index="10" type="float" value="${B2}" />
+	</bean>
+
+	<!-- ******************** K-Means-least-squares Cocluster Setting******************************* -->
+	<bean id="kmean_la" class="edu.tongji.data.Cocluster">
+		<property name="settingFile"
+			value="E:/MovieLens/ml-10M100K/3/KMeans/LeastAngle/SETTING" />
+		<property name="rowMappingFile"
+			value="E:/MovieLens/ml-10M100K/3/KMeans/LeastAngle/RM" />
+		<property name="colMappingFile"
+			value="E:/MovieLens/ml-10M100K/3/KMeans/LeastAngle/CM" />
+		<property name="models">
+			<list>
+				<ref bean="kmls1"></ref>
+				<ref bean="model"></ref>
+				<ref bean="model"></ref>
+				<ref bean="model"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="kmls1" class="edu.tongji.data.Model">
+		<constructor-arg index="0" type="int" value="${USER_COUNT}" />
+		<constructor-arg index="1" type="int" value="${ITEM_COUNT}" />
+		<constructor-arg index="2" type="double" value="${MAX_RATING}" />
+		<constructor-arg index="3" type="double" value="${MIN_RATING}" />
+		<constructor-arg index="4" type="int" value="${FEATURE_COUNT}" />
+		<constructor-arg index="5" type="double" value="${LEARNING_RATE}" />
+		<constructor-arg index="6" type="double" value="${REGULARIZED_PARAM}" />
+		<constructor-arg index="7" type="double" value="${MOMENTUM}" />
+		<constructor-arg index="8" type="int" value="60" />
+		<constructor-arg index="9" type="float" value="${B1}" />
+		<constructor-arg index="10" type="float" value="${B2}" />
+	</bean>
+
+	<!-- *********************** K-Means-feature Cocluster Setting************************************** -->
+	<bean id="kmean_f20" class="edu.tongji.data.Cocluster">
+		<property name="settingFile"
+			value="E:/MovieLens/ml-10M100K/3/KMeans/Feature/SETTING" />
+		<property name="rowMappingFile" value="E:/MovieLens/ml-10M100K/3/KMeans/Feature/RM" />
+		<property name="colMappingFile" value="E:/MovieLens/ml-10M100K/3/KMeans/Feature/CM" />
+		<property name="models">
+			<list>
+				<ref bean="kmls1"></ref>
+				<ref bean="model"></ref>
+				<ref bean="model"></ref>
+				<ref bean="model"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="kmls1" class="edu.tongji.data.Model">
+		<constructor-arg index="0" type="int" value="${USER_COUNT}" />
+		<constructor-arg index="1" type="int" value="${ITEM_COUNT}" />
+		<constructor-arg index="2" type="double" value="${MAX_RATING}" />
+		<constructor-arg index="3" type="double" value="${MIN_RATING}" />
+		<constructor-arg index="4" type="int" value="${FEATURE_COUNT}" />
+		<constructor-arg index="5" type="double" value="${LEARNING_RATE}" />
+		<constructor-arg index="6" type="double" value="${REGULARIZED_PARAM}" />
+		<constructor-arg index="7" type="double" value="${MOMENTUM}" />
+		<constructor-arg index="8" type="int" value="60" />
+		<constructor-arg index="9" type="float" value="${B1}" />
+		<constructor-arg index="10" type="float" value="${B2}" />
+	</bean>
+
+
+	<!-- ******************************************** Global Cocluster Setting************************************************ -->
+	<bean id="global" class="edu.tongji.data.Cocluster">
+		<property name="models">
+			<list>
+				<ref bean="model"></ref>
+			</list>
+		</property>
+	</bean>
+
+
+
+	<!-- ******************************************** Thread Setting************************************************ -->
+	<bean id="movielensRatingTemplateParser" class="edu.tongji.parser.MovielensRatingTemplateParser" />
+
+
+	<!-- **************************** Outter Setting Connector ************************************************ -->
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location">
+			<value>
+				classpath:experiment/recommendation/mixture/z_mixture.properties
+			</value>
+		</property>
+	</bean>
+
+</beans>

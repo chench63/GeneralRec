@@ -208,7 +208,7 @@ public final class MatrixFileUtil {
         //reading training file
         Map<Integer, Integer> rowAssig = new HashMap<Integer, Integer>();
         Map<Integer, Integer> colAssig = new HashMap<Integer, Integer>();
-        BlockMatrix matrix = readBlockInner(settingFile, rowMappingFile, colMappingFile, rowAssig,
+        BlockMatrix matrix = readEmptyBlock(settingFile, rowMappingFile, colMappingFile, rowAssig,
             colAssig);
 
         String[] lines = FileUtil.readLines(sourceFile);
@@ -244,7 +244,7 @@ public final class MatrixFileUtil {
         //
         Map<Integer, Integer> rowAssig = new HashMap<Integer, Integer>();
         Map<Integer, Integer> colAssig = new HashMap<Integer, Integer>();
-        BlockMatrix matrix = readBlockInner(settingFile, rowMappingFile, colMappingFile, rowAssig,
+        BlockMatrix matrix = readEmptyBlock(settingFile, rowMappingFile, colMappingFile, rowAssig,
             colAssig);
 
         String[] lines = FileUtil.readLines(sourceFile);
@@ -275,7 +275,7 @@ public final class MatrixFileUtil {
         //Construct BlockMatrix
         Map<Integer, Integer> rowAssig = new HashMap<Integer, Integer>();
         Map<Integer, Integer> colAssig = new HashMap<Integer, Integer>();
-        BlockMatrix matrix = readBlockInner(settingFile, rowMappingFile, colMappingFile, rowAssig,
+        BlockMatrix matrix = readEmptyBlock(settingFile, rowMappingFile, colMappingFile, rowAssig,
             colAssig);
 
         //construct result
@@ -304,7 +304,7 @@ public final class MatrixFileUtil {
      * @param colMappingFile
      * @return
      */
-    public static BlockMatrix readBlockInner(String settingFile, String rowMappingFile,
+    public static BlockMatrix readEmptyBlock(String settingFile, String rowMappingFile,
                                              String colMappingFile, Map<Integer, Integer> rowAssig,
                                              Map<Integer, Integer> colAssig) {
         String[] lines = FileUtil.readLines(settingFile);
@@ -344,4 +344,5 @@ public final class MatrixFileUtil {
 
         return matrix;
     }
+
 }

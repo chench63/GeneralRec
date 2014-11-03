@@ -783,6 +783,28 @@ public class SparseMatrix implements Serializable {
     }
 
     /**
+     * part of the matrix w.r.t the given row and column index set
+     * 
+     * @param rows the rows to be partitioned to sub-matrix
+     * @param cols the columns to be partitioned to sub-matrix
+     * @return the sub-matrix with the given row and column index set
+     */
+    public SparseMatrix partition(int[] rows, int[] cols) {
+        SparseMatrix result = new SparseMatrix(M, N);
+        for (int row : rows) {
+            for (int col : cols) {
+                double val = this.getValue(row, col);
+                if (val == 0.0d) {
+                    continue;
+                }
+
+                result.setValue(row, col, val);
+            }
+        }
+        return result;
+    }
+
+    /**
      * Convert the matrix to a printable string.
      * 
      * @return The resulted string in the form of "(1, 2: 5.0) (2, 4: 4.5)"
