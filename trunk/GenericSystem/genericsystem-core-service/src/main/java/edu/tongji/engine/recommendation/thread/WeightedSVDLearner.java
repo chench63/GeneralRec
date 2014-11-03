@@ -4,6 +4,7 @@ import java.util.Queue;
 
 import org.apache.log4j.Logger;
 
+import prea.util.MatrixInformationUtil;
 import prea.util.SimpleEvaluationMetrics;
 import edu.tongji.data.Model;
 import edu.tongji.data.SparseMatrix;
@@ -52,9 +53,10 @@ public class WeightedSVDLearner extends Thread {
         while ((task = task()) != null) {
             task.buildModel(rateMatrix);
             SimpleEvaluationMetrics metric = null;
+
+            //block
             synchronized (mutexMatrix) {
                 task.evaluate(testMatrix, cumPrediction, cumWeight);
-
                 int userCount = testMatrix.length()[0];
                 SparseMatrix prediction = new SparseMatrix(testMatrix);
                 for (int u = 0; u < userCount; u++) {
@@ -72,9 +74,9 @@ public class WeightedSVDLearner extends Thread {
                 }
                 metric = new SimpleEvaluationMetrics(testMatrix, prediction, task.maxValue(),
                     task.minValue());
+                LoggerUtil.info(logger, metric.printOneLine());
+                LoggerUtil.info(logger, MatrixInformationUtil.RMSEAnalysis(testMatrix, prediction));
             }
-
-            LoggerUtil.info(logger, metric.printOneLine());
         }
     }
 }

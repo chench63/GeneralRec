@@ -64,8 +64,13 @@ public class ModelUtil {
                 model.setRows(clusters[i][j].getRowSet());
                 model.setCols(clusters[i][j].getColSet());
                 clusters[i][j] = null;
+                indx++;
             }
         }
+
+        //release memory
+        rowAssig.clear();
+        colAssig.clear();
     }
 
     private static class Elmt {

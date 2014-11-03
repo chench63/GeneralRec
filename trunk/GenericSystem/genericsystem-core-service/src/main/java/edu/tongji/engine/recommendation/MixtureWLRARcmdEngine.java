@@ -51,7 +51,6 @@ public class MixtureWLRARcmdEngine extends RcmdtnEngine {
      */
     @Override
     protected void excuteInner() {
-        super.excuteInner();
     }
 
     /** 
@@ -69,6 +68,7 @@ public class MixtureWLRARcmdEngine extends RcmdtnEngine {
         WeightedSVDLearner.cumWeight = new SparseMatrix(userCount, itemCount);
 
         ExecutorService exec = Executors.newCachedThreadPool();
+        exec.execute(new WeightedSVDLearner());
         exec.execute(new WeightedSVDLearner());
         exec.execute(new WeightedSVDLearner());
         exec.execute(new WeightedSVDLearner());
