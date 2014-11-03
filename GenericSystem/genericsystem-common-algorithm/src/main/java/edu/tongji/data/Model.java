@@ -37,9 +37,14 @@ public class Model {
     }
 
     public void evaluate(SparseMatrix testMatrix, SparseMatrix cumPrediction, SparseMatrix cumWeight) {
-        SparseMatrix localMatrix = testMatrix.partition(rows, cols);
+        SparseMatrix localMatrix = null;
+        if (rows == null | cols == null) {
+            localMatrix = testMatrix;
+        } else {
+            localMatrix = testMatrix.partition(rows, cols);
+        }
 
-        for (int u : rows) {
+        for (int u = 0; u < localMatrix.length()[0]; u++) {
             int[] indexList = localMatrix.getRowRef(u).indexList();
             if (indexList == null) {
                 continue;
