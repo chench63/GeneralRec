@@ -165,19 +165,23 @@ public final class CoclusterUtil {
         int round = 0;
         while (round < maxIteration) {
             boolean isChanged = false;
+            double err = 0.0;
+            round++;
 
             //update row cluster
-            updateRowCluster(points, K, L, rowCluster, colCluster, rowAssigmnt, colAssigmnt,
+            err = updateRowCluster(points, K, L, rowCluster, colCluster, rowAssigmnt, colAssigmnt,
                 constraint, divergence, isChanged, E_Uc_Vc, E_U, E_Uc, E_V, E_Vc);
+            LoggerUtil.info(logger, round + "A:\t" + err);
 
             //update column cluster
-            updateColCluster(points, K, L, rowCluster, colCluster, rowAssigmnt, colAssigmnt,
+            err = updateColCluster(points, K, L, rowCluster, colCluster, rowAssigmnt, colAssigmnt,
                 constraint, divergence, isChanged, E_Uc_Vc, E_U, E_Uc, E_V, E_Vc);
+            LoggerUtil.info(logger, round + "B:\t" + err);
 
             //update Lagrange multipliers
             comConExpectationAsConjugateDist(points, K, L, rowCluster, colCluster, E_Uc_Vc, E_U,
                 E_Uc, E_V, E_Vc);
-            round++;
+
         }
 
         Cluster[][] result = new Cluster[2][1];
