@@ -54,8 +54,11 @@ public class Model {
                 double prediction = getPrediction(u, v);
                 double weight = getWeight(u, v, prediction);
 
-                cumPrediction.setValue(u, v, prediction * weight);
-                cumWeight.setValue(u, v, weight);
+                double newCumPrediction = prediction * weight + cumPrediction.getValue(u, v);
+                double newCumWeight = weight + cumWeight.getValue(u, v);
+
+                cumPrediction.setValue(u, v, newCumPrediction);
+                cumWeight.setValue(u, v, newCumWeight);
             }
         }
 
