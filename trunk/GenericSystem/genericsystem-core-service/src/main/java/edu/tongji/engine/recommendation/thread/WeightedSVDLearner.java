@@ -53,12 +53,13 @@ public class WeightedSVDLearner extends Thread {
         while ((task = task()) != null) {
             task.buildModel(rateMatrix);
             SimpleEvaluationMetrics metric = null;
+            SparseMatrix prediction = null;
 
             //block
             synchronized (mutexMatrix) {
                 task.evaluate(testMatrix, cumPrediction, cumWeight);
                 int userCount = testMatrix.length()[0];
-                SparseMatrix prediction = new SparseMatrix(testMatrix);
+                prediction = new SparseMatrix(testMatrix);
                 for (int u = 0; u < userCount; u++) {
                     int[] indexList = testMatrix.getRowRef(u).indexList();
                     if (indexList == null) {
@@ -74,9 +75,11 @@ public class WeightedSVDLearner extends Thread {
                 }
                 metric = new SimpleEvaluationMetrics(testMatrix, prediction, task.maxValue(),
                     task.minValue());
-                LoggerUtil.info(logger, metric.printOneLine());
-                LoggerUtil.info(logger, MatrixInformationUtil.RMSEAnalysis(testMatrix, prediction));
             }
+
+            //logger
+            LoggerUtil.info(logger, metric.printOneLine());
+            LoggerUtil.info(logger, MatrixInformationUtil.RMSEAnalysis(testMatrix, prediction));
         }
     }
 }
