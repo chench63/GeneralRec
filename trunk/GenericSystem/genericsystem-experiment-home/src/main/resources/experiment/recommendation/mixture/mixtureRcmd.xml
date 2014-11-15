@@ -44,7 +44,7 @@
 		<property name="userCount" value="${USER_COUNT}" />
 		<property name="itemCount" value="${ITEM_COUNT}" />
 		<property name="parser" ref="movielensRatingTemplateParser" />
-		<property name="clusters">
+		<property name="groups">
 			<list>
 				<ref bean="global"></ref>
 				<ref bean="kls"></ref>
@@ -61,7 +61,7 @@
 	</bean>
 
 	<!-- ********************* K-Means-least-squares Cocluster Setting************************************************ -->
-	<bean id="kmean_ls" class="edu.tongji.data.Cocluster">
+	<bean id="kmean_ls" class="edu.tongji.data.ModelGroup">
 		<property name="settingFile"
 			value="E:/MovieLens/ml-10M100K/3/KMeans/LeastSquare/SETTING" />
 		<property name="rowMappingFile"
@@ -106,7 +106,6 @@
 		<constructor-arg index="10" type="float" value="${B2}" />
 	</bean>
 
-
 	<bean id="kmls2" class="edu.tongji.data.Model" scope="prototype">
 		<constructor-arg index="0" type="int" value="${USER_COUNT}" />
 		<constructor-arg index="1" type="int" value="${ITEM_COUNT}" />
@@ -136,7 +135,7 @@
 	</bean>
 
 	<!-- ******************** K-Means-least-angle Cocluster Setting******************************* -->
-	<bean id="kmean_la" class="edu.tongji.data.Cocluster">
+	<bean id="kmean_la" class="edu.tongji.data.ModelGroup">
 		<property name="settingFile"
 			value="E:/MovieLens/ml-10M100K/3/KMeans/LeastAngle/SETTING" />
 		<property name="rowMappingFile"
@@ -212,7 +211,7 @@
 
 
 	<!-- *********************** K-Means-feature Cocluster Setting************************************** -->
-	<bean id="kmean_f20" class="edu.tongji.data.Cocluster">
+	<bean id="kmean_f20" class="edu.tongji.data.ModelGroup">
 		<property name="settingFile"
 			value="E:/MovieLens/ml-10M100K/3/KMeans/Feature/SETTING" />
 		<property name="rowMappingFile" value="E:/MovieLens/ml-10M100K/3/KMeans/Feature/RM" />
@@ -286,7 +285,7 @@
 
 
 	<!-- Primaries -->
-	<bean id="kls" class="edu.tongji.data.Cocluster">
+	<bean id="kls" class="edu.tongji.data.ModelGroup">
 		<property name="settingFile"
 			value="E:/MovieLens/ml-10M100K/3/KMeans/LeastSquare/SETTING" />
 		<property name="rowMappingFile"
@@ -303,7 +302,7 @@
 		</property>
 	</bean>
 
-	<bean id="kla" class="edu.tongji.data.Cocluster">
+	<bean id="kla" class="edu.tongji.data.ModelGroup">
 		<property name="settingFile"
 			value="E:/MovieLens/ml-10M100K/3/KMeans/LeastAngle/SETTING" />
 		<property name="rowMappingFile"
@@ -320,7 +319,7 @@
 		</property>
 	</bean>
 
-	<bean id="kf20" class="edu.tongji.data.Cocluster">
+	<bean id="kf20" class="edu.tongji.data.ModelGroup">
 		<property name="settingFile"
 			value="E:/MovieLens/ml-10M100K/3/KMeans/Feature/SETTING" />
 		<property name="rowMappingFile" value="E:/MovieLens/ml-10M100K/3/KMeans/Feature/RM" />
@@ -341,7 +340,7 @@
 
 
 	<!-- *********************** Cocluster-IW Cocluster Setting************************************** -->
-	<bean id="cocluter_IW" class="edu.tongji.data.Cocluster">
+	<bean id="cocluter_IW" class="edu.tongji.data.ModelGroup">
 		<property name="settingFile"
 			value="E:/MovieLens/ml-10M100K/3/Cocluster/IW/SETTING" />
 		<property name="rowMappingFile" value="E:/MovieLens/ml-10M100K/3/Cocluster/IW/RM" />
@@ -356,7 +355,7 @@
 		</property>
 	</bean>
 
-	<bean id="cocluter_IW_3" class="edu.tongji.data.Cocluster">
+	<bean id="cocluter_IW_3" class="edu.tongji.data.ModelGroup">
 		<property name="settingFile"
 			value="E:/MovieLens/ml-10M100K/3/Cocluster/IW_3/SETTING" />
 		<property name="rowMappingFile" value="E:/MovieLens/ml-10M100K/3/Cocluster/IW_3/RM" />
@@ -371,7 +370,7 @@
 		</property>
 	</bean>
 
-	<bean id="cocluter_IW2" class="edu.tongji.data.Cocluster">
+	<bean id="cocluter_IW2" class="edu.tongji.data.ModelGroup">
 		<property name="settingFile"
 			value="E:/MovieLens/ml-10M100K/3/Cocluster/IW2/SETTING" />
 		<property name="rowMappingFile" value="E:/MovieLens/ml-10M100K/3/Cocluster/IW2/RM" />
@@ -387,7 +386,7 @@
 	</bean>
 
 	<!-- *********************** Cocluster-IW Cocluster Setting************************************** -->
-	<bean id="cocluter_EW" class="edu.tongji.data.Cocluster">
+	<bean id="cocluter_EW" class="edu.tongji.data.ModelGroup">
 		<property name="settingFile"
 			value="E:/MovieLens/ml-10M100K/3/Cocluster/EW/SETTING" />
 		<property name="rowMappingFile" value="E:/MovieLens/ml-10M100K/3/Cocluster/EW/RM" />
@@ -402,7 +401,7 @@
 		</property>
 	</bean>
 
-	<bean id="cocluter_EW_3" class="edu.tongji.data.Cocluster">
+	<bean id="cocluter_EW_3" class="edu.tongji.data.ModelGroup">
 		<property name="settingFile"
 			value="E:/MovieLens/ml-10M100K/3/Cocluster/EW_3/SETTING" />
 		<property name="rowMappingFile" value="E:/MovieLens/ml-10M100K/3/Cocluster/EW_3/RM" />
@@ -417,7 +416,7 @@
 		</property>
 	</bean>
 
-	<bean id="cocluter_EW2" class="edu.tongji.data.Cocluster">
+	<bean id="cocluter_EW2" class="edu.tongji.data.ModelGroup">
 		<property name="settingFile"
 			value="E:/MovieLens/ml-10M100K/3/Cocluster/EW2/SETTING" />
 		<property name="rowMappingFile" value="E:/MovieLens/ml-10M100K/3/Cocluster/EW2/RM" />
@@ -433,7 +432,7 @@
 	</bean>
 
 	<!-- ******************************************** Global Cocluster Setting************************************************ -->
-	<bean id="global" class="edu.tongji.data.Cocluster">
+	<bean id="global" class="edu.tongji.data.ModelGroup">
 		<property name="models">
 			<list>
 				<ref bean="model"></ref>

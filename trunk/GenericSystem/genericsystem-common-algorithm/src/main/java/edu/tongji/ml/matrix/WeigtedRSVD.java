@@ -5,6 +5,7 @@
 package edu.tongji.ml.matrix;
 
 import edu.tongji.data.SparseMatrix;
+import edu.tongji.data.SparseRowMatrix;
 import edu.tongji.data.SparseVector;
 import edu.tongji.util.LoggerUtil;
 
@@ -78,12 +79,8 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
      * @see edu.tongji.ml.matrix.MatrixFactorizationRecommender#buildModel(edu.tongji.data.SparseMatrix)
      */
     @Override
-    public void buildModel(SparseMatrix rateMatrix) {
+    public void buildModel(SparseRowMatrix rateMatrix) {
         super.buildModel(rateMatrix);
-
-        //initialize weights
-        getUserWeights(rateMatrix);
-        getItemWeights(rateMatrix);
 
         // Gradient Descent:
         int round = 0;
@@ -137,6 +134,72 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
 
     }
 
+    /** 
+     * @see edu.tongji.ml.matrix.MatrixFactorizationRecommender#buildModel(edu.tongji.data.SparseMatrix)
+     */
+    public void buildModel(SparseMatrix rateMatrix) {
+        super.buildModel(rateMatrix);
+
+        // Gradient Descent:
+        int round = 0;
+        int rateCount = rateMatrix.itemCount();
+        double prevErr = 99999;
+        double currErr = 9999;
+
+        while (Math.abs(prevErr - currErr) > 0.0001 && round < maxIter) {
+            double sum = 0.0;
+            for (int u = 0; u < userCount; u++) {
+                SparseVector items = rateMatrix.getRowRef(u);
+                int[] itemIndexList = items.indexList();
+
+                if (itemIndexList != null) {
+                    for (int i : itemIndexList) {
+                        SparseVector Fu = userFeatures.getRowRef(u);
+                        SparseVector Gi = itemFeatures.getColRef(i);
+
+                        double AuiEst = Fu.innerProduct(Gi);
+                        double AuiReal = rateMatrix.getValue(u, i);
+                        double err = AuiReal - AuiEst;
+                        sum += Math.abs(err);
+
+                        int weightIndx = Double.valueOf(AuiReal / minValue - 1).intValue();
+                        for (int s = 0; s < featureCount; s++) {
+                            double Fus = userFeatures.getValue(u, s);
+                            double Gis = itemFeatures.getValue(s, i);
+                            userFeatures.setValue(u, s,
+                                Fus
+                                        + learningRate
+                                        * (err * Gis * getWeight(u, i, weightIndx) - regularizer
+                                                                                     * Fus));
+                            itemFeatures.setValue(s, i,
+                                Gis
+                                        + learningRate
+                                        * (err * Fus * getWeight(u, i, weightIndx) - regularizer
+                                                                                     * Gis));
+                        }
+                    }
+                }
+            }
+
+            prevErr = currErr;
+            currErr = sum / rateCount;
+
+            round++;
+
+            // Show progress:
+            LoggerUtil.info(logger, round + "\t" + currErr);
+        }
+
+    }
+
+    /**
+     * compute the weight of the given rating
+     * 
+     * @param u
+     * @param i
+     * @param weightIndx
+     * @return
+     */
     public double getWeight(int u, int i, int weightIndx) {
         //b1 + (b2 + Pu)(b2 + Pi) + Pu*Pu +Pi*Pi
         return base1 + (base2 + userWeights[u][weightIndx]) * (base2 + itemWeights[i][weightIndx])
@@ -147,65 +210,32 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
         //        return  base1 + (base2 + userWeights[u][weightIndx]) * (base2 + itemWeights[i][weightIndx]);
     }
 
-    public void getUserWeights(SparseMatrix rateMatrix) {
-        int weightSize = Double.valueOf(maxValue / minValue).intValue();
-        userWeights = new float[userCount][weightSize];
-        for (int u = 0; u < userCount; u++) {
-            SparseVector Fu = rateMatrix.getRowRef(u);
-            int[] itemIndexList = Fu.indexList();
-
-            if (itemIndexList == null) {
-                for (int s = 0; s < weightSize; s++) {
-                    userWeights[u][s] = 1.0f / weightSize;
-                }
-            } else {
-                int total = weightSize;
-                int[] rates = new int[weightSize];
-
-                // count
-                for (int i : itemIndexList) {
-                    int indx = Double.valueOf(Fu.getValue(i) / minValue - 1).intValue();
-                    rates[indx]++;
-                    total++;
-                }
-
-                // compute weights
-                for (int s = 0; s < weightSize; s++) {
-                    userWeights[u][s] = (rates[s] + 1.0f) / total;
-                }
-            }
-        }
+    /**
+     * explicit clear the reference
+     */
+    public void explicitClear() {
+        this.itemFeatures = null;
+        this.userFeatures = null;
+        this.itemWeights = null;
+        this.userWeights = null;
     }
 
-    public void getItemWeights(SparseMatrix rateMatrix) {
-        int weightSize = Double.valueOf(maxValue / minValue).intValue();
-        itemWeights = new float[itemCount][weightSize];
-        for (int i = 0; i < itemCount; i++) {
-            SparseVector Gi = rateMatrix.getColRef(i);
-            int[] userIndexList = Gi.indexList();
+    /**
+     * Setter method for property <tt>userWeights</tt>.
+     * 
+     * @param userWeights value to be assigned to property userWeights
+     */
+    public void setUserWeights(float[][] userWeights) {
+        this.userWeights = userWeights;
+    }
 
-            if (userIndexList == null) {
-                for (int s = 0; s < weightSize; s++) {
-                    itemWeights[i][s] = 1.0f / weightSize;
-                }
-            } else {
-                int total = weightSize;
-                int[] rates = new int[weightSize];
-
-                // count
-                for (int u : userIndexList) {
-                    int indx = Double.valueOf(Gi.getValue(u) / minValue - 1).intValue();
-                    rates[indx]++;
-                    total++;
-                }
-
-                // compute weights
-                for (int s = 0; s < weightSize; s++) {
-                    itemWeights[i][s] = (rates[s] + 1.0f) / total;
-                }
-            }
-
-        }
+    /**
+     * Setter method for property <tt>itemWeights</tt>.
+     * 
+     * @param itemWeights value to be assigned to property itemWeights
+     */
+    public void setItemWeights(float[][] itemWeights) {
+        this.itemWeights = itemWeights;
     }
 
 }

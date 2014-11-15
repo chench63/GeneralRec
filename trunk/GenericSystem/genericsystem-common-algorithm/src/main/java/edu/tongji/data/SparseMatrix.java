@@ -1,6 +1,7 @@
 package edu.tongji.data;
 
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * This class implements sparse matrix, containing empty values for most space.
@@ -789,19 +790,127 @@ public class SparseMatrix implements Serializable {
      * @param cols the columns to be partitioned to sub-matrix
      * @return the sub-matrix with the given row and column index set
      */
-    public SparseMatrix partition(int[] rows, int[] cols) {
-        SparseMatrix result = new SparseMatrix(M, N);
-        for (int row : rows) {
-            for (int col : cols) {
-                double val = this.getValue(row, col);
-                if (val == 0.0d) {
-                    continue;
-                }
+    public SparseRowMatrix partition(int[] rows, int[] cols) {
+        //construct row tables
+        boolean[] colTable = new boolean[N];
+        for (int col : cols) {
+            colTable[col] = true;
+        }
 
-                result.setValue(row, col, val);
+        //copy data
+        SparseRowMatrix result = new SparseRowMatrix(M, N);
+        for (int row : rows) {
+            SparseVector Fr = this.getRowRef(row);
+            int[] indexList = Fr.indexList();
+            if (indexList == null) {
+                continue;
+            }
+
+            for (int col : indexList) {
+                if (colTable[col]) {
+                    double val = this.getValue(row, col);
+                    result.setValue(row, col, val);
+                }
             }
         }
         return result;
+    }
+
+    /**
+     * compute the probability w.r.t the element in each row or column
+     * 
+     * @param rows
+     * @param cols
+     * @param maxValue
+     * @param minValue
+     * @param isRow
+     * @return
+     */
+    public float[][] probability(int[] rows, int[] cols, double maxValue, double minValue,
+                                 boolean isRow) {
+        float[][] probs = null;
+        int weightSize = Double.valueOf(maxValue / minValue).intValue();
+
+        if (isRow) {
+            //construct row map to show whether the row is in given rows
+            boolean[] colTable = new boolean[N];
+            for (int col : cols) {
+                colTable[col] = true;
+            }
+
+            //construct probabilities with Lagrange Smoothing
+            probs = new float[M][0];
+
+            //compute the probabilities 
+            for (int row : rows) {
+                SparseVector Fu = getRowRef(row);
+                int[] indexList = Fu.indexList();
+
+                //count
+                float[] localPro = new float[weightSize];
+                Arrays.fill(localPro, 1.0f);
+
+                int total = weightSize;
+                if (indexList != null) {
+                    for (int j : indexList) {
+                        if (!colTable[j]) {
+                            continue;
+                        }
+
+                        int weightIndx = Double.valueOf(Fu.getValue(j) / minValue - 1).intValue();
+                        localPro[weightIndx] += 1;
+                        total++;
+                    }
+                }
+
+                //average
+                for (int indx = 0; indx < weightSize; indx++) {
+                    localPro[indx] /= total;
+                }
+                probs[row] = localPro;
+            }
+
+        } else {
+            //construct row map to show whether the row is in given rows
+            boolean[] rowTable = new boolean[M];
+            for (int row : rows) {
+                rowTable[row] = true;
+            }
+
+            //construct probabilities with Lagrange Smoothing
+            probs = new float[N][0];
+
+            //compute the probabilities
+            for (int col : cols) {
+                SparseVector Gi = this.getColRef(col);
+                int[] indexList = Gi.indexList();
+
+                //count
+                float[] localPro = new float[weightSize];
+                Arrays.fill(localPro, 1.0f);
+
+                int total = weightSize;
+                if (indexList != null) {
+                    for (int j : indexList) {
+                        if (!rowTable[j]) {
+                            continue;
+                        }
+
+                        int weightIndx = Double.valueOf(Gi.getValue(j) / minValue - 1).intValue();
+                        localPro[weightIndx] += 1;
+                        total++;
+                    }
+                }
+
+                //average
+                for (int indx = 0; indx < weightSize; indx++) {
+                    localPro[indx] /= total;
+                }
+                probs[col] = localPro;
+            }
+        }
+
+        return probs;
     }
 
     /**

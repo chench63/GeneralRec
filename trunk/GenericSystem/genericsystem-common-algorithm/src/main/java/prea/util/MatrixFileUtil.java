@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 
 import edu.tongji.data.BlockMatrix;
 import edu.tongji.data.SparseMatrix;
+import edu.tongji.data.SparseRowMatrix;
 import edu.tongji.data.SparseVector;
 import edu.tongji.parser.Parser;
 import edu.tongji.util.FileUtil;
@@ -37,6 +38,32 @@ public final class MatrixFileUtil {
      * @param matrix            the matrix contains the data
      */
     public static void write(String file, SparseMatrix matrix) {
+        int rowCount = matrix.length()[0];
+        StringBuilder content = new StringBuilder();
+        for (int i = 0; i < rowCount; i++) {
+            SparseVector Mi = matrix.getRowRef(i);
+            int[] indexList = Mi.indexList();
+            if (indexList == null) {
+                continue;
+            }
+
+            for (int j : indexList) {
+                double val = matrix.getValue(i, j);
+                String elemnt = i + "::" + j + "::" + String.format("%.1f", val);
+                content.append(elemnt).append('\n');
+            }
+        }
+
+        FileUtil.write(file, content.toString());
+    }
+
+    /**
+     * write matrix to disk
+     * 
+     * @param file              the file to write
+     * @param matrix            the matrix contains the data
+     */
+    public static void write(String file, SparseRowMatrix matrix) {
         int rowCount = matrix.length()[0];
         StringBuilder content = new StringBuilder();
         for (int i = 0; i < rowCount; i++) {
@@ -195,6 +222,25 @@ public final class MatrixFileUtil {
      */
     public static SparseMatrix read(String file, int rowCount, int colCount, Parser parser) {
         SparseMatrix result = new SparseMatrix(rowCount, colCount);
+        String[] lines = FileUtil.readLines(file);
+        for (String line : lines) {
+            RatingVO rating = (RatingVO) parser.parse(line);
+            result.setValue(rating.getUsrId(), rating.getMovieId(), rating.getRatingReal());
+        }
+        return result;
+    }
+
+    /**
+     * Read matrix from file
+     * 
+     * @param file          file contain matrix data
+     * @param rowCount      the number of rows
+     * @param colCount      the number of columns
+     * @param parser        the parser to parse the data structure
+     * @return
+     */
+    public static SparseRowMatrix reads(String file, int rowCount, int colCount, Parser parser) {
+        SparseRowMatrix result = new SparseRowMatrix(rowCount, colCount);
         String[] lines = FileUtil.readLines(file);
         for (String line : lines) {
             RatingVO rating = (RatingVO) parser.parse(line);
