@@ -15,8 +15,16 @@ import edu.tongji.data.Model;
  */
 public class ModelUtil {
 
-    public static void readCocluster(String settingFile, String rowMappingFile,
-                                     String colMappingFile, List<Model> models) {
+    /**
+     * 
+     * 
+     * @param settingFile
+     * @param rowMappingFile
+     * @param colMappingFile
+     * @param models
+     */
+    public static void readModels(String settingFile, String rowMappingFile, String colMappingFile,
+                                  List<Model> models) {
         if (settingFile == null && rowMappingFile == null && colMappingFile == null) {
             return;
         }

@@ -1,6 +1,6 @@
 package prea.util;
 
-import edu.tongji.data.SparseMatrix;
+import edu.tongji.data.SparseRowMatrix;
 import edu.tongji.data.SparseVector;
 
 /**
@@ -13,20 +13,20 @@ import edu.tongji.data.SparseVector;
  */
 public class SimpleEvaluationMetrics {
     /** Real ratings for test items. */
-    private SparseMatrix testMatrix;
+    private SparseRowMatrix testMatrix;
     /** Predicted ratings by CF algorithms for test items. */
-    private SparseMatrix predicted;
+    private SparseRowMatrix predicted;
     /** Maximum value of rating, existing in the dataset. */
-    private double       maxValue;
+    private double          maxValue;
     /** Minimum value of rating, existing in the dataset. */
-    private double       minValue;
+    private double          minValue;
 
     /** Mean Absoulte Error (MAE) */
-    private double       mae;
+    private double          mae;
     /** Mean Squared Error (MSE) */
-    private double       mse;
+    private double          mse;
     /** Asymmetric Loss */
-    private double       asymmetricLoss;
+    private double          asymmetricLoss;
 
     /**
      * Standard constructor for EvaluationMetrics class.
@@ -37,7 +37,7 @@ public class SimpleEvaluationMetrics {
      * @param min Minimum value of rating, existing in the dataset.
      *
      */
-    public SimpleEvaluationMetrics(SparseMatrix tm, SparseMatrix p, double max, double min) {
+    public SimpleEvaluationMetrics(SparseRowMatrix tm, SparseRowMatrix p, double max, double min) {
         testMatrix = tm;
         predicted = p;
         maxValue = max;
@@ -46,7 +46,7 @@ public class SimpleEvaluationMetrics {
         build();
     }
 
-    public SparseMatrix getPrediction() {
+    public SparseRowMatrix getPrediction() {
         return predicted;
     }
 

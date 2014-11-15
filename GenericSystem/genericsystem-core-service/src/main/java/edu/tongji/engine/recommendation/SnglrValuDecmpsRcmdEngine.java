@@ -7,7 +7,7 @@ package edu.tongji.engine.recommendation;
 import prea.util.MatrixFileUtil;
 import prea.util.MatrixInformationUtil;
 import prea.util.SimpleEvaluationMetrics;
-import edu.tongji.data.SparseMatrix;
+import edu.tongji.data.SparseRowMatrix;
 import edu.tongji.ml.matrix.MatrixFactorizationRecommender;
 import edu.tongji.util.LoggerUtil;
 import edu.tongji.util.StringUtil;
@@ -21,10 +21,10 @@ import edu.tongji.util.StringUtil;
 public class SnglrValuDecmpsRcmdEngine extends RcmdtnEngine {
 
     /** matrix with training data*/
-    private SparseMatrix                   rateMatrix;
+    private SparseRowMatrix                rateMatrix;
 
     /** matrix with testing data*/
-    private SparseMatrix                   testMatrix;
+    private SparseRowMatrix                testMatrix;
 
     /** the file contains prediction*/
     private String                         predictionFile;
@@ -64,7 +64,7 @@ public class SnglrValuDecmpsRcmdEngine extends RcmdtnEngine {
      * 
      * @param rateMatrix value to be assigned to property rateMatrix
      */
-    public void setRateMatrix(SparseMatrix rateMatrix) {
+    public void setRateMatrix(SparseRowMatrix rateMatrix) {
         this.rateMatrix = rateMatrix;
     }
 
@@ -73,7 +73,7 @@ public class SnglrValuDecmpsRcmdEngine extends RcmdtnEngine {
      * 
      * @param testingMatrix value to be assigned to property testingMatrix
      */
-    public void setTestMatrix(SparseMatrix testMatrix) {
+    public void setTestMatrix(SparseRowMatrix testMatrix) {
         this.testMatrix = testMatrix;
     }
 

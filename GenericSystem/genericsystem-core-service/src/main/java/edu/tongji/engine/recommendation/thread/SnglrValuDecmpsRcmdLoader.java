@@ -7,7 +7,7 @@ package edu.tongji.engine.recommendation.thread;
 import org.apache.log4j.Logger;
 
 import prea.util.MatrixInformationUtil;
-import edu.tongji.data.SparseMatrix;
+import edu.tongji.data.SparseRowMatrix;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.parser.Parser;
 import edu.tongji.util.FileUtil;
@@ -23,10 +23,10 @@ import edu.tongji.vo.RatingVO;
 public class SnglrValuDecmpsRcmdLoader extends Thread {
 
     /** matrix with training data*/
-    private SparseMatrix          rateMatrix;
+    private SparseRowMatrix       rateMatrix;
 
     /** matrix with testing data*/
-    private SparseMatrix          testMatrix;
+    private SparseRowMatrix       testMatrix;
 
     /** file with training data*/
     private String                trainingSetFile;
@@ -71,7 +71,7 @@ public class SnglrValuDecmpsRcmdLoader extends Thread {
      * 
      * @param rateMatrix value to be assigned to property rateMatrix
      */
-    public void setRateMatrix(SparseMatrix rateMatrix) {
+    public void setRateMatrix(SparseRowMatrix rateMatrix) {
         this.rateMatrix = rateMatrix;
     }
 
@@ -80,7 +80,7 @@ public class SnglrValuDecmpsRcmdLoader extends Thread {
      * 
      * @param testingMatrix value to be assigned to property testingMatrix
      */
-    public void setTestMatrix(SparseMatrix testMatrix) {
+    public void setTestMatrix(SparseRowMatrix testMatrix) {
         this.testMatrix = testMatrix;
     }
 

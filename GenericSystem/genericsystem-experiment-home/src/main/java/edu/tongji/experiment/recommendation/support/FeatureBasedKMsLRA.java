@@ -93,16 +93,18 @@ public class FeatureBasedKMsLRA {
         LoggerUtil.info(logger, "2. divide rows");
         Map<Integer, Integer> rowAssig = new HashMap<Integer, Integer>();
         int[] rowBound = new int[K];
-        MatrixKMsUtil.divide(recommender.getU(), K, maxIter, DISTANCE_TYPE, rowAssig, rowBound);
+        MatrixKMsUtil.divide(recommender.getU().toSparseMatrix(), K, maxIter, DISTANCE_TYPE,
+            rowAssig, rowBound);
         //        MatrixKMsUtil.divideAsDensity(rateMatrix, recommender.getU(), K_Row, maxIter,
         //            DISTANCE_TYPE, rowAssig, rowBound);
 
         //divide cols
         LoggerUtil.info(logger, "3. divide cols");
-        recommender.getV().selfTranspose();
+        SparseMatrix V = recommender.getV().toSparseMatrix();
+        V.selfTranspose();
         Map<Integer, Integer> colAssig = new HashMap<Integer, Integer>();
         int[] colBound = new int[L];
-        MatrixKMsUtil.divide(recommender.getV(), L, maxIter, DISTANCE_TYPE, colAssig, colBound);
+        MatrixKMsUtil.divide(V, L, maxIter, DISTANCE_TYPE, colAssig, colBound);
         //        MatrixKMsUtil.divideAsDensity(rateMatrix, recommender.getV(), K_Col, maxIter,
         //            DISTANCE_TYPE, colAssig, colBound);
 

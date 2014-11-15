@@ -1,6 +1,6 @@
 package edu.tongji.ml.matrix;
 
-import edu.tongji.data.SparseMatrix;
+import edu.tongji.data.SparseRowMatrix;
 import edu.tongji.data.SparseVector;
 import edu.tongji.util.LoggerUtil;
 
@@ -48,7 +48,7 @@ public class RegularizedSVD extends MatrixFactorizationRecommender {
      * @param rateMatrix Training data set.
      */
     @Override
-    public void buildModel(SparseMatrix rateMatrix) {
+    public void buildModel(SparseRowMatrix rateMatrix) {
         super.buildModel(rateMatrix);
 
         // Gradient Descent:

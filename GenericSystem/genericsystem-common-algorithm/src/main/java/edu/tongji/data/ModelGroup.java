@@ -1,27 +1,47 @@
 package edu.tongji.data;
 
 import java.util.List;
+import java.util.Queue;
+
 import prea.util.ModelUtil;
 
 /**
- * Cocluster
+ * the group of models.
  * 
  * @author Hanke
  * @version $Id: Cocluster.java, v 0.1 2014-11-2 下午12:53:29 Exp $
  */
-public class Cocluster {
+public class ModelGroup {
 
+    /** file contains setting*/
     private String      settingFile;
+    /** file contains mapping w.r.t rows*/
     private String      rowMappingFile;
+    /** file contains mapping w.r.t columns*/
     private String      colMappingFile;
-
+    /** real models*/
     private List<Model> models;
 
-    public List<Model> assembleModels() {
-        List<Model> result = models;
-        ModelUtil.readCocluster(settingFile, rowMappingFile, colMappingFile, result);
+    /**
+     * join the contained models to the given queue
+     * 
+     * @param m the queue to add
+     */
+    public void join(Queue<Model> m, SparseMatrix rateMatrix) {
+        //read configuration
+        ModelUtil.readModels(settingFile, rowMappingFile, colMappingFile, models);
+        for (Model model : models) {
+            float[][] userWeights = rateMatrix.probability(model.getRows(), model.getCols(),
+                model.maxValue(), model.minValue(), true);
+            float[][] itemWeights = rateMatrix.probability(model.getRows(), model.getCols(),
+                model.maxValue(), model.minValue(), false);
+            model.setWeights(userWeights, itemWeights);
+            m.add(model);
+        }
+
+        //clear reference
+        models.clear();
         models = null;
-        return result;
     }
 
     /**

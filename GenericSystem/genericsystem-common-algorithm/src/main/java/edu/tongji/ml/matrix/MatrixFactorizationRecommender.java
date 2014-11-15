@@ -6,7 +6,9 @@ import java.io.Serializable;
 
 import org.apache.log4j.Logger;
 
+import edu.tongji.data.SparseColumnMatrix;
 import edu.tongji.data.SparseMatrix;
+import edu.tongji.data.SparseRowMatrix;
 import edu.tongji.log4j.LoggerDefineConstant;
 
 /**
@@ -47,9 +49,9 @@ public abstract class MatrixFactorizationRecommender implements Serializable {
     protected double              offset;
 
     /** User profile in low-rank matrix form. */
-    protected SparseMatrix        userFeatures;
+    protected SparseRowMatrix     userFeatures;
     /** Item profile in low-rank matrix form. */
-    protected SparseMatrix        itemFeatures;
+    protected SparseColumnMatrix  itemFeatures;
 
     /** logger */
     protected final static Logger logger           = Logger
@@ -86,11 +88,11 @@ public abstract class MatrixFactorizationRecommender implements Serializable {
 
     }
 
-    public SparseMatrix getU() {
+    public SparseRowMatrix getU() {
         return userFeatures;
     }
 
-    public SparseMatrix getV() {
+    public SparseColumnMatrix getV() {
         return itemFeatures;
     }
 
@@ -102,9 +104,33 @@ public abstract class MatrixFactorizationRecommender implements Serializable {
      * 
      * @param rateMatrix The rating matrix with train data.
      */
+    public void buildModel(SparseRowMatrix rateMatrix) {
+        userFeatures = new SparseRowMatrix(userCount, featureCount);
+        itemFeatures = new SparseColumnMatrix(featureCount, itemCount);
+
+        // Initialize user/item features:
+        for (int u = 0; u < userCount; u++) {
+            for (int f = 0; f < featureCount; f++) {
+                double rdm = Math.random() / featureCount;
+                userFeatures.setValue(u, f, rdm);
+            }
+        }
+        for (int i = 0; i < itemCount; i++) {
+            for (int f = 0; f < featureCount; f++) {
+                double rdm = Math.random() / featureCount;
+                itemFeatures.setValue(f, i, rdm);
+            }
+        }
+    }
+
+    /**
+     * Build a model with given training set.
+     * 
+     * @param rateMatrix The rating matrix with train data.
+     */
     public void buildModel(SparseMatrix rateMatrix) {
-        userFeatures = new SparseMatrix(userCount, featureCount);
-        itemFeatures = new SparseMatrix(featureCount, itemCount);
+        userFeatures = new SparseRowMatrix(userCount, featureCount);
+        itemFeatures = new SparseColumnMatrix(featureCount, itemCount);
 
         // Initialize user/item features:
         for (int u = 0; u < userCount; u++) {
@@ -131,8 +157,8 @@ public abstract class MatrixFactorizationRecommender implements Serializable {
      * 
      * @return The result of evaluation, such as MAE, RMSE, and rank-score.
      */
-    public SimpleEvaluationMetrics evaluate(SparseMatrix testMatrix) {
-        SparseMatrix predicted = new SparseMatrix(userCount, itemCount);
+    public SimpleEvaluationMetrics evaluate(SparseRowMatrix testMatrix) {
+        SparseRowMatrix predicted = new SparseRowMatrix(userCount, itemCount);
 
         for (int u = 0; u < userCount; u++) {
             int[] testItems = testMatrix.getRowRef(u).indexList();
@@ -156,5 +182,25 @@ public abstract class MatrixFactorizationRecommender implements Serializable {
         }
 
         return new SimpleEvaluationMetrics(testMatrix, predicted, maxValue, minValue);
+    }
+
+    /**
+     * return the predicted rating
+     * 
+     * @param u the given user index
+     * @param i the given item index
+     * @return the predicted rating
+     */
+    public double getPredictedRating(int u, int i) {
+        double prediction = this.offset
+                            + userFeatures.getRowRef(u).innerProduct(itemFeatures.getColRef(i));
+
+        if (prediction > maxValue) {
+            return maxValue;
+        } else if (prediction < minValue) {
+            return minValue;
+        } else {
+            return prediction;
+        }
     }
 }

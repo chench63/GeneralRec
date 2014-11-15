@@ -7,9 +7,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import prea.util.MatrixFileUtil;
-import edu.tongji.data.Cocluster;
 import edu.tongji.data.Model;
+import edu.tongji.data.ModelGroup;
 import edu.tongji.data.SparseMatrix;
+import edu.tongji.data.SparseRowMatrix;
+import edu.tongji.data.SparseVector;
 import edu.tongji.engine.recommendation.thread.WeightedSVDLearner;
 import edu.tongji.parser.Parser;
 
@@ -21,29 +23,61 @@ import edu.tongji.parser.Parser;
 public class MixtureWLRARcmdEngine extends RcmdtnEngine {
 
     /** file with training data*/
-    private String          trainingSetFile;
+    private String           trainingSetFile;
 
     /** file with testing data*/
-    private String          testingSetFile;
+    private String           testingSetFile;
 
-    private int             userCount;
+    /** The number of users. */
+    private int              userCount;
 
-    private int             itemCount;
+    /** The number of items. */
+    private int              itemCount;
 
-    private List<Cocluster> clusters;
+    /** groups of model */
+    private List<ModelGroup> groups;
 
     /** the content parser w.r.t certain dataset*/
-    private Parser          parser;
+    private Parser           parser;
 
     /** 
      * @see edu.tongji.engine.recommendation.RcmdtnEngine#loadDataSet()
      */
     @Override
     protected void loadDataSet() {
-        WeightedSVDLearner.rateMatrix = MatrixFileUtil.read(trainingSetFile, userCount, itemCount,
+        // construct queue of models
+        SparseMatrix rateMatrix = MatrixFileUtil
+            .read(trainingSetFile, userCount, itemCount, parser);
+        Queue<Model> models = new LinkedList<Model>();
+        for (ModelGroup group : groups) {
+            group.join(models, rateMatrix);
+        }
+        groups.clear();
+        groups = null;
+        WeightedSVDLearner.models = models;
+
+        // construct training matrix
+        SparseRowMatrix rowMatrix = new SparseRowMatrix(userCount, itemCount);
+        for (int u = 0; u < userCount; u++) {
+            SparseVector Fu = rateMatrix.getRowRef(u);
+            int[] indexList = Fu.indexList();
+            if (indexList == null) {
+                continue;
+            }
+
+            for (int i : indexList) {
+                rowMatrix.setValue(u, i, rateMatrix.getValue(u, i));
+                rateMatrix.setValue(u, i, 0.0d);
+            }
+        }
+        rateMatrix = null;
+        WeightedSVDLearner.rateMatrix = rowMatrix;
+
+        // construct test matrix
+        WeightedSVDLearner.testMatrix = MatrixFileUtil.reads(testingSetFile, userCount, itemCount,
             parser);
-        WeightedSVDLearner.testMatrix = MatrixFileUtil.read(testingSetFile, userCount, itemCount,
-            parser);
+        WeightedSVDLearner.cumPrediction = new SparseRowMatrix(userCount, itemCount);
+        WeightedSVDLearner.cumWeight = new SparseRowMatrix(userCount, itemCount);
     }
 
     /** 
@@ -58,15 +92,6 @@ public class MixtureWLRARcmdEngine extends RcmdtnEngine {
      */
     @Override
     protected void evaluate() {
-        Queue<Model> models = new LinkedList<Model>();
-        for (Cocluster cluster : clusters) {
-            models.addAll(cluster.assembleModels());
-        }
-        clusters.clear();
-        WeightedSVDLearner.models = models;
-        WeightedSVDLearner.cumPrediction = new SparseMatrix(userCount, itemCount);
-        WeightedSVDLearner.cumWeight = new SparseMatrix(userCount, itemCount);
-
         ExecutorService exec = Executors.newCachedThreadPool();
         exec.execute(new WeightedSVDLearner());
         exec.execute(new WeightedSVDLearner());
@@ -112,12 +137,12 @@ public class MixtureWLRARcmdEngine extends RcmdtnEngine {
     }
 
     /**
-     * Setter method for property <tt>clusters</tt>.
+     * Setter method for property <tt>groups</tt>.
      * 
-     * @param clusters value to be assigned to property clusters
+     * @param groups value to be assigned to property groups
      */
-    public void setClusters(List<Cocluster> clusters) {
-        this.clusters = clusters;
+    public void setGroups(List<ModelGroup> groups) {
+        this.groups = groups;
     }
 
     /**
