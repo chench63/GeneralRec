@@ -34,13 +34,13 @@ public class CoclusterLRA {
     public final static String  SOURCE_FILE      = "E:/MovieLens/ml-10M100K/3/trainingset";
 
     /** file to persist the new data */
-    public final static String  SETTING_FILE     = "E:/MovieLens/ml-10M100K/3/Cocluster/EW/SETTING";
+    public final static String  SETTING_FILE     = "E:/MovieLens/ml-10M100K/3/Cocluster/IW_3/SETTING";
 
     /** file to persist the new data */
-    public final static String  ROW_MAPPING_FILE = "E:/MovieLens/ml-10M100K/3/Cocluster/EW/RM";
+    public final static String  ROW_MAPPING_FILE = "E:/MovieLens/ml-10M100K/3/Cocluster/IW_3/RM";
 
     /** file to persist the setting data */
-    public final static String  COL_MAPPING_FILE = "E:/MovieLens/ml-10M100K/3/Cocluster/EW/CM";
+    public final static String  COL_MAPPING_FILE = "E:/MovieLens/ml-10M100K/3/Cocluster/IW_3/CM";
 
     /** The parser to parse the dataset file  **/
     public final static Parser  parser           = new MovielensRatingTemplateParser();
@@ -52,19 +52,19 @@ public class CoclusterLRA {
     public final static int     colCount         = 10677;
 
     /** Bragman Divergence*/
-    public final static int     DIVERGENCE       = CoclusterUtil.EUCLIDEAN_DIVERGENCE;
+    public final static int     DIVERGENCE       = CoclusterUtil.I_DIVERGENCE;
 
     /** Constraints*/
     public final static int     CONSTRAINTS      = CoclusterUtil.C_5;
 
     /** the number of classes*/
-    public final static int     K                = 2;
+    public final static int     K                = 3;
 
     /** the number of classes*/
     public final static int     L                = 2;
 
     /** the maximum number of iterations*/
-    public final static int     maxIteration     = 8;
+    public final static int     maxIteration     = 12;
 
     /** logger */
     private final static Logger logger           = Logger

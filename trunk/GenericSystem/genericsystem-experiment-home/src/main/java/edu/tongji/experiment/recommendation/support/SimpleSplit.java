@@ -33,10 +33,10 @@ public class SimpleSplit {
     protected final static String FILENAME              = "E:/MovieLens/ml-10M100K/ratings.dat";
 
     /** training dataset file output path*/
-    protected final static String TRAINING_DATASET_FILE = "E:/MovieLens/ml-10M100K/trainingset";
+    protected final static String TRAINING_DATASET_FILE = "E:/MovieLens/ml-10M100K/5/trainingset";
 
     /** testing dataset file output path*/
-    protected final static String TESTING_DATASET_FILE  = "E:/MovieLens/ml-10M100K/testingset";
+    protected final static String TESTING_DATASET_FILE  = "E:/MovieLens/ml-10M100K/5/testingset";
 
     /** the number of rows*/
     public final static int       rowCount              = 69878;

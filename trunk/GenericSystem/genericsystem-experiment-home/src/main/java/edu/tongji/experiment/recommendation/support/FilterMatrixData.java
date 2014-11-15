@@ -17,19 +17,19 @@ import edu.tongji.parser.Parser;
 public class FilterMatrixData {
 
     /** file with setting data*/
-    public static String    settingFile    = "E:/MovieLens/ml-10M100K/3/KMeans/LeastSquare/SETTING";
+    public static String    settingFile    = "E:/MovieLens/ml-10M100K/3/KMeans/Feature/SETTING";
 
     /** file with row mapping data*/
-    public static String    rowMappingFile = "E:/MovieLens/ml-10M100K/3/KMeans/LeastSquare/RM";
+    public static String    rowMappingFile = "E:/MovieLens/ml-10M100K/3/KMeans/Feature/RM";
 
     /** file with column mapping data*/
-    public static String    colMappingFile = "E:/MovieLens/ml-10M100K/3/KMeans/LeastSquare/CM";
+    public static String    colMappingFile = "E:/MovieLens/ml-10M100K/3/KMeans/Feature/CM";
 
     /** file with training data*/
     public static String    sourceFile     = "E:/MovieLens/ml-10M100K/3/testingset";
 
     /** file with testing data*/
-    public static String    targetFile     = "E:/MovieLens/ml-10M100K/3/testingset_0_0";
+    public static String    targetFile     = "E:/MovieLens/ml-10M100K/3/KMeans/Feature/testingset";
     /** the number of rows*/
     public final static int rowCount       = 69878;
 
@@ -40,18 +40,22 @@ public class FilterMatrixData {
     public static Parser    parser         = new MovielensRatingTemplateParser();
 
     /** the row index of the target block*/
-    public static int       iBlock         = 0;
+    public static int       iBlock         = 2;
 
     /** the column index of the target block*/
-    public static int       jBlock         = 0;
+    public static int       jBlock         = 2;
 
     /**
      * 
      * @param args
      */
     public static void main(String[] args) {
-        SparseMatrix target = MatrixFileUtil.readBlock(sourceFile, settingFile, rowMappingFile,
-            colMappingFile, rowCount, colCount, parser, iBlock, jBlock);
-        MatrixFileUtil.write(targetFile, target);
+        for (int i = 0; i < iBlock; i++) {
+            for (int j = 0; j < jBlock; j++) {
+                SparseMatrix target = MatrixFileUtil.readBlock(sourceFile, settingFile,
+                    rowMappingFile, colMappingFile, rowCount, colCount, parser, i, j);
+                MatrixFileUtil.write(targetFile + "_" + i + "_" + j, target);
+            }
+        }
     }
 }

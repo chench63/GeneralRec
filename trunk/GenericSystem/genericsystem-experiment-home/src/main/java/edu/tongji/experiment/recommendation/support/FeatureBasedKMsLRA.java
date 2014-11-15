@@ -30,16 +30,16 @@ public class FeatureBasedKMsLRA {
     //      Common variable
     //==========================
     /** file to store the original data, make sure the data is compact.*/
-    protected final static String SOURCE_FILE      = "E:/MovieLens/ml-10M100K/trainingset";
+    protected final static String SOURCE_FILE      = "E:/MovieLens//ml-10M100K/5/trainingset";
 
     /** file to persist the new data */
-    public final static String    ROW_MAPPING_FILE = "E:/MovieLens/ml-10M100K/RM";
+    public final static String    ROW_MAPPING_FILE = "E:/MovieLens/ml-10M100K/5/KMeans/Feature/RM";
 
     /** file to persist the new data */
-    public final static String    COL_MAPPING_FILE = "E:/MovieLens/ml-10M100K/CM";
+    public final static String    COL_MAPPING_FILE = "E:/MovieLens/ml-10M100K/5/KMeans/Feature/CM";
 
     /** file to persist the setting data */
-    public final static String    SETTING_FILE     = "E:/MovieLens/ml-10M100K/SETTING";
+    public final static String    SETTING_FILE     = "E:/MovieLens/ml-10M100K/5/KMeans/Feature/SETTING";
 
     /** The parser to parse the dataset file  **/
     public final static Parser    parser           = new MovielensRatingTemplateParser();

@@ -37,7 +37,7 @@
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
 		<property name="location">
 			<value>
-				classpath:experiment/recommendation/mixture/z_mixture.properties
+				classpath:experiment/recommendation/anchor/z_anchor.properties
 			</value>
 		</property>
 	</bean>

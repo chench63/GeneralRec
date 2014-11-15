@@ -224,4 +224,22 @@ public final class FileUtil {
         }
     }
 
+    /**
+     * Append the content into the given file
+     * 
+     * @param file      the file to write
+     * @param context   the content to write
+     */
+    public static void writeAsAppend(String file, String context) {
+        FileWriter writer = null;
+        try {
+            writer = new FileWriter(file, true);
+            writer.append(context);
+        } catch (IOException e) {
+            ExceptionUtil.caught(e, "写文件发生异常，校验文件格式");
+        } finally {
+            IOUtils.closeQuietly(writer);
+        }
+    }
+
 }

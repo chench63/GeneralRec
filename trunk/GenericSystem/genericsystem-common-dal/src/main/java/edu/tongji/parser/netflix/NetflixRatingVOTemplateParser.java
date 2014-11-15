@@ -55,6 +55,9 @@ public class NetflixRatingVOTemplateParser implements Parser {
      */
     @Override
     public Object parse(String template) {
+        if (StringUtil.isEmpty(template) | (template.indexOf(":") != -1)) {
+            return null;
+        }
 
         try {
             String[] elements = template.split(SAPERATOR_EXPRESSION);
