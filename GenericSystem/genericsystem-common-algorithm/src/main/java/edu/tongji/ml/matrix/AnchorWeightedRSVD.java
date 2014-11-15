@@ -80,7 +80,7 @@ public class AnchorWeightedRSVD extends MatrixFactorizationRecommender {
 
         while (Math.abs(prevErr - currErr) > 0.0001 && round < maxIter) {
             double sum = 0.0;
-            for (int u = 1; u <= userCount; u++) {
+            for (int u = 0; u < userCount; u++) {
                 SparseVector items = rateMatrix.getRowRef(u);
                 int[] itemIndexList = items.indexList();
 

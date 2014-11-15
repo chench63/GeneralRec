@@ -27,7 +27,7 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
     //===================================
     //      parameter
     //===================================
-    private float             base1            = 1.55f;
+    private float             base1            = 1.45f;
 
     private float             base2            = 0.5f;
 
@@ -138,7 +138,13 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
     }
 
     public double getWeight(int u, int i, int weightIndx) {
-        return (userWeights[u][weightIndx] * itemWeights[i][weightIndx] + base1);
+        //b1 + (b2 + Pu)(b2 + Pi) + Pu*Pu +Pi*Pi
+        return base1 + (base2 + userWeights[u][weightIndx]) * (base2 + itemWeights[i][weightIndx])
+               + userWeights[u][weightIndx] * userWeights[u][weightIndx]
+               + itemWeights[i][weightIndx] * itemWeights[i][weightIndx];
+
+        //b1 + (b2 + Pu)(b2 + Pi)
+        //        return  base1 + (base2 + userWeights[u][weightIndx]) * (base2 + itemWeights[i][weightIndx]);
     }
 
     public void getUserWeights(SparseMatrix rateMatrix) {
@@ -150,7 +156,7 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
 
             if (itemIndexList == null) {
                 for (int s = 0; s < weightSize; s++) {
-                    userWeights[u][s] = base2 + 1.0f / weightSize;
+                    userWeights[u][s] = 1.0f / weightSize;
                 }
             } else {
                 int total = weightSize;
@@ -165,7 +171,7 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
 
                 // compute weights
                 for (int s = 0; s < weightSize; s++) {
-                    userWeights[u][s] = base2 + (rates[s] + 1.0f) / total;
+                    userWeights[u][s] = (rates[s] + 1.0f) / total;
                 }
             }
         }
@@ -180,7 +186,7 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
 
             if (userIndexList == null) {
                 for (int s = 0; s < weightSize; s++) {
-                    itemWeights[i][s] = base2 + 1.0f / weightSize;
+                    itemWeights[i][s] = 1.0f / weightSize;
                 }
             } else {
                 int total = weightSize;
@@ -195,7 +201,7 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
 
                 // compute weights
                 for (int s = 0; s < weightSize; s++) {
-                    itemWeights[i][s] = base2 + (rates[s] + 1.0f) / total;
+                    itemWeights[i][s] = (rates[s] + 1.0f) / total;
                 }
             }
 

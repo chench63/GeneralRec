@@ -60,6 +60,10 @@ public class ModelUtil {
         int indx = 0;
         for (int i = 0; i < clusters.length; i++) {
             for (int j = 0; j < clusters[i].length; j++) {
+                if (indx >= models.size()) {
+                    break;
+                }
+
                 Model model = models.get(indx);
                 model.setRows(clusters[i][j].getRowSet());
                 model.setCols(clusters[i][j].getColSet());

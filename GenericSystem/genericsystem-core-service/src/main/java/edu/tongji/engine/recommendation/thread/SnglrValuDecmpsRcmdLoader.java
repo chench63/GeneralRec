@@ -4,9 +4,14 @@
  */
 package edu.tongji.engine.recommendation.thread;
 
+import org.apache.log4j.Logger;
+
+import prea.util.MatrixInformationUtil;
 import edu.tongji.data.SparseMatrix;
+import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.parser.Parser;
 import edu.tongji.util.FileUtil;
+import edu.tongji.util.LoggerUtil;
 import edu.tongji.vo.RatingVO;
 
 /**
@@ -18,19 +23,22 @@ import edu.tongji.vo.RatingVO;
 public class SnglrValuDecmpsRcmdLoader extends Thread {
 
     /** matrix with training data*/
-    private SparseMatrix rateMatrix;
+    private SparseMatrix          rateMatrix;
 
     /** matrix with testing data*/
-    private SparseMatrix testMatrix;
+    private SparseMatrix          testMatrix;
 
     /** file with training data*/
-    private String       trainingSetFile;
+    private String                trainingSetFile;
 
     /** file with testing data*/
-    private String       testingSetFile;
+    private String                testingSetFile;
 
     /** the content parser w.r.t certain dataset*/
-    private Parser       parser;
+    private Parser                parser;
+
+    /** logger */
+    protected final static Logger logger = Logger.getLogger(LoggerDefineConstant.SERVICE_NORMAL);
 
     /** 
      * @see java.lang.Thread#run()
@@ -45,6 +53,7 @@ public class SnglrValuDecmpsRcmdLoader extends Thread {
             //            rateMatrix.setValue(rating.getUsrId() - 1, rating.getMovieId() - 1,
             //                rating.getRatingReal());
         }
+        LoggerUtil.info(logger, MatrixInformationUtil.hierarchy(rateMatrix));
 
         //reading testing data
         lines = FileUtil.readLines(testingSetFile);

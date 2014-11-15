@@ -34,14 +34,14 @@
 	</bean>
 
 
-	<!-- ******************************************** Engine Setting************************************************ -->
+	<!-- ******************************************** Engine Setting******************<property name="predictionFile" value="${PREDICTION_READ_PATH}" />****************************** -->
 	<bean id="stdSVD"
 		class="edu.tongji.engine.recommendation.SnglrValuDecmpsRcmdEngine">
 		<property name="loader" ref="snglrValuDecmpsRcmdLoader" />
 		<property name="recommender" ref="weigtedRSVD" />
 		<property name="rateMatrix" ref="rateMatrix" />
 		<property name="testMatrix" ref="testMatrix" />
-		<property name="predictionFile" value="${PREDICTION_READ_PATH}" />
+		
 	</bean>
 
 	<!-- ******************************************** Matrix Setting************************************************ -->

@@ -30,16 +30,16 @@ public class KMsLRA {
     //      Common variable
     //==========================
     /** file to store the original data, make sure the data is compact.*/
-    public final static String  SOURCE_FILE      = "E:/MovieLens//ml-10M100K/3/trainingset";
+    public final static String  SOURCE_FILE      = "E:/MovieLens//ml-10M100K/1/trainingset";
 
     /** file to persist the new data */
-    public final static String  ROW_MAPPING_FILE = "E:/MovieLens/ml-10M100K/3/KMeans/LeastAngle/RM";
+    public final static String  ROW_MAPPING_FILE = "E:/MovieLens/ml-10M100K/1/KMeans/LeastSquare/RM";
 
     /** file to persist the new data */
-    public final static String  COL_MAPPING_FILE = "E:/MovieLens/ml-10M100K/3/KMeans/LeastAngle/CM";
+    public final static String  COL_MAPPING_FILE = "E:/MovieLens/ml-10M100K/1/KMeans/LeastSquare/CM";
 
     /** file to persist the setting data */
-    public final static String  SETTING_FILE     = "E:/MovieLens/ml-10M100K/3/KMeans/LeastAngle/SETTING";
+    public final static String  SETTING_FILE     = "E:/MovieLens/ml-10M100K/1/KMeans/LeastSquare/SETTING";
 
     /** The parser to parse the dataset file  **/
     public final static Parser  parser           = new MovielensRatingTemplateParser();
@@ -51,7 +51,7 @@ public class KMsLRA {
     public final static int     colCount         = 10677;
 
     /** the type of distance involved*/
-    public final static int     DISTANCE_TYPE    = KMeansUtil.ANGLE_DISTANCE;
+    public final static int     DISTANCE_TYPE    = KMeansUtil.SQUARE_ROOT_ERROR_DISTANCE;
 
     /** the number of classes*/
     public final static int     K                = 2;
@@ -60,7 +60,7 @@ public class KMsLRA {
     public final static int     L                = 2;
 
     /** the maximum number of iterations*/
-    public final static int     maxIteration     = 10;
+    public final static int     maxIteration     = 7;
 
     /** logger */
     private final static Logger logger           = Logger

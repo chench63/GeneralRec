@@ -55,9 +55,9 @@ public class LLRAMixtureRcmdEngine extends RcmdtnEngine {
     private Parser               parser;
 
     /** Similarity matrix between users. */
-    private static SparseMatrix  userSimilarity;
+    private SparseMatrix         userSimilarity;
     /** Similarity matrix between items. */
-    private static SparseMatrix  itemSimilarity;
+    private SparseMatrix         itemSimilarity;
 
     //====================================
     //
@@ -76,8 +76,8 @@ public class LLRAMixtureRcmdEngine extends RcmdtnEngine {
         SparseMatrix rateMatrix = MatrixFileUtil
             .read(trainingSetFile, userCount, itemCount, parser);
         SparseMatrix testMatrix = MatrixFileUtil.read(testingSetFile, userCount, itemCount, parser);
-        baseline = new RegularizedSVD(userCount, itemCount, maxValue, minValue, 10, learningRate,
-            regularizer, 0, maxIter);
+        baseline = new RegularizedSVD(userCount, itemCount, maxValue, minValue, 10, 0.005, 0.2, 0,
+            200);
         baseline.buildModel(rateMatrix);
 
         //=========================
@@ -94,15 +94,17 @@ public class LLRAMixtureRcmdEngine extends RcmdtnEngine {
 
             // Preparing weight vectors:
             SparseVector w = kernelSmoothing(userCount, u_t, KernelSmoothing.EPANECHNIKOV_KERNEL,
-                0.8, false);
+                0.5, false);
             SparseVector v = kernelSmoothing(itemCount, i_t, KernelSmoothing.EPANECHNIKOV_KERNEL,
-                0.8, true);
+                0.5, true);
 
             //add model
             models.add(new AnchorWeightedRSVD(userCount, itemCount, maxValue, minValue,
                 featureCount, learningRate, regularizer, momentum, maxIter, base1, base2, w, v,
                 u_t, i_t));
         }
+        userSimilarity = null;
+        itemSimilarity = null;
 
         //==========================
         AnchorWeightedSVDLearner.models = models;
@@ -215,7 +217,7 @@ public class LLRAMixtureRcmdEngine extends RcmdtnEngine {
         SparseVector newFeatureVector = new SparseVector(size);
         newFeatureVector.setValue(id, 1.0);
 
-        for (int i = 1; i < size; i++) {
+        for (int i = 0; i < size; i++) {
             double sim;
             if (isItemFeature) {
                 sim = getItemSimilarity(i, id);
