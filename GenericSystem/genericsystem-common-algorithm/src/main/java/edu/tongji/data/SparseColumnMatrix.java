@@ -120,4 +120,13 @@ public class SparseColumnMatrix {
         }
         return result;
     }
+
+    /**
+     * clear all elements in matrix
+     */
+    public void clear() {
+        for (SparseVector col : cols) {
+            col.clear();
+        }
+    }
 }

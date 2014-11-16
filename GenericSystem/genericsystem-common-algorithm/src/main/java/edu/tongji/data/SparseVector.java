@@ -12,12 +12,12 @@ import java.util.Map;
  * @version 1.1
  */
 public class SparseVector implements Serializable {
-    private static final long   serialVersionUID = 8002;
+    private static final long    serialVersionUID = 8002;
 
     /** The length (maximum number of items to be stored) of sparse vector. */
-    private int                 N;
+    private int                  N;
     /** Data map for <index, value> pairs. */
-    private Map<Integer, Float> map;
+    private Map<Integer, Double> map;
 
     /*========================================
      * Constructors
@@ -28,7 +28,7 @@ public class SparseVector implements Serializable {
      */
     public SparseVector() {
         this.N = 0;
-        this.map = new HashMap<Integer, Float>(0);
+        this.map = new HashMap<Integer, Double>(0);
     }
 
     /**
@@ -38,7 +38,7 @@ public class SparseVector implements Serializable {
      */
     public SparseVector(int n) {
         this.N = n;
-        this.map = new HashMap<Integer, Float>(0);
+        this.map = new HashMap<Integer, Double>(0);
     }
 
     /*========================================
@@ -54,7 +54,7 @@ public class SparseVector implements Serializable {
         if (value == 0.0)
             map.remove(i);
         else
-            map.put(i, (float) value);
+            map.put(i, value);
     }
 
     /**
@@ -156,6 +156,13 @@ public class SparseVector implements Serializable {
         for (int i = 0; i < index.length; i++) {
             this.setValue(index[i], value);
         }
+    }
+
+    /**
+     * remove all elements 
+     */
+    public void clear() {
+        this.map.clear();
     }
 
     /*========================================

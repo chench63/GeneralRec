@@ -914,6 +914,19 @@ public class SparseMatrix implements Serializable {
     }
 
     /**
+     * remove all elements
+     */
+    public void clear() {
+        for (SparseVector row : rows) {
+            row.clear();
+        }
+
+        for (SparseVector col : cols) {
+            col.clear();
+        }
+    }
+
+    /**
      * Convert the matrix to a printable string.
      * 
      * @return The resulted string in the form of "(1, 2: 5.0) (2, 4: 4.5)"
