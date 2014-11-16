@@ -214,6 +214,8 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
      * explicit clear the reference
      */
     public void explicitClear() {
+        itemFeatures.clear();
+        userFeatures.clear();
         this.itemFeatures = null;
         this.userFeatures = null;
         this.itemWeights = null;

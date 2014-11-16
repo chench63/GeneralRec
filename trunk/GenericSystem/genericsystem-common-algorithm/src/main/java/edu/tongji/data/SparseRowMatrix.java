@@ -158,6 +158,15 @@ public class SparseRowMatrix {
     }
 
     /**
+     * clear all elements in matrix
+     */
+    public void clear() {
+        for (SparseVector row : rows) {
+            row.clear();
+        }
+    }
+
+    /**
      * Return items in the diagonal in vector form.
      * 
      * @return Diagonal vector from the matrix.
