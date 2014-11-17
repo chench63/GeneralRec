@@ -68,7 +68,10 @@ public class CoclusterLRA {
      * @param args
      */
     public static void main(String[] args) {
+        // load dataset
+        SparseMatrix rateMatrix = MatrixFileUtil.read(SOURCE_FILE, rowCount, colCount, parser);
 
+        // coclustering
         for (int diverIndx = 0; diverIndx < DIVERGENCE.length; diverIndx++) {
             for (int consts : CONSTRAINTS) {
                 for (int k : K) {
@@ -89,7 +92,7 @@ public class CoclusterLRA {
                         LoggerUtil.info(logger, (new StringBuilder("1. start to cocluster. "))
                             .append(DIR[diverIndx]).append(consts).append('_').append(k)
                             .append('_').append(l));
-                        doCocluster(SOURCE_FILE, settingFile, rowMappingFile, colMappingFile,
+                        doCocluster(rateMatrix, settingFile, rowMappingFile, colMappingFile,
                             DIVERGENCE[diverIndx], consts, k, l);
                     }
                 }
@@ -98,10 +101,9 @@ public class CoclusterLRA {
 
     }
 
-    public static void doCocluster(String sourseFile, String settingFile, String rowMappingFile,
-                                   String colMappingFile, int diverType, int constrains, int K,
-                                   int L) {
-        SparseMatrix rateMatrix = MatrixFileUtil.read(sourseFile, rowCount, colCount, parser);
+    public static void doCocluster(SparseMatrix rateMatrix, String settingFile,
+                                   String rowMappingFile, String colMappingFile, int diverType,
+                                   int constrains, int K, int L) {
         Map<Integer, Integer> rowAssign = new HashMap<Integer, Integer>();
         int[] rowBound = new int[K];
         Map<Integer, Integer> colAssign = new HashMap<Integer, Integer>();
