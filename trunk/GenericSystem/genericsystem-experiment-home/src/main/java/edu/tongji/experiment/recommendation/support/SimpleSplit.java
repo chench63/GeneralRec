@@ -31,19 +31,19 @@ import edu.tongji.vo.RatingVO;
 public class SimpleSplit {
 
     /** source dataset file input path */
-    protected final static String FILENAME              = "C:/Netflix/ratings.dat";
+    protected final static String FILENAME              = "E:/MovieLens/ml-10M100K/ratings.dat";
 
     /** training dataset file output path */
-    protected final static String TRAINING_DATASET_FILE = "C:/Netflix/1/trainingset";
+    protected final static String TRAINING_DATASET_FILE = "E:/MovieLens/ml-10M100K/5/trainingset";
 
     /** testing dataset file output path */
-    protected final static String TESTING_DATASET_FILE  = "C:/Netflix/1/testingset";
+    protected final static String TESTING_DATASET_FILE  = "E:/MovieLens/ml-10M100K/5/testingset";
 
     /** the number of rows */
-    public final static int       rowCount              = 480189;
+    public final static int       rowCount              = 69878;
 
     /** the number of columns */
-    public final static int       colCount              = 17770;
+    public final static int       colCount              = 10677;
 
     /** training data/ total data */
     protected final static float  RATIO                 = 0.9f;

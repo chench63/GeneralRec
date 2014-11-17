@@ -215,6 +215,17 @@ public final class FileUtil {
 
         BufferedWriter writer = null;
         try {
+            //make sure parent directory exist
+            File f = new File(file);
+            File dir = f.getParentFile();
+            if (f.isFile() && f.exists()) {
+                f.delete();
+            }
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+
+            //write to file
             writer = new BufferedWriter(new FileWriter(file));
             writer.write(context);
         } catch (IOException e) {
@@ -240,6 +251,32 @@ public final class FileUtil {
         } finally {
             IOUtils.closeQuietly(writer);
         }
+    }
+
+    /**
+     * Tests whether the file or directory denoted by this abstract pathname exists
+     * 
+     * @param file the file to check
+     * @return
+     */
+    public static boolean exists(String file) {
+        File f = new File(file);
+        return f.exists();
+    }
+
+    /**
+     * Delete the given file 
+     * 
+     * @param file
+     * @return
+     */
+    public static boolean delete(String file) {
+        File f = new File(file);
+        if (f.exists()) {
+            return f.delete();
+        }
+
+        return false;
     }
 
 }

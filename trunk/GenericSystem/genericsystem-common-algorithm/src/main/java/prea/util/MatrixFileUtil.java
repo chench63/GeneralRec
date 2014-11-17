@@ -38,8 +38,9 @@ public final class MatrixFileUtil {
      * @param matrix            the matrix contains the data
      */
     public static void write(String file, SparseMatrix matrix) {
+        FileUtil.delete(file);
+
         int rowCount = matrix.length()[0];
-        StringBuilder content = new StringBuilder();
         for (int i = 0; i < rowCount; i++) {
             SparseVector Mi = matrix.getRowRef(i);
             int[] indexList = Mi.indexList();
@@ -47,14 +48,15 @@ public final class MatrixFileUtil {
                 continue;
             }
 
+            StringBuilder content = new StringBuilder();
             for (int j : indexList) {
                 double val = matrix.getValue(i, j);
                 String elemnt = i + "::" + j + "::" + String.format("%.1f", val);
                 content.append(elemnt).append('\n');
             }
+            FileUtil.writeAsAppend(file, content.toString());
         }
 
-        FileUtil.write(file, content.toString());
     }
 
     /**
@@ -64,23 +66,23 @@ public final class MatrixFileUtil {
      * @param matrix            the matrix contains the data
      */
     public static void write(String file, SparseRowMatrix matrix) {
+        FileUtil.delete(file);
+
         int rowCount = matrix.length()[0];
-        StringBuilder content = new StringBuilder();
         for (int i = 0; i < rowCount; i++) {
             SparseVector Mi = matrix.getRowRef(i);
             int[] indexList = Mi.indexList();
             if (indexList == null) {
                 continue;
             }
-
+            StringBuilder content = new StringBuilder();
             for (int j : indexList) {
                 double val = matrix.getValue(i, j);
                 String elemnt = i + "::" + j + "::" + String.format("%.1f", val);
                 content.append(elemnt).append('\n');
             }
+            FileUtil.writeAsAppend(file, content.toString());
         }
-
-        FileUtil.write(file, content.toString());
     }
 
     /**

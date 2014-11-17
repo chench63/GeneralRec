@@ -38,10 +38,10 @@ public final class CoclusterUtil {
     //      Constraints
     //===========================================
     /** Constraint 2: preserve E[Z|U*,V*] */
-    public final static int     C_2                  = 602;
+    public final static int     C_2                  = 2;
 
     /** Constraint 5: preserve E[Z|U*,V*], E[Z|U*,V], E[Z|U,V*] */
-    public final static int     C_5                  = 605;
+    public final static int     C_5                  = 5;
 
     /** logger */
     private final static Logger logger               = Logger
