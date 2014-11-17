@@ -831,7 +831,20 @@ public class SparseMatrix implements Serializable {
         float[][] probs = null;
         int weightSize = Double.valueOf(maxValue / minValue).intValue();
 
+        if (rows == null && cols == null) {
+            rows = new int[M];
+            for (int i = 0; i < M; i++) {
+                rows[i] = i;
+            }
+
+            cols = new int[N];
+            for (int i = 0; i < N; i++) {
+                cols[i] = i;
+            }
+        }
+
         if (isRow) {
+
             //construct row map to show whether the row is in given rows
             boolean[] colTable = new boolean[N];
             for (int col : cols) {

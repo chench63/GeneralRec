@@ -29,8 +29,8 @@
 		<constructor-arg index="2" type="double" value="${MAX_RATING}" />
 		<constructor-arg index="3" type="double" value="${MIN_RATING}" />
 		<constructor-arg index="4" type="int" value="${FEATURE_COUNT}" />
-		<constructor-arg index="5" type="double" value="${LEARNING_RATE}" />
-		<constructor-arg index="6" type="double" value="${REGULARIZED_PARAM}" />
+		<constructor-arg index="5" type="double" value="0.001" />
+		<constructor-arg index="6" type="double" value="0.01" />
 		<constructor-arg index="7" type="double" value="${MOMENTUM}" />
 		<constructor-arg index="8" type="int" value="100" />
 		<constructor-arg index="9" type="float" value="${B1}" />
@@ -47,15 +47,14 @@
 		<property name="groups">
 			<list>
 				<ref bean="global"></ref>
-				<ref bean="kls"></ref>
-				<ref bean="kla"></ref>
-				<ref bean="kf20"></ref>
 				<ref bean="cocluter_IW"></ref>
 				<ref bean="cocluter_IW_3"></ref>
 				<ref bean="cocluter_IW2"></ref>
+				<ref bean="cocluter_IW2_3"></ref>
 				<ref bean="cocluter_EW"></ref>
 				<ref bean="cocluter_EW_3"></ref>
 				<ref bean="cocluter_EW2"></ref>
+				<ref bean="cocluter_EW2_3"></ref>
 			</list>
 		</property>
 	</bean>
@@ -347,10 +346,10 @@
 		<property name="colMappingFile" value="E:/MovieLens/ml-10M100K/3/Cocluster/IW/CM" />
 		<property name="models">
 			<list>
-				<ref bean="model"></ref>
-				<ref bean="model"></ref>
-				<ref bean="model"></ref>
-				<ref bean="model"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
 			</list>
 		</property>
 	</bean>
@@ -362,10 +361,10 @@
 		<property name="colMappingFile" value="E:/MovieLens/ml-10M100K/3/Cocluster/IW_3/CM" />
 		<property name="models">
 			<list>
-				<ref bean="model"></ref>
-				<ref bean="model"></ref>
-				<ref bean="model"></ref>
-				<ref bean="model"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
 			</list>
 		</property>
 	</bean>
@@ -377,10 +376,25 @@
 		<property name="colMappingFile" value="E:/MovieLens/ml-10M100K/3/Cocluster/IW2/CM" />
 		<property name="models">
 			<list>
-				<ref bean="model"></ref>
-				<ref bean="model"></ref>
-				<ref bean="model"></ref>
-				<ref bean="model"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_IW2_3" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile"
+			value="E:/MovieLens/ml-10M100K/3/Cocluster/IW2_3/SETTING" />
+		<property name="rowMappingFile" value="E:/MovieLens/ml-10M100K/3/Cocluster/IW2_3/RM" />
+		<property name="colMappingFile" value="E:/MovieLens/ml-10M100K/3/Cocluster/IW2_3/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
 			</list>
 		</property>
 	</bean>
@@ -393,10 +407,10 @@
 		<property name="colMappingFile" value="E:/MovieLens/ml-10M100K/3/Cocluster/EW/CM" />
 		<property name="models">
 			<list>
-				<ref bean="model"></ref>
-				<ref bean="model"></ref>
-				<ref bean="model"></ref>
-				<ref bean="model"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
 			</list>
 		</property>
 	</bean>
@@ -408,10 +422,10 @@
 		<property name="colMappingFile" value="E:/MovieLens/ml-10M100K/3/Cocluster/EW_3/CM" />
 		<property name="models">
 			<list>
-				<ref bean="model"></ref>
-				<ref bean="model"></ref>
-				<ref bean="model"></ref>
-				<ref bean="model"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
 			</list>
 		</property>
 	</bean>
@@ -423,10 +437,25 @@
 		<property name="colMappingFile" value="E:/MovieLens/ml-10M100K/3/Cocluster/EW2/CM" />
 		<property name="models">
 			<list>
-				<ref bean="model"></ref>
-				<ref bean="model"></ref>
-				<ref bean="model"></ref>
-				<ref bean="model"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_EW2_3" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile"
+			value="E:/MovieLens/ml-10M100K/3/Cocluster/EW2_3/SETTING" />
+		<property name="rowMappingFile" value="E:/MovieLens/ml-10M100K/3/Cocluster/EW2_3/RM" />
+		<property name="colMappingFile" value="E:/MovieLens/ml-10M100K/3/Cocluster/EW2_3/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
 			</list>
 		</property>
 	</bean>
