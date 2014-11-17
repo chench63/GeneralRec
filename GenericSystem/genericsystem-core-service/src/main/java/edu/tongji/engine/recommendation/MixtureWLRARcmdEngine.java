@@ -14,6 +14,7 @@ import edu.tongji.data.SparseRowMatrix;
 import edu.tongji.data.SparseVector;
 import edu.tongji.engine.recommendation.thread.WeightedSVDLearner;
 import edu.tongji.parser.Parser;
+import edu.tongji.util.LoggerUtil;
 
 /**
  * 
@@ -45,6 +46,8 @@ public class MixtureWLRARcmdEngine extends RcmdtnEngine {
      */
     @Override
     protected void loadDataSet() {
+        LoggerUtil.info(logger, "1. loading data set. Groups: " + groups.size());
+
         // construct queue of models
         SparseMatrix rateMatrix = MatrixFileUtil
             .read(trainingSetFile, userCount, itemCount, parser);
@@ -78,6 +81,8 @@ public class MixtureWLRARcmdEngine extends RcmdtnEngine {
             parser);
         WeightedSVDLearner.cumPrediction = new SparseRowMatrix(userCount, itemCount);
         WeightedSVDLearner.cumWeight = new SparseRowMatrix(userCount, itemCount);
+        LoggerUtil.info(logger, "Train: " + WeightedSVDLearner.rateMatrix.itemCount() + "\tTest: "
+                                + WeightedSVDLearner.testMatrix.itemCount());
     }
 
     /** 
