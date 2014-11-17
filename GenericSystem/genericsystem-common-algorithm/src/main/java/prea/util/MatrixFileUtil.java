@@ -4,15 +4,22 @@
  */
 package prea.util;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+
+import org.apache.commons.io.IOUtils;
 
 import edu.tongji.data.BlockMatrix;
 import edu.tongji.data.SparseMatrix;
 import edu.tongji.data.SparseRowMatrix;
 import edu.tongji.data.SparseVector;
 import edu.tongji.parser.Parser;
+import edu.tongji.util.ExceptionUtil;
 import edu.tongji.util.FileUtil;
 import edu.tongji.vo.RatingVO;
 
@@ -224,12 +231,24 @@ public final class MatrixFileUtil {
      */
     public static SparseMatrix read(String file, int rowCount, int colCount, Parser parser) {
         SparseMatrix result = new SparseMatrix(rowCount, colCount);
-        String[] lines = FileUtil.readLines(file);
-        for (String line : lines) {
-            RatingVO rating = (RatingVO) parser.parse(line);
-            result.setValue(rating.getUsrId(), rating.getMovieId(), rating.getRatingReal());
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(file));
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                RatingVO rating = (RatingVO) parser.parse(line);
+                result.setValue(rating.getUsrId(), rating.getMovieId(), rating.getRatingReal());
+            }
+
+            return result;
+        } catch (FileNotFoundException e) {
+            ExceptionUtil.caught(e, "无法找到对应的加载文件: " + file);
+        } catch (IOException e) {
+            ExceptionUtil.caught(e, "读取文件发生异常，校验文件格式");
+        } finally {
+            IOUtils.closeQuietly(reader);
         }
-        return result;
+        return null;
     }
 
     /**
@@ -243,12 +262,24 @@ public final class MatrixFileUtil {
      */
     public static SparseRowMatrix reads(String file, int rowCount, int colCount, Parser parser) {
         SparseRowMatrix result = new SparseRowMatrix(rowCount, colCount);
-        String[] lines = FileUtil.readLines(file);
-        for (String line : lines) {
-            RatingVO rating = (RatingVO) parser.parse(line);
-            result.setValue(rating.getUsrId(), rating.getMovieId(), rating.getRatingReal());
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(file));
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                RatingVO rating = (RatingVO) parser.parse(line);
+                result.setValue(rating.getUsrId(), rating.getMovieId(), rating.getRatingReal());
+            }
+
+            return result;
+        } catch (FileNotFoundException e) {
+            ExceptionUtil.caught(e, "无法找到对应的加载文件: " + file);
+        } catch (IOException e) {
+            ExceptionUtil.caught(e, "读取文件发生异常，校验文件格式");
+        } finally {
+            IOUtils.closeQuietly(reader);
         }
-        return result;
+        return null;
     }
 
     public static BlockMatrix read(String sourceFile, String settingFile, String rowMappingFile,
