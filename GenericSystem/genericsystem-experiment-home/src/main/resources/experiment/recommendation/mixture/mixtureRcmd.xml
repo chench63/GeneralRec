@@ -47,303 +47,26 @@
 		<property name="groups">
 			<list>
 				<ref bean="global"></ref>
-				<ref bean="cocluter_IW"></ref>
-				<ref bean="cocluter_IW_3"></ref>
-				<ref bean="cocluter_IW2"></ref>
-				<ref bean="cocluter_IW2_3"></ref>
-				<ref bean="cocluter_EW"></ref>
-				<ref bean="cocluter_EW_3"></ref>
-				<ref bean="cocluter_EW2"></ref>
-				<ref bean="cocluter_EW2_3"></ref>
+				<ref bean="cocluter_IW2_2_2"></ref>
+				<ref bean="cocluter_IW2_3_2"></ref>
+				<ref bean="cocluter_IW5_2_2"></ref>
+				<ref bean="cocluter_IW5_3_2"></ref>
+				<ref bean="cocluter_EW2_2_2"></ref>
+				<ref bean="cocluter_EW2_3_2"></ref>
+				<ref bean="cocluter_EW5_2_2"></ref>
+				<ref bean="cocluter_EW5_3_2"></ref>
 			</list>
 		</property>
 	</bean>
-
-	<!-- ********************* K-Means-least-squares Cocluster Setting************************************************ -->
-	<bean id="kmean_ls" class="edu.tongji.data.ModelGroup">
-		<property name="settingFile"
-			value="E:/MovieLens/ml-10M100K/3/KMeans/LeastSquare/SETTING" />
-		<property name="rowMappingFile"
-			value="E:/MovieLens/ml-10M100K/3/KMeans/LeastSquare/RM" />
-		<property name="colMappingFile"
-			value="E:/MovieLens/ml-10M100K/3/KMeans/LeastSquare/CM" />
-		<property name="models">
-			<list>
-				<ref bean="kmls0"></ref>
-				<ref bean="kmls1"></ref>
-				<ref bean="kmls2"></ref>
-				<ref bean="kmls3"></ref>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="kmls0" class="edu.tongji.data.Model" scope="prototype">
-		<constructor-arg index="0" type="int" value="${USER_COUNT}" />
-		<constructor-arg index="1" type="int" value="${ITEM_COUNT}" />
-		<constructor-arg index="2" type="double" value="${MAX_RATING}" />
-		<constructor-arg index="3" type="double" value="${MIN_RATING}" />
-		<constructor-arg index="4" type="int" value="${FEATURE_COUNT}" />
-		<constructor-arg index="5" type="double" value="${LEARNING_RATE}" />
-		<constructor-arg index="6" type="double" value="${REGULARIZED_PARAM}" />
-		<constructor-arg index="7" type="double" value="${MOMENTUM}" />
-		<constructor-arg index="8" type="int" value="60" />
-		<constructor-arg index="9" type="float" value="1.55" />
-		<constructor-arg index="10" type="float" value="${B2}" />
-	</bean>
-
-	<bean id="kmls1" class="edu.tongji.data.Model" scope="prototype">
-		<constructor-arg index="0" type="int" value="${USER_COUNT}" />
-		<constructor-arg index="1" type="int" value="${ITEM_COUNT}" />
-		<constructor-arg index="2" type="double" value="${MAX_RATING}" />
-		<constructor-arg index="3" type="double" value="${MIN_RATING}" />
-		<constructor-arg index="4" type="int" value="${FEATURE_COUNT}" />
-		<constructor-arg index="5" type="double" value="${LEARNING_RATE}" />
-		<constructor-arg index="6" type="double" value="${REGULARIZED_PARAM}" />
-		<constructor-arg index="7" type="double" value="${MOMENTUM}" />
-		<constructor-arg index="8" type="int" value="80" />
-		<constructor-arg index="9" type="float" value="1.50" />
-		<constructor-arg index="10" type="float" value="${B2}" />
-	</bean>
-
-	<bean id="kmls2" class="edu.tongji.data.Model" scope="prototype">
-		<constructor-arg index="0" type="int" value="${USER_COUNT}" />
-		<constructor-arg index="1" type="int" value="${ITEM_COUNT}" />
-		<constructor-arg index="2" type="double" value="${MAX_RATING}" />
-		<constructor-arg index="3" type="double" value="${MIN_RATING}" />
-		<constructor-arg index="4" type="int" value="${FEATURE_COUNT}" />
-		<constructor-arg index="5" type="double" value="${LEARNING_RATE}" />
-		<constructor-arg index="6" type="double" value="${REGULARIZED_PARAM}" />
-		<constructor-arg index="7" type="double" value="${MOMENTUM}" />
-		<constructor-arg index="8" type="int" value="35" />
-		<constructor-arg index="9" type="float" value="1.30" />
-		<constructor-arg index="10" type="float" value="${B2}" />
-	</bean>
-
-	<bean id="kmls3" class="edu.tongji.data.Model" scope="prototype">
-		<constructor-arg index="0" type="int" value="${USER_COUNT}" />
-		<constructor-arg index="1" type="int" value="${ITEM_COUNT}" />
-		<constructor-arg index="2" type="double" value="${MAX_RATING}" />
-		<constructor-arg index="3" type="double" value="${MIN_RATING}" />
-		<constructor-arg index="4" type="int" value="${FEATURE_COUNT}" />
-		<constructor-arg index="5" type="double" value="${LEARNING_RATE}" />
-		<constructor-arg index="6" type="double" value="${REGULARIZED_PARAM}" />
-		<constructor-arg index="7" type="double" value="${MOMENTUM}" />
-		<constructor-arg index="8" type="int" value="50" />
-		<constructor-arg index="9" type="float" value="1.40" />
-		<constructor-arg index="10" type="float" value="${B2}" />
-	</bean>
-
-	<!-- ******************** K-Means-least-angle Cocluster Setting******************************* -->
-	<bean id="kmean_la" class="edu.tongji.data.ModelGroup">
-		<property name="settingFile"
-			value="E:/MovieLens/ml-10M100K/3/KMeans/LeastAngle/SETTING" />
-		<property name="rowMappingFile"
-			value="E:/MovieLens/ml-10M100K/3/KMeans/LeastAngle/RM" />
-		<property name="colMappingFile"
-			value="E:/MovieLens/ml-10M100K/3/KMeans/LeastAngle/CM" />
-		<property name="models">
-			<list>
-				<ref bean="kmla0"></ref>
-				<ref bean="kmla1"></ref>
-				<ref bean="kmla2"></ref>
-				<ref bean="kmla3"></ref>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="kmla0" class="edu.tongji.data.Model" scope="prototype">
-		<constructor-arg index="0" type="int" value="${USER_COUNT}" />
-		<constructor-arg index="1" type="int" value="${ITEM_COUNT}" />
-		<constructor-arg index="2" type="double" value="${MAX_RATING}" />
-		<constructor-arg index="3" type="double" value="${MIN_RATING}" />
-		<constructor-arg index="4" type="int" value="${FEATURE_COUNT}" />
-		<constructor-arg index="5" type="double" value="${LEARNING_RATE}" />
-		<constructor-arg index="6" type="double" value="${REGULARIZED_PARAM}" />
-		<constructor-arg index="7" type="double" value="${MOMENTUM}" />
-		<constructor-arg index="8" type="int" value="70" />
-		<constructor-arg index="9" type="float" value="1.45" />
-		<constructor-arg index="10" type="float" value="${B2}" />
-	</bean>
-
-	<bean id="kmla1" class="edu.tongji.data.Model" scope="prototype">
-		<constructor-arg index="0" type="int" value="${USER_COUNT}" />
-		<constructor-arg index="1" type="int" value="${ITEM_COUNT}" />
-		<constructor-arg index="2" type="double" value="${MAX_RATING}" />
-		<constructor-arg index="3" type="double" value="${MIN_RATING}" />
-		<constructor-arg index="4" type="int" value="${FEATURE_COUNT}" />
-		<constructor-arg index="5" type="double" value="${LEARNING_RATE}" />
-		<constructor-arg index="6" type="double" value="${REGULARIZED_PARAM}" />
-		<constructor-arg index="7" type="double" value="${MOMENTUM}" />
-		<constructor-arg index="8" type="int" value="60" />
-		<constructor-arg index="9" type="float" value="1.40" />
-		<constructor-arg index="10" type="float" value="${B2}" />
-	</bean>
-
-
-	<bean id="kmla2" class="edu.tongji.data.Model" scope="prototype">
-		<constructor-arg index="0" type="int" value="${USER_COUNT}" />
-		<constructor-arg index="1" type="int" value="${ITEM_COUNT}" />
-		<constructor-arg index="2" type="double" value="${MAX_RATING}" />
-		<constructor-arg index="3" type="double" value="${MIN_RATING}" />
-		<constructor-arg index="4" type="int" value="${FEATURE_COUNT}" />
-		<constructor-arg index="5" type="double" value="${LEARNING_RATE}" />
-		<constructor-arg index="6" type="double" value="${REGULARIZED_PARAM}" />
-		<constructor-arg index="7" type="double" value="${MOMENTUM}" />
-		<constructor-arg index="8" type="int" value="40" />
-		<constructor-arg index="9" type="float" value="1.45" />
-		<constructor-arg index="10" type="float" value="${B2}" />
-	</bean>
-
-	<bean id="kmla3" class="edu.tongji.data.Model" scope="prototype">
-		<constructor-arg index="0" type="int" value="${USER_COUNT}" />
-		<constructor-arg index="1" type="int" value="${ITEM_COUNT}" />
-		<constructor-arg index="2" type="double" value="${MAX_RATING}" />
-		<constructor-arg index="3" type="double" value="${MIN_RATING}" />
-		<constructor-arg index="4" type="int" value="${FEATURE_COUNT}" />
-		<constructor-arg index="5" type="double" value="${LEARNING_RATE}" />
-		<constructor-arg index="6" type="double" value="${REGULARIZED_PARAM}" />
-		<constructor-arg index="7" type="double" value="${MOMENTUM}" />
-		<constructor-arg index="8" type="int" value="40" />
-		<constructor-arg index="9" type="float" value="1.45" />
-		<constructor-arg index="10" type="float" value="${B2}" />
-	</bean>
-
-
-	<!-- *********************** K-Means-feature Cocluster Setting************************************** -->
-	<bean id="kmean_f20" class="edu.tongji.data.ModelGroup">
-		<property name="settingFile"
-			value="E:/MovieLens/ml-10M100K/3/KMeans/Feature/SETTING" />
-		<property name="rowMappingFile" value="E:/MovieLens/ml-10M100K/3/KMeans/Feature/RM" />
-		<property name="colMappingFile" value="E:/MovieLens/ml-10M100K/3/KMeans/Feature/CM" />
-		<property name="models">
-			<list>
-				<ref bean="kf0"></ref>
-				<ref bean="kf1"></ref>
-				<ref bean="kf2"></ref>
-				<ref bean="kf3"></ref>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="kf0" class="edu.tongji.data.Model" scope="prototype">
-		<constructor-arg index="0" type="int" value="${USER_COUNT}" />
-		<constructor-arg index="1" type="int" value="${ITEM_COUNT}" />
-		<constructor-arg index="2" type="double" value="${MAX_RATING}" />
-		<constructor-arg index="3" type="double" value="${MIN_RATING}" />
-		<constructor-arg index="4" type="int" value="${FEATURE_COUNT}" />
-		<constructor-arg index="5" type="double" value="${LEARNING_RATE}" />
-		<constructor-arg index="6" type="double" value="${REGULARIZED_PARAM}" />
-		<constructor-arg index="7" type="double" value="${MOMENTUM}" />
-		<constructor-arg index="8" type="int" value="60" />
-		<constructor-arg index="9" type="float" value="1.20" />
-		<constructor-arg index="10" type="float" value="${B2}" />
-	</bean>
-
-	<bean id="kf1" class="edu.tongji.data.Model" scope="prototype">
-		<constructor-arg index="0" type="int" value="${USER_COUNT}" />
-		<constructor-arg index="1" type="int" value="${ITEM_COUNT}" />
-		<constructor-arg index="2" type="double" value="${MAX_RATING}" />
-		<constructor-arg index="3" type="double" value="${MIN_RATING}" />
-		<constructor-arg index="4" type="int" value="${FEATURE_COUNT}" />
-		<constructor-arg index="5" type="double" value="${LEARNING_RATE}" />
-		<constructor-arg index="6" type="double" value="${REGULARIZED_PARAM}" />
-		<constructor-arg index="7" type="double" value="${MOMENTUM}" />
-		<constructor-arg index="8" type="int" value="45" />
-		<constructor-arg index="9" type="float" value="1.45" />
-		<constructor-arg index="10" type="float" value="${B2}" />
-	</bean>
-
-
-	<bean id="kf2" class="edu.tongji.data.Model" scope="prototype">
-		<constructor-arg index="0" type="int" value="${USER_COUNT}" />
-		<constructor-arg index="1" type="int" value="${ITEM_COUNT}" />
-		<constructor-arg index="2" type="double" value="${MAX_RATING}" />
-		<constructor-arg index="3" type="double" value="${MIN_RATING}" />
-		<constructor-arg index="4" type="int" value="${FEATURE_COUNT}" />
-		<constructor-arg index="5" type="double" value="${LEARNING_RATE}" />
-		<constructor-arg index="6" type="double" value="${REGULARIZED_PARAM}" />
-		<constructor-arg index="7" type="double" value="${MOMENTUM}" />
-		<constructor-arg index="8" type="int" value="40" />
-		<constructor-arg index="9" type="float" value="1.50" />
-		<constructor-arg index="10" type="float" value="${B2}" />
-	</bean>
-
-	<bean id="kf3" class="edu.tongji.data.Model" scope="prototype">
-		<constructor-arg index="0" type="int" value="${USER_COUNT}" />
-		<constructor-arg index="1" type="int" value="${ITEM_COUNT}" />
-		<constructor-arg index="2" type="double" value="${MAX_RATING}" />
-		<constructor-arg index="3" type="double" value="${MIN_RATING}" />
-		<constructor-arg index="4" type="int" value="${FEATURE_COUNT}" />
-		<constructor-arg index="5" type="double" value="${LEARNING_RATE}" />
-		<constructor-arg index="6" type="double" value="${REGULARIZED_PARAM}" />
-		<constructor-arg index="7" type="double" value="${MOMENTUM}" />
-		<constructor-arg index="8" type="int" value="70" />
-		<constructor-arg index="9" type="float" value="1.40" />
-		<constructor-arg index="10" type="float" value="${B2}" />
-	</bean>
-
-
-	<!-- Primaries -->
-	<bean id="kls" class="edu.tongji.data.ModelGroup">
-		<property name="settingFile"
-			value="E:/MovieLens/ml-10M100K/3/KMeans/LeastSquare/SETTING" />
-		<property name="rowMappingFile"
-			value="E:/MovieLens/ml-10M100K/3/KMeans/LeastSquare/RM" />
-		<property name="colMappingFile"
-			value="E:/MovieLens/ml-10M100K/3/KMeans/LeastSquare/CM" />
-		<property name="models">
-			<list>
-				<ref bean="cocluster"></ref>
-				<ref bean="cocluster"></ref>
-				<ref bean="cocluster"></ref>
-				<ref bean="cocluster"></ref>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="kla" class="edu.tongji.data.ModelGroup">
-		<property name="settingFile"
-			value="E:/MovieLens/ml-10M100K/3/KMeans/LeastAngle/SETTING" />
-		<property name="rowMappingFile"
-			value="E:/MovieLens/ml-10M100K/3/KMeans/LeastAngle/RM" />
-		<property name="colMappingFile"
-			value="E:/MovieLens/ml-10M100K/3/KMeans/LeastAngle/CM" />
-		<property name="models">
-			<list>
-				<ref bean="cocluster"></ref>
-				<ref bean="cocluster"></ref>
-				<ref bean="cocluster"></ref>
-				<ref bean="cocluster"></ref>
-			</list>
-		</property>
-	</bean>
-
-	<bean id="kf20" class="edu.tongji.data.ModelGroup">
-		<property name="settingFile"
-			value="E:/MovieLens/ml-10M100K/3/KMeans/Feature/SETTING" />
-		<property name="rowMappingFile" value="E:/MovieLens/ml-10M100K/3/KMeans/Feature/RM" />
-		<property name="colMappingFile" value="E:/MovieLens/ml-10M100K/3/KMeans/Feature/CM" />
-		<property name="models">
-			<list>
-				<ref bean="cocluster"></ref>
-				<ref bean="cocluster"></ref>
-				<ref bean="cocluster"></ref>
-				<ref bean="cocluster"></ref>
-			</list>
-		</property>
-	</bean>
-
-
-
-
-
 
 	<!-- *********************** Cocluster-IW Cocluster Setting************************************** -->
-	<bean id="cocluter_IW" class="edu.tongji.data.ModelGroup">
+	<bean id="cocluter_IW2_2_2" class="edu.tongji.data.ModelGroup">
 		<property name="settingFile"
-			value="E:/MovieLens/ml-10M100K/3/Cocluster/IW/SETTING" />
-		<property name="rowMappingFile" value="E:/MovieLens/ml-10M100K/3/Cocluster/IW/RM" />
-		<property name="colMappingFile" value="E:/MovieLens/ml-10M100K/3/Cocluster/IW/CM" />
+			value="E:/MovieLens/ml-10M100K/1/Cocluster/IW2_2_2/SETTING" />
+		<property name="rowMappingFile"
+			value="E:/MovieLens/ml-10M100K/1/Cocluster/IW2_2_2/RM" />
+		<property name="colMappingFile"
+			value="E:/MovieLens/ml-10M100K/1/Cocluster/IW2_2_2/CM" />
 		<property name="models">
 			<list>
 				<ref bean="cocluster"></ref>
@@ -354,11 +77,13 @@
 		</property>
 	</bean>
 
-	<bean id="cocluter_IW_3" class="edu.tongji.data.ModelGroup">
+	<bean id="cocluter_IW2_3_2" class="edu.tongji.data.ModelGroup">
 		<property name="settingFile"
-			value="E:/MovieLens/ml-10M100K/3/Cocluster/IW_3/SETTING" />
-		<property name="rowMappingFile" value="E:/MovieLens/ml-10M100K/3/Cocluster/IW_3/RM" />
-		<property name="colMappingFile" value="E:/MovieLens/ml-10M100K/3/Cocluster/IW_3/CM" />
+			value="E:/MovieLens/ml-10M100K/1/Cocluster/IW2_3_2/SETTING" />
+		<property name="rowMappingFile"
+			value="E:/MovieLens/ml-10M100K/1/Cocluster/IW2_3_2/RM" />
+		<property name="colMappingFile"
+			value="E:/MovieLens/ml-10M100K/1/Cocluster/IW2_3_2/CM" />
 		<property name="models">
 			<list>
 				<ref bean="cocluster"></ref>
@@ -369,11 +94,13 @@
 		</property>
 	</bean>
 
-	<bean id="cocluter_IW2" class="edu.tongji.data.ModelGroup">
+	<bean id="cocluter_IW5_2_2" class="edu.tongji.data.ModelGroup">
 		<property name="settingFile"
-			value="E:/MovieLens/ml-10M100K/3/Cocluster/IW2/SETTING" />
-		<property name="rowMappingFile" value="E:/MovieLens/ml-10M100K/3/Cocluster/IW2/RM" />
-		<property name="colMappingFile" value="E:/MovieLens/ml-10M100K/3/Cocluster/IW2/CM" />
+			value="E:/MovieLens/ml-10M100K/1/Cocluster/IW5_2_2/SETTING" />
+		<property name="rowMappingFile"
+			value="E:/MovieLens/ml-10M100K/1/Cocluster/IW5_2_2/RM" />
+		<property name="colMappingFile"
+			value="E:/MovieLens/ml-10M100K/1/Cocluster/IW5_2_2/CM" />
 		<property name="models">
 			<list>
 				<ref bean="cocluster"></ref>
@@ -384,11 +111,13 @@
 		</property>
 	</bean>
 
-	<bean id="cocluter_IW2_3" class="edu.tongji.data.ModelGroup">
+	<bean id="cocluter_IW5_3_2" class="edu.tongji.data.ModelGroup">
 		<property name="settingFile"
-			value="E:/MovieLens/ml-10M100K/3/Cocluster/IW2_3/SETTING" />
-		<property name="rowMappingFile" value="E:/MovieLens/ml-10M100K/3/Cocluster/IW2_3/RM" />
-		<property name="colMappingFile" value="E:/MovieLens/ml-10M100K/3/Cocluster/IW2_3/CM" />
+			value="E:/MovieLens/ml-10M100K/1/Cocluster/IW5_3_2/SETTING" />
+		<property name="rowMappingFile"
+			value="E:/MovieLens/ml-10M100K/1/Cocluster/IW5_3_2/RM" />
+		<property name="colMappingFile"
+			value="E:/MovieLens/ml-10M100K/1/Cocluster/IW5_3_2/CM" />
 		<property name="models">
 			<list>
 				<ref bean="cocluster"></ref>
@@ -400,11 +129,13 @@
 	</bean>
 
 	<!-- *********************** Cocluster-IW Cocluster Setting************************************** -->
-	<bean id="cocluter_EW" class="edu.tongji.data.ModelGroup">
+	<bean id="cocluter_EW2_2_2" class="edu.tongji.data.ModelGroup">
 		<property name="settingFile"
-			value="E:/MovieLens/ml-10M100K/3/Cocluster/EW/SETTING" />
-		<property name="rowMappingFile" value="E:/MovieLens/ml-10M100K/3/Cocluster/EW/RM" />
-		<property name="colMappingFile" value="E:/MovieLens/ml-10M100K/3/Cocluster/EW/CM" />
+			value="E:/MovieLens/ml-10M100K/1/Cocluster/EW2_2_2/SETTING" />
+		<property name="rowMappingFile"
+			value="E:/MovieLens/ml-10M100K/1/Cocluster/EW2_2_2/RM" />
+		<property name="colMappingFile"
+			value="E:/MovieLens/ml-10M100K/1/Cocluster/EW2_2_2/CM" />
 		<property name="models">
 			<list>
 				<ref bean="cocluster"></ref>
@@ -415,11 +146,13 @@
 		</property>
 	</bean>
 
-	<bean id="cocluter_EW_3" class="edu.tongji.data.ModelGroup">
+	<bean id="cocluter_EW2_3_2" class="edu.tongji.data.ModelGroup">
 		<property name="settingFile"
-			value="E:/MovieLens/ml-10M100K/3/Cocluster/EW_3/SETTING" />
-		<property name="rowMappingFile" value="E:/MovieLens/ml-10M100K/3/Cocluster/EW_3/RM" />
-		<property name="colMappingFile" value="E:/MovieLens/ml-10M100K/3/Cocluster/EW_3/CM" />
+			value="E:/MovieLens/ml-10M100K/1/Cocluster/EW2_3_2/SETTING" />
+		<property name="rowMappingFile"
+			value="E:/MovieLens/ml-10M100K/1/Cocluster/EW2_3_2/RM" />
+		<property name="colMappingFile"
+			value="E:/MovieLens/ml-10M100K/1/Cocluster/EW2_3_2/CM" />
 		<property name="models">
 			<list>
 				<ref bean="cocluster"></ref>
@@ -430,11 +163,13 @@
 		</property>
 	</bean>
 
-	<bean id="cocluter_EW2" class="edu.tongji.data.ModelGroup">
+	<bean id="cocluter_EW5_2_2" class="edu.tongji.data.ModelGroup">
 		<property name="settingFile"
-			value="E:/MovieLens/ml-10M100K/3/Cocluster/EW2/SETTING" />
-		<property name="rowMappingFile" value="E:/MovieLens/ml-10M100K/3/Cocluster/EW2/RM" />
-		<property name="colMappingFile" value="E:/MovieLens/ml-10M100K/3/Cocluster/EW2/CM" />
+			value="E:/MovieLens/ml-10M100K/1/Cocluster/EW5_2_2/SETTING" />
+		<property name="rowMappingFile"
+			value="E:/MovieLens/ml-10M100K/1/Cocluster/EW5_2_2/RM" />
+		<property name="colMappingFile"
+			value="E:/MovieLens/ml-10M100K/1/Cocluster/EW5_2_2/CM" />
 		<property name="models">
 			<list>
 				<ref bean="cocluster"></ref>
@@ -445,11 +180,13 @@
 		</property>
 	</bean>
 
-	<bean id="cocluter_EW2_3" class="edu.tongji.data.ModelGroup">
+	<bean id="cocluter_EW5_3_2" class="edu.tongji.data.ModelGroup">
 		<property name="settingFile"
-			value="E:/MovieLens/ml-10M100K/3/Cocluster/EW2_3/SETTING" />
-		<property name="rowMappingFile" value="E:/MovieLens/ml-10M100K/3/Cocluster/EW2_3/RM" />
-		<property name="colMappingFile" value="E:/MovieLens/ml-10M100K/3/Cocluster/EW2_3/CM" />
+			value="E:/MovieLens/ml-10M100K/1/Cocluster/EW5_3_2/SETTING" />
+		<property name="rowMappingFile"
+			value="E:/MovieLens/ml-10M100K/1/Cocluster/EW5_3_2/RM" />
+		<property name="colMappingFile"
+			value="E:/MovieLens/ml-10M100K/1/Cocluster/EW5_3_2/CM" />
 		<property name="models">
 			<list>
 				<ref bean="cocluster"></ref>
