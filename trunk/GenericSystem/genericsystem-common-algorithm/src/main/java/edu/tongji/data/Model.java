@@ -34,7 +34,7 @@ public class Model {
      * 
      * @param rateMatrix
      */
-    public void buildModel(SparseRowMatrix rateMatrix) {
+    public void buildModel(final SparseRowMatrix rateMatrix) {
         if (rows == null | cols == null) {
             recmder.buildModel(rateMatrix);
         } else {
@@ -50,7 +50,7 @@ public class Model {
      * @param cumPrediction     the cumulative prediction
      * @param cumWeight         the cumulative weights
      */
-    public void evaluate(SparseRowMatrix testMatrix, SparseRowMatrix cumPrediction,
+    public void evaluate(final SparseRowMatrix testMatrix, SparseRowMatrix cumPrediction,
                          SparseRowMatrix cumWeight) {
         SparseRowMatrix localMatrix = null;
         if (rows == null | cols == null) {
