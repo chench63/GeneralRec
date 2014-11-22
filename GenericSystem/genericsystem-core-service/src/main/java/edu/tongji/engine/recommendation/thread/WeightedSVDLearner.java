@@ -3,9 +3,10 @@ package edu.tongji.engine.recommendation.thread;
 import java.util.Queue;
 
 import org.apache.log4j.Logger;
+import org.springframework.util.StopWatch;
 
+import prea.util.EvaluationMetrics;
 import prea.util.MatrixInformationUtil;
-import prea.util.SimpleEvaluationMetrics;
 import edu.tongji.data.Model;
 import edu.tongji.data.SparseRowMatrix;
 import edu.tongji.log4j.LoggerDefineConstant;
@@ -51,12 +52,19 @@ public class WeightedSVDLearner extends Thread {
     public void run() {
         Model task = null;
         while ((task = task()) != null) {
+            //build the model and establish GC, once the model is builded.
+            StopWatch stopWatch = new StopWatch();
+            stopWatch.start();
             task.buildModel(rateMatrix);
-            SimpleEvaluationMetrics metric = null;
+            stopWatch.stop();
+            LoggerUtil.info(logger, "T: " + stopWatch.getLastTaskTimeMillis());
+
+            EvaluationMetrics metric = null;
             SparseRowMatrix prediction = null;
 
             //block
             synchronized (mutexMatrix) {
+                //evaluate the model and establish GC at the same time.
                 task.evaluate(testMatrix, cumPrediction, cumWeight);
                 int userCount = testMatrix.length()[0];
                 int itemCount = testMatrix.length()[1];
@@ -75,7 +83,7 @@ public class WeightedSVDLearner extends Thread {
                         prediction.setValue(u, v, rateEsti);
                     }
                 }
-                metric = new SimpleEvaluationMetrics(testMatrix, prediction, task.maxValue(),
+                metric = new EvaluationMetrics(testMatrix, prediction, task.maxValue(),
                     task.minValue());
             }
 

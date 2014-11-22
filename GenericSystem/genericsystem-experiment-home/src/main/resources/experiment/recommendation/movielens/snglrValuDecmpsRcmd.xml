@@ -21,36 +21,25 @@
 		<constructor-arg index="8" type="int" value="${MAX_ITERATION}" />
 	</bean>
 
-	<bean id="weigtedRSVD" class="edu.tongji.ml.matrix.WeigtedRSVD">
-		<constructor-arg index="0" type="int" value="${USER_COUNT}" />
-		<constructor-arg index="1" type="int" value="${ITEM_COUNT}" />
-		<constructor-arg index="2" type="double" value="${MAX_RATING}" />
-		<constructor-arg index="3" type="double" value="${MIN_RATING}" />
-		<constructor-arg index="4" type="int" value="${FEATURE_COUNT}" />
-		<constructor-arg index="5" type="double" value="${LEARNING_RATE}" />
-		<constructor-arg index="6" type="double" value="${REGULARIZED_PARAM}" />
-		<constructor-arg index="7" type="double" value="${MOMENTUM}" />
-		<constructor-arg index="8" type="int" value="${MAX_ITERATION}" />
-	</bean>
 
-
-	<!-- ******************************************** Engine Setting******************<property name="predictionFile" value="${PREDICTION_READ_PATH}" />****************************** -->
+	<!-- ******************************************** Engine Setting******************<property 
+		name="predictionFile" value="${PREDICTION_READ_PATH}" />****************************** -->
 	<bean id="stdSVD"
 		class="edu.tongji.engine.recommendation.SnglrValuDecmpsRcmdEngine">
 		<property name="loader" ref="snglrValuDecmpsRcmdLoader" />
-		<property name="recommender" ref="weigtedRSVD" />
+		<property name="recommender" ref="regulrzdSVD" />
 		<property name="rateMatrix" ref="rateMatrix" />
 		<property name="testMatrix" ref="testMatrix" />
-		
+
 	</bean>
 
 	<!-- ******************************************** Matrix Setting************************************************ -->
-	<bean id="rateMatrix" class="edu.tongji.data.SparseMatrix">
+	<bean id="rateMatrix" class="edu.tongji.data.SparseRowMatrix">
 		<constructor-arg index="0" type="int" value="${USER_COUNT}" />
 		<constructor-arg index="1" type="int" value="${ITEM_COUNT}" />
 	</bean>
 
-	<bean id="testMatrix" class="edu.tongji.data.SparseMatrix">
+	<bean id="testMatrix" class="edu.tongji.data.SparseRowMatrix">
 		<constructor-arg index="0" type="int" value="${USER_COUNT}" />
 		<constructor-arg index="1" type="int" value="${ITEM_COUNT}" />
 	</bean>

@@ -71,7 +71,7 @@ public class RegularizedSVD extends MatrixFactorizationRecommender {
                         double AuiEst = Fu.innerProduct(Gi);
                         double AuiReal = rateMatrix.getValue(u, i);
                         double err = AuiReal - AuiEst;
-                        sum += Math.abs(err);
+                        sum += Math.pow(err, 2.0d);
 
                         for (int s = 0; s < featureCount; s++) {
                             double Fus = userFeatures.getValue(u, s);
@@ -86,7 +86,7 @@ public class RegularizedSVD extends MatrixFactorizationRecommender {
             }
 
             prevErr = currErr;
-            currErr = sum / rateCount;
+            currErr = Math.sqrt(sum / rateCount);
 
             round++;
 

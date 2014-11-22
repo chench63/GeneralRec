@@ -47,14 +47,6 @@
 		<property name="groups">
 			<list>
 				<ref bean="global"></ref>
-				<ref bean="cocluter_IW2_2_2"></ref>
-				<ref bean="cocluter_IW2_3_2"></ref>
-				<ref bean="cocluter_IW5_2_2"></ref>
-				<ref bean="cocluter_IW5_3_2"></ref>
-				<ref bean="cocluter_EW2_2_2"></ref>
-				<ref bean="cocluter_EW2_3_2"></ref>
-				<ref bean="cocluter_EW5_2_2"></ref>
-				<ref bean="cocluter_EW5_3_2"></ref>
 			</list>
 		</property>
 	</bean>

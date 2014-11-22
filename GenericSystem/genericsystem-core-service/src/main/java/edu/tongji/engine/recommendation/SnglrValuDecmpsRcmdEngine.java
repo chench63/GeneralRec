@@ -4,13 +4,13 @@
  */
 package edu.tongji.engine.recommendation;
 
-import prea.util.MatrixFileUtil;
+import org.springframework.util.StopWatch;
+
+import prea.util.EvaluationMetrics;
 import prea.util.MatrixInformationUtil;
-import prea.util.SimpleEvaluationMetrics;
 import edu.tongji.data.SparseRowMatrix;
 import edu.tongji.ml.matrix.MatrixFactorizationRecommender;
 import edu.tongji.util.LoggerUtil;
-import edu.tongji.util.StringUtil;
 
 /**
  * Regularized SVD method
@@ -26,9 +26,6 @@ public class SnglrValuDecmpsRcmdEngine extends RcmdtnEngine {
     /** matrix with testing data*/
     private SparseRowMatrix                testMatrix;
 
-    /** the file contains prediction*/
-    private String                         predictionFile;
-
     /** svd-based recommender*/
     private MatrixFactorizationRecommender recommender;
 
@@ -37,8 +34,13 @@ public class SnglrValuDecmpsRcmdEngine extends RcmdtnEngine {
      */
     @Override
     protected void excuteInner() {
-        LoggerUtil.info(logger, "3. initializing working threads.");
+        LoggerUtil.info(logger, "3. Building model. Train: " + rateMatrix.itemCount() + " Test: "
+                                + testMatrix.itemCount());
+        StopWatch stopWatch = new StopWatch();
+        stopWatch.start();
         recommender.buildModel(rateMatrix);
+        stopWatch.stop();
+        LoggerUtil.info(logger, "3. Model completes. T: " + stopWatch.getLastTaskTimeMillis());
 
     }
 
@@ -47,11 +49,8 @@ public class SnglrValuDecmpsRcmdEngine extends RcmdtnEngine {
      */
     @Override
     protected void evaluate() {
-        SimpleEvaluationMetrics metrics = recommender.evaluate(testMatrix);
+        EvaluationMetrics metrics = recommender.evaluate(testMatrix);
         LoggerUtil.info(logger, metrics.printOneLine());
-        if (StringUtil.isNotBlank(predictionFile)) {
-            MatrixFileUtil.write(predictionFile, metrics.getPrediction());
-        }
 
         //iterate testMatrix
         LoggerUtil.info(logger,
@@ -84,15 +83,6 @@ public class SnglrValuDecmpsRcmdEngine extends RcmdtnEngine {
      */
     public void setRecommender(MatrixFactorizationRecommender recommender) {
         this.recommender = recommender;
-    }
-
-    /**
-     * Setter method for property <tt>predictionFile</tt>.
-     * 
-     * @param predictionFile value to be assigned to property predictionFile
-     */
-    public void setPredictionFile(String predictionFile) {
-        this.predictionFile = predictionFile;
     }
 
 }

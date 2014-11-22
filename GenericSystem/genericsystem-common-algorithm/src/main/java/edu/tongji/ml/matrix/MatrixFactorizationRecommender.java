@@ -1,6 +1,6 @@
 package edu.tongji.ml.matrix;
 
-import prea.util.SimpleEvaluationMetrics;
+import prea.util.EvaluationMetrics;
 
 import java.io.Serializable;
 
@@ -157,7 +157,7 @@ public abstract class MatrixFactorizationRecommender implements Serializable {
      * 
      * @return The result of evaluation, such as MAE, RMSE, and rank-score.
      */
-    public SimpleEvaluationMetrics evaluate(SparseRowMatrix testMatrix) {
+    public EvaluationMetrics evaluate(SparseRowMatrix testMatrix) {
         SparseRowMatrix predicted = new SparseRowMatrix(userCount, itemCount);
 
         for (int u = 0; u < userCount; u++) {
@@ -181,7 +181,7 @@ public abstract class MatrixFactorizationRecommender implements Serializable {
             }
         }
 
-        return new SimpleEvaluationMetrics(testMatrix, predicted, maxValue, minValue);
+        return new EvaluationMetrics(testMatrix, predicted, maxValue, minValue);
     }
 
     /**
