@@ -30,13 +30,19 @@ public class ModelGroup {
     public void join(Queue<Model> m, SparseMatrix rateMatrix) {
         //read configuration
         ModelUtil.readModels(settingFile, rowMappingFile, colMappingFile, models);
+
+        //join models
+        int currId = m.size();
         for (Model model : models) {
             float[][] userWeights = rateMatrix.probability(model.getRows(), model.getCols(),
                 model.maxValue(), model.minValue(), true);
             float[][] itemWeights = rateMatrix.probability(model.getRows(), model.getCols(),
                 model.maxValue(), model.minValue(), false);
             model.setWeights(userWeights, itemWeights);
+            model.setId(currId);
             m.add(model);
+
+            currId++;
         }
 
         //clear reference
