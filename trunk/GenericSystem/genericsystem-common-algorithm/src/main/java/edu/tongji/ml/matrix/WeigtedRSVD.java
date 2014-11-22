@@ -102,7 +102,7 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
                         double AuiEst = Fu.innerProduct(Gi);
                         double AuiReal = rateMatrix.getValue(u, i);
                         double err = AuiReal - AuiEst;
-                        sum += Math.abs(err);
+                        sum += Math.pow(err, 2.0d);
 
                         int weightIndx = Double.valueOf(AuiReal / minValue - 1).intValue();
                         for (int s = 0; s < featureCount; s++) {
@@ -124,7 +124,7 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
             }
 
             prevErr = currErr;
-            currErr = sum / rateCount;
+            currErr = Math.sqrt(sum / rateCount);
 
             round++;
 
