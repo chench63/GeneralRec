@@ -19,6 +19,7 @@ import edu.tongji.util.LoggerUtil;
  */
 public class WeightedSVDLearner extends Thread {
 
+    /** concurrent task list*/
     public static Queue<Model>    models;
 
     /**  matrix with training data */
@@ -27,20 +28,29 @@ public class WeightedSVDLearner extends Thread {
     /** matrix with testing data*/
     public static SparseRowMatrix testMatrix;
 
+    /** cumulative prediction*/
     public static SparseRowMatrix cumPrediction;
 
+    /** cumulative weights*/
     public static SparseRowMatrix cumWeight;
 
-    private static Object         mutex       = new Object();
+    /** task mutex object*/
+    private final static Object   mutexTask   = new Object();
 
-    private static Object         mutexMatrix = new Object();
+    /** evaluate mutex object*/
+    private final static Object   mutexMatrix = new Object();
 
     /** logger */
     protected final static Logger logger      = Logger
                                                   .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
 
+    /** 
+     * assign the task
+     * 
+     * @return
+     */
     public static Model task() {
-        synchronized (mutex) {
+        synchronized (mutexTask) {
             return models.poll();
         }
     }
@@ -57,12 +67,11 @@ public class WeightedSVDLearner extends Thread {
             stopWatch.start();
             task.buildModel(rateMatrix);
             stopWatch.stop();
-            LoggerUtil.info(logger, "T: " + stopWatch.getLastTaskTimeMillis());
+            LoggerUtil.info(logger,
+                "ThreadId: " + task.getId() + "\tTime: " + stopWatch.getLastTaskTimeMillis());
 
             EvaluationMetrics metric = null;
             SparseRowMatrix prediction = null;
-
-            //block
             synchronized (mutexMatrix) {
                 //evaluate the model and establish GC at the same time.
                 task.evaluate(testMatrix, cumPrediction, cumWeight);

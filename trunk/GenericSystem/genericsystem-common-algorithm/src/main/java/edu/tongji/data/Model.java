@@ -9,14 +9,17 @@ import edu.tongji.ml.matrix.WeigtedRSVD;
  */
 public class Model {
 
-    /** matrix factorization*/
+    /** matrix factorization */
     private WeigtedRSVD recmder;
 
-    /** included index of rows*/
+    /** included index of rows */
     private int[]       rows;
 
-    /** included index of columns*/
+    /** included index of columns */
     private int[]       cols;
+
+    /** the unique id of model*/
+    private int         id;
 
     /**
      * 
@@ -40,44 +43,71 @@ public class Model {
         } else {
             SparseRowMatrix localMatrix = rateMatrix.partition(rows, cols);
             recmder.buildModel(localMatrix);
+            localMatrix.clear();
+
+            // suggest JVM to gc
+            System.gc();
         }
     }
 
     /**
      * evaluate the model
      * 
-     * @param testMatrix        the matrix with testing data
-     * @param cumPrediction     the cumulative prediction
-     * @param cumWeight         the cumulative weights
+     * @param testMatrix
+     *            the matrix with testing data
+     * @param cumPrediction
+     *            the cumulative prediction
+     * @param cumWeight
+     *            the cumulative weights
      */
     public void evaluate(final SparseRowMatrix testMatrix, SparseRowMatrix cumPrediction,
                          SparseRowMatrix cumWeight) {
-        SparseRowMatrix localMatrix = null;
-        if (rows == null | cols == null) {
-            localMatrix = testMatrix;
+        if (rows != null | cols != null) {
+            // catch paralleled local model
+            SparseRowMatrix localMatrix = testMatrix.partition(rows, cols);
+            for (int u = 0; u < localMatrix.length()[0]; u++) {
+                int[] indexList = localMatrix.getRowRef(u).indexList();
+                if (indexList == null) {
+                    continue;
+                }
+
+                for (int v : indexList) {
+                    double prediction = recmder.getPredictedRating(u, v);
+                    double weight = getWeight(u, v, prediction);
+
+                    double newCumPrediction = prediction * weight + cumPrediction.getValue(u, v);
+                    double newCumWeight = weight + cumWeight.getValue(u, v);
+
+                    cumPrediction.setValue(u, v, newCumPrediction);
+                    cumWeight.setValue(u, v, newCumWeight);
+                }
+            }
+
+            // release local model memory
+            localMatrix.clear();
+            localMatrix = null;
         } else {
-            localMatrix = testMatrix.partition(rows, cols);
+            // catch global model
+            for (int u = 0; u < testMatrix.length()[0]; u++) {
+                int[] indexList = testMatrix.getRowRef(u).indexList();
+                if (indexList == null) {
+                    continue;
+                }
+
+                for (int v : indexList) {
+                    double prediction = recmder.getPredictedRating(u, v);
+                    double weight = getWeight(u, v, prediction);
+
+                    double newCumPrediction = prediction * weight + cumPrediction.getValue(u, v);
+                    double newCumWeight = weight + cumWeight.getValue(u, v);
+
+                    cumPrediction.setValue(u, v, newCumPrediction);
+                    cumWeight.setValue(u, v, newCumWeight);
+                }
+            }
         }
 
-        for (int u = 0; u < localMatrix.length()[0]; u++) {
-            int[] indexList = localMatrix.getRowRef(u).indexList();
-            if (indexList == null) {
-                continue;
-            }
-
-            for (int v : indexList) {
-                double prediction = recmder.getPredictedRating(u, v);
-                double weight = getWeight(u, v, prediction);
-
-                double newCumPrediction = prediction * weight + cumPrediction.getValue(u, v);
-                double newCumWeight = weight + cumWeight.getValue(u, v);
-
-                cumPrediction.setValue(u, v, newCumPrediction);
-                cumWeight.setValue(u, v, newCumWeight);
-            }
-        }
-
-        //release memory
+        // release recommender memory
         rows = null;
         cols = null;
         recmder.explicitClear();
@@ -108,7 +138,8 @@ public class Model {
     /**
      * Setter method for property <tt>rows</tt>.
      * 
-     * @param rows value to be assigned to property rows
+     * @param rows
+     *            value to be assigned to property rows
      */
     public void setRows(int[] rows) {
         this.rows = rows;
@@ -117,7 +148,8 @@ public class Model {
     /**
      * Setter method for property <tt>cols</tt>.
      * 
-     * @param cols value to be assigned to property cols
+     * @param cols
+     *            value to be assigned to property cols
      */
     public void setCols(int[] cols) {
         this.cols = cols;
@@ -139,6 +171,24 @@ public class Model {
      */
     public int[] getCols() {
         return cols;
+    }
+
+    /**
+     * Getter method for property <tt>id</tt>.
+     * 
+     * @return property value of id
+     */
+    public int getId() {
+        return id;
+    }
+
+    /**
+     * Setter method for property <tt>id</tt>.
+     * 
+     * @param id value to be assigned to property id
+     */
+    public void setId(int id) {
+        this.id = id;
     }
 
 }

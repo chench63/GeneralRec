@@ -11,7 +11,6 @@ import edu.tongji.data.Model;
 import edu.tongji.data.ModelGroup;
 import edu.tongji.data.SparseMatrix;
 import edu.tongji.data.SparseRowMatrix;
-import edu.tongji.data.SparseVector;
 import edu.tongji.engine.recommendation.thread.WeightedSVDLearner;
 import edu.tongji.parser.Parser;
 import edu.tongji.util.LoggerUtil;
@@ -23,10 +22,10 @@ import edu.tongji.util.LoggerUtil;
  */
 public class MixtureWLRARcmdEngine extends RcmdtnEngine {
 
-    /** file with training data*/
+    /** file with training data */
     private String           trainingSetFile;
 
-    /** file with testing data*/
+    /** file with testing data */
     private String           testingSetFile;
 
     /** The number of users. */
@@ -38,44 +37,22 @@ public class MixtureWLRARcmdEngine extends RcmdtnEngine {
     /** groups of model */
     private List<ModelGroup> groups;
 
-    /** the content parser w.r.t certain dataset*/
+    /** the content parser w.r.t certain dataset */
     private Parser           parser;
 
-    /** 
+    /**
      * @see edu.tongji.engine.recommendation.RcmdtnEngine#loadDataSet()
      */
     @Override
     protected void loadDataSet() {
         LoggerUtil.info(logger, "1. loading data set. Groups: " + groups.size());
-
         // construct queue of models
-        SparseMatrix rateMatrix = MatrixFileUtil
-            .read(trainingSetFile, userCount, itemCount, parser);
-        Queue<Model> models = new LinkedList<Model>();
-        for (ModelGroup group : groups) {
-            group.join(models, rateMatrix);
-        }
-        groups.clear();
-        groups = null;
-        WeightedSVDLearner.models = models;
+        joinGroup();
 
         // construct training matrix
-        SparseRowMatrix rowMatrix = new SparseRowMatrix(userCount, itemCount);
-        for (int u = 0; u < userCount; u++) {
-            SparseVector Fu = rateMatrix.getRowRef(u);
-            int[] indexList = Fu.indexList();
-            if (indexList == null) {
-                continue;
-            }
-
-            for (int i : indexList) {
-                rowMatrix.setValue(u, i, rateMatrix.getValue(u, i));
-                rateMatrix.setValue(u, i, 0.0d);
-            }
-        }
-        rateMatrix = null;
-        WeightedSVDLearner.rateMatrix = rowMatrix;
-
+        LoggerUtil.info(logger, "\t\td. loading rateMatrix and testMatrix. ");
+        WeightedSVDLearner.rateMatrix = MatrixFileUtil.reads(trainingSetFile, userCount, itemCount,
+            parser);
         // construct test matrix
         WeightedSVDLearner.testMatrix = MatrixFileUtil.reads(testingSetFile, userCount, itemCount,
             parser);
@@ -85,20 +62,42 @@ public class MixtureWLRARcmdEngine extends RcmdtnEngine {
                                 + WeightedSVDLearner.testMatrix.itemCount());
     }
 
-    /** 
+    /**
+     * join model of group to task list
+     */
+    protected void joinGroup() {
+        LoggerUtil.info(logger, "\t\ta. loading trainingset. ");
+        SparseMatrix rateMatrix = MatrixFileUtil
+            .read(trainingSetFile, userCount, itemCount, parser);
+
+        LoggerUtil.info(logger, "\t\tb. loading model. ");
+        Queue<Model> models = new LinkedList<Model>();
+        for (ModelGroup group : groups) {
+            group.join(models, rateMatrix);
+        }
+
+        // suggest JVM to release memory
+        LoggerUtil.info(logger, "\t\tc. releasing mem. ");
+        rateMatrix.clear();
+        System.gc();
+        groups.clear();
+        groups = null;
+        WeightedSVDLearner.models = models;
+    }
+
+    /**
      * @see edu.tongji.engine.recommendation.RcmdtnEngine#excuteInner()
      */
     @Override
     protected void excuteInner() {
     }
 
-    /** 
+    /**
      * @see edu.tongji.engine.recommendation.RcmdtnEngine#evaluate()
      */
     @Override
     protected void evaluate() {
         ExecutorService exec = Executors.newCachedThreadPool();
-        exec.execute(new WeightedSVDLearner());
         exec.execute(new WeightedSVDLearner());
         exec.execute(new WeightedSVDLearner());
         exec.execute(new WeightedSVDLearner());
@@ -108,7 +107,8 @@ public class MixtureWLRARcmdEngine extends RcmdtnEngine {
     /**
      * Setter method for property <tt>trainingSetFile</tt>.
      * 
-     * @param trainingSetFile value to be assigned to property trainingSetFile
+     * @param trainingSetFile
+     *            value to be assigned to property trainingSetFile
      */
     public void setTrainingSetFile(String trainingSetFile) {
         this.trainingSetFile = trainingSetFile;
@@ -117,7 +117,8 @@ public class MixtureWLRARcmdEngine extends RcmdtnEngine {
     /**
      * Setter method for property <tt>testingSetFile</tt>.
      * 
-     * @param testingSetFile value to be assigned to property testingSetFile
+     * @param testingSetFile
+     *            value to be assigned to property testingSetFile
      */
     public void setTestingSetFile(String testingSetFile) {
         this.testingSetFile = testingSetFile;
@@ -126,7 +127,8 @@ public class MixtureWLRARcmdEngine extends RcmdtnEngine {
     /**
      * Setter method for property <tt>userCount</tt>.
      * 
-     * @param userCount value to be assigned to property userCount
+     * @param userCount
+     *            value to be assigned to property userCount
      */
     public void setUserCount(int userCount) {
         this.userCount = userCount;
@@ -135,7 +137,8 @@ public class MixtureWLRARcmdEngine extends RcmdtnEngine {
     /**
      * Setter method for property <tt>itemCount</tt>.
      * 
-     * @param itemCount value to be assigned to property itemCount
+     * @param itemCount
+     *            value to be assigned to property itemCount
      */
     public void setItemCount(int itemCount) {
         this.itemCount = itemCount;
@@ -144,7 +147,8 @@ public class MixtureWLRARcmdEngine extends RcmdtnEngine {
     /**
      * Setter method for property <tt>groups</tt>.
      * 
-     * @param groups value to be assigned to property groups
+     * @param groups
+     *            value to be assigned to property groups
      */
     public void setGroups(List<ModelGroup> groups) {
         this.groups = groups;
@@ -153,7 +157,8 @@ public class MixtureWLRARcmdEngine extends RcmdtnEngine {
     /**
      * Setter method for property <tt>parser</tt>.
      * 
-     * @param parser value to be assigned to property parser
+     * @param parser
+     *            value to be assigned to property parser
      */
     public void setParser(Parser parser) {
         this.parser = parser;
