@@ -16,6 +16,7 @@ import edu.tongji.engine.recommendation.thread.WeightedSVDLearner;
 import edu.tongji.parser.Parser;
 import edu.tongji.util.ExceptionUtil;
 import edu.tongji.util.LoggerUtil;
+import edu.tongji.util.StringUtil;
 
 /**
  * 
@@ -23,6 +24,9 @@ import edu.tongji.util.LoggerUtil;
  * @version $Id: MixtureWLRARcmdEngine.java, v 0.1 2014-11-2 下午2:37:12 Exp $
  */
 public class MixtureWLRARcmdEngine extends RcmdtnEngine {
+
+    /** the directory contains training, test dataset and coclustering setting file*/
+    private String           rootDir;
 
     /** file with training data */
     private String           trainingSetFile;
@@ -49,6 +53,11 @@ public class MixtureWLRARcmdEngine extends RcmdtnEngine {
     protected void loadDataSet() {
         LoggerUtil.info(logger, "1. loading data set. Groups: " + groups.size());
         // construct queue of models
+        if (StringUtil.isBlank(trainingSetFile) && StringUtil.isBlank(testingSetFile)) {
+            trainingSetFile = rootDir + "trainingset";
+            testingSetFile = rootDir + "testingset";
+        }
+        ModelGroup.setRootDir(rootDir);
         joinGroup();
 
         // construct training matrix
@@ -169,6 +178,15 @@ public class MixtureWLRARcmdEngine extends RcmdtnEngine {
      */
     public void setParser(Parser parser) {
         this.parser = parser;
+    }
+
+    /**
+     * Setter method for property <tt>rootDir</tt>.
+     * 
+     * @param rootDir value to be assigned to property rootDir
+     */
+    public void setRootDir(String rootDir) {
+        this.rootDir = rootDir;
     }
 
     /**
