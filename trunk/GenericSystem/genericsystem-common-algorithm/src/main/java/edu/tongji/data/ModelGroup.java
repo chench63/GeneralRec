@@ -3,6 +3,7 @@ package edu.tongji.data;
 import java.util.List;
 import java.util.Queue;
 
+import edu.tongji.util.StringUtil;
 import prea.util.ModelUtil;
 
 /**
@@ -13,14 +14,16 @@ import prea.util.ModelUtil;
  */
 public class ModelGroup {
 
+    /** root file directory*/
+    private static String rootDir;
     /** file contains setting*/
-    private String      settingFile;
+    private String        settingFile;
     /** file contains mapping w.r.t rows*/
-    private String      rowMappingFile;
+    private String        rowMappingFile;
     /** file contains mapping w.r.t columns*/
-    private String      colMappingFile;
+    private String        colMappingFile;
     /** real models*/
-    private List<Model> models;
+    private List<Model>   models;
 
     /**
      * join the contained models to the given queue
@@ -29,6 +32,14 @@ public class ModelGroup {
      */
     public void join(Queue<Model> m, SparseMatrix rateMatrix) {
         //read configuration
+        if (StringUtil.isNotBlank(colMappingFile) && StringUtil.isNotBlank(rowMappingFile)
+            && StringUtil.isNotBlank(settingFile)) {
+            colMappingFile += rootDir;
+            rowMappingFile += rootDir;
+            settingFile += rootDir;
+
+        }
+
         ModelUtil.readModels(settingFile, rowMappingFile, colMappingFile, models);
 
         //join models
@@ -84,6 +95,15 @@ public class ModelGroup {
      */
     public void setModels(List<Model> models) {
         this.models = models;
+    }
+
+    /**
+     * Setter method for property <tt>rootDir</tt>.
+     * 
+     * @param rootDir value to be assigned to property rootDir
+     */
+    public static void setRootDir(String rootDir) {
+        ModelGroup.rootDir = rootDir;
     }
 
     /**
