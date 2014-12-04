@@ -28,9 +28,9 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
     //===================================
     //      parameter
     //===================================
-    private float             base1            = 1.45f;
+    public float              base1            = 1.45f;
 
-    private float             base2            = 0.5f;
+    public float              base2            = 0.5f;
 
     /*========================================
      * Constructors

@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import prea.util.MatrixFileUtil;
 import edu.tongji.data.Model;
@@ -13,6 +14,7 @@ import edu.tongji.data.SparseMatrix;
 import edu.tongji.data.SparseRowMatrix;
 import edu.tongji.engine.recommendation.thread.WeightedSVDLearner;
 import edu.tongji.parser.Parser;
+import edu.tongji.util.ExceptionUtil;
 import edu.tongji.util.LoggerUtil;
 
 /**
@@ -97,11 +99,16 @@ public class MixtureWLRARcmdEngine extends RcmdtnEngine {
      */
     @Override
     protected void evaluate() {
-        ExecutorService exec = Executors.newCachedThreadPool();
-        exec.execute(new WeightedSVDLearner());
-        exec.execute(new WeightedSVDLearner());
-        exec.execute(new WeightedSVDLearner());
-        exec.shutdown();
+        try {
+            ExecutorService exec = Executors.newCachedThreadPool();
+            exec.execute(new WeightedSVDLearner());
+            exec.execute(new WeightedSVDLearner());
+            exec.execute(new WeightedSVDLearner());
+            exec.shutdown();
+            exec.awaitTermination(Integer.MAX_VALUE, TimeUnit.DAYS);
+        } catch (InterruptedException e) {
+            ExceptionUtil.caught(e, "ExecutorService await crush! ");
+        }
     }
 
     /**
@@ -162,6 +169,15 @@ public class MixtureWLRARcmdEngine extends RcmdtnEngine {
      */
     public void setParser(Parser parser) {
         this.parser = parser;
+    }
+
+    /**
+     * Getter method for property <tt>groups</tt>.
+     * 
+     * @return property value of groups
+     */
+    public List<ModelGroup> getGroups() {
+        return groups;
     }
 
 }

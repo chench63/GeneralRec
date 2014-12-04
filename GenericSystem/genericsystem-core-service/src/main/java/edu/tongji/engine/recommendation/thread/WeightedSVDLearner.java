@@ -34,6 +34,9 @@ public class WeightedSVDLearner extends Thread {
     /** cumulative weights*/
     public static SparseRowMatrix cumWeight;
 
+    /** current RMSE value*/
+    public static double          curRMSE     = 0.0d;
+
     /** task mutex object*/
     private final static Object   mutexTask   = new Object();
 
@@ -94,11 +97,14 @@ public class WeightedSVDLearner extends Thread {
                 }
                 metric = new EvaluationMetrics(testMatrix, prediction, task.maxValue(),
                     task.minValue());
+
+                //update current RMSE
+                curRMSE = metric.getRMSE();
             }
 
             //logger
-            LoggerUtil.info(logger, metric.printOneLine());
-            LoggerUtil.info(logger, MatrixInformationUtil.RMSEAnalysis(testMatrix, prediction));
+            LoggerUtil.info(logger, (new StringBuilder()).append(metric.printOneLine())
+                .append("\n").append(MatrixInformationUtil.RMSEAnalysis(testMatrix, prediction)));
         }
     }
 }
