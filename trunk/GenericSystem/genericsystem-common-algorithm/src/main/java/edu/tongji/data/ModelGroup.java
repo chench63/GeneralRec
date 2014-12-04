@@ -86,4 +86,13 @@ public class ModelGroup {
         this.models = models;
     }
 
+    /**
+     * Getter method for property <tt>models</tt>.
+     * 
+     * @return property value of models
+     */
+    public List<Model> getModels() {
+        return models;
+    }
+
 }

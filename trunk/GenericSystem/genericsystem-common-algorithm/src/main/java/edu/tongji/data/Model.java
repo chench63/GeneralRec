@@ -1,6 +1,11 @@
 package edu.tongji.data;
 
+import org.apache.log4j.Logger;
+
+import prea.util.EvaluationMetrics;
+import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.ml.matrix.WeigtedRSVD;
+import edu.tongji.util.LoggerUtil;
 
 /**
  * 
@@ -10,16 +15,19 @@ import edu.tongji.ml.matrix.WeigtedRSVD;
 public class Model {
 
     /** matrix factorization */
-    private WeigtedRSVD recmder;
+    public WeigtedRSVD            recmder;
 
     /** included index of rows */
-    private int[]       rows;
+    private int[]                 rows;
 
     /** included index of columns */
-    private int[]       cols;
+    private int[]                 cols;
 
     /** the unique id of model*/
-    private int         id;
+    private int                   id;
+
+    /** logger */
+    protected final static Logger logger = Logger.getLogger(LoggerDefineConstant.SERVICE_NORMAL);
 
     /**
      * 
@@ -87,6 +95,11 @@ public class Model {
             localMatrix.clear();
             localMatrix = null;
         } else {
+            //Specail Operation output Global result
+            EvaluationMetrics globalResult = recmder.evaluate(testMatrix);
+            LoggerUtil.info(logger, "Singleton Model : \n" + EvaluationMetrics.printTitle() + "\n"
+                                    + globalResult.printOneLine());
+
             // catch global model
             for (int u = 0; u < testMatrix.length()[0]; u++) {
                 int[] indexList = testMatrix.getRowRef(u).indexList();
