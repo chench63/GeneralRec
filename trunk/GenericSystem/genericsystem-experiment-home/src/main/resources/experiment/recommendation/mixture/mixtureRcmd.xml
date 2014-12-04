@@ -40,8 +40,6 @@
 	<!-- ******************************************** Engine Setting************************************************ -->
 	<bean id="mixtureRcmd" class="edu.tongji.engine.recommendation.MixtureWLRARcmdEngine">
 		<property name="rootDir" value="${ROOT_DIR}" />
-		<property name="trainingSetFile" value="${TRAININGSET_READ_PATH}" />
-		<property name="testingSetFile" value="${TESTINGSET_READ_PATH}" />
 		<property name="userCount" value="${USER_COUNT}" />
 		<property name="itemCount" value="${ITEM_COUNT}" />
 		<property name="parser" ref="movielensRatingTemplateParser" />

@@ -34,9 +34,9 @@ public class ModelGroup {
         //read configuration
         if (StringUtil.isNotBlank(colMappingFile) && StringUtil.isNotBlank(rowMappingFile)
             && StringUtil.isNotBlank(settingFile)) {
-            colMappingFile += rootDir;
-            rowMappingFile += rootDir;
-            settingFile += rootDir;
+            colMappingFile = rootDir + colMappingFile;
+            rowMappingFile = rootDir + rowMappingFile;
+            settingFile = rootDir + settingFile;
 
         }
 

@@ -113,6 +113,7 @@ public class MixtureWLRARcmdEngine extends RcmdtnEngine {
             exec.execute(new WeightedSVDLearner());
             exec.execute(new WeightedSVDLearner());
             exec.execute(new WeightedSVDLearner());
+            exec.execute(new WeightedSVDLearner());
             exec.shutdown();
             exec.awaitTermination(Integer.MAX_VALUE, TimeUnit.DAYS);
         } catch (InterruptedException e) {
