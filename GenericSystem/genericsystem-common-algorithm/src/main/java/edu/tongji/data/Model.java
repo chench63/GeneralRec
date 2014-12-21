@@ -54,7 +54,7 @@ public class Model {
             localMatrix.clear();
 
             // suggest JVM to gc
-            System.gc();
+//            System.gc();
         }
     }
 

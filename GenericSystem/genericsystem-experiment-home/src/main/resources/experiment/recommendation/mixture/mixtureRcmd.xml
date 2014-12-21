@@ -45,7 +45,7 @@
 		<property name="parser" ref="movielensRatingTemplateParser" />
 		<property name="groups">
 			<list>
-				<ref bean="global"></ref>
+
 			</list>
 		</property>
 	</bean>
