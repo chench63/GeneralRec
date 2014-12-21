@@ -69,6 +69,7 @@ public class MixtureWLRARcmdEngine extends RcmdtnEngine {
             parser);
         WeightedSVDLearner.cumPrediction = new SparseRowMatrix(userCount, itemCount);
         WeightedSVDLearner.cumWeight = new SparseRowMatrix(userCount, itemCount);
+        WeightedSVDLearner.curRMSE = 0;
         LoggerUtil.info(logger, "Train: " + WeightedSVDLearner.rateMatrix.itemCount() + "\tTest: "
                                 + WeightedSVDLearner.testMatrix.itemCount());
     }
@@ -90,7 +91,7 @@ public class MixtureWLRARcmdEngine extends RcmdtnEngine {
         // suggest JVM to release memory
         LoggerUtil.info(logger, "\t\tc. releasing mem. ");
         rateMatrix.clear();
-        System.gc();
+//        System.gc();
         groups.clear();
         groups = null;
         WeightedSVDLearner.models = models;
