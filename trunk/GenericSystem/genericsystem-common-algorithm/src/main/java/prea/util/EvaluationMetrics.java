@@ -177,7 +177,7 @@ public class EvaluationMetrics {
         double rMaxSum = 0;
         int avgPEffectiveUserCount = 0;
 
-        for (int u = 1; u <= userCount; u++) {
+        for (int u = 0; u <= userCount; u++) {
             testUserCount++;
 
             SparseVector realRateList = testMatrix.getRowRef(u);
