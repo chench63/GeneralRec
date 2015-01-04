@@ -26,10 +26,10 @@ import edu.tongji.util.LoggerUtil;
 public final class WeightedSVDCoclusterAnalyzExper {
 
     /** result file*/
-    public final static String    resultFilePrefix = "E:/MovieLens/ml-10M100K/Exper2_Pure_";
+    public final static String    resultFilePrefix = "E:/MovieLens/ml-10M100K/Exper2_";
 
     /** */
-    public final static String[]  param_divergence = { "cocluter_EW" };
+    public final static String[]  param_divergence = { "cocluter_EW", "cocluter_IW" };
 
     /** */
     public final static String[]  param_C          = { "2", "5" };
@@ -190,11 +190,9 @@ public final class WeightedSVDCoclusterAnalyzExper {
                     List<ModelGroup> groups = engine.getGroups();
                     for (String divergence : param_divergence) {
                         for (String constrain : param_C) {
-                            for (int eK = 2; eK <= k; eK++) {
-                                String groupName = divergence + constrain + '_' + eK + '_' + eK;
-                                ModelGroup group = (ModelGroup) ctx.getBean(groupName);
-                                groups.add(group);
-                            }
+                            String groupName = divergence + constrain + '_' + k + '_' + k;
+                            ModelGroup group = (ModelGroup) ctx.getBean(groupName);
+                            groups.add(group);
                         }
                     }
 

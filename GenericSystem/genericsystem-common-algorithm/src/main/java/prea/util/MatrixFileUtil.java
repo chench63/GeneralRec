@@ -18,6 +18,7 @@ import edu.tongji.data.BlockMatrix;
 import edu.tongji.data.SparseMatrix;
 import edu.tongji.data.SparseRowMatrix;
 import edu.tongji.data.SparseVector;
+import edu.tongji.parser.MovielensRatingTemplateParser;
 import edu.tongji.parser.Parser;
 import edu.tongji.util.ExceptionUtil;
 import edu.tongji.util.FileUtil;
@@ -230,6 +231,10 @@ public final class MatrixFileUtil {
      * @return
      */
     public static SparseMatrix read(String file, int rowCount, int colCount, Parser parser) {
+        if (parser == null) {
+            parser = new MovielensRatingTemplateParser();
+        }
+
         SparseMatrix result = new SparseMatrix(rowCount, colCount);
         BufferedReader reader = null;
         try {
@@ -261,6 +266,10 @@ public final class MatrixFileUtil {
      * @return
      */
     public static SparseRowMatrix reads(String file, int rowCount, int colCount, Parser parser) {
+        if (parser == null) {
+            parser = new MovielensRatingTemplateParser();
+        }
+
         SparseRowMatrix result = new SparseRowMatrix(rowCount, colCount);
         BufferedReader reader = null;
         try {
@@ -284,6 +293,10 @@ public final class MatrixFileUtil {
 
     public static BlockMatrix read(String sourceFile, String settingFile, String rowMappingFile,
                                    String colMappingFile, int rowCount, int colCount, Parser parser) {
+        if (parser == null) {
+            parser = new MovielensRatingTemplateParser();
+        }
+
         //reading training file
         Map<Integer, Integer> rowAssig = new HashMap<Integer, Integer>();
         Map<Integer, Integer> colAssig = new HashMap<Integer, Integer>();
