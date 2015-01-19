@@ -28,7 +28,7 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
     //===================================
     //      parameter
     //===================================
-    public float              base1            = 1.45f;
+    public float              base1            = 0.45f;
 
     public float              base2            = 0.5f;
 
@@ -202,9 +202,11 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
      */
     public double getWeight(int u, int i, int weightIndx) {
         //b1 + (b2 + Pu)(b2 + Pi) + Pu*Pu +Pi*Pi
-        return base1 + (base2 + userWeights[u][weightIndx]) * (base2 + itemWeights[i][weightIndx])
-               + userWeights[u][weightIndx] * userWeights[u][weightIndx]
-               + itemWeights[i][weightIndx] * itemWeights[i][weightIndx];
+        //        return base1 + (base2 + userWeights[u][weightIndx]) * (base2 + itemWeights[i][weightIndx])
+        //               + userWeights[u][weightIndx] * userWeights[u][weightIndx]
+        //               + itemWeights[i][weightIndx] * itemWeights[i][weightIndx];
+
+        return 1 + base1 * userWeights[u][weightIndx] + base2 * itemWeights[i][weightIndx];
 
         //b1 + (b2 + Pu)(b2 + Pi)
         //        return  base1 + (base2 + userWeights[u][weightIndx]) * (base2 + itemWeights[i][weightIndx]);

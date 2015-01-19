@@ -30,20 +30,19 @@ public final class WeightedSVDParamAnalyzExper {
 
     /** base1 in weightedSVD*/
     public final static float[]   param_b1         = { 0.0f, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f,
-            0.7f, 0.8f, 0.9f                      };
+            0.7f, 0.8f, 0.9f, 1.0f                };
 
     /** base2 in weightedSVD*/
-    public final static float[]   param_b2         = { 0.0f, 0.1f, 0.2f, 0.3f, 0.4f, 0.5f, 0.6f,
-            0.7f, 0.8f, 0.9f                      };
+    public final static float[]   param_b2         = { 0.0f, 0.1f, 0.2f, 0.3f };
 
     /** rank of the Solution */
-    public final static int[]     param_r          = { 5 };
+    public final static int[]     param_r          = { 25 };
 
     public final static String[]  trainingSetFiles = { "E:/MovieLens/ml-1m/1/trainingset",
-            "E:/MovieLens/ml-1m/2/trainingset", "E:/MovieLens/ml-1m/3/trainingset" };
+            "E:/MovieLens/ml-1m/3/trainingset"    };
 
     public final static String[]  testingSetFiles  = { "E:/MovieLens/ml-1m/1/testingset",
-            "E:/MovieLens/ml-1m/2/testingset", "E:/MovieLens/ml-1m/3/testingset" };
+            "E:/MovieLens/ml-1m/3/testingset"     };
 
     /** logger */
     protected final static Logger logger           = Logger
@@ -86,7 +85,7 @@ public final class WeightedSVDParamAnalyzExper {
                             List<ModelGroup> groups = engine.getGroups();
                             for (ModelGroup group : groups) {
                                 for (Model model : group.getModels()) {
-                                    model.recmder.base1 = b1 + 1;
+                                    model.recmder.base1 = b1;
                                     model.recmder.base2 = b2;
                                     model.recmder.featureCount = r;
                                 }
