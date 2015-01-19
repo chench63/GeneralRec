@@ -30,70 +30,75 @@ public class CoclusterLRA {
     //==========================
     //      Common variable
     //==========================
-    /** file to store the original data, make sure the data is compact.*/
-    public final static String   SOURCE_FILE             = "E:/MovieLens/ml-10M100K/4/trainingset";
-
-    /** file to write cocluster settings */
-    public final static String   TARGET_ROOT_STRING_FILE = "E:/MovieLens/ml-10M100K/4/Cocluster/";
+    /** file to store the original data and cocluster directory, make sure the data is compact.*/
+    public final static String[] ROOTDIRS     = { "E:/MovieLens/ml-10M100K/1/",
+            "E:/MovieLens/ml-10M100K/2/", "E:/MovieLens/ml-10M100K/3/",
+            "E:/MovieLens/ml-10M100K/5/"     };
 
     /** The parser to parse the dataset file  **/
-    public final static Parser   parser                  = new MovielensRatingTemplateParser();
+    public final static Parser   parser       = new MovielensRatingTemplateParser();
 
-    public final static int[]    DIVERGENCE              = { CoclusterUtil.EUCLIDEAN_DIVERGENCE,
-            CoclusterUtil.I_DIVERGENCE                  };
+    public final static int[]    DIVERGENCE   = { CoclusterUtil.EUCLIDEAN_DIVERGENCE,
+            CoclusterUtil.I_DIVERGENCE       };
 
-    public final static String[] DIR                     = { "EW", "IW" };
+    public final static String[] DIR          = { "EW", "IW" };
 
-    public final static int[]    CONSTRAINTS             = { CoclusterUtil.C_2, CoclusterUtil.C_5 };
+    public final static int[]    CONSTRAINTS  = { CoclusterUtil.C_1, CoclusterUtil.C_3,
+            CoclusterUtil.C_4, CoclusterUtil.C_6 };
 
-    public final static int[]    K                       = { 2, 3 };
+    public final static int[]    K            = { 2, 3 };
 
-    public final static int[]    L                       = { 2 };
+    public final static int[]    L            = { 2 };
 
     /** the number of rows*/
-    public final static int      rowCount                = 69878;
+    public final static int      rowCount     = 69878;
 
     /** the number of columns*/
-    public final static int      colCount                = 10677;
+    public final static int      colCount     = 10677;
 
     /** the maximum number of iterations*/
-    public final static int      maxIteration            = 12;
+    public final static int      maxIteration = 6;
 
     /** logger */
-    private final static Logger  logger                  = Logger
-                                                             .getLogger(LoggerDefineConstant.SERVICE_TEST);
+    private final static Logger  logger       = Logger.getLogger(LoggerDefineConstant.SERVICE_TEST);
 
     /**
      * 
      * @param args
      */
     public static void main(String[] args) {
-        // load dataset
-        SparseMatrix rateMatrix = MatrixFileUtil.read(SOURCE_FILE, rowCount, colCount, parser);
 
         // coclustering
-        for (int diverIndx = 0; diverIndx < DIVERGENCE.length; diverIndx++) {
-            for (int consts : CONSTRAINTS) {
-                for (int k : K) {
-                    for (int l : L) {
-                        String settingFile = (new StringBuilder(TARGET_ROOT_STRING_FILE))
-                            .append(DIR[diverIndx]).append(consts).append('_').append(k)
-                            .append('_').append(l).append(FileUtil.UNION_DIR_SEPERATOR)
-                            .append("SETTING").toString();
-                        String rowMappingFile = (new StringBuilder(TARGET_ROOT_STRING_FILE))
-                            .append(DIR[diverIndx]).append(consts).append('_').append(k)
-                            .append('_').append(l).append(FileUtil.UNION_DIR_SEPERATOR)
-                            .append("RM").toString();
-                        String colMappingFile = (new StringBuilder(TARGET_ROOT_STRING_FILE))
-                            .append(DIR[diverIndx]).append(consts).append('_').append(k)
-                            .append('_').append(l).append(FileUtil.UNION_DIR_SEPERATOR)
-                            .append("CM").toString();
+        for (String rootDir : ROOTDIRS) {
+            // load dataset
+            String sourceFile = rootDir + "trainingset";
+            String targetCoclusterRoot = rootDir + "Cocluster/";
+            SparseMatrix rateMatrix = MatrixFileUtil.read(sourceFile, rowCount, colCount, parser);
+            LoggerUtil.info(logger, (new StringBuilder("0. load dataset: ")).append(sourceFile));
 
-                        LoggerUtil.info(logger, (new StringBuilder("1. start to cocluster. "))
-                            .append(DIR[diverIndx]).append(consts).append('_').append(k)
-                            .append('_').append(l));
-                        doCocluster(rateMatrix, settingFile, rowMappingFile, colMappingFile,
-                            DIVERGENCE[diverIndx], consts, k, l);
+            for (int diverIndx = 0; diverIndx < DIVERGENCE.length; diverIndx++) {
+                for (int consts : CONSTRAINTS) {
+                    for (int k : K) {
+                        for (int l : L) {
+                            String settingFile = (new StringBuilder(targetCoclusterRoot))
+                                .append(DIR[diverIndx]).append(consts).append('_').append(k)
+                                .append('_').append(l).append(FileUtil.UNION_DIR_SEPERATOR)
+                                .append("SETTING").toString();
+                            String rowMappingFile = (new StringBuilder(targetCoclusterRoot))
+                                .append(DIR[diverIndx]).append(consts).append('_').append(k)
+                                .append('_').append(l).append(FileUtil.UNION_DIR_SEPERATOR)
+                                .append("RM").toString();
+                            String colMappingFile = (new StringBuilder(targetCoclusterRoot))
+                                .append(DIR[diverIndx]).append(consts).append('_').append(k)
+                                .append('_').append(l).append(FileUtil.UNION_DIR_SEPERATOR)
+                                .append("CM").toString();
+
+                            LoggerUtil.info(logger, (new StringBuilder("1. start to cocluster. "))
+                                .append(DIR[diverIndx]).append(consts).append('_').append(k)
+                                .append('_').append(l));
+                            doCocluster(rateMatrix, settingFile, rowMappingFile, colMappingFile,
+                                DIVERGENCE[diverIndx], consts, k, l);
+                        }
                     }
                 }
             }

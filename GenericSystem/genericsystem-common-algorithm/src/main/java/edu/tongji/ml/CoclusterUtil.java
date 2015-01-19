@@ -37,11 +37,23 @@ public final class CoclusterUtil {
     //===========================================
     //      Constraints
     //===========================================
+    /** Constraint 1: preserve E[Z|U*], E[Z|V*] */
+    public final static int     C_1                  = 1;
+
     /** Constraint 2: preserve E[Z|U*,V*] */
     public final static int     C_2                  = 2;
 
+    /** Constraint 3: preserve E[Z|U*,V*], E[Z|U] */
+    public final static int     C_3                  = 3;
+
+    /** Constraint 4: preserve E[Z|U*,V*], E[Z|V] */
+    public final static int     C_4                  = 4;
+
     /** Constraint 5: preserve E[Z|U*,V*], E[Z|U*,V], E[Z|U,V*] */
     public final static int     C_5                  = 5;
+
+    /** Constraint 6: preserve E[Z|U,V*], E[Z|U*,V] */
+    public final static int     C_6                  = 6;
 
     /** logger */
     private final static Logger logger               = Logger
@@ -66,59 +78,59 @@ public final class CoclusterUtil {
      * @return  the cocolusters, index 0 contains the row clusters, whereas
      * 1 contains the column clusters.
      */
-    public static Cluster[][] divide(final SparseMatrix points, final int K, final int L,
-                                     final int maxIteration, final int constraint,
-                                     final int divergence) {
-        //check primary parameter
-        int rowCount = points.length()[0];
-        int colCount = points.length()[1];
-        if (rowCount < K || colCount < L) {
-            throw new RuntimeException("Number of samples is less than the number of classes.");
-        }
-
-        //make a initial division
-        Cluster[] rowCluster = new Cluster[K];
-        int[] rowAssigmnt = new int[rowCount];
-        initialCluster(rowCluster, rowAssigmnt);
-
-        Cluster[] colCluster = new Cluster[L];
-        int[] colAssigmnt = new int[colCount];
-        initialCluster(colCluster, colAssigmnt);
-
-        //conditional expectation
-        double[][] E_Uc_Vc = new double[K][L];
-        double[] E_U = new double[rowCount];
-        double[] E_Uc = new double[K];
-        double[] E_V = new double[colCount];
-        double[] E_Vc = new double[L];
-        comConExpectation(points, K, L, rowCluster, colCluster, E_Uc_Vc, E_U, E_Uc, E_V, E_Vc);
-
-        int round = 0;
-        while (round < maxIteration) {
-            boolean isChanged = false;
-            double err = 0.0;
-            round++;
-
-            //update row cluster
-            err = updateRowCluster(points, K, L, rowCluster, colCluster, rowAssigmnt, colAssigmnt,
-                constraint, divergence, isChanged, E_Uc_Vc, E_U, E_Uc, E_V, E_Vc);
-            LoggerUtil.info(logger, round + "A:\t" + err);
-
-            //update column cluster
-            err = updateColCluster(points, K, L, rowCluster, colCluster, rowAssigmnt, colAssigmnt,
-                constraint, divergence, isChanged, E_Uc_Vc, E_U, E_Uc, E_V, E_Vc);
-            LoggerUtil.info(logger, round + "B:\t" + err);
-
-            //update Lagrange multipliers
-            comConExpectation(points, K, L, rowCluster, colCluster, E_Uc_Vc, E_U, E_Uc, E_V, E_Vc);
-
-        }
-
-        Cluster[][] result = new Cluster[2][1];
-        result[0] = rowCluster;
-        result[1] = colCluster;
-        return result;
-    }
+    //    public static Cluster[][] divide(final SparseMatrix points, final int K, final int L,
+    //                                     final int maxIteration, final int constraint,
+    //                                     final int divergence) {
+    //        //check primary parameter
+    //        int rowCount = points.length()[0];
+    //        int colCount = points.length()[1];
+    //        if (rowCount < K || colCount < L) {
+    //            throw new RuntimeException("Number of samples is less than the number of classes.");
+    //        }
+    //
+    //        //make a initial division
+    //        Cluster[] rowCluster = new Cluster[K];
+    //        int[] rowAssigmnt = new int[rowCount];
+    //        initialCluster(rowCluster, rowAssigmnt);
+    //
+    //        Cluster[] colCluster = new Cluster[L];
+    //        int[] colAssigmnt = new int[colCount];
+    //        initialCluster(colCluster, colAssigmnt);
+    //
+    //        //conditional expectation
+    //        double[][] E_Uc_Vc = new double[K][L];
+    //        double[] E_U = new double[rowCount];
+    //        double[] E_Uc = new double[K];
+    //        double[] E_V = new double[colCount];
+    //        double[] E_Vc = new double[L];
+    //        comConExpectation(points, K, L, rowCluster, colCluster, E_Uc_Vc, E_U, E_Uc, E_V, E_Vc);
+    //
+    //        int round = 0;
+    //        while (round < maxIteration) {
+    //            boolean isChanged = false;
+    //            double err = 0.0;
+    //            round++;
+    //
+    //            //update row cluster
+    //            err = updateRowCluster(points, K, L, rowCluster, colCluster, rowAssigmnt, colAssigmnt,
+    //                constraint, divergence, isChanged, E_Uc_Vc, E_U, E_Uc, E_V, E_Vc);
+    //            LoggerUtil.info(logger, round + "A:\t" + err);
+    //
+    //            //update column cluster
+    //            err = updateColCluster(points, K, L, rowCluster, colCluster, rowAssigmnt, colAssigmnt,
+    //                constraint, divergence, isChanged, E_Uc_Vc, E_U, E_Uc, E_V, E_Vc);
+    //            LoggerUtil.info(logger, round + "B:\t" + err);
+    //
+    //            //update Lagrange multipliers
+    //            comConExpectation(points, K, L, rowCluster, colCluster, E_Uc_Vc, E_U, E_Uc, E_V, E_Vc);
+    //
+    //        }
+    //
+    //        Cluster[][] result = new Cluster[2][1];
+    //        result[0] = rowCluster;
+    //        result[1] = colCluster;
+    //        return result;
+    //    }
 
     /**
      * cocolustering the matrix, while we assume the missing value comply
@@ -155,12 +167,15 @@ public final class CoclusterUtil {
 
         //conditional expectation
         double[][] E_Uc_Vc = new double[K][L];
+        double[][] E_U_Vc = new double[rowCount][L];
+        double[][] E_Uc_V = new double[K][colCount];
         double[] E_U = new double[rowCount];
         double[] E_Uc = new double[K];
         double[] E_V = new double[colCount];
         double[] E_Vc = new double[L];
+        double E = points.average();
         comConExpectationAsConjugateDist(points, K, L, rowCluster, colCluster, E_Uc_Vc, E_U, E_Uc,
-            E_V, E_Vc);
+            E_V, E_Vc, E_U_Vc, E_Uc_V);
 
         int round = 0;
         while (round < maxIteration) {
@@ -170,17 +185,17 @@ public final class CoclusterUtil {
 
             //update row cluster
             err = updateRowCluster(points, K, L, rowCluster, colCluster, rowAssigmnt, colAssigmnt,
-                constraint, divergence, isChanged, E_Uc_Vc, E_U, E_Uc, E_V, E_Vc);
+                constraint, divergence, isChanged, E_Uc_Vc, E_U, E_Uc, E_V, E_Vc, E_U_Vc, E_Uc_V, E);
             LoggerUtil.info(logger, round + "A:\t" + err);
 
             //update column cluster
             err = updateColCluster(points, K, L, rowCluster, colCluster, rowAssigmnt, colAssigmnt,
-                constraint, divergence, isChanged, E_Uc_Vc, E_U, E_Uc, E_V, E_Vc);
+                constraint, divergence, isChanged, E_Uc_Vc, E_U, E_Uc, E_V, E_Vc, E_U_Vc, E_Uc_V, E);
             LoggerUtil.info(logger, round + "B:\t" + err);
 
             //update Lagrange multipliers
             comConExpectationAsConjugateDist(points, K, L, rowCluster, colCluster, E_Uc_Vc, E_U,
-                E_Uc, E_V, E_Vc);
+                E_Uc, E_V, E_Vc, E_U_Vc, E_Uc_V);
 
         }
 
@@ -251,14 +266,17 @@ public final class CoclusterUtil {
                                              final int[] colAssigmnt, final int constraint,
                                              final int divergence, boolean isChanged,
                                              double[][] E_Uc_Vc, double[] E_U, double[] E_Uc,
-                                             double[] E_V, double[] E_Vc) {
+                                             double[] E_V, double[] E_Vc, double[][] E_U_Vc,
+                                             double[][] E_Uc_V, double E) {
         switch (divergence) {
             case I_DIVERGENCE:
                 return updateRowClusterForIDivergence(points, K, L, rowCluster, colCluster,
-                    rowAssigmnt, colAssigmnt, constraint, isChanged, E_Uc_Vc, E_U, E_Uc, E_V, E_Vc);
+                    rowAssigmnt, colAssigmnt, constraint, isChanged, E_Uc_Vc, E_U, E_Uc, E_V, E_Vc,
+                    E_U_Vc, E_Uc_V, E);
             case EUCLIDEAN_DIVERGENCE:
                 return updateRowClusterForEuclidean(points, K, L, rowCluster, colCluster,
-                    rowAssigmnt, colAssigmnt, constraint, isChanged, E_Uc_Vc, E_U, E_Uc, E_V, E_Vc);
+                    rowAssigmnt, colAssigmnt, constraint, isChanged, E_Uc_Vc, E_U, E_Uc, E_V, E_Vc,
+                    E_U_Vc, E_Uc_V, E);
             default:
                 throw new RuntimeException("No Divergence is choosed! ");
         }
@@ -285,7 +303,8 @@ public final class CoclusterUtil {
                                                            final int constraint, boolean isChanged,
                                                            double[][] E_Uc_Vc, double[] E_U,
                                                            double[] E_Uc, double[] E_V,
-                                                           double[] E_Vc) {
+                                                           double[] E_Vc, double[][] E_U_Vc,
+                                                           double[][] E_Uc_V, double E) {
         int rowCount = points.length()[0];
 
         //clear current clusters
@@ -311,11 +330,23 @@ public final class CoclusterUtil {
                     // compute Zuv w.r.t constraints
                     double ZuvEstim = 0.0d;
                     switch (constraint) {
+                        case C_1:
+                            ZuvEstim = E_Uc[Uc] * E_Vc[Vc] / E;
+                            break;
                         case C_2:
                             ZuvEstim = E_Uc_Vc[Uc][Vc];
                             break;
+                        case C_3:
+                            ZuvEstim = E_Uc_Vc[Uc][Vc] * E_U[u] / E_Uc[Uc];
+                            break;
+                        case C_4:
+                            ZuvEstim = E_Uc_Vc[Uc][Vc] * E_U[v] / E_Uc[Vc];
+                            break;
                         case C_5:
                             ZuvEstim = E_Uc_Vc[Uc][Vc] * E_U[u] * E_V[v] / (E_Uc[Uc] * E_Vc[Vc]);
+                            break;
+                        case C_6:
+                            ZuvEstim = E_U_Vc[u][Vc] * E_Uc_V[Uc][v] / (E_Uc_Vc[Uc][Vc]);
                             break;
                         default:
                             throw new RuntimeException("No contraints is choosed! ");
@@ -365,7 +396,9 @@ public final class CoclusterUtil {
                                                          final int[] colAssigmnt,
                                                          final int constraint, boolean isChanged,
                                                          double[][] E_Uc_Vc, double[] E_U,
-                                                         double[] E_Uc, double[] E_V, double[] E_Vc) {
+                                                         double[] E_Uc, double[] E_V,
+                                                         double[] E_Vc, double[][] E_U_Vc,
+                                                         double[][] E_Uc_V, double E) {
         int rowCount = points.length()[0];
 
         //clear current clusters
@@ -391,11 +424,23 @@ public final class CoclusterUtil {
                     // compute Zuv w.r.t constraints
                     double ZuvEstim = 0.0d;
                     switch (constraint) {
+                        case C_1:
+                            ZuvEstim = E_Uc[Uc] + E_Vc[Vc] - E;
+                            break;
                         case C_2:
                             ZuvEstim = E_Uc_Vc[Uc][Vc];
                             break;
+                        case C_3:
+                            ZuvEstim = E_Uc_Vc[Uc][Vc] + E_U[u] - E_Uc[Uc];
+                            break;
+                        case C_4:
+                            ZuvEstim = E_Uc_Vc[Uc][Vc] + E_U[v] - E_Uc[Vc];
+                            break;
                         case C_5:
-                            ZuvEstim = E_Uc_Vc[Uc][Vc] + E_U[u] - E_Uc[Uc] + E_V[v] - E_Vc[Vc];
+                            ZuvEstim = E_Uc_Vc[Uc][Vc] + E_U[u] + E_V[v] - E_Uc[Uc] - E_Vc[Vc];
+                            break;
+                        case C_6:
+                            ZuvEstim = E_U_Vc[u][Vc] + E_Uc_V[Uc][v] - E_Uc_Vc[Uc][Vc];
                             break;
                         default:
                             throw new RuntimeException("No contraints is choosed! ");
@@ -432,14 +477,17 @@ public final class CoclusterUtil {
                                              final int[] colAssigmnt, final int constraint,
                                              final int divergence, boolean isChanged,
                                              double[][] E_Uc_Vc, double[] E_U, double[] E_Uc,
-                                             double[] E_V, double[] E_Vc) {
+                                             double[] E_V, double[] E_Vc, double[][] E_U_Vc,
+                                             double[][] E_Uc_V, double E) {
         switch (divergence) {
             case I_DIVERGENCE:
                 return updateColClusterForIDivergence(points, K, L, rowCluster, colCluster,
-                    rowAssigmnt, colAssigmnt, constraint, isChanged, E_Uc_Vc, E_U, E_Uc, E_V, E_Vc);
+                    rowAssigmnt, colAssigmnt, constraint, isChanged, E_Uc_Vc, E_U, E_Uc, E_V, E_Vc,
+                    E_U_Vc, E_Uc_V, E);
             case EUCLIDEAN_DIVERGENCE:
                 return updateColClusterForEuclidean(points, K, L, rowCluster, colCluster,
-                    rowAssigmnt, colAssigmnt, constraint, isChanged, E_Uc_Vc, E_U, E_Uc, E_V, E_Vc);
+                    rowAssigmnt, colAssigmnt, constraint, isChanged, E_Uc_Vc, E_U, E_Uc, E_V, E_Vc,
+                    E_U_Vc, E_Uc_V, E);
             default:
                 throw new RuntimeException("No Divergence is choosed! ");
         }
@@ -466,7 +514,8 @@ public final class CoclusterUtil {
                                                            final int constraint, boolean isChanged,
                                                            double[][] E_Uc_Vc, double[] E_U,
                                                            double[] E_Uc, double[] E_V,
-                                                           double[] E_Vc) {
+                                                           double[] E_Vc, double[][] E_U_Vc,
+                                                           double[][] E_Uc_V, double E) {
         int colCount = points.length()[1];
         //clear current clusters
         boolean[] emptyIndicator = new boolean[L];
@@ -501,12 +550,25 @@ public final class CoclusterUtil {
                     double ZuvReal = ZvReal.getValue(u);
                     double ZuvEstim = 0.0d;
                     switch (constraint) {
+                        case C_1:
+                            ZuvEstim = E_Uc[Uc] * E_Vc[Vc] / E;
+                            break;
                         case C_2:
                             ZuvEstim = E_Uc_Vc[Uc][Vc];
+                            break;
+                        case C_3:
+                            ZuvEstim = E_Uc_Vc[Uc][Vc] * E_U[u] / E_Uc[Uc];
+                            break;
+                        case C_4:
+                            ZuvEstim = E_Uc_Vc[Uc][Vc] * E_U[v] / E_Uc[Vc];
                             break;
                         case C_5:
                             ZuvEstim = E_Uc_Vc[Uc][Vc] * E_U[u] * E_V[v] / (E_Uc[Uc] * E_Vc[Vc]);
                             break;
+                        case C_6:
+                            ZuvEstim = E_U_Vc[u][Vc] * E_Uc_V[Uc][v] / (E_Uc_Vc[Uc][Vc]);
+                            break;
+
                         default:
                             throw new RuntimeException("No contraints is choosed! ");
                     }
@@ -556,7 +618,9 @@ public final class CoclusterUtil {
                                                          final int[] colAssigmnt,
                                                          final int constraint, boolean isChanged,
                                                          double[][] E_Uc_Vc, double[] E_U,
-                                                         double[] E_Uc, double[] E_V, double[] E_Vc) {
+                                                         double[] E_Uc, double[] E_V,
+                                                         double[] E_Vc, double[][] E_U_Vc,
+                                                         double[][] E_Uc_V, double E) {
         int colCount = points.length()[1];
         //clear current clusters
         for (Cluster local : colCluster) {
@@ -581,11 +645,23 @@ public final class CoclusterUtil {
                     double ZuvReal = ZvReal.getValue(u);
                     double ZuvEstim = 0.0d;
                     switch (constraint) {
+                        case C_1:
+                            ZuvEstim = E_Uc[Uc] + E_Vc[Vc] - E;
+                            break;
                         case C_2:
                             ZuvEstim = E_Uc_Vc[Uc][Vc];
                             break;
+                        case C_3:
+                            ZuvEstim = E_Uc_Vc[Uc][Vc] + E_U[u] - E_Uc[Uc];
+                            break;
+                        case C_4:
+                            ZuvEstim = E_Uc_Vc[Uc][Vc] + E_U[v] - E_Uc[Vc];
+                            break;
                         case C_5:
-                            ZuvEstim = E_Uc_Vc[Uc][Vc] + E_U[u] - E_Uc[Uc] + E_V[v] - E_Vc[Vc];
+                            ZuvEstim = E_Uc_Vc[Uc][Vc] + E_U[u] + E_V[v] - E_Uc[Uc] - E_Vc[Vc];
+                            break;
+                        case C_6:
+                            ZuvEstim = E_U_Vc[u][Vc] + E_Uc_V[Uc][v] - E_Uc_Vc[Uc][Vc];
                             break;
                         default:
                             throw new RuntimeException("No contraints is choosed! ");
@@ -695,13 +771,17 @@ public final class CoclusterUtil {
      * @param E_Uc          the mean of specified row cluster
      * @param E_V           the mean of specified column
      * @param E_Vc          the mean of specified column cluster
+     * @param E_U_Vc        the mean of specified row in cocluster
+     * @param E_Uc_V        the mean of specified column in cocluster
+     * @param E             the mean of the entire matrix
      */
     protected static void comConExpectationAsConjugateDist(final SparseMatrix points, final int K,
                                                            final int L, final Cluster[] rowCluster,
                                                            final Cluster[] colCluster,
                                                            double[][] E_Uc_Vc, double[] E_U,
                                                            double[] E_Uc, double[] E_V,
-                                                           double[] E_Vc) {
+                                                           double[] E_Vc, double[][] E_U_Vc,
+                                                           double[][] E_Uc_V) {
         int rowCount = points.length()[0];
         int colCount = points.length()[1];
 
@@ -758,6 +838,43 @@ public final class CoclusterUtil {
         for (int v = 0; v < colCount; v++) {
             E_V[v] = points.getColRef(v).average();
         }
-    }
 
+        //6. cmp E_U_Vc
+        for (int u = 0; u < rowCount; u++) {
+            SparseVector Ru = points.getRowRef(u);
+            for (int l = 0; l < L; l++) {
+                Cluster colLocal = colCluster[l];
+
+                int itemCount = 0;
+                double sum = 0.0d;
+                for (int v : colLocal) {
+                    double val = Ru.getValue(v);
+                    if (val != 0.0d) {
+                        sum += val;
+                        itemCount++;
+                    }
+                }
+                E_U_Vc[u][l] = sum / itemCount;
+            }
+        }
+
+        //7. cmp E_Uc_V
+        for (int v = 0; v < colCount; v++) {
+            SparseVector Rv = points.getColRef(v);
+            for (int k = 0; k < K; k++) {
+                Cluster rowLocal = rowCluster[k];
+
+                int itemCount = 0;
+                double sum = 0.0d;
+                for (int u : rowLocal) {
+                    double val = Rv.getValue(u);
+                    if (val != 0.0d) {
+                        sum += val;
+                        itemCount++;
+                    }
+                }
+                E_Uc_V[k][v] = sum / itemCount;
+            }
+        }
+    }
 }

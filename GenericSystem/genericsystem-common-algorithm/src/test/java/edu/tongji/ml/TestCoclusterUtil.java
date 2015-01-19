@@ -45,8 +45,8 @@ public class TestCoclusterUtil {
         rateMatrix.setValue(5, 4, 0.04);
         rateMatrix.setValue(5, 5, 0.04);
 
-        Cluster[][] result = CoclusterUtil.divide(rateMatrix, 3, 2, 10, CoclusterUtil.C_5,
-            CoclusterUtil.EUCLIDEAN_DIVERGENCE);
+        Cluster[][] result = CoclusterUtil.divideWithConjugateAssumption(rateMatrix, 3, 2, 10,
+            CoclusterUtil.C_6, CoclusterUtil.EUCLIDEAN_DIVERGENCE);
 
         for (int i = 0; i < 2; i++) {
             System.out.println("================================");
