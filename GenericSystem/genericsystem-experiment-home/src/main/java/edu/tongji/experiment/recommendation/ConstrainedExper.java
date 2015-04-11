@@ -27,21 +27,20 @@ import prea.util.MatrixFileUtil;
 public class ConstrainedExper {
 
     /** file to store the original data and cocluster directory. 10M100K 1m*/
-    public final static String rootDir      = "E:/MovieLens/ml-10M100K/1/";
-    public final static String clusterDir   = "Kmeanspp/KL_2_2/";
+    public final static String  rootDir       = "E:/MovieLens/ml-10M100K/1/";
+    public final static String  clusterDir    = "Kmeanspp/KL_2_2/";
 
     /** The number of users. 943 6040 69878*/
-    public final static int    userCount    = 69878;
+    public final static int     userCount     = 69878;
     /** The number of items. 1682 3706 10677*/
-    public final static int    itemCount    = 10677;
-    /** Maximum value of rating, existing in the dataset. */
-    public final static double maxValue     = 5.0;
-    /** Minimum value of rating, existing in the dataset. */
-    public final static double minValue     = 0.5;
-    public final static int    featureCount = 20;
-    public final static double lrate        = 0.001;
-    public final static double regularized  = 0.02;
-    public final static int    maxIteration = 100;
+    public final static int     itemCount     = 10677;
+    public final static double  maxValue      = 5.0;
+    public final static double  minValue      = 0.5;
+    public final static int[]   featureCounts = { 20 };
+    public final static double  lrate         = 0.001;
+    public final static double  regularized   = 0.02;
+    public final static int     maxIteration  = 100;
+    public final static boolean showProgress  = false;
 
     /**
      * 
@@ -50,20 +49,10 @@ public class ConstrainedExper {
     public static void main(String[] args) {
         RSVD();
 
+        //        UserConstrainedRSVD();
         //        ItemConstrainedRSVD();
-
         //        BiConstrainedRSVD();
 
-        //                for (int i = 1; i <= 3; i++) {
-        //                    DynamicConstrainedRSVD(0.1 * i);
-        //                }
-        //        for (int i = 4; i <= 6; i++) {
-        //            DynamicConstrainedRSVD(0.1 * i);
-        //        }
-        for (int i = 7; i <= 9; i++) {
-            DynamicConstrainedRSVD(0.1 * i);
-        }
-        //        DynamicConstrainedRSVD(1.0);
     }
 
     public static void RSVD() {
@@ -74,16 +63,19 @@ public class ConstrainedExper {
         SparseRowMatrix testMatrix = MatrixFileUtil.reads(testFile, userCount, itemCount, null);
 
         //build model
-        RegularizedSVD recmmd = new RegularizedSVD(userCount, itemCount, maxValue, minValue,
-            featureCount, lrate, regularized, 0, maxIteration, false);
-        recmmd.test = testMatrix;
-        recmmd.buildModel(rateMatrix);
+        for (int featureCount : featureCounts) {
+            RegularizedSVD recmmd = new RegularizedSVD(userCount, itemCount, maxValue, minValue,
+                featureCount, lrate, regularized, 0, maxIteration, showProgress);
+            recmmd.test = testMatrix;
+            recmmd.buildModel(rateMatrix);
 
-        //evaluation
-        EvaluationMetrics metric = recmmd.evaluate(testMatrix);
-        System.out.println(metric.printMultiLine());
-        FileUtil.writeAsAppend("E://zRSVD", "fc: " + featureCount + "\tlr: " + lrate + "\tr: "
+            //evaluation
+            EvaluationMetrics metric = recmmd.evaluate(testMatrix);
+            System.out.println(metric.printMultiLine());
+            FileUtil
+                .writeAsAppend("E://zRSVD", "fc: " + featureCount + "\tlr: " + lrate + "\tr: "
                                             + regularized + "\n" + metric.printOneLine() + "\n");
+        }
     }
 
     public static void UserConstrainedRSVD() {
@@ -93,20 +85,23 @@ public class ConstrainedExper {
         SparseRowMatrix rateMatrix = MatrixFileUtil.reads(trainFile, userCount, itemCount, null);
         SparseRowMatrix testMatrix = MatrixFileUtil.reads(testFile, userCount, itemCount, null);
 
-        int[] ua = new int[itemCount];
+        int[] ua = new int[userCount];
         int[] dimnsn = readBiAssigmnt(ua, null);
 
         //build model
-        UserConstraintRSVD recmmd = new UserConstraintRSVD(userCount, itemCount, maxValue,
-            minValue, featureCount, lrate, regularized, 0, maxIteration, dimnsn[0], ua, false);
-        recmmd.test = testMatrix;
-        recmmd.buildModel(rateMatrix);
+        for (int featureCount : featureCounts) {
+            UserConstraintRSVD recmmd = new UserConstraintRSVD(userCount, itemCount, maxValue,
+                minValue, featureCount, lrate, regularized, 0, maxIteration, dimnsn[0], ua,
+                showProgress);
+            recmmd.test = testMatrix;
+            recmmd.buildModel(rateMatrix);
 
-        //evaluation
-        EvaluationMetrics metric = recmmd.evaluate(testMatrix);
-        System.out.println(metric.printMultiLine());
-        FileUtil.writeAsAppend("E://zIC", "fc: " + featureCount + "\tlr: " + lrate + "\tr: "
-                                          + regularized + "\n" + metric.printOneLine() + "\n");
+            //evaluation
+            EvaluationMetrics metric = recmmd.evaluate(testMatrix);
+            System.out.println(metric.printMultiLine());
+            FileUtil.writeAsAppend("E://zIC", "fc: " + featureCount + "\tlr: " + lrate + "\tr: "
+                                              + regularized + "\n" + metric.printOneLine() + "\n");
+        }
     }
 
     public static void ItemConstrainedRSVD() {
@@ -116,20 +111,23 @@ public class ConstrainedExper {
         SparseRowMatrix rateMatrix = MatrixFileUtil.reads(trainFile, userCount, itemCount, null);
         SparseRowMatrix testMatrix = MatrixFileUtil.reads(testFile, userCount, itemCount, null);
 
-        int[] ia = new int[userCount];
+        int[] ia = new int[itemCount];
         int[] dimnsn = readBiAssigmnt(null, ia);
 
         //build model
-        ItemConstraintRSVD recmmd = new ItemConstraintRSVD(userCount, itemCount, maxValue,
-            minValue, featureCount, lrate, regularized, 0, maxIteration, dimnsn[1], ia, false);
-        recmmd.test = testMatrix;
-        recmmd.buildModel(rateMatrix);
+        for (int featureCount : featureCounts) {
+            ItemConstraintRSVD recmmd = new ItemConstraintRSVD(userCount, itemCount, maxValue,
+                minValue, featureCount, lrate, regularized, 0, maxIteration, dimnsn[1], ia,
+                showProgress);
+            recmmd.test = testMatrix;
+            recmmd.buildModel(rateMatrix);
 
-        //evaluation
-        EvaluationMetrics metric = recmmd.evaluate(testMatrix);
-        System.out.println(metric.printMultiLine());
-        FileUtil.writeAsAppend("E://zIC", "fc: " + featureCount + "\tlr: " + lrate + "\tr: "
-                                          + regularized + "\n" + metric.printOneLine() + "\n");
+            //evaluation
+            EvaluationMetrics metric = recmmd.evaluate(testMatrix);
+            System.out.println(metric.printMultiLine());
+            FileUtil.writeAsAppend("E://zIC", "fc: " + featureCount + "\tlr: " + lrate + "\tr: "
+                                              + regularized + "\n" + metric.printOneLine() + "\n");
+        }
     }
 
     public static void BiConstrainedRSVD() {
@@ -139,22 +137,24 @@ public class ConstrainedExper {
         SparseRowMatrix rateMatrix = MatrixFileUtil.reads(trainFile, userCount, itemCount, null);
         SparseRowMatrix testMatrix = MatrixFileUtil.reads(testFile, userCount, itemCount, null);
 
-        int[] ua = new int[itemCount];
-        int[] ia = new int[userCount];
+        int[] ua = new int[userCount];
+        int[] ia = new int[itemCount];
         int[] dimnsn = readBiAssigmnt(ua, ia);
 
         //build model
-        FCRSVD recmmd = new FCRSVD(userCount, itemCount, maxValue, minValue, featureCount, lrate,
-            regularized, 0, maxIteration, dimnsn[0], dimnsn[1], ia, ua, false);
-        recmmd.test = testMatrix;
-        recmmd.buildModel(rateMatrix);
+        for (int featureCount : featureCounts) {
+            FCRSVD recmmd = new FCRSVD(userCount, itemCount, maxValue, minValue, featureCount,
+                lrate, regularized, 0, maxIteration, dimnsn[0], dimnsn[1], ua, ia, showProgress);
+            recmmd.test = testMatrix;
+            recmmd.buildModel(rateMatrix);
 
-        //evaluation
-        EvaluationMetrics metric = recmmd.evaluate(testMatrix);
-        System.out.println(metric.printMultiLine());
-        FileUtil.writeAsAppend("E://zBC", "fc: " + featureCount + "\tlr: " + lrate + "\tr: "
-                                          + regularized + "\tk: " + dimnsn[0] + "\tl: " + dimnsn[1]
-                                          + "\n" + metric.printOneLine() + "\n");
+            //evaluation
+            EvaluationMetrics metric = recmmd.evaluate(testMatrix);
+            System.out.println(metric.printMultiLine());
+            FileUtil.writeAsAppend("E://zBC", "fc: " + featureCount + "\tlr: " + lrate + "\tr: "
+                                              + regularized + "\tk: " + dimnsn[0] + "\tl: "
+                                              + dimnsn[1] + "\n" + metric.printOneLine() + "\n");
+        }
     }
 
     public static void DynamicConstrainedRSVD(double balanced) {
@@ -164,24 +164,27 @@ public class ConstrainedExper {
         SparseRowMatrix rateMatrix = MatrixFileUtil.reads(trainFile, userCount, itemCount, null);
         SparseRowMatrix testMatrix = MatrixFileUtil.reads(testFile, userCount, itemCount, null);
 
-        int[] ua = new int[itemCount];
-        int[] ia = new int[userCount];
+        int[] ia = new int[itemCount];
+        int[] ua = new int[userCount];
         int[] dimnsn = readBiAssigmnt(ua, ia);
 
         //build model
-        DynamicCRSVD recmmd = new DynamicCRSVD(userCount, itemCount, maxValue, minValue,
-            featureCount, lrate, regularized, 0, maxIteration, dimnsn[0], dimnsn[1], ia, ua,
-            balanced, false);
-        recmmd.test = testMatrix;
-        recmmd.buildModel(rateMatrix);
+        for (int featureCount : featureCounts) {
+            DynamicCRSVD recmmd = new DynamicCRSVD(userCount, itemCount, maxValue, minValue,
+                featureCount, lrate, regularized, 0, maxIteration, dimnsn[0], dimnsn[1], ua, ia,
+                balanced, showProgress);
+            recmmd.test = testMatrix;
+            recmmd.buildModel(rateMatrix);
 
-        //evaluation
-        EvaluationMetrics metric = recmmd.evaluate(testMatrix);
-        System.out.println(metric.printMultiLine());
-        FileUtil.writeAsAppend("E://zBC", "fc: " + featureCount + "\tlr: " + lrate + "\tr: "
-                                          + regularized + "\tk: " + dimnsn[0] + "\tl: " + dimnsn[1]
-                                          + "\tb: " + balanced + "\n" + metric.printOneLine()
-                                          + "\n");
+            //evaluation
+            EvaluationMetrics metric = recmmd.evaluate(testMatrix);
+            System.out.println(metric.printMultiLine());
+            FileUtil.writeAsAppend(
+                "E://zBC",
+                "fc: " + featureCount + "\tlr: " + lrate + "\tr: " + regularized + "\tk: "
+                        + dimnsn[0] + "\tl: " + dimnsn[1] + "\tb: " + balanced + "\n"
+                        + metric.printOneLine() + "\n");
+        }
     }
 
     public static int[] readBiAssigmnt(int[] ua, int[] ia) {
@@ -195,12 +198,12 @@ public class ConstrainedExper {
             colMappingFile, rowAssig, colAssig);
         int[] biSize = new int[2];
 
-        if (ia != null) {
+        if (ua != null) {
             int[] userClusterBounds = blockMatrix.rowBound();
             for (Entry<Integer, Integer> uIndex : rowAssig.entrySet()) {
                 for (int i = 0; i < userClusterBounds.length; i++) {
                     if (uIndex.getValue() < userClusterBounds[i]) {
-                        ia[uIndex.getKey()] = i;
+                        ua[uIndex.getKey()] = i;
                         break;
                     }
                 }
@@ -208,12 +211,12 @@ public class ConstrainedExper {
             biSize[0] = userClusterBounds.length;
         }
 
-        if (ua != null) {
+        if (ia != null) {
             int[] itemClusterBounds = blockMatrix.structure()[0];
             for (Entry<Integer, Integer> iIndex : colAssig.entrySet()) {
                 for (int i = 0; i < itemClusterBounds.length; i++) {
                     if (iIndex.getValue() < itemClusterBounds[i]) {
-                        ua[iIndex.getKey()] = i;
+                        ia[iIndex.getKey()] = i;
                         break;
                     }
                 }

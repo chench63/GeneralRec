@@ -40,13 +40,13 @@ public class DynamicCRSVD extends MatrixFactorizationRecommender {
      * @param iter The maximum number of iterations.
      */
     public DynamicCRSVD(int uc, int ic, double max, double min, int fc, double lr, double r,
-                        double m, int iter, int k, int l, int[] ia, int[] ua, double b,
+                        double m, int iter, int k, int l, int[] ua, int[] ia, double b,
                         boolean verbose) {
         super(uc, ic, max, min, fc, lr, r, m, iter, verbose);
         userFeaturesAss = new SparseRowMatrix[l];
         itemFeaturesAss = new SparseColumnMatrix[k];
-        iAssigmnt = ia;
-        uAssigmnt = ua;
+        iAssigmnt = ua;
+        uAssigmnt = ia;
         balanced = b;
     }
 
