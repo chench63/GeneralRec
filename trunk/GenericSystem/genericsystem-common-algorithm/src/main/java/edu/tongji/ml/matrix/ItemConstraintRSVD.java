@@ -39,10 +39,10 @@ public class ItemConstraintRSVD extends MatrixFactorizationRecommender {
      * @param iter The maximum number of iterations.
      */
     public ItemConstraintRSVD(int uc, int ic, double max, double min, int fc, double lr, double r,
-                              double m, int iter, int k, int[] ua, boolean verbose) {
+                              double m, int iter, int k, int[] ia, boolean verbose) {
         super(uc, ic, max, min, fc, lr, r, m, iter, verbose);
         userFeaturesAss = new SparseRowMatrix[k];
-        this.assigmnt = ua;
+        this.assigmnt = ia;
     }
 
     /*========================================

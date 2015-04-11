@@ -40,10 +40,10 @@ public class UserConstraintRSVD extends MatrixFactorizationRecommender {
      * @param ua 
      */
     public UserConstraintRSVD(int uc, int ic, double max, double min, int fc, double lr, double r,
-                              double m, int iter, int l, int[] ia, boolean verbose) {
+                              double m, int iter, int l, int[] ua, boolean verbose) {
         super(uc, ic, max, min, fc, lr, r, m, iter, verbose);
         itemFeaturesAss = new SparseColumnMatrix[l];
-        iAssigmnt = ia;
+        iAssigmnt = ua;
     }
 
     /*========================================
