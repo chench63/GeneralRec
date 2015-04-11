@@ -2,8 +2,6 @@ package edu.tongji.ml.matrix;
 
 import prea.util.EvaluationMetrics;
 
-import java.io.Serializable;
-
 import org.apache.log4j.Logger;
 
 import edu.tongji.data.SparseColumnMatrix;
@@ -19,9 +17,7 @@ import edu.tongji.log4j.LoggerDefineConstant;
  * @since 2012. 4. 20
  * @version 1.1
  */
-public abstract class MatrixFactorizationRecommender implements Serializable {
-    private static final long     serialVersionUID = 4000;
-
+public abstract class MatrixFactorizationRecommender {
     /*========================================
      * Common Variables
      *========================================*/
@@ -54,8 +50,7 @@ public abstract class MatrixFactorizationRecommender implements Serializable {
     protected SparseColumnMatrix  itemFeatures;
 
     /** logger */
-    protected final static Logger logger           = Logger
-                                                       .getLogger(LoggerDefineConstant.SERVICE_CORE);
+    protected final static Logger logger = Logger.getLogger(LoggerDefineConstant.SERVICE_CORE);
 
     /*========================================
      * Constructors

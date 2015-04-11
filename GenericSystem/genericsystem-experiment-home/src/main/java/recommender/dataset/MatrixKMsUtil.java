@@ -12,7 +12,7 @@ import java.util.Map;
 
 import edu.tongji.data.Cluster;
 import edu.tongji.data.SparseMatrix;
-import edu.tongji.ml.KMeansUtil;
+import edu.tongji.ml.KMeansPlusPlusUtil;
 
 /**
  * Cluster the matrix w.r.t the distance between the
@@ -42,7 +42,7 @@ public final class MatrixKMsUtil {
      */
     public static void divide(SparseMatrix matrix, int K, int maxIteration, int type,
                               Map<Integer, Integer> assign, int[] bound) {
-        Cluster[] cols = KMeansUtil.divide(matrix, K, maxIteration, type);
+        Cluster[] cols = KMeansPlusPlusUtil.cluster(matrix, K, maxIteration, type);
         int newRow = 0;
         for (Cluster cluster : cols) {
             for (int row : cluster) {
@@ -71,7 +71,7 @@ public final class MatrixKMsUtil {
     public static void divideAsDensity(SparseMatrix rateMatrix, SparseMatrix matrix, int K,
                                        int maxIteration, int type, Map<Integer, Integer> assign,
                                        int[] bound) {
-        Cluster[] cols = KMeansUtil.divide(matrix, K, maxIteration, type);
+        Cluster[] cols = KMeansPlusPlusUtil.cluster(matrix, K, maxIteration, type);
 
         //move dense row in lower row
         preprocess(rateMatrix, cols);

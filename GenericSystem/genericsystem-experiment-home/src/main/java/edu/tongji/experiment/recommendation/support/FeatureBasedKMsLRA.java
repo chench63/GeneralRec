@@ -13,7 +13,7 @@ import prea.util.MatrixFileUtil;
 import recommender.dataset.MatrixKMsUtil;
 import edu.tongji.data.SparseMatrix;
 import edu.tongji.log4j.LoggerDefineConstant;
-import edu.tongji.ml.KMeansUtil;
+import edu.tongji.ml.KMeansPlusPlusUtil;
 import edu.tongji.ml.matrix.WeigtedRSVD;
 import edu.tongji.parser.MovielensRatingTemplateParser;
 import edu.tongji.parser.Parser;
@@ -55,7 +55,7 @@ public class FeatureBasedKMsLRA {
     //==========================
 
     /** the type of distance involved*/
-    public final static int       DISTANCE_TYPE    = KMeansUtil.ANGLE_DISTANCE;
+    public final static int       DISTANCE_TYPE    = KMeansPlusPlusUtil.SQUARE_EUCLIDEAN_DISTANCE;
 
     /** the number of classes*/
     public final static int       K                = 2;

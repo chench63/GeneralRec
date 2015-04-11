@@ -69,9 +69,10 @@ public class WeightedSVDLearner extends Thread {
             StopWatch stopWatch = new StopWatch();
             stopWatch.start();
             task.buildModel(rateMatrix);
+            //            if (!task.buildModel(rateMatrix, 0.01)) {
+            //                continue;
+            //            }
             stopWatch.stop();
-            LoggerUtil.info(logger,
-                "ThreadId: " + task.getId() + "\tTime: " + stopWatch.getLastTaskTimeMillis());
 
             EvaluationMetrics metric = null;
             SparseRowMatrix prediction = null;
@@ -103,8 +104,14 @@ public class WeightedSVDLearner extends Thread {
             }
 
             //logger
-            LoggerUtil.info(logger, (new StringBuilder()).append(metric.printOneLine())
-                .append("\n").append(MatrixInformationUtil.RMSEAnalysis(testMatrix, prediction)));
+            LoggerUtil.info(
+                logger,
+                (new StringBuilder("ThreadId: " + task.getId()))
+                    .append("\tTime: " + stopWatch.getLastTaskTimeMillis())
+                    .append("\tSparsity: " + String.format("%.7f", task.getSparsity()))
+                    .append("\n").append(metric.printOneLine()));
+            LoggerUtil.debug(logger, (new StringBuilder("ThreadId: " + task.getId())).append("\t")
+                .append(MatrixInformationUtil.RMSEAnalysis(testMatrix, metric.getPrediction())));
         }
     }
 }

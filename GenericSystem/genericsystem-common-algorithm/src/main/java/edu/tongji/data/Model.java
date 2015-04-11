@@ -1,8 +1,13 @@
 package edu.tongji.data;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+
 import org.apache.log4j.Logger;
 
 import prea.util.EvaluationMetrics;
+import prea.util.MatrixInformationUtil;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.ml.matrix.WeigtedRSVD;
 import edu.tongji.util.LoggerUtil;
@@ -26,8 +31,14 @@ public class Model {
     /** the unique id of model*/
     private int                   id;
 
+    /** the sparsity of the matrix*/
+    private double                sparsity = Double.NaN;
+
     /** logger */
-    protected final static Logger logger = Logger.getLogger(LoggerDefineConstant.SERVICE_NORMAL);
+    protected final static Logger logger   = Logger.getLogger(LoggerDefineConstant.SERVICE_NORMAL);
+
+    public Model() {
+    }
 
     /**
      * 
@@ -41,6 +52,54 @@ public class Model {
     }
 
     /**
+     * compute the sparsity of the training matrix this model contains.
+     * 
+     * @param rateMatrix
+     * @return
+     */
+    private void sparsity(final SparseRowMatrix rateMatrix) {
+        double totalCount = (rows == null | cols == null) ? (rateMatrix.length()[0] * rateMatrix
+            .length()[1]) : rows.length * cols.length;
+        double itemCount = rateMatrix.itemCount();
+        sparsity = itemCount / totalCount;
+
+    }
+
+    /**
+     * build model with density limitation
+     * 
+     * @param rateMatrix
+     */
+    public boolean buildModel(final SparseRowMatrix rateMatrix, double densityThreshhold) {
+        if (rows == null | cols == null) {
+            double totalCount = rateMatrix.length()[0] * rateMatrix.length()[1];
+            double itemCount = rateMatrix.itemCount();
+            if (itemCount / totalCount < densityThreshhold) {
+                LoggerUtil.info(logger, "Id: " + id + "\t[" + (itemCount / totalCount)
+                                        + "] is too sparse to build the model");
+                return false;
+            }
+
+            recmder.buildModel(rateMatrix);
+            sparsity(rateMatrix);
+        } else {
+            SparseRowMatrix localMatrix = rateMatrix.partition(rows, cols);
+            double totalCount = rows.length * cols.length;
+            double itemCount = localMatrix.itemCount();
+            if (itemCount / totalCount < densityThreshhold) {
+                LoggerUtil.info(logger, "Id: " + id + "\t[" + (itemCount / totalCount)
+                                        + "] is too sparse to build the model");
+                return false;
+            }
+
+            recmder.buildModel(localMatrix);
+            sparsity(localMatrix);
+        }
+
+        return true;
+    }
+
+    /**
      * build model
      * 
      * @param rateMatrix
@@ -48,13 +107,14 @@ public class Model {
     public void buildModel(final SparseRowMatrix rateMatrix) {
         if (rows == null | cols == null) {
             recmder.buildModel(rateMatrix);
+            sparsity(rateMatrix);
         } else {
             SparseRowMatrix localMatrix = rateMatrix.partition(rows, cols);
             recmder.buildModel(localMatrix);
-            localMatrix.clear();
+            sparsity(localMatrix);
 
             // suggest JVM to gc
-//            System.gc();
+            //            System.gc();
         }
     }
 
@@ -68,6 +128,8 @@ public class Model {
      * @param cumWeight
      *            the cumulative weights
      */
+    static Map<Integer, SparseRowMatrix> TEST = new HashMap<Integer, SparseRowMatrix>();
+
     public void evaluate(final SparseRowMatrix testMatrix, SparseRowMatrix cumPrediction,
                          SparseRowMatrix cumWeight) {
         if (rows != null | cols != null) {
@@ -91,14 +153,46 @@ public class Model {
                 }
             }
 
-            // release local model memory
-            localMatrix.clear();
-            localMatrix = null;
+            EvaluationMetrics metric = recmder.evaluate(localMatrix);
+
+            //TODO:
+            if (logger.isDebugEnabled()) {
+                TEST.put(getId(), localMatrix);
+                LoggerUtil.debug(
+                    logger,
+                    (new StringBuilder("ThreadId: " + getId())).append("\t").append(
+                        MatrixInformationUtil.RMSEAnalysis(localMatrix, metric.getPrediction())));
+            }
+
         } else {
             //Specail Operation output Global result
-            EvaluationMetrics globalResult = recmder.evaluate(testMatrix);
-            LoggerUtil.info(logger, "Singleton Model : \n" + EvaluationMetrics.printTitle() + "\n"
-                                    + globalResult.printOneLine());
+
+            //            EvaluationMetrics globalResult = recmder.evaluate(testMatrix);
+            //            SparseRowMatrix wTest = new SparseRowMatrix(testMatrix.length()[0],
+            //                testMatrix.length()[1]);
+            //            SparseRowMatrix wPredicted = globalResult.getPrediction();
+            //            for (int u = 0; u < testMatrix.length()[0]; u++) {
+            //                int[] indexList = testMatrix.getRowRef(u).indexList();
+            //                if (indexList == null) {
+            //                    continue;
+            //                }
+            //
+            //                for (int v : indexList) {
+            //                    double real = testMatrix.getValue(u, v);
+            //                    double realWeight = getWeight(u, v, real);
+            //                    wTest.setValue(u, v, realWeight * real);
+            //
+            //                    double prediction = wPredicted.getValue(u, v);
+            //                    double estWeight = getWeight(u, v, prediction);
+            //                    wPredicted.setValue(u, v, estWeight * prediction);
+            //                }
+            //            }
+            //            globalResult = recmder.evaluate(testMatrix);
+            //            LoggerUtil.info(logger, MatrixInformationUtil.PredictionReliabilityAnalysis(
+            //                globalResult.getPrediction(), wTest, wPredicted));
+
+            //            LoggerUtil.info(logger, "Singleton Model : \n" + EvaluationMetrics.printTitle() + "\n"
+            //                                    + globalResult.printOneLine());
 
             // catch global model
             for (int u = 0; u < testMatrix.length()[0]; u++) {
@@ -116,8 +210,26 @@ public class Model {
 
                     cumPrediction.setValue(u, v, newCumPrediction);
                     cumWeight.setValue(u, v, newCumWeight);
+
                 }
             }
+
+            //TODO
+            if (logger.isDebugEnabled()) {
+                for (Entry<Integer, SparseRowMatrix> entry : TEST.entrySet()) {
+                    EvaluationMetrics eResult = recmder.evaluate(entry.getValue());
+                    LoggerUtil.debug(
+                        logger,
+                        (new StringBuilder())
+                            .append("ThreadId: ")
+                            .append(entry.getKey())
+                            .append("\t")
+                            .append(
+                                MatrixInformationUtil.RMSEAnalysis(entry.getValue(),
+                                    eResult.getPrediction())));
+                }
+            }
+
         }
 
         // release recommender memory
@@ -202,6 +314,15 @@ public class Model {
      */
     public void setId(int id) {
         this.id = id;
+    }
+
+    /**
+     * Getter method for property <tt>sparsity</tt>.
+     * 
+     * @return property value of sparsity
+     */
+    public double getSparsity() {
+        return sparsity;
     }
 
 }

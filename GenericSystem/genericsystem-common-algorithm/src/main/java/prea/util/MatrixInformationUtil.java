@@ -127,6 +127,7 @@ public final class MatrixInformationUtil {
     public static String RMSEAnalysis(SparseRowMatrix testMatrix, SparseRowMatrix predictedMatrix) {
         int[] countTable = new int[10];
         double[] rmseTable = new double[10];
+        double[] distanceTable = new double[10];
 
         int rowCount = testMatrix.length()[0];
         for (int u = 0; u < rowCount; u++) {
@@ -140,9 +141,15 @@ public final class MatrixInformationUtil {
                 double RuvReal = Ru.getValue(v);
                 double RuvEsitm = predictedMatrix.getValue(u, v);
 
+                //RMSE
                 int pivot = Double.valueOf(RuvReal / 0.5 - 1).intValue();
                 countTable[pivot]++;
                 rmseTable[pivot] += Math.pow(RuvReal - RuvEsitm, 2.0d);
+
+                //Distance
+                for (int r = 0; r < 10; r++) {
+                    distanceTable[r] += Math.pow(RuvEsitm - 0.5 * (r + 1), 2.0d);
+                }
             }
         }
 
@@ -154,16 +161,19 @@ public final class MatrixInformationUtil {
         }
 
         // message
-        StringBuilder msg = new StringBuilder("\n");
+        double globalRMSE = Math.sqrt(rmseTotal / countTotal);
+        StringBuilder msg = new StringBuilder();
+        msg.append("RMSE: ").append(String.format("%.6f", globalRMSE) + "\t\t[*]");
         for (int i = 0; i < 10; i++) {
             if (countTable[i] == 0) {
                 continue;
             }
             double RMSE = Math.sqrt(rmseTable[i] / countTable[i]);
-            msg.append("\t").append((i + 1) * 0.5).append('\t')
-                .append(String.format("%.5f", countTable[i] / countTotal)).append("\t\t")
-                .append(String.format("%.6f", RMSE)).append(" [")
-                .append(String.format("%.5f", rmseTable[i] / rmseTotal)).append("]\n");
+            double Dis = Math.sqrt(distanceTable[i] / countTotal);
+            msg.append("\n\t").append((i + 1) * 0.5).append('[')
+                .append(String.format("%.5f", countTable[i] / countTotal)).append("]\t")
+                .append(String.format("%.6f", RMSE)).append('\t')
+                .append(String.format("%.6f", Dis));
         }
         return msg.toString();
     }
@@ -217,5 +227,81 @@ public final class MatrixInformationUtil {
                 .append(String.format("%.5f", rmseTable[i] / rmseTotal)).append("]\n");
         }
         return msg.toString();
+    }
+
+    public static String PredictionReliabilityAnalysis(SparseRowMatrix testMatrix,
+                                                       SparseRowMatrix weightedTestMatrix,
+                                                       SparseRowMatrix weightedPredictedMatrix) {
+        int[] countTable = new int[10];
+        double[] rmseTable = new double[10];
+
+        int rowCount = testMatrix.length()[0];
+        for (int u = 0; u < rowCount; u++) {
+            SparseVector Ru = testMatrix.getRowRef(u);
+            int[] indexList = Ru.indexList();
+            if (indexList == null) {
+                continue;
+            }
+
+            for (int v : indexList) {
+                double RuvReal = testMatrix.getValue(u, v);
+                double wReal = weightedTestMatrix.getValue(u, v);
+                double wEsitm = weightedPredictedMatrix.getValue(u, v);
+
+                //RMSE
+                int pivot = Double.valueOf(RuvReal / 0.5 - 1).intValue();
+                countTable[pivot]++;
+                rmseTable[pivot] += Math.pow((wReal - wEsitm), 2.0d);
+            }
+        }
+
+        double rmseTotal = 0.0d;
+        double countTotal = 0.0d;
+        for (int i = 0; i < 10; i++) {
+            rmseTotal += rmseTable[i];
+            countTotal += countTable[i];
+        }
+
+        // message
+        double globalRMSE = Math.sqrt(rmseTotal / countTotal);
+        StringBuilder msg = new StringBuilder("RMSE: " + String.format("%.6f", globalRMSE) + "\n");
+        for (int i = 0; i < 10; i++) {
+            if (countTable[i] == 0) {
+                continue;
+            }
+            double RMSE = Math.sqrt(rmseTable[i] / countTable[i]);
+            msg.append("\t").append((i + 1) * 0.5).append('[')
+                .append(String.format("%.5f", countTable[i] / countTotal)).append("]\t")
+                .append(String.format("%.6f", RMSE)).append('\n');
+        }
+        return msg.toString();
+    }
+
+    public static double[] ratingDistribution(SparseMatrix matrix, double maxValue, double minValue) {
+        int len = (int) (maxValue / minValue);
+        int[] countTable = new int[len];
+
+        int M = matrix.length()[0];
+        for (int u = 0; u < M; u++) {
+            SparseVector Ru = matrix.getRowRef(u);
+            int[] indexList = Ru.indexList();
+            if (indexList == null) {
+                continue;
+            }
+
+            for (int v : indexList) {
+                double val = Ru.getValue(v);
+                int pivot = Double.valueOf(val / minValue - 1).intValue();
+                countTable[pivot]++;
+            }
+        }
+
+        double[] result = new double[len];
+        int itemCount = matrix.itemCount();
+        for (int i = 0; i < len; i++) {
+            result[i] = countTable[i] * 1.0 / itemCount;
+        }
+
+        return result;
     }
 }

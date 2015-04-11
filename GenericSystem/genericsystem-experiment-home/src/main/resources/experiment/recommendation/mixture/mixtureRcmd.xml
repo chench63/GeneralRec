@@ -32,7 +32,7 @@
 		<constructor-arg index="5" type="double" value="${LEARNING_RATE}" />
 		<constructor-arg index="6" type="double" value="${REGULARIZED_PARAM}" />
 		<constructor-arg index="7" type="double" value="${MOMENTUM}" />
-		<constructor-arg index="8" type="int" value="100" />
+		<constructor-arg index="8" type="int" value="${MAX_ITERATION}" />
 		<constructor-arg index="9" type="float" value="${B1}" />
 		<constructor-arg index="10" type="float" value="${B2}" />
 	</bean>
@@ -45,21 +45,27 @@
 		<property name="parser" ref="movielensRatingTemplateParser" />
 		<property name="groups">
 			<list>
-				<ref bean="cocluter_IW1_2_2"></ref>
-				<ref bean="cocluter_IW2_2_2"></ref>
-				<ref bean="cocluter_IW3_2_2"></ref>
-				<ref bean="cocluter_IW4_2_2"></ref>
-				<ref bean="cocluter_IW5_2_2"></ref>
-				<ref bean="cocluter_IW6_2_2"></ref>
-				<ref bean="cocluter_EW1_2_2"></ref>
-				<ref bean="cocluter_EW2_2_2"></ref>
-				<ref bean="cocluter_EW3_2_2"></ref>
-				<ref bean="cocluter_EW4_2_2"></ref>
-				<ref bean="cocluter_EW5_2_2"></ref>
-				<ref bean="cocluter_EW6_2_2"></ref>
+				<ref bean="KMeans_EU_2_2"></ref>
+				<ref bean="global"></ref>
 			</list>
 		</property>
 	</bean>
+
+	<!-- *********************** Kmeanspp-EW Setting************************************** -->
+	<bean id="KMeans_EU_2_2" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Kmeanspp/EU_2_2/SETTING" />
+		<property name="rowMappingFile" value="Kmeanspp/EU_2_2/RM" />
+		<property name="colMappingFile" value="Kmeanspp/EU_2_2/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
 
 	<!-- *********************** Cocluster-IW Cocluster Setting************************************** -->
 	<bean id="cocluter_IW1_2_2" class="edu.tongji.data.ModelGroup">
