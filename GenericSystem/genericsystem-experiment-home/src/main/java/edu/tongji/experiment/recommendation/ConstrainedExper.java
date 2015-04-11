@@ -75,7 +75,7 @@ public class ConstrainedExper {
 
         //build model
         RegularizedSVD recmmd = new RegularizedSVD(userCount, itemCount, maxValue, minValue,
-            featureCount, lrate, regularized, 0, maxIteration);
+            featureCount, lrate, regularized, 0, maxIteration, false);
         recmmd.test = testMatrix;
         recmmd.buildModel(rateMatrix);
 
@@ -98,7 +98,7 @@ public class ConstrainedExper {
 
         //build model
         UserConstraintRSVD recmmd = new UserConstraintRSVD(userCount, itemCount, maxValue,
-            minValue, featureCount, lrate, regularized, 0, maxIteration, dimnsn[0], ua);
+            minValue, featureCount, lrate, regularized, 0, maxIteration, dimnsn[0], ua, false);
         recmmd.test = testMatrix;
         recmmd.buildModel(rateMatrix);
 
@@ -121,7 +121,7 @@ public class ConstrainedExper {
 
         //build model
         ItemConstraintRSVD recmmd = new ItemConstraintRSVD(userCount, itemCount, maxValue,
-            minValue, featureCount, lrate, regularized, 0, maxIteration, dimnsn[1], ia);
+            minValue, featureCount, lrate, regularized, 0, maxIteration, dimnsn[1], ia, false);
         recmmd.test = testMatrix;
         recmmd.buildModel(rateMatrix);
 
@@ -145,7 +145,7 @@ public class ConstrainedExper {
 
         //build model
         FCRSVD recmmd = new FCRSVD(userCount, itemCount, maxValue, minValue, featureCount, lrate,
-            regularized, 0, maxIteration, dimnsn[0], dimnsn[1], ia, ua);
+            regularized, 0, maxIteration, dimnsn[0], dimnsn[1], ia, ua, false);
         recmmd.test = testMatrix;
         recmmd.buildModel(rateMatrix);
 
@@ -171,7 +171,7 @@ public class ConstrainedExper {
         //build model
         DynamicCRSVD recmmd = new DynamicCRSVD(userCount, itemCount, maxValue, minValue,
             featureCount, lrate, regularized, 0, maxIteration, dimnsn[0], dimnsn[1], ia, ua,
-            balanced);
+            balanced, false);
         recmmd.test = testMatrix;
         recmmd.buildModel(rateMatrix);
 
@@ -183,25 +183,6 @@ public class ConstrainedExper {
                                           + "\tb: " + balanced + "\n" + metric.printOneLine()
                                           + "\n");
     }
-
-    //    public static int readAssigmnt(int[] assigmnt) {
-    //        String settingFile = rootDir + "Kmeanspp/EU_4_4/SETTING";
-    //        String rowMappingFile = rootDir + "Kmeanspp/EU_4_4/RM";
-    //        String colMappingFile = rootDir + "Kmeanspp/EU_4_4/CM";
-    //
-    //        List<Model> models = new ArrayList<Model>();
-    //        for (int i = 0; i < 2; i++) {
-    //            models.add(new Model());
-    //        }
-    //        ModelUtil.readModels(settingFile, rowMappingFile, colMappingFile, models);
-    //        for (int i = 0; i < models.size(); i++) {
-    //            Model model = models.get(i);
-    //            for (int row : model.getCols()) {
-    //                assigmnt[row] = i;
-    //            }
-    //        }
-    //        return models.size();
-    //    }
 
     public static int[] readBiAssigmnt(int[] ua, int[] ia) {
         String settingFile = rootDir + clusterDir + "SETTING";

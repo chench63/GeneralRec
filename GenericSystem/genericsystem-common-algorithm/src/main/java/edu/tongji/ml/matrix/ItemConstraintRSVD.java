@@ -39,8 +39,8 @@ public class ItemConstraintRSVD extends MatrixFactorizationRecommender {
      * @param iter The maximum number of iterations.
      */
     public ItemConstraintRSVD(int uc, int ic, double max, double min, int fc, double lr, double r,
-                              double m, int iter, int k, int[] ua) {
-        super(uc, ic, max, min, fc, lr, r, m, iter);
+                              double m, int iter, int k, int[] ua, boolean verbose) {
+        super(uc, ic, max, min, fc, lr, r, m, iter, verbose);
         userFeaturesAss = new SparseRowMatrix[k];
         this.assigmnt = ua;
     }
@@ -109,10 +109,13 @@ public class ItemConstraintRSVD extends MatrixFactorizationRecommender {
             currErr = Math.sqrt(sum / rateCount);
 
             round++;
-            EvaluationMetrics metric = this.evaluate(test);
-            FileUtil.writeAsAppend("E://IC[" + featureCount + "]_k" + userFeaturesAss.length + "_"
-                                   + maxIter, round + "\t" + String.format("%.4f", currErr) + "\t"
-                                              + String.format("%.4f", metric.getRMSE()) + "\n");
+            if (showProgress && (round % 10 == 0)) {
+                EvaluationMetrics metric = this.evaluate(test);
+                FileUtil.writeAsAppend(
+                    "E://IC[" + featureCount + "]_k" + userFeaturesAss.length + "_" + maxIter,
+                    round + "\t" + String.format("%.4f", currErr) + "\t"
+                            + String.format("%.4f", metric.getRMSE()) + "\n");
+            }
 
             // Show progress:
             LoggerUtil.info(logger, round + "\t" + currErr);

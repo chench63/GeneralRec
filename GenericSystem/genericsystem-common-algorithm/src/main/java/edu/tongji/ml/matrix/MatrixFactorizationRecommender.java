@@ -41,6 +41,8 @@ public abstract class MatrixFactorizationRecommender {
     /** Maximum number of iteration. */
     public int                    maxIter;
 
+    /** Indicator whether to show progress of iteration. */
+    public boolean                showProgress;
     /** Offset to rating estimation. Usually this is the average of ratings. */
     protected double              offset;
 
@@ -67,9 +69,10 @@ public abstract class MatrixFactorizationRecommender {
      * @param r Controlling factor for the degree of regularization. 
      * @param m Momentum used in gradient-based or iterative optimization.
      * @param iter The maximum number of iterations.
+     * @param verbose Indicating whether to show iteration steps and train error.
      */
     public MatrixFactorizationRecommender(int uc, int ic, double max, double min, int fc,
-                                          double lr, double r, double m, int iter) {
+                                          double lr, double r, double m, int iter, boolean verbose) {
         userCount = uc;
         itemCount = ic;
         maxValue = max;
@@ -81,6 +84,7 @@ public abstract class MatrixFactorizationRecommender {
         momentum = m;
         maxIter = iter;
 
+        showProgress = verbose;
     }
 
     public SparseRowMatrix getU() {

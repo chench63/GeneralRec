@@ -38,8 +38,8 @@ public class RegularizedSVD extends MatrixFactorizationRecommender {
      * @param verbose Indicating whether to show iteration steps and train error.
      */
     public RegularizedSVD(int uc, int ic, double max, double min, int fc, double lr, double r,
-                          double m, int iter) {
-        super(uc, ic, max, min, fc, lr, r, m, iter);
+                          double m, int iter, boolean verbose) {
+        super(uc, ic, max, min, fc, lr, r, m, iter, verbose);
     }
 
     /*========================================
@@ -90,13 +90,15 @@ public class RegularizedSVD extends MatrixFactorizationRecommender {
 
             prevErr = currErr;
             currErr = Math.sqrt(sum / rateCount);
-            //            EvaluationMetrics metric = this.evaluate(test);
-            //            FileUtil.writeAsAppend("E://RSVD", round + "\t" + String.format("%.4f", currErr) + "\t"
-            //                                               + String.format("%.4f", metric.getRMSE()) + "\n");
-
             round++;
 
             // Show progress:
+            if (showProgress && (round % 10 == 0)) {
+                EvaluationMetrics metric = this.evaluate(test);
+                FileUtil.writeAsAppend("E://RSVD", round + "\t" + String.format("%.4f", currErr)
+                                                   + "\t" + String.format("%.4f", metric.getRMSE())
+                                                   + "\n");
+            }
             LoggerUtil.info(logger, round + "\t" + currErr);
         }
     }

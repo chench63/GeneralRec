@@ -40,8 +40,9 @@ public class DynamicCRSVD extends MatrixFactorizationRecommender {
      * @param iter The maximum number of iterations.
      */
     public DynamicCRSVD(int uc, int ic, double max, double min, int fc, double lr, double r,
-                        double m, int iter, int k, int l, int[] ia, int[] ua, double b) {
-        super(uc, ic, max, min, fc, lr, r, m, iter);
+                        double m, int iter, int k, int l, int[] ia, int[] ua, double b,
+                        boolean verbose) {
+        super(uc, ic, max, min, fc, lr, r, m, iter, verbose);
         userFeaturesAss = new SparseRowMatrix[l];
         itemFeaturesAss = new SparseColumnMatrix[k];
         iAssigmnt = ia;
@@ -128,12 +129,14 @@ public class DynamicCRSVD extends MatrixFactorizationRecommender {
             currErr = Math.sqrt(sum / rateCount);
 
             round++;
-            EvaluationMetrics metric = this.evaluate(test);
-            FileUtil.writeAsAppend(
-                "E://DCRSVD[" + featureCount + "]_k" + userFeaturesAss.length + "_" + maxIter
-                        + "_b" + Double.valueOf(balanced * 10).intValue(),
-                round + "\t" + String.format("%.4f", currErr) + "\t"
-                        + String.format("%.4f", metric.getRMSE()) + "\n");
+            if (showProgress && (round % 10 == 0)) {
+                EvaluationMetrics metric = this.evaluate(test);
+                FileUtil.writeAsAppend(
+                    "E://DCRSVD[" + featureCount + "]_k" + userFeaturesAss.length + "_" + maxIter
+                            + "_b" + Double.valueOf(balanced * 10).intValue(),
+                    round + "\t" + String.format("%.4f", currErr) + "\t"
+                            + String.format("%.4f", metric.getRMSE()) + "\n");
+            }
 
             // Show progress:
             LoggerUtil.info(logger, round + "\t" + currErr);
