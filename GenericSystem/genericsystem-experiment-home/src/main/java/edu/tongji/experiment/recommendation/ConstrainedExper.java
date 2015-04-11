@@ -27,35 +27,56 @@ import prea.util.MatrixFileUtil;
 public class ConstrainedExper {
 
     /** file to store the original data and cocluster directory. 10M100K 1m*/
-    public final static String  rootDir       = "E:/MovieLens/ml-10M100K/1/";
-    public final static String  clusterDir    = "Kmeanspp/KL_2_2/";
-
+    public final static String  rootDir      = "E:/MovieLens/ml-10M100K/1/";
     /** The number of users. 943 6040 69878*/
-    public final static int     userCount     = 69878;
+    public final static int     userCount    = 69878;
     /** The number of items. 1682 3706 10677*/
-    public final static int     itemCount     = 10677;
-    public final static double  maxValue      = 5.0;
-    public final static double  minValue      = 0.5;
-    public final static int[]   featureCounts = { 20 };
-    public final static double  lrate         = 0.001;
-    public final static double  regularized   = 0.02;
-    public final static int     maxIteration  = 100;
-    public final static boolean showProgress  = false;
+    public final static int     itemCount    = 10677;
+    public final static double  maxValue     = 5.0;
+    public final static double  minValue     = 0.5;
+    public final static double  lrate        = 0.001;
+    public final static double  regularized  = 0.02;
+    public final static int     maxIteration = 100;
+    public final static boolean showProgress = false;
+
+    public final static String  resultDir    = "E:/";
 
     /**
      * 
      * @param args
      */
     public static void main(String[] args) {
-        RSVD();
-
-        //        UserConstrainedRSVD();
-        //        ItemConstrainedRSVD();
-        //        BiConstrainedRSVD();
 
     }
 
-    public static void RSVD() {
+    /*========================================
+     * Experiments
+     *========================================*/
+    public static void rankExp() {
+        String clusterDir = "Kmeanspp/KL_2_2/";
+
+        int[] featureCounts = { 20 };
+        RSVD(featureCounts);
+        UserConstrainedRSVD(featureCounts, clusterDir);
+        ItemConstrainedRSVD(featureCounts, clusterDir);
+        BiConstrainedRSVD(featureCounts, clusterDir);
+    }
+
+    public static void clusteringExp() {
+        String[] clusterDirs = { "Kmeanspp/KL_2_2/" };
+        int[] featureCounts = { 20 };
+
+        for (String clusterDir : clusterDirs) {
+            BiConstrainedRSVD(featureCounts, clusterDir);
+        }
+
+    }
+
+    /*========================================
+     * Algorithms
+     *========================================*/
+
+    public static void RSVD(int[] featureCounts) {
         //loading dataset
         String trainFile = rootDir + "trainingset";
         String testFile = rootDir + "testingset";
@@ -72,13 +93,14 @@ public class ConstrainedExper {
             //evaluation
             EvaluationMetrics metric = recmmd.evaluate(testMatrix);
             System.out.println(metric.printMultiLine());
-            FileUtil
-                .writeAsAppend("E://zRSVD", "fc: " + featureCount + "\tlr: " + lrate + "\tr: "
-                                            + regularized + "\n" + metric.printOneLine() + "\n");
+            FileUtil.writeAsAppend(
+                resultDir + "zRSVD",
+                "fc: " + featureCount + "\tlr: " + lrate + "\tr: " + regularized + "\n"
+                        + metric.printOneLine() + "\n");
         }
     }
 
-    public static void UserConstrainedRSVD() {
+    public static void UserConstrainedRSVD(int[] featureCounts, String clusterDir) {
         //loading dataset
         String trainFile = rootDir + "trainingset";
         String testFile = rootDir + "testingset";
@@ -86,7 +108,7 @@ public class ConstrainedExper {
         SparseRowMatrix testMatrix = MatrixFileUtil.reads(testFile, userCount, itemCount, null);
 
         int[] ua = new int[userCount];
-        int[] dimnsn = readBiAssigmnt(ua, null);
+        int[] dimnsn = readBiAssigmnt(ua, null, clusterDir);
 
         //build model
         for (int featureCount : featureCounts) {
@@ -99,12 +121,14 @@ public class ConstrainedExper {
             //evaluation
             EvaluationMetrics metric = recmmd.evaluate(testMatrix);
             System.out.println(metric.printMultiLine());
-            FileUtil.writeAsAppend("E://zIC", "fc: " + featureCount + "\tlr: " + lrate + "\tr: "
-                                              + regularized + "\n" + metric.printOneLine() + "\n");
+            FileUtil.writeAsAppend(
+                resultDir + "zIC",
+                "fc: " + featureCount + "\tlr: " + lrate + "\tr: " + regularized + "\n"
+                        + metric.printOneLine() + "\n");
         }
     }
 
-    public static void ItemConstrainedRSVD() {
+    public static void ItemConstrainedRSVD(int[] featureCounts, String clusterDir) {
         //loading dataset
         String trainFile = rootDir + "trainingset";
         String testFile = rootDir + "testingset";
@@ -112,7 +136,7 @@ public class ConstrainedExper {
         SparseRowMatrix testMatrix = MatrixFileUtil.reads(testFile, userCount, itemCount, null);
 
         int[] ia = new int[itemCount];
-        int[] dimnsn = readBiAssigmnt(null, ia);
+        int[] dimnsn = readBiAssigmnt(null, ia, clusterDir);
 
         //build model
         for (int featureCount : featureCounts) {
@@ -125,12 +149,14 @@ public class ConstrainedExper {
             //evaluation
             EvaluationMetrics metric = recmmd.evaluate(testMatrix);
             System.out.println(metric.printMultiLine());
-            FileUtil.writeAsAppend("E://zIC", "fc: " + featureCount + "\tlr: " + lrate + "\tr: "
-                                              + regularized + "\n" + metric.printOneLine() + "\n");
+            FileUtil.writeAsAppend(
+                resultDir + "zIC",
+                "fc: " + featureCount + "\tlr: " + lrate + "\tr: " + regularized + "\n"
+                        + metric.printOneLine() + "\n");
         }
     }
 
-    public static void BiConstrainedRSVD() {
+    public static void BiConstrainedRSVD(int[] featureCounts, String clusterDir) {
         //loading dataset
         String trainFile = rootDir + "trainingset";
         String testFile = rootDir + "testingset";
@@ -139,7 +165,7 @@ public class ConstrainedExper {
 
         int[] ua = new int[userCount];
         int[] ia = new int[itemCount];
-        int[] dimnsn = readBiAssigmnt(ua, ia);
+        int[] dimnsn = readBiAssigmnt(ua, ia, clusterDir);
 
         //build model
         for (int featureCount : featureCounts) {
@@ -157,7 +183,8 @@ public class ConstrainedExper {
         }
     }
 
-    public static void DynamicConstrainedRSVD(double balanced) {
+    public static void DynamicConstrainedRSVD(int[] featureCounts, String clusterDir,
+                                              double balanced) {
         //loading dataset
         String trainFile = rootDir + "trainingset";
         String testFile = rootDir + "testingset";
@@ -166,7 +193,7 @@ public class ConstrainedExper {
 
         int[] ia = new int[itemCount];
         int[] ua = new int[userCount];
-        int[] dimnsn = readBiAssigmnt(ua, ia);
+        int[] dimnsn = readBiAssigmnt(ua, ia, clusterDir);
 
         //build model
         for (int featureCount : featureCounts) {
@@ -179,15 +206,14 @@ public class ConstrainedExper {
             //evaluation
             EvaluationMetrics metric = recmmd.evaluate(testMatrix);
             System.out.println(metric.printMultiLine());
-            FileUtil.writeAsAppend(
-                "E://zBC",
-                "fc: " + featureCount + "\tlr: " + lrate + "\tr: " + regularized + "\tk: "
-                        + dimnsn[0] + "\tl: " + dimnsn[1] + "\tb: " + balanced + "\n"
-                        + metric.printOneLine() + "\n");
+            FileUtil.writeAsAppend(resultDir + "zBC", "fc: " + featureCount + "\tlr: " + lrate
+                                                      + "\tr: " + regularized + "\tk: " + dimnsn[0]
+                                                      + "\tl: " + dimnsn[1] + "\tb: " + balanced
+                                                      + "\n" + metric.printOneLine() + "\n");
         }
     }
 
-    public static int[] readBiAssigmnt(int[] ua, int[] ia) {
+    public static int[] readBiAssigmnt(int[] ua, int[] ia, String clusterDir) {
         String settingFile = rootDir + clusterDir + "SETTING";
         String rowMappingFile = rootDir + clusterDir + "RM";
         String colMappingFile = rootDir + clusterDir + "CM";
