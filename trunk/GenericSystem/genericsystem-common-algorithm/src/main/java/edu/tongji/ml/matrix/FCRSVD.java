@@ -40,8 +40,8 @@ public class FCRSVD extends MatrixFactorizationRecommender {
      * @param iter The maximum number of iterations.
      */
     public FCRSVD(int uc, int ic, double max, double min, int fc, double lr, double r, double m,
-                  int iter, int k, int l, int[] ia, int[] ua) {
-        super(uc, ic, max, min, fc, lr, r, m, iter);
+                  int iter, int k, int l, int[] ia, int[] ua, boolean verbose) {
+        super(uc, ic, max, min, fc, lr, r, m, iter, verbose);
         userFeaturesAss = new SparseRowMatrix[l];
         itemFeaturesAss = new SparseColumnMatrix[k];
         iAssigmnt = ia;
@@ -121,10 +121,13 @@ public class FCRSVD extends MatrixFactorizationRecommender {
             currErr = Math.sqrt(sum / rateCount);
 
             round++;
-            EvaluationMetrics metric = this.evaluate(test);
-            FileUtil.writeAsAppend("E://10m[" + featureCount + "]_k" + userFeaturesAss.length + "_"
-                                   + maxIter, round + "\t" + String.format("%.4f", currErr) + "\t"
-                                              + String.format("%.4f", metric.getRMSE()) + "\n");
+            if (showProgress && (round % 10 == 0)) {
+                EvaluationMetrics metric = this.evaluate(test);
+                FileUtil.writeAsAppend(
+                    "E://10m[" + featureCount + "]_k" + userFeaturesAss.length + "_" + maxIter,
+                    round + "\t" + String.format("%.4f", currErr) + "\t"
+                            + String.format("%.4f", metric.getRMSE()) + "\n");
+            }
 
             // Show progress:
             LoggerUtil.info(logger, round + "\t" + currErr);

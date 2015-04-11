@@ -53,7 +53,7 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
      */
     public WeigtedRSVD(int uc, int ic, double max, double min, int fc, double lr, double r,
                        double m, int iter, float b1, float b2) {
-        super(uc, ic, max, min, fc, lr, r, m, iter);
+        super(uc, ic, max, min, fc, lr, r, m, iter, false);
         this.base1 = b1;
         this.base2 = b2;
     }
@@ -73,7 +73,7 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
      */
     public WeigtedRSVD(int uc, int ic, double max, double min, int fc, double lr, double r,
                        double m, int iter) {
-        super(uc, ic, max, min, fc, lr, r, m, iter);
+        super(uc, ic, max, min, fc, lr, r, m, iter, false);
     }
 
     public void init(SparseRowMatrix rateMatrix) {
