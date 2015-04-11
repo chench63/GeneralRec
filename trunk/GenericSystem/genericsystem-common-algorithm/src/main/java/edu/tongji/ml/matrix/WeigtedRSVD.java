@@ -16,21 +16,22 @@ import edu.tongji.util.LoggerUtil;
  */
 public class WeigtedRSVD extends MatrixFactorizationRecommender {
 
-    /**  serial number*/
-    private static final long serialVersionUID = -6860703746675880356L;
-
     /** the rating distribution w.r.t each user*/
-    public float[][]          userWeights;
+    public float[][] userWeights;
 
     /** the rating distribution w.r.t each item*/
-    public float[][]          itemWeights;
+    public float[][] itemWeights;
+
+    public float[]   totalWeights; //= { 0.0f, 0.0f, 0.0f, 0.5f, 0.0f };
 
     //===================================
     //      parameter
     //===================================
-    public float              base1            = 0.45f;
+    public float     base1 = 0.45f;
 
-    public float              base2            = 0.5f;
+    public float     base2 = 0.5f;
+
+    public float     base3 = 0.0f;
 
     /*========================================
      * Constructors
@@ -75,12 +76,36 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
         super(uc, ic, max, min, fc, lr, r, m, iter);
     }
 
+    public void init(SparseRowMatrix rateMatrix) {
+        totalWeights = new float[Double.valueOf(maxValue / minValue).intValue()];
+
+        for (int u = 0; u < userCount; u++) {
+            SparseVector items = rateMatrix.getRowRef(u);
+            int[] itemIndexList = items.indexList();
+
+            if (itemIndexList == null) {
+                continue;
+            }
+            for (int i : itemIndexList) {
+                double AuiReal = items.getValue(i);
+                int weightIndx = Double.valueOf(AuiReal / minValue - 1).intValue();
+                totalWeights[weightIndx] += 1;
+            }
+        }
+
+        int totalCount = rateMatrix.itemCount();
+        for (int i = 0; i < totalWeights.length; i++) {
+            totalWeights[i] /= totalCount;
+        }
+    }
+
     /** 
      * @see edu.tongji.ml.matrix.MatrixFactorizationRecommender#buildModel(edu.tongji.data.SparseMatrix)
      */
     @Override
     public void buildModel(SparseRowMatrix rateMatrix) {
         super.buildModel(rateMatrix);
+        init(rateMatrix);
 
         // Gradient Descent:
         int round = 0;
@@ -102,29 +127,46 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
                         double AuiEst = Fu.innerProduct(Gi);
                         double AuiReal = rateMatrix.getValue(u, i);
                         double err = AuiReal - AuiEst;
-                        sum += Math.pow(err, 2.0d);
+                        sum += Math.abs(err);
 
                         int weightIndx = Double.valueOf(AuiReal / minValue - 1).intValue();
                         for (int s = 0; s < featureCount; s++) {
                             double Fus = userFeatures.getValue(u, s);
                             double Gis = itemFeatures.getValue(s, i);
-                            userFeatures.setValue(u, s,
-                                Fus
-                                        + learningRate
-                                        * (err * Gis * getWeight(u, i, weightIndx) - regularizer
-                                                                                     * Fus));
-                            itemFeatures.setValue(s, i,
-                                Gis
-                                        + learningRate
-                                        * (err * Fus * getWeight(u, i, weightIndx) - regularizer
-                                                                                     * Gis));
+                            //                            userFeatures.setValue(u, s,
+                            //                                Fus
+                            //                                        + learningRate
+                            //                                        * (err * Gis * getWeight(u, i, weightIndx) - regularizer
+                            //                                                                                     * Fus));
+                            //                            itemFeatures.setValue(s, i,
+                            //                                Gis
+                            //                                        + learningRate
+                            //                                        * (err * Fus * getWeight(u, i, weightIndx) - regularizer
+                            //                                                                                     * Gis));
+
+                            userFeatures
+                                .setValue(
+                                    u,
+                                    s,
+                                    Fus
+                                            + learningRate
+                                            * (err * Gis * (1 + base3 * totalWeights[weightIndx]) - regularizer
+                                                                                                    * Fus));
+                            itemFeatures
+                                .setValue(
+                                    s,
+                                    i,
+                                    Gis
+                                            + learningRate
+                                            * (err * Fus * (1 + base3 * totalWeights[weightIndx]) - regularizer
+                                                                                                    * Gis));
                         }
                     }
                 }
             }
 
             prevErr = currErr;
-            currErr = Math.sqrt(sum / rateCount);
+            currErr = sum / rateCount;
 
             round++;
 
@@ -206,10 +248,14 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
         //               + userWeights[u][weightIndx] * userWeights[u][weightIndx]
         //               + itemWeights[i][weightIndx] * itemWeights[i][weightIndx];
 
-        return 1 + base1 * userWeights[u][weightIndx] + base2 * itemWeights[i][weightIndx];
+        //        return userWeights[u][weightIndx] + itemWeights[i][weightIndx];
+
+        //        return 1.0;
+
+        //        return 1.0 + base3 * totalWeights[weightIndx];
 
         //b1 + (b2 + Pu)(b2 + Pi)
-        //        return  base1 + (base2 + userWeights[u][weightIndx]) * (base2 + itemWeights[i][weightIndx]);
+        return base1 + (base2 + userWeights[u][weightIndx]) * (base2 + itemWeights[i][weightIndx]);
     }
 
     /**

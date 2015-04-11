@@ -91,7 +91,7 @@ public class MixtureWLRARcmdEngine extends RcmdtnEngine {
         // suggest JVM to release memory
         LoggerUtil.info(logger, "\t\tc. releasing mem. ");
         rateMatrix.clear();
-//        System.gc();
+        //        System.gc();
         groups.clear();
         groups = null;
         WeightedSVDLearner.models = models;

@@ -15,6 +15,7 @@ import java.util.Map.Entry;
 import org.apache.commons.io.IOUtils;
 
 import edu.tongji.data.BlockMatrix;
+import edu.tongji.data.SparseColumnMatrix;
 import edu.tongji.data.SparseMatrix;
 import edu.tongji.data.SparseRowMatrix;
 import edu.tongji.data.SparseVector;
@@ -256,6 +257,84 @@ public final class MatrixFileUtil {
         return null;
     }
 
+    public static SparseMatrix[] readDistriInfo(String file, int rowCount, int colCount,
+                                                double maxVal, double minVal, Parser parser) {
+        if (parser == null) {
+            parser = new MovielensRatingTemplateParser();
+        }
+
+        SparseMatrix valMatrix = new SparseMatrix(rowCount, colCount);
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(file));
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                RatingVO rating = (RatingVO) parser.parse(line);
+                valMatrix.setValue(rating.getUsrId(), rating.getMovieId(), rating.getRatingReal());
+            }
+
+            SparseMatrix[] result = new SparseMatrix[2];
+            int discreteCount = (int) (maxVal / minVal);
+            SparseMatrix rowDistriInfo = new SparseMatrix(rowCount, discreteCount);
+            float[][] rowDist = valMatrix.probability(null, null, maxVal, minVal, true);
+            for (int row = 0; row < rowCount; row++) {
+                for (int indx = 0; indx < discreteCount; indx++) {
+                    rowDistriInfo.setValue(row, indx, rowDist[row][indx]);
+                }
+            }
+            result[0] = rowDistriInfo;
+
+            SparseMatrix colDistriInfo = new SparseMatrix(colCount, discreteCount);
+            float[][] colDist = valMatrix.probability(null, null, maxVal, minVal, false);
+            for (int col = 0; col < colCount; col++) {
+                for (int indx = 0; indx < discreteCount; indx++) {
+                    colDistriInfo.setValue(col, indx, colDist[col][indx]);
+                }
+            }
+            result[1] = colDistriInfo;
+
+            return result;
+        } catch (FileNotFoundException e) {
+            ExceptionUtil.caught(e, "无法找到对应的加载文件: " + file);
+        } catch (IOException e) {
+            ExceptionUtil.caught(e, "读取文件发生异常，校验文件格式");
+        } finally {
+            IOUtils.closeQuietly(reader);
+        }
+
+        return null;
+    }
+
+    public static SparseMatrix read(String file, int rowCount, int colCount, Parser parser,
+                                    double specifyRating) {
+        if (parser == null) {
+            parser = new MovielensRatingTemplateParser();
+        }
+
+        SparseMatrix result = new SparseMatrix(rowCount, colCount);
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(file));
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                RatingVO rating = (RatingVO) parser.parse(line);
+                if (rating.getRatingReal() != specifyRating) {
+                    continue;
+                }
+                result.setValue(rating.getUsrId(), rating.getMovieId(), rating.getRatingReal());
+            }
+
+            return result;
+        } catch (FileNotFoundException e) {
+            ExceptionUtil.caught(e, "无法找到对应的加载文件: " + file);
+        } catch (IOException e) {
+            ExceptionUtil.caught(e, "读取文件发生异常，校验文件格式");
+        } finally {
+            IOUtils.closeQuietly(reader);
+        }
+        return null;
+    }
+
     /**
      * Read matrix from file
      * 
@@ -291,8 +370,67 @@ public final class MatrixFileUtil {
         return null;
     }
 
-    public static BlockMatrix read(String sourceFile, String settingFile, String rowMappingFile,
-                                   String colMappingFile, int rowCount, int colCount, Parser parser) {
+    /**
+     * Read matrix from file
+     * 
+     * @param file          file contain matrix data
+     * @param rowCount      the number of rows
+     * @param colCount      the number of columns
+     * @param parser        the parser to parse the data structure
+     * @return
+     */
+    public static SparseColumnMatrix readCols(String file, int rowCount, int colCount, Parser parser) {
+        if (parser == null) {
+            parser = new MovielensRatingTemplateParser();
+        }
+
+        SparseColumnMatrix result = new SparseColumnMatrix(rowCount, colCount);
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(file));
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                RatingVO rating = (RatingVO) parser.parse(line);
+                result.setValue(rating.getUsrId(), rating.getMovieId(), rating.getRatingReal());
+            }
+
+            return result;
+        } catch (FileNotFoundException e) {
+            ExceptionUtil.caught(e, "无法找到对应的加载文件: " + file);
+        } catch (IOException e) {
+            ExceptionUtil.caught(e, "读取文件发生异常，校验文件格式");
+        } finally {
+            IOUtils.closeQuietly(reader);
+        }
+        return null;
+    }
+
+    public static SparseMatrix read(String sourceFile, String settingFile, String rowMappingFile,
+                                    String colMappingFile, int rowCount, int colCount, Parser parser) {
+        if (parser == null) {
+            parser = new MovielensRatingTemplateParser();
+        }
+
+        //reading training file
+        Map<Integer, Integer> rowAssig = new HashMap<Integer, Integer>();
+        Map<Integer, Integer> colAssig = new HashMap<Integer, Integer>();
+        readEmptyBlock(settingFile, rowMappingFile, colMappingFile, rowAssig, colAssig);
+
+        SparseMatrix matrix = new SparseMatrix(rowCount, colCount);
+        String[] lines = FileUtil.readLines(sourceFile);
+        for (String line : lines) {
+            RatingVO rating = (RatingVO) parser.parse(line);
+            int row = rowAssig.get(rating.getUsrId());
+            int col = colAssig.get(rating.getMovieId());
+
+            matrix.setValue(row, col, rating.getRatingReal());
+        }
+
+        return matrix;
+    }
+
+    public static BlockMatrix reads(String sourceFile, String settingFile, String rowMappingFile,
+                                    String colMappingFile, int rowCount, int colCount, Parser parser) {
         if (parser == null) {
             parser = new MovielensRatingTemplateParser();
         }

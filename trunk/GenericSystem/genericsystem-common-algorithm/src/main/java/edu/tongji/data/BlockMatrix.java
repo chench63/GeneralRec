@@ -5,6 +5,8 @@
 package edu.tongji.data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The integrated matrix for a compact matrix.
@@ -201,6 +203,21 @@ public class BlockMatrix implements Serializable {
      */
     public SparseMatrix getBlock(int i, int j) {
         return rateMatrices[i][j];
+    }
+
+    /**
+     * get all inner matrices
+     * 
+     * @return
+     */
+    public List<SparseMatrix> getList() {
+        List<SparseMatrix> result = new ArrayList<SparseMatrix>();
+        for (int row = 0; row < rateMatrices.length; row++) {
+            for (int col = 0; col < rateMatrices[row].length; col++) {
+                result.add(rateMatrices[row][col]);
+            }
+        }
+        return result;
     }
 
     /**

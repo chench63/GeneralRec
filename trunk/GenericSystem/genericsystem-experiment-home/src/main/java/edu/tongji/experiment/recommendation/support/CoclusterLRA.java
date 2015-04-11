@@ -46,9 +46,11 @@ public class CoclusterLRA {
     public final static int[]    CONSTRAINTS  = { CoclusterUtil.C_1, CoclusterUtil.C_3,
             CoclusterUtil.C_4, CoclusterUtil.C_6 };
 
-    public final static int[]    K            = { 2, 3 };
+    /** the number of  row classes*/
+    public final static int[]    K            = { 5 };
 
-    public final static int[]    L            = { 2 };
+    /** the number of column classes*/
+    public final static int[]    L            = { 5 };
 
     /** the number of rows*/
     public final static int      rowCount     = 69878;

@@ -1,7 +1,9 @@
 package edu.tongji.ml.matrix;
 
+import prea.util.EvaluationMetrics;
 import edu.tongji.data.SparseRowMatrix;
 import edu.tongji.data.SparseVector;
+import edu.tongji.util.FileUtil;
 import edu.tongji.util.LoggerUtil;
 
 /**
@@ -15,7 +17,8 @@ import edu.tongji.util.LoggerUtil;
  * @version 1.1
  */
 public class RegularizedSVD extends MatrixFactorizationRecommender {
-    private static final long serialVersionUID = 4001;
+
+    public SparseRowMatrix test;
 
     /*========================================
      * Constructors
@@ -87,6 +90,9 @@ public class RegularizedSVD extends MatrixFactorizationRecommender {
 
             prevErr = currErr;
             currErr = Math.sqrt(sum / rateCount);
+            //            EvaluationMetrics metric = this.evaluate(test);
+            //            FileUtil.writeAsAppend("E://RSVD", round + "\t" + String.format("%.4f", currErr) + "\t"
+            //                                               + String.format("%.4f", metric.getRMSE()) + "\n");
 
             round++;
 
