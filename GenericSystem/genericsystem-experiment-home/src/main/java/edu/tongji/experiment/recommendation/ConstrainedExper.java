@@ -122,7 +122,7 @@ public class ConstrainedExper {
             EvaluationMetrics metric = recmmd.evaluate(testMatrix);
             System.out.println(metric.printMultiLine());
             FileUtil.writeAsAppend(
-                resultDir + "zIC",
+                resultDir + "zUC",
                 "fc: " + featureCount + "\tlr: " + lrate + "\tr: " + regularized + "\n"
                         + metric.printOneLine() + "\n");
         }
@@ -206,7 +206,7 @@ public class ConstrainedExper {
             //evaluation
             EvaluationMetrics metric = recmmd.evaluate(testMatrix);
             System.out.println(metric.printMultiLine());
-            FileUtil.writeAsAppend(resultDir + "zBC", "fc: " + featureCount + "\tlr: " + lrate
+            FileUtil.writeAsAppend(resultDir + "zDC", "fc: " + featureCount + "\tlr: " + lrate
                                                       + "\tr: " + regularized + "\tk: " + dimnsn[0]
                                                       + "\tl: " + dimnsn[1] + "\tb: " + balanced
                                                       + "\n" + metric.printOneLine() + "\n");
