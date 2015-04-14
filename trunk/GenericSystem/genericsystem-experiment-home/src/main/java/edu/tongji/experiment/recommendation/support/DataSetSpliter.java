@@ -32,13 +32,13 @@ public class DataSetSpliter {
      * Common parameters
      *========================================*/
     /** source dataset file input path Netflix MovieLens*/
-    protected final static String   rootDir     = "E:/MovieLens/ml-1m/";
+    protected final static String   rootDir     = "E:/MovieLens/ml-10M100K/";
     /** source dataset file input path */
-    protected final static String   unifiedFile = "E:/MovieLens/ml-1m/ratings.dat";
+    protected final static String   unifiedFile = "E:/MovieLens/ml-10M100K/ratings.dat";
     /** the number of rows     943 6040 69878 480189*/
-    public final static int         userCount   = 6040;
+    public final static int         userCount   = 69878;
     /** the number of columns 1682 3706 10677 17770*/
-    public final static int         itemCount   = 3706;
+    public final static int         itemCount   = 10677;
     /** the time of repeat */
     public final static int         numRepeat   = 2;
     /** logger */
@@ -48,7 +48,7 @@ public class DataSetSpliter {
     /*========================================
      * Cold-start train and test dataset spliting
      *========================================*/
-    protected final static int[]    Ns          = { 10 };
+    protected final static int[]    Ns          = { 10, 20, 50 };
 
     /*========================================
      * Simple train and test dataset spliting
@@ -65,8 +65,8 @@ public class DataSetSpliter {
         //        simpleSplit();
 
         //fetchN
-        netflix();
-        //        movieLens();
+        //        netflix();
+        movieLens();
     }
 
     public static void simpleSplit() {
@@ -229,6 +229,9 @@ public class DataSetSpliter {
         for (int u = 0; u < userCount; u++) {
             SparseVector Fu = matrix.getRowRef(u);
             int[] itemIndex = Fu.indexList();
+            if (itemIndex == null) {
+                continue;
+            }
 
             StringBuilder content = new StringBuilder();
             for (int i : itemIndex) {
