@@ -315,7 +315,7 @@ public class EvaluationMetrics {
      * @return The one-line string to be printed.
      */
     public String printOneLine() {
-        return String.format("%.4f\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f", this.getMAE(),
+        return String.format("%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f\t%.6f", this.getMAE(),
             this.getRMSE(), this.getAsymmetricLoss(), this.getHLU(), this.getNDCG(),
             this.getKendall(), this.getSpearman(), this.getAveragePrecision());
     }

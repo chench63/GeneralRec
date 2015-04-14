@@ -4,10 +4,22 @@
  */
 package prea.util;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
+import org.apache.commons.io.IOUtils;
+
 import edu.tongji.data.BlockMatrix;
 import edu.tongji.data.SparseMatrix;
 import edu.tongji.data.SparseRowMatrix;
 import edu.tongji.data.SparseVector;
+import edu.tongji.ml.matrix.MatrixFactorizationRecommender;
+import edu.tongji.parser.MovielensRatingTemplateParser;
+import edu.tongji.parser.Parser;
+import edu.tongji.util.ExceptionUtil;
+import edu.tongji.vo.RatingVO;
 
 /**
  * Matrix information utility
@@ -176,6 +188,40 @@ public final class MatrixInformationUtil {
                 .append(String.format("%.6f", Dis));
         }
         return msg.toString();
+    }
+
+    public static double offlineRMSE(MatrixFactorizationRecommender recmmd, String testFile,
+                                     int rowCount, int colCount, Parser parser) {
+        if (parser == null) {
+            parser = new MovielensRatingTemplateParser();
+        }
+
+        double RMSE = 0.0d;
+        int itemCount = 0;
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(testFile));
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                RatingVO rating = (RatingVO) parser.parse(line);
+                int u = rating.getUsrId();
+                int i = rating.getMovieId();
+                double AuiReal = rating.getRatingReal();
+                double AuiEst = recmmd.getPredictedRating(u, i);
+                RMSE += Math.pow(AuiReal - AuiEst, 2.0d);
+                itemCount++;
+            }
+
+            return Math.sqrt(RMSE / itemCount);
+        } catch (FileNotFoundException e) {
+            ExceptionUtil.caught(e, "无法找到对应的加载文件: " + testFile);
+        } catch (IOException e) {
+            ExceptionUtil.caught(e, "读取文件发生异常，校验文件格式");
+        } finally {
+            IOUtils.closeQuietly(reader);
+        }
+
+        return 0.0d;
     }
 
     /**
