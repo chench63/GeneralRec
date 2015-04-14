@@ -121,7 +121,7 @@ public class FCRSVD extends MatrixFactorizationRecommender {
             currErr = Math.sqrt(sum / rateCount);
 
             round++;
-            if (showProgress && (round % 10 == 0)) {
+            if (showProgress && (round % 10 == 0) && test != null) {
                 EvaluationMetrics metric = this.evaluate(test);
                 FileUtil.writeAsAppend(
                     "E://10m[" + featureCount + "]_k" + userFeaturesAss.length + "_" + maxIter,
