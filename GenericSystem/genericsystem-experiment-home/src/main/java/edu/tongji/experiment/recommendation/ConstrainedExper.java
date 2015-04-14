@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
+
 import edu.tongji.data.BlockMatrix;
 import edu.tongji.data.SparseRowMatrix;
 import edu.tongji.ml.matrix.DynamicCRSVD;
@@ -27,7 +29,7 @@ import prea.util.MatrixFileUtil;
 public class ConstrainedExper {
 
     /** file to store the original data and cocluster directory. 10M100K 1m*/
-    public final static String  rootDir      = "E:/MovieLens/ml-10M100K/1/";
+    public static String        rootDir      = "E:/MovieLens/ml-10M100K/fetch";
     /** The number of users. 943 6040 69878*/
     public final static int     userCount    = 69878;
     /** The number of items. 1682 3706 10677*/
@@ -35,8 +37,8 @@ public class ConstrainedExper {
     public final static double  maxValue     = 5.0;
     public final static double  minValue     = 0.5;
     public final static double  lrate        = 0.001;
-    public final static double  regularized  = 0.02;
-    public final static int     maxIteration = 100;
+    public final static double  regularized  = 0.06;
+    public final static int     maxIteration = 200;
     public final static boolean showProgress = false;
 
     public final static String  resultDir    = "E:/";
@@ -46,7 +48,9 @@ public class ConstrainedExper {
      * @param args
      */
     public static void main(String[] args) {
-
+        int N = 50;
+        rootDir = rootDir + N + "/1/";
+        rankExp();
     }
 
     /*========================================
@@ -55,10 +59,10 @@ public class ConstrainedExper {
     public static void rankExp() {
         String clusterDir = "Kmeanspp/KL_2_2/";
 
-        int[] featureCounts = { 20 };
-        RSVD(featureCounts);
-        UserConstrainedRSVD(featureCounts, clusterDir);
-        ItemConstrainedRSVD(featureCounts, clusterDir);
+        int[] featureCounts = { 20, 20, 20, 20, 20 };
+        //        RSVD(featureCounts);
+        //        UserConstrainedRSVD(featureCounts, clusterDir);
+        //        ItemConstrainedRSVD(featureCounts, clusterDir);
         BiConstrainedRSVD(featureCounts, clusterDir);
     }
 
@@ -84,6 +88,7 @@ public class ConstrainedExper {
         SparseRowMatrix testMatrix = MatrixFileUtil.reads(testFile, userCount, itemCount, null);
 
         //build model
+        DescriptiveStatistics stat = new DescriptiveStatistics();
         for (int featureCount : featureCounts) {
             RegularizedSVD recmmd = new RegularizedSVD(userCount, itemCount, maxValue, minValue,
                 featureCount, lrate, regularized, 0, maxIteration, showProgress);
@@ -97,7 +102,12 @@ public class ConstrainedExper {
                 resultDir + "zRSVD",
                 "fc: " + featureCount + "\tlr: " + lrate + "\tr: " + regularized + "\n"
                         + metric.printOneLine() + "\n");
+            stat.addValue(metric.getRMSE());
         }
+        FileUtil.writeAsAppend(
+            resultDir + "zRSVD",
+            "Mean: " + stat.getMean() + "\tSD:"
+                    + String.format("%.6f", stat.getStandardDeviation()) + "\n");
     }
 
     public static void UserConstrainedRSVD(int[] featureCounts, String clusterDir) {
@@ -168,6 +178,7 @@ public class ConstrainedExper {
         int[] dimnsn = readBiAssigmnt(ua, ia, clusterDir);
 
         //build model
+        DescriptiveStatistics stat = new DescriptiveStatistics();
         for (int featureCount : featureCounts) {
             FCRSVD recmmd = new FCRSVD(userCount, itemCount, maxValue, minValue, featureCount,
                 lrate, regularized, 0, maxIteration, dimnsn[0], dimnsn[1], ua, ia, showProgress);
@@ -177,10 +188,16 @@ public class ConstrainedExper {
             //evaluation
             EvaluationMetrics metric = recmmd.evaluate(testMatrix);
             System.out.println(metric.printMultiLine());
-            FileUtil.writeAsAppend("E://zBC", "fc: " + featureCount + "\tlr: " + lrate + "\tr: "
-                                              + regularized + "\tk: " + dimnsn[0] + "\tl: "
-                                              + dimnsn[1] + "\n" + metric.printOneLine() + "\n");
+            FileUtil.writeAsAppend(resultDir + "zBC_50", "fc: " + featureCount + "\tlr: " + lrate
+                                                         + "\tr: " + regularized + "\tk: "
+                                                         + dimnsn[0] + "\tl: " + dimnsn[1] + "\n"
+                                                         + metric.printOneLine() + "\n");
+            stat.addValue(metric.getRMSE());
         }
+        FileUtil.writeAsAppend(
+            resultDir + "zBC_50",
+            "Mean: " + stat.getMean() + "\tSD:"
+                    + String.format("%.6f", stat.getStandardDeviation()) + "\n");
     }
 
     public static void DynamicConstrainedRSVD(int[] featureCounts, String clusterDir,
