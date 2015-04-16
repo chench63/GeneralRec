@@ -1,6 +1,7 @@
 package edu.tongji.ml.matrix;
 
 import prea.util.EvaluationMetrics;
+import edu.tongji.data.SparseMatrix;
 import edu.tongji.data.SparseRowMatrix;
 import edu.tongji.data.SparseVector;
 import edu.tongji.util.FileUtil;
@@ -102,4 +103,61 @@ public class RegularizedSVD extends MatrixFactorizationRecommender {
             LoggerUtil.info(logger, round + "\t" + currErr);
         }
     }
+
+    /** 
+     * @see edu.tongji.ml.matrix.MatrixFactorizationRecommender#buildModel(edu.tongji.data.SparseMatrix)
+     */
+    @Override
+    public void buildModel(SparseMatrix rateMatrix) {
+        super.buildModel(rateMatrix);
+
+        // Gradient Descent:
+        int round = 0;
+        int rateCount = rateMatrix.itemCount();
+        double prevErr = 99999;
+        double currErr = 9999;
+
+        while (Math.abs(prevErr - currErr) > 0.0001 && round < maxIter) {
+            double sum = 0.0;
+            for (int u = 0; u < userCount; u++) {
+                SparseVector items = rateMatrix.getRowRef(u);
+                int[] itemIndexList = items.indexList();
+
+                if (itemIndexList != null) {
+                    for (int i : itemIndexList) {
+                        SparseVector Fu = userFeatures.getRowRef(u);
+                        SparseVector Gi = itemFeatures.getColRef(i);
+
+                        double AuiEst = Fu.innerProduct(Gi);
+                        double AuiReal = rateMatrix.getValue(u, i);
+                        double err = AuiReal - AuiEst;
+                        sum += Math.pow(err, 2.0d);
+
+                        for (int s = 0; s < featureCount; s++) {
+                            double Fus = userFeatures.getValue(u, s);
+                            double Gis = itemFeatures.getValue(s, i);
+                            userFeatures.setValue(u, s, Fus + learningRate
+                                                        * (err * Gis - regularizer * Fus));
+                            itemFeatures.setValue(s, i, Gis + learningRate
+                                                        * (err * Fus - regularizer * Gis));
+                        }
+                    }
+                }
+            }
+
+            prevErr = currErr;
+            currErr = Math.sqrt(sum / rateCount);
+            round++;
+
+            // Show progress:
+            if (showProgress && (round % 10 == 0)) {
+                EvaluationMetrics metric = this.evaluate(test);
+                FileUtil.writeAsAppend("E://RSVD", round + "\t" + String.format("%.4f", currErr)
+                                                   + "\t" + String.format("%.4f", metric.getRMSE())
+                                                   + "\n");
+            }
+            LoggerUtil.info(logger, round + "\t" + currErr);
+        }
+    }
+
 }

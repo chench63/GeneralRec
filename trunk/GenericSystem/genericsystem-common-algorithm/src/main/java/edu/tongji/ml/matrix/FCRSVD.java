@@ -2,6 +2,7 @@ package edu.tongji.ml.matrix;
 
 import prea.util.EvaluationMetrics;
 import edu.tongji.data.SparseColumnMatrix;
+import edu.tongji.data.SparseMatrix;
 import edu.tongji.data.SparseRowMatrix;
 import edu.tongji.data.SparseVector;
 import edu.tongji.util.FileUtil;
@@ -58,6 +59,87 @@ public class FCRSVD extends MatrixFactorizationRecommender {
      */
     @Override
     public void buildModel(SparseRowMatrix rateMatrix) {
+        initFeatures();
+
+        // Gradient Descent:
+        int round = 0;
+        int rateCount = rateMatrix.itemCount();
+        double prevErr = 99999;
+        double currErr = 9999;
+
+        while (Math.abs(prevErr - currErr) > 0.0001 && round < maxIter) {
+            double sum = 0.0;
+            for (int u = 0; u < userCount; u++) {
+                SparseVector items = rateMatrix.getRowRef(u);
+                int[] itemIndexList = items.indexList();
+
+                if (itemIndexList != null) {
+                    for (int i : itemIndexList) {
+                        //global model
+                        SparseVector Fu = userFeatures.getRowRef(u);
+                        SparseVector Gi = itemFeatures.getColRef(i);
+                        double AuiEst = Fu.innerProduct(Gi);
+                        double AuiReal = rateMatrix.getValue(u, i);
+                        double err = AuiReal - AuiEst;
+                        sum += Math.pow(err, 2.0d);
+
+                        // item clustering local models
+                        SparseVector fu = userFeaturesAss[uAssigmnt[i]].getRowRef(u);
+                        double IuiEst = fu.innerProduct(Gi);
+                        double errIui = AuiReal - IuiEst;
+
+                        // user clustering local models
+                        SparseVector gi = itemFeaturesAss[iAssigmnt[u]].getCol(i);
+                        double UuiEst = Fu.innerProduct(gi);
+                        double errUui = AuiReal - UuiEst;
+
+                        for (int s = 0; s < featureCount; s++) {
+                            double Fus = userFeatures.getValue(u, s);
+                            double fus = userFeaturesAss[uAssigmnt[i]].getValue(u, s);
+                            double Gis = itemFeatures.getValue(s, i);
+                            double gis = itemFeaturesAss[iAssigmnt[u]].getValue(s, i);
+                            //local models updates
+                            userFeaturesAss[uAssigmnt[i]].setValue(u, s,
+                                fus + learningRate * (errIui * Gis - regularizer * fus));
+                            itemFeaturesAss[iAssigmnt[u]].setValue(s, i,
+                                gis + learningRate * (errUui * Fus - regularizer * gis));
+
+                            //global model updates
+                            userFeatures.setValue(u, s, Fus
+                                                        + learningRate
+                                                        * (err * Gis + errUui * gis - regularizer
+                                                                                      * Fus));
+                            itemFeatures.setValue(s, i, Gis
+                                                        + learningRate
+                                                        * (err * Fus + errIui * fus - regularizer
+                                                                                      * Gis));
+                        }
+                    }
+                }
+            }
+
+            prevErr = currErr;
+            currErr = Math.sqrt(sum / rateCount);
+
+            round++;
+            if (showProgress && (round % 10 == 0) && test != null) {
+                EvaluationMetrics metric = this.evaluate(test);
+                FileUtil.writeAsAppend(
+                    "E://10m[" + featureCount + "]_k" + userFeaturesAss.length + "_" + maxIter,
+                    round + "\t" + String.format("%.4f", currErr) + "\t"
+                            + String.format("%.4f", metric.getRMSE()) + "\n");
+            }
+
+            // Show progress:
+            LoggerUtil.info(logger, round + "\t" + currErr);
+        }
+    }
+
+    /** 
+     * @see edu.tongji.ml.matrix.MatrixFactorizationRecommender#buildModel(edu.tongji.data.SparseMatrix)
+     */
+    @Override
+    public void buildModel(SparseMatrix rateMatrix) {
         initFeatures();
 
         // Gradient Descent:

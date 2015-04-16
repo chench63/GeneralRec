@@ -190,40 +190,6 @@ public final class MatrixInformationUtil {
         return msg.toString();
     }
 
-    public static double offlineRMSE(MatrixFactorizationRecommender recmmd, String testFile,
-                                     int rowCount, int colCount, Parser parser) {
-        if (parser == null) {
-            parser = new MovielensRatingTemplateParser();
-        }
-
-        double RMSE = 0.0d;
-        int itemCount = 0;
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new FileReader(testFile));
-            String line = null;
-            while ((line = reader.readLine()) != null) {
-                RatingVO rating = (RatingVO) parser.parse(line);
-                int u = rating.getUsrId();
-                int i = rating.getMovieId();
-                double AuiReal = rating.getRatingReal();
-                double AuiEst = recmmd.getPredictedRating(u, i);
-                RMSE += Math.pow(AuiReal - AuiEst, 2.0d);
-                itemCount++;
-            }
-
-            return Math.sqrt(RMSE / itemCount);
-        } catch (FileNotFoundException e) {
-            ExceptionUtil.caught(e, "无法找到对应的加载文件: " + testFile);
-        } catch (IOException e) {
-            ExceptionUtil.caught(e, "读取文件发生异常，校验文件格式");
-        } finally {
-            IOUtils.closeQuietly(reader);
-        }
-
-        return 0.0d;
-    }
-
     /**
      * analyze the error distribution
      * 
@@ -349,5 +315,125 @@ public final class MatrixInformationUtil {
         }
 
         return result;
+    }
+
+    public static double offlineRMSE(MatrixFactorizationRecommender recmmd, String testFile,
+                                     int rowCount, int colCount, Parser parser) {
+        if (parser == null) {
+            parser = new MovielensRatingTemplateParser();
+        }
+
+        double RMSE = 0.0d;
+        int itemCount = 0;
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(testFile));
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                RatingVO rating = (RatingVO) parser.parse(line);
+                int u = rating.getUsrId();
+                int i = rating.getMovieId();
+                double AuiReal = rating.getRatingReal();
+                double AuiEst = recmmd.getPredictedRating(u, i);
+                RMSE += Math.pow(AuiReal - AuiEst, 2.0d);
+                itemCount++;
+            }
+
+            return Math.sqrt(RMSE / itemCount);
+        } catch (FileNotFoundException e) {
+            ExceptionUtil.caught(e, "无法找到对应的加载文件: " + testFile);
+        } catch (IOException e) {
+            ExceptionUtil.caught(e, "读取文件发生异常，校验文件格式");
+        } finally {
+            IOUtils.closeQuietly(reader);
+        }
+
+        return 0.0d;
+    }
+
+    public static double[] RMSEAnalysisOfObservedRatingsPerUser(SparseMatrix rateMatrix,
+                                                                SparseMatrix testMatrix,
+                                                                MatrixFactorizationRecommender recmmd,
+                                                                double[] threshholds) {
+        double[] SSEs = new double[threshholds.length];
+        int[] itemCounts = new int[threshholds.length];
+
+        int usrCount = rateMatrix.length()[0];
+        for (int u = 0; u < usrCount; u++) {
+            SparseVector Fu = testMatrix.getRowRef(u);
+            int[] itemList = Fu.indexList();
+            if (itemList == null) {
+                continue;
+            }
+
+            // compute corresponding RMSE group
+            int obsrvdRatingCount = rateMatrix.getRowRef(u).itemCount();
+            int pivot = -1;
+            for (int k = 0; k < threshholds.length; k++) {
+                if (obsrvdRatingCount <= threshholds[k]) {
+                    pivot = k;
+                    break;
+                }
+            }
+
+            // compute Sum Square Error
+            for (int i : itemList) {
+                double AuiReal = testMatrix.getValue(u, i);
+                double AuiEstm = recmmd.getPredictedRating(u, i);
+                SSEs[pivot] += Math.pow(AuiReal - AuiEstm, 2.0d);
+                itemCounts[pivot]++;
+            }
+        }
+
+        //compute Root Sum Square Error
+        for (int k = 0; k < threshholds.length; k++) {
+            if (itemCounts[k] != 0) {
+                SSEs[k] = Math.sqrt(SSEs[k] / itemCounts[k]);
+            }
+        }
+        return SSEs;
+    }
+
+    public static double[] RMSEAnalysisOfObservedRatingsPerItem(SparseMatrix rateMatrix,
+                                                                SparseMatrix testMatrix,
+                                                                MatrixFactorizationRecommender recmmd,
+                                                                double[] threshholds) {
+        double[] SSEs = new double[threshholds.length];
+        int[] itemCounts = new int[threshholds.length];
+
+        int itemCount = rateMatrix.length()[1];
+        for (int i = 0; i < itemCount; i++) {
+            SparseVector Gi = testMatrix.getColRef(i);
+            int[] usrList = Gi.indexList();
+            if (usrList == null) {
+                continue;
+            }
+
+            // compute corresponding RMSE group
+            int obsrvdRatingCount = rateMatrix.getColRef(i).itemCount();
+            int pivot = -1;
+            for (int k = 0; k < threshholds.length; k++) {
+                if (obsrvdRatingCount <= threshholds[k]) {
+                    pivot = k;
+                    break;
+                }
+            }
+
+            // compute Sum Square Error
+            for (int u : usrList) {
+                double AuiReal = testMatrix.getValue(u, i);
+                double AuiEstm = recmmd.getPredictedRating(u, i);
+                SSEs[pivot] += Math.pow(AuiReal - AuiEstm, 2.0d);
+                itemCounts[pivot]++;
+            }
+        }
+
+        //compute Root Sum Square Error
+        for (int k = 0; k < threshholds.length; k++) {
+            if (itemCounts[k] != 0) {
+                SSEs[k] = Math.sqrt(SSEs[k] / itemCounts[k]);
+            }
+        }
+        return SSEs;
     }
 }
