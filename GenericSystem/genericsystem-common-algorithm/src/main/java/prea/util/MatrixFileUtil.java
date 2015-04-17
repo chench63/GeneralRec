@@ -50,23 +50,33 @@ public final class MatrixFileUtil {
         FileUtil.delete(file);
         FileUtil.existDirAndMakeDir(file);
 
-        int rowCount = matrix.length()[0];
-        for (int i = 0; i < rowCount; i++) {
-            SparseVector Mi = matrix.getRowRef(i);
-            int[] indexList = Mi.indexList();
-            if (indexList == null) {
+        int itemCount = 0;
+        StringBuilder buffer = new StringBuilder();
+        for (int u = 0, rowCount = matrix.length()[0]; u < rowCount; u++) {
+            SparseVector Fu = matrix.getRowRef(u);
+            int[] itemList = Fu.indexList();
+            if (itemList == null) {
                 continue;
             }
 
-            StringBuilder content = new StringBuilder();
-            for (int j : indexList) {
-                double val = matrix.getValue(i, j);
-                String elemnt = i + "::" + j + "::" + String.format("%.1f", val);
-                content.append(elemnt).append('\n');
+            for (int i : itemList) {
+                double val = matrix.getValue(u, i);
+                String elemnt = u + "::" + i + "::" + String.format("%.1f", val);
+                buffer.append(elemnt).append('\n');
+                itemCount++;
             }
-            FileUtil.writeAsAppend(file, content.toString());
+
+            // if greater than buffer size, then clear the buffer.
+            if (itemCount >= 1000000) {
+                FileUtil.writeAsAppend(file, buffer.toString());
+
+                //reset buffer
+                itemCount = 0;
+                buffer = new StringBuilder();
+            }
         }
 
+        FileUtil.writeAsAppend(file, buffer.toString());
     }
 
     /**
@@ -79,21 +89,33 @@ public final class MatrixFileUtil {
         FileUtil.delete(file);
         FileUtil.existDirAndMakeDir(file);
 
-        int rowCount = matrix.length()[0];
-        for (int i = 0; i < rowCount; i++) {
-            SparseVector Mi = matrix.getRowRef(i);
-            int[] indexList = Mi.indexList();
-            if (indexList == null) {
+        int itemCount = 0;
+        StringBuilder buffer = new StringBuilder();
+        for (int u = 0, rowCount = matrix.length()[0]; u < rowCount; u++) {
+            SparseVector Fu = matrix.getRowRef(u);
+            int[] itemList = Fu.indexList();
+            if (itemList == null) {
                 continue;
             }
-            StringBuilder content = new StringBuilder();
-            for (int j : indexList) {
-                double val = matrix.getValue(i, j);
-                String elemnt = i + "::" + j + "::" + String.format("%.1f", val);
-                content.append(elemnt).append('\n');
+
+            for (int i : itemList) {
+                double val = matrix.getValue(u, i);
+                String elemnt = u + "::" + i + "::" + String.format("%.1f", val);
+                buffer.append(elemnt).append('\n');
+                itemCount++;
             }
-            FileUtil.writeAsAppend(file, content.toString());
+
+            // if greater than buffer size, then clear the buffer.
+            if (itemCount >= 1000000) {
+                FileUtil.writeAsAppend(file, buffer.toString());
+
+                //reset buffer
+                itemCount = 0;
+                buffer = new StringBuilder();
+            }
         }
+
+        FileUtil.writeAsAppend(file, buffer.toString());
     }
 
     /**
@@ -106,22 +128,33 @@ public final class MatrixFileUtil {
         FileUtil.delete(file);
         FileUtil.existDirAndMakeDir(file);
 
-        int colCount = matrix.length()[1];
-        for (int i = 0; i < colCount; i++) {
+        int itemCount = 0;
+        StringBuilder buffer = new StringBuilder();
+        for (int i = 0, colCount = matrix.length()[1]; i < colCount; i++) {
             SparseVector Mi = matrix.getColRef(i);
-            int[] indexList = Mi.indexList();
-            if (indexList == null) {
+            int[] usrList = Mi.indexList();
+            if (usrList == null) {
                 continue;
             }
 
-            StringBuilder content = new StringBuilder();
-            for (int u : indexList) {
+            for (int u : usrList) {
                 double val = matrix.getValue(u, i);
                 String elemnt = u + "::" + i + "::" + String.format("%.1f", val);
-                content.append(elemnt).append('\n');
+                buffer.append(elemnt).append('\n');
+                itemCount++;
             }
-            FileUtil.writeAsAppend(file, content.toString());
+
+            // if greater than buffer size, then clear the buffer.
+            if (itemCount >= 1000000) {
+                FileUtil.writeAsAppend(file, buffer.toString());
+
+                //reset buffer
+                itemCount = 0;
+                buffer = new StringBuilder();
+            }
         }
+
+        FileUtil.writeAsAppend(file, buffer.toString());
     }
 
     /**
@@ -154,9 +187,8 @@ public final class MatrixFileUtil {
      */
     public static void write(String file, SparseMatrix matrix, Map<Integer, Integer> rowAssign,
                              Map<Integer, Integer> colAssign, boolean cleanMatrix) {
-        int rowCount = matrix.length()[0];
         StringBuilder content = new StringBuilder();
-        for (int i = 0; i < rowCount; i++) {
+        for (int i = 0, rowCount = matrix.length()[0]; i < rowCount; i++) {
             SparseVector Mi = matrix.getRowRef(i);
             int[] indexList = Mi.indexList();
             if (indexList == null) {
@@ -178,6 +210,58 @@ public final class MatrixFileUtil {
         }
 
         FileUtil.write(file, content.toString());
+    }
+
+    /**
+     * write matrix to disk
+     * 
+     * @param file              the file to write
+     * @param matrix            the matrix contains the data
+     * @param rowAssign         the row relation mapping old index to new index
+     * @param colAssign         the column relation mapping old index to new index
+     * @param cleanMatrix       if true, clear the input matrix to save memory
+     */
+    public static void write(String file, SparseRowMatrix matrix, Map<Integer, Integer> rowAssig,
+                             Map<Integer, Integer> colAssig, boolean cleanMatrix) {
+        FileUtil.delete(file);
+        FileUtil.existDirAndMakeDir(file);
+
+        int itemCount = 0;
+        StringBuilder buffer = new StringBuilder();
+        for (int u = 0, rowCount = matrix.length()[0]; u < rowCount; u++) {
+            SparseVector Fu = matrix.getRowRef(u);
+            int[] itemIndex = Fu.indexList();
+            if (itemIndex == null) {
+                continue;
+            }
+
+            StringBuilder content = new StringBuilder();
+            for (int i : itemIndex) {
+                double val = matrix.getValue(u, i);
+                String newElem = rowAssig.get(u) + "::" + colAssig.get(i) + "::"
+                                 + String.format("%.1f", val);
+                content.append(newElem).append('\n');
+                itemCount++;
+
+                // element in dataset cannot be zero
+                if (val == 0.0) {
+                    throw new RuntimeException("Dataset must be wrong!");
+                } else {
+                    matrix.setValue(u, i, 0.0d);
+                }
+            }
+
+            // if greater than buffer size, then clear the buffer.
+            if (itemCount >= 1000000) {
+                FileUtil.writeAsAppend(file, buffer.toString());
+
+                //reset buffer
+                itemCount = 0;
+                buffer = new StringBuilder();
+            }
+        }
+        FileUtil.writeAsAppend(file, buffer.toString());
+
     }
 
     /**
