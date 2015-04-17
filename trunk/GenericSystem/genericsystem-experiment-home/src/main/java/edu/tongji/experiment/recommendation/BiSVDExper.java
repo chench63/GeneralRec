@@ -19,7 +19,7 @@ import edu.tongji.util.FileUtil;
 public class BiSVDExper {
 
     /** file to store the original data and cocluster directory. 10M100K 1m*/
-    public static String        rootDir      = "E:/MovieLens/ml-10M100K/fetch";
+    public static String[]      rootDirs     = { "E:/MovieLens/ml-10M100K/fetch" };
     /** The number of users. 943 6040 69878*/
     public final static int     userCount    = 69878;
     /** The number of items. 1682 3706 10677*/
@@ -38,8 +38,6 @@ public class BiSVDExper {
      * @param args
      */
     public static void main(String[] args) {
-        int N = 50;
-        rootDir = rootDir + N + "/1/";
         rankExp();
     }
 
@@ -48,20 +46,24 @@ public class BiSVDExper {
      *========================================*/
     public static void rankExp() {
         String clusterDir = "Kmeanspp/KL_2_2/";
-        int[] featureCounts = { 20, 20, 20, 20, 20 };
 
-        //        RSVD(featureCounts);
-        //        UserConstrainedRSVD(featureCounts, clusterDir);
-        //        ItemConstrainedRSVD(featureCounts, clusterDir);
-        BiConstrainedRSVD(featureCounts, clusterDir);
+        int[] featureCounts = { 20 };
+        for (String rootDir : rootDirs) {
+            //            RSVD(featureCounts, rootDir);
+            //            UserConstrainedRSVD(featureCounts, clusterDir, rootDir);
+            //            ItemConstrainedRSVD(featureCounts, clusterDir, rootDir);
+            BiConstrainedRSVD(featureCounts, clusterDir, rootDir);
+        }
     }
 
     public static void clusteringExp() {
         String[] clusterDirs = { "Kmeanspp/KL_2_2/" };
         int[] featureCounts = { 20 };
 
-        for (String clusterDir : clusterDirs) {
-            BiConstrainedRSVD(featureCounts, clusterDir);
+        for (String rootDir : rootDirs) {
+            for (String clusterDir : clusterDirs) {
+                BiConstrainedRSVD(featureCounts, clusterDir, rootDir);
+            }
         }
     }
 
@@ -69,7 +71,7 @@ public class BiSVDExper {
      * Algorithms
      *========================================*/
 
-    public static void RSVD(int[] featureCounts) {
+    public static void RSVD(int[] featureCounts, String rootDir) {
         //loading dataset
         String trainFile = rootDir + "trainingset";
         String testFile = rootDir + "testingset";
@@ -98,14 +100,14 @@ public class BiSVDExper {
                     + String.format("%.6f", stat.getStandardDeviation()) + "\n");
     }
 
-    public static void UserConstrainedRSVD(int[] featureCounts, String clusterDir) {
+    public static void UserConstrainedRSVD(int[] featureCounts, String clusterDir, String rootDir) {
         //loading dataset
         String trainFile = rootDir + "trainingset";
         String testFile = rootDir + "testingset";
         SparseRowMatrix rateMatrix = MatrixFileUtil.reads(trainFile, userCount, itemCount, null);
 
         int[] ua = new int[userCount];
-        int[] dimnsn = readBiAssigmnt(ua, null, clusterDir);
+        int[] dimnsn = readBiAssigmnt(ua, null, clusterDir, rootDir);
 
         //build model
         for (int featureCount : featureCounts) {
@@ -124,7 +126,7 @@ public class BiSVDExper {
         }
     }
 
-    public static void ItemConstrainedRSVD(int[] featureCounts, String clusterDir) {
+    public static void ItemConstrainedRSVD(int[] featureCounts, String clusterDir, String rootDir) {
         //loading dataset
         String trainFile = rootDir + "trainingset";
         String testFile = rootDir + "testingset";
@@ -132,7 +134,7 @@ public class BiSVDExper {
         SparseRowMatrix testMatrix = MatrixFileUtil.reads(testFile, userCount, itemCount, null);
 
         int[] ia = new int[itemCount];
-        int[] dimnsn = readBiAssigmnt(null, ia, clusterDir);
+        int[] dimnsn = readBiAssigmnt(null, ia, clusterDir, rootDir);
 
         //build model
         for (int featureCount : featureCounts) {
@@ -152,7 +154,7 @@ public class BiSVDExper {
         }
     }
 
-    public static void BiConstrainedRSVD(int[] featureCounts, String clusterDir) {
+    public static void BiConstrainedRSVD(int[] featureCounts, String clusterDir, String rootDir) {
         //loading dataset
         String trainFile = rootDir + "trainingset";
         String testFile = rootDir + "testingset";
@@ -160,7 +162,7 @@ public class BiSVDExper {
 
         int[] ua = new int[userCount];
         int[] ia = new int[itemCount];
-        int[] dimnsn = readBiAssigmnt(ua, ia, clusterDir);
+        int[] dimnsn = readBiAssigmnt(ua, ia, clusterDir, rootDir);
 
         //build model
         DescriptiveStatistics stat = new DescriptiveStatistics();
@@ -185,7 +187,7 @@ public class BiSVDExper {
                     + String.format("%.6f", stat.getStandardDeviation()) + "\n");
     }
 
-    public static int[] readBiAssigmnt(int[] ua, int[] ia, String clusterDir) {
+    public static int[] readBiAssigmnt(int[] ua, int[] ia, String clusterDir, String rootDir) {
         String settingFile = rootDir + clusterDir + "SETTING";
         String rowMappingFile = rootDir + clusterDir + "RM";
         String colMappingFile = rootDir + clusterDir + "CM";
