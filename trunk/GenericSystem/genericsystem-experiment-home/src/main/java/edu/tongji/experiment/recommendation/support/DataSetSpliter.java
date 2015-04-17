@@ -224,31 +224,7 @@ public class DataSetSpliter {
 
         LoggerUtil.info(logger, "0c. write filtered file to disk. \nUsers: " + rowAssig.size()
                                 + "\tItems: " + colAssig.size() + "\tTotal: " + matrix.itemCount());
-        FileUtil.delete(filteringFile);
-        FileUtil.existDirAndMakeDir(filteringFile);
-        for (int u = 0; u < userCount; u++) {
-            SparseVector Fu = matrix.getRowRef(u);
-            int[] itemIndex = Fu.indexList();
-            if (itemIndex == null) {
-                continue;
-            }
-
-            StringBuilder content = new StringBuilder();
-            for (int i : itemIndex) {
-                double val = matrix.getValue(u, i);
-                String newElem = rowAssig.get(u) + "::" + colAssig.get(i) + "::"
-                                 + String.format("%.1f", val);
-                content.append(newElem).append('\n');
-
-                // element in dataset cannot be zero
-                if (val == 0.0) {
-                    throw new RuntimeException("Dataset must be wrong!");
-                } else {
-                    matrix.setValue(u, i, 0.0d);
-                }
-            }
-            FileUtil.writeAsAppend(filteringFile, content.toString());
-        }
+        MatrixFileUtil.write(filteringFile, matrix, rowAssig, colAssig, false);
 
         //update dimension
         int[] newDim = new int[2];
