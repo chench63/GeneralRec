@@ -19,19 +19,19 @@ import edu.tongji.util.FileUtil;
 public class BiSVDExper {
 
     /** file to store the original data and cocluster directory. 10M100K 1m*/
-    public static String[]      rootDirs     = { "E:/MovieLens/ml-10M100K/fetch" };
-    /** The number of users. 943 6040 69878*/
-    public final static int     userCount    = 69878;
-    /** The number of items. 1682 3706 10677*/
-    public final static int     itemCount    = 10677;
+    public static String[]      rootDirs     = { "E:/Netflix/Fetch50/2/", "E:/Netflix/Fetch50/3/" };
+    /** The number of users. 943 6040 69878  480189*/
+    public final static int     userCount    = 480189;
+    /** The number of items. 1682 3706 10677 17770*/
+    public final static int     itemCount    = 17770;
     public final static double  maxValue     = 5.0;
-    public final static double  minValue     = 0.5;
+    public final static double  minValue     = 1.0;
     public final static double  lrate        = 0.001;
-    public final static double  regularized  = 0.06;
-    public final static int     maxIteration = 200;
+    public final static double  regularized  = 0.15;
+    public final static int     maxIteration = 400;
     public final static boolean showProgress = false;
 
-    public final static String  resultDir    = "E:/";
+    public final static String  resultDir    = "E:/Netflix/";
 
     /**
      * 
@@ -53,6 +53,7 @@ public class BiSVDExper {
             //            UserConstrainedRSVD(featureCounts, clusterDir, rootDir);
             //            ItemConstrainedRSVD(featureCounts, clusterDir, rootDir);
             BiConstrainedRSVD(featureCounts, clusterDir, rootDir);
+            System.gc();
         }
     }
 
@@ -176,15 +177,15 @@ public class BiSVDExper {
                 null);
             System.out.println("BC\tfc: " + featureCount + "\tlr: " + lrate + "\tr: " + regularized
                                + "\tk: " + dimnsn[0] + "\tl: " + dimnsn[1] + "\n" + RMSE + "\n");
-            FileUtil.writeAsAppend(resultDir + "zBC", "fc: " + featureCount + "\tlr: " + lrate
+            FileUtil.writeAsAppend(resultDir + "zBC[50]", "fc: " + featureCount + "\tlr: " + lrate
                                                       + "\tr: " + regularized + "\tk: " + dimnsn[0]
                                                       + "\tl: " + dimnsn[1] + "\n" + RMSE + "\n");
             stat.addValue(RMSE);
         }
-        FileUtil.writeAsAppend(
-            resultDir + "zBC",
-            "Mean: " + stat.getMean() + "\tSD:"
-                    + String.format("%.6f", stat.getStandardDeviation()) + "\n");
+        //        FileUtil.writeAsAppend(
+        //            resultDir + "zBC",
+        //            "Mean: " + stat.getMean() + "\tSD:"
+        //                    + String.format("%.6f", stat.getStandardDeviation()) + "\n");
     }
 
     public static int[] readBiAssigmnt(int[] ua, int[] ia, String clusterDir, String rootDir) {

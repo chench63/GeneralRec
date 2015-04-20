@@ -93,14 +93,13 @@ public class WeightedSVDLearner extends Thread {
                         prediction.setValue(u, v, rateEsti);
                     }
                 }
-                metric = new EvaluationMetrics(testMatrix, prediction, task.maxValue(),
-                    task.minValue());
 
                 //update current RMSE
-                curRMSE = metric.getRMSE();
+                //                curRMSE = metric.getRMSE();
             }
 
             //logger
+            metric = new EvaluationMetrics(testMatrix, prediction, task.maxValue(), task.minValue());
             LoggerUtil.info(
                 logger,
                 (new StringBuilder("ThreadId: " + task.getId()))
