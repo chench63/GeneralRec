@@ -30,7 +30,7 @@ public class ModelGroup {
      * 
      * @param m the queue to add
      */
-    public void join(Queue<Model> m, SparseMatrix rateMatrix) {
+    public void join(Queue<Model> m, SparseMatrix rateMatrix, int groupId) {
         //read configuration
         if (StringUtil.isNotBlank(colMappingFile) && StringUtil.isNotBlank(rowMappingFile)
             && StringUtil.isNotBlank(settingFile)) {
@@ -51,6 +51,7 @@ public class ModelGroup {
                 model.maxValue(), model.minValue(), false);
             model.setWeights(userWeights, itemWeights);
             model.setId(currId);
+            model.setGroupId(groupId);
             m.add(model);
 
             currId++;

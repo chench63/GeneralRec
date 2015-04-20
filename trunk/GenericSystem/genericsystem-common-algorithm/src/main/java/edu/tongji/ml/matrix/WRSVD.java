@@ -1,7 +1,3 @@
-/**
- * Tongji Edu.
- * Copyright (c) 2004-2014 All Rights Reserved.
- */
 package edu.tongji.ml.matrix;
 
 import edu.tongji.data.SparseMatrix;
@@ -11,27 +7,16 @@ import edu.tongji.util.LoggerUtil;
 
 /**
  * 
- * @author Hanke Chen
- * @version $Id: WeigtedRSVD.java, v 0.1 2014-10-19 上午11:20:27 chench Exp $
+ * @author Hanke
+ * @version $Id: WRSVD.java, v 0.1 2015-4-19 下午4:34:02 Exp $
  */
-public class WeigtedRSVD extends MatrixFactorizationRecommender {
-
-    /** the rating distribution w.r.t each user*/
-    public float[][] userWeights;
-
-    /** the rating distribution w.r.t each item*/
-    public float[][] itemWeights;
-
-    public float[]   totalWeights; //= { 0.0f, 0.0f, 0.0f, 0.5f, 0.0f };
+public class WRSVD extends MatrixFactorizationRecommender {
 
     //===================================
     //      parameter
     //===================================
-    public float     base1 = 0.7f;
-
-    public float     base2 = 0.8f;
-
-    public float     base3 = 0.4f;
+    public double[] totalWeights;
+    public double   beta0 = 0.0f;
 
     /*========================================
      * Constructors
@@ -48,36 +33,15 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
      * @param r Controlling factor for the degree of regularization. 
      * @param m Momentum used in gradient-based or iterative optimization.
      * @param iter The maximum number of iterations.
-     * @param b1 The base of learning rate.
-     * @param b2 The base of userWeights or itemWeights.
      */
-    public WeigtedRSVD(int uc, int ic, double max, double min, int fc, double lr, double r,
-                       double m, int iter, float b1, float b2) {
-        super(uc, ic, max, min, fc, lr, r, m, iter, false);
-        this.base1 = b1;
-        this.base2 = b2;
-    }
-
-    /**
-     * Construct a matrix-factorization-based model with the given data.
-     * 
-     * @param uc The number of users in the dataset.
-     * @param ic The number of items in the dataset.
-     * @param max The maximum rating value in the dataset.
-     * @param min The minimum rating value in the dataset.
-     * @param fc The number of features used for describing user and item profiles.
-     * @param lr Learning rate for gradient-based or iterative optimization.
-     * @param r Controlling factor for the degree of regularization. 
-     * @param m Momentum used in gradient-based or iterative optimization.
-     * @param iter The maximum number of iterations.
-     */
-    public WeigtedRSVD(int uc, int ic, double max, double min, int fc, double lr, double r,
-                       double m, int iter) {
-        super(uc, ic, max, min, fc, lr, r, m, iter, false);
+    public WRSVD(int uc, int ic, double max, double min, int fc, double lr, double r, double m,
+                 int iter, boolean verbose, double b0) {
+        super(uc, ic, max, min, fc, lr, r, m, iter, verbose);
+        beta0 = b0;
     }
 
     public void init(SparseRowMatrix rateMatrix) {
-        totalWeights = new float[Double.valueOf(maxValue / minValue).intValue()];
+        totalWeights = new double[Double.valueOf(maxValue / minValue).intValue()];
 
         for (int u = 0; u < userCount; u++) {
             SparseVector items = rateMatrix.getRowRef(u);
@@ -127,22 +91,12 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
                         double AuiEst = Fu.innerProduct(Gi);
                         double AuiReal = rateMatrix.getValue(u, i);
                         double err = AuiReal - AuiEst;
-                        sum += Math.abs(err);
+                        sum += Math.pow(err, 2.0d);
 
                         int weightIndx = Double.valueOf(AuiReal / minValue - 1).intValue();
                         for (int s = 0; s < featureCount; s++) {
                             double Fus = userFeatures.getValue(u, s);
                             double Gis = itemFeatures.getValue(s, i);
-                            //                            userFeatures.setValue(u, s,
-                            //                                Fus
-                            //                                        + learningRate
-                            //                                        * (err * Gis * getWeight(u, i, weightIndx) - regularizer
-                            //                                                                                     * Fus));
-                            //                            itemFeatures.setValue(s, i,
-                            //                                Gis
-                            //                                        + learningRate
-                            //                                        * (err * Fus * getWeight(u, i, weightIndx) - regularizer
-                            //                                                                                     * Gis));
 
                             userFeatures
                                 .setValue(
@@ -150,7 +104,7 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
                                     s,
                                     Fus
                                             + learningRate
-                                            * (err * Gis * (1 + base3 * totalWeights[weightIndx]) - regularizer
+                                            * (err * Gis * (1 + beta0 * totalWeights[weightIndx]) - regularizer
                                                                                                     * Fus));
                             itemFeatures
                                 .setValue(
@@ -158,7 +112,7 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
                                     i,
                                     Gis
                                             + learningRate
-                                            * (err * Fus * (1 + base3 * totalWeights[weightIndx]) - regularizer
+                                            * (err * Fus * (1 + beta0 * totalWeights[weightIndx]) - regularizer
                                                                                                     * Gis));
                         }
                     }
@@ -166,7 +120,7 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
             }
 
             prevErr = currErr;
-            currErr = sum / rateCount;
+            currErr = Math.sqrt(sum / rateCount);
 
             round++;
 
@@ -208,16 +162,22 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
                         for (int s = 0; s < featureCount; s++) {
                             double Fus = userFeatures.getValue(u, s);
                             double Gis = itemFeatures.getValue(s, i);
-                            userFeatures.setValue(u, s,
-                                Fus
-                                        + learningRate
-                                        * (err * Gis * getWeight(u, i, weightIndx) - regularizer
-                                                                                     * Fus));
-                            itemFeatures.setValue(s, i,
-                                Gis
-                                        + learningRate
-                                        * (err * Fus * getWeight(u, i, weightIndx) - regularizer
-                                                                                     * Gis));
+                            userFeatures
+                                .setValue(
+                                    u,
+                                    s,
+                                    Fus
+                                            + learningRate
+                                            * (err * Gis * (1 + beta0 * totalWeights[weightIndx]) - regularizer
+                                                                                                    * Fus));
+                            itemFeatures
+                                .setValue(
+                                    s,
+                                    i,
+                                    Gis
+                                            + learningRate
+                                            * (err * Fus * (1 + beta0 * totalWeights[weightIndx]) - regularizer
+                                                                                                    * Gis));
                         }
                     }
                 }
@@ -232,68 +192,6 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
             LoggerUtil.info(logger, round + "\t" + currErr);
         }
 
-    }
-
-    /**
-     * compute the weight of the given rating
-     * 
-     * @param u
-     * @param i
-     * @param weightIndx
-     * @return
-     */
-    public double getWeight(int u, int i, int weightIndx) {
-        //b1 + (b2 + Pu)(b2 + Pi) + Pu*Pu +Pi*Pi
-        //        return base1 + (base2 + userWeights[u][weightIndx]) * (base2 + itemWeights[i][weightIndx])
-        //               + userWeights[u][weightIndx] * userWeights[u][weightIndx]
-        //               + itemWeights[i][weightIndx] * itemWeights[i][weightIndx];
-
-        //        return userWeights[u][weightIndx] + itemWeights[i][weightIndx];
-
-        //        return 1.0;
-
-        //        return 1.0 + base3 * totalWeights[weightIndx];
-
-        //b1 + (b2 + Pu)(b2 + Pi)
-        return base1 + (base2 + userWeights[u][weightIndx]) * (base2 + itemWeights[i][weightIndx]);
-    }
-
-    public double getPu(int u, int weightIndx) {
-        return userWeights[u][weightIndx];
-    }
-
-    public double getPi(int i, int weightIndx) {
-        return itemWeights[i][weightIndx];
-    }
-
-    /**
-     * explicit clear the reference
-     */
-    public void explicitClear() {
-        itemFeatures.clear();
-        userFeatures.clear();
-        this.itemFeatures = null;
-        this.userFeatures = null;
-        this.itemWeights = null;
-        this.userWeights = null;
-    }
-
-    /**
-     * Setter method for property <tt>userWeights</tt>.
-     * 
-     * @param userWeights value to be assigned to property userWeights
-     */
-    public void setUserWeights(float[][] userWeights) {
-        this.userWeights = userWeights;
-    }
-
-    /**
-     * Setter method for property <tt>itemWeights</tt>.
-     * 
-     * @param itemWeights value to be assigned to property itemWeights
-     */
-    public void setItemWeights(float[][] itemWeights) {
-        this.itemWeights = itemWeights;
     }
 
 }

@@ -84,17 +84,19 @@ public class MixtureWLRARcmdEngine extends RcmdtnEngine {
 
         LoggerUtil.info(logger, "\t\tb. loading model. ");
         Queue<Model> models = new LinkedList<Model>();
-        for (ModelGroup group : groups) {
-            group.join(models, rateMatrix);
+        for (int g = 0; g < groups.size(); g++) {
+            groups.get(g).join(models, rateMatrix, g);
         }
+        WeightedSVDLearner.models = models;
 
         // suggest JVM to release memory
-        LoggerUtil.info(logger, "\t\tc. releasing mem. ");
-        rateMatrix.clear();
-        //        System.gc();
-        groups.clear();
-        groups = null;
-        WeightedSVDLearner.models = models;
+        if (userCount > 400 * 1000 & itemCount > 12 * 1000) {
+            LoggerUtil.info(logger, "\t\tc. releasing mem. ");
+            rateMatrix.clear();
+            groups.clear();
+            groups = null;
+            System.gc();
+        }
     }
 
     /**
