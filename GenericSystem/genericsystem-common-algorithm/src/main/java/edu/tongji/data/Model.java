@@ -1,15 +1,11 @@
 package edu.tongji.data;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.apache.log4j.Logger;
 
 import prea.util.EvaluationMetrics;
-import prea.util.MatrixInformationUtil;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.ml.matrix.WeigtedRSVD;
+import edu.tongji.util.FileUtil;
 import edu.tongji.util.LoggerUtil;
 
 /**
@@ -18,27 +14,21 @@ import edu.tongji.util.LoggerUtil;
  * @version $Id: Model.java, v 0.1 2014-11-2 下午3:26:24 Exp $
  */
 public class Model {
-
     /** matrix factorization */
     public WeigtedRSVD            recmder;
-
     /** included index of rows */
     private int[]                 rows;
-
     /** included index of columns */
     private int[]                 cols;
-
     /** the unique id of model*/
     private int                   id;
-
-    /** the sparsity of the matrix*/
-    private double                sparsity = Double.NaN;
-
+    /** the unique id of the model group */
+    private int                   groupId;
     /** logger */
-    protected final static Logger logger   = Logger.getLogger(LoggerDefineConstant.SERVICE_NORMAL);
+    protected final static Logger logger     = Logger
+                                                 .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
 
-    public Model() {
-    }
+    protected final static String resultFile = "C:/netflix/WEMAREC";
 
     /**
      * 
@@ -52,54 +42,6 @@ public class Model {
     }
 
     /**
-     * compute the sparsity of the training matrix this model contains.
-     * 
-     * @param rateMatrix
-     * @return
-     */
-    private void sparsity(final SparseRowMatrix rateMatrix) {
-        double totalCount = (rows == null | cols == null) ? (rateMatrix.length()[0] * rateMatrix
-            .length()[1]) : rows.length * cols.length;
-        double itemCount = rateMatrix.itemCount();
-        sparsity = itemCount / totalCount;
-
-    }
-
-    /**
-     * build model with density limitation
-     * 
-     * @param rateMatrix
-     */
-    public boolean buildModel(final SparseRowMatrix rateMatrix, double densityThreshhold) {
-        if (rows == null | cols == null) {
-            double totalCount = rateMatrix.length()[0] * rateMatrix.length()[1];
-            double itemCount = rateMatrix.itemCount();
-            if (itemCount / totalCount < densityThreshhold) {
-                LoggerUtil.info(logger, "Id: " + id + "\t[" + (itemCount / totalCount)
-                                        + "] is too sparse to build the model");
-                return false;
-            }
-
-            recmder.buildModel(rateMatrix);
-            sparsity(rateMatrix);
-        } else {
-            SparseRowMatrix localMatrix = rateMatrix.partition(rows, cols);
-            double totalCount = rows.length * cols.length;
-            double itemCount = localMatrix.itemCount();
-            if (itemCount / totalCount < densityThreshhold) {
-                LoggerUtil.info(logger, "Id: " + id + "\t[" + (itemCount / totalCount)
-                                        + "] is too sparse to build the model");
-                return false;
-            }
-
-            recmder.buildModel(localMatrix);
-            sparsity(localMatrix);
-        }
-
-        return true;
-    }
-
-    /**
      * build model
      * 
      * @param rateMatrix
@@ -107,14 +49,15 @@ public class Model {
     public void buildModel(final SparseRowMatrix rateMatrix) {
         if (rows == null | cols == null) {
             recmder.buildModel(rateMatrix);
-            sparsity(rateMatrix);
         } else {
             SparseRowMatrix localMatrix = rateMatrix.partition(rows, cols);
             recmder.buildModel(localMatrix);
-            sparsity(localMatrix);
 
             // suggest JVM to gc
-            //            System.gc();
+            if (recmder.userCount > 400 * 1000 & recmder.itemCount > 12 * 1000) {
+                localMatrix.clear();
+                System.gc();
+            }
         }
     }
 
@@ -128,71 +71,79 @@ public class Model {
      * @param cumWeight
      *            the cumulative weights
      */
-    static Map<Integer, SparseRowMatrix> TEST = new HashMap<Integer, SparseRowMatrix>();
-
     public void evaluate(final SparseRowMatrix testMatrix, SparseRowMatrix cumPrediction,
                          SparseRowMatrix cumWeight) {
         if (rows != null | cols != null) {
             // catch paralleled local model
-            SparseRowMatrix localMatrix = testMatrix.partition(rows, cols);
-            for (int u = 0; u < localMatrix.length()[0]; u++) {
-                int[] indexList = localMatrix.getRowRef(u).indexList();
-                if (indexList == null) {
-                    continue;
-                }
-
-                for (int v : indexList) {
-                    double prediction = recmder.getPredictedRating(u, v);
-                    double weight = getWeight(u, v, prediction);
-
-                    double newCumPrediction = prediction * weight + cumPrediction.getValue(u, v);
-                    double newCumWeight = weight + cumWeight.getValue(u, v);
-
-                    cumPrediction.setValue(u, v, newCumPrediction);
-                    cumWeight.setValue(u, v, newCumWeight);
-                }
-            }
-
-            EvaluationMetrics metric = recmder.evaluate(localMatrix);
-
-            //TODO:
-            if (logger.isDebugEnabled()) {
-                TEST.put(getId(), localMatrix);
-                LoggerUtil.debug(
-                    logger,
-                    (new StringBuilder("ThreadId: " + getId())).append("\t").append(
-                        MatrixInformationUtil.RMSEAnalysis(localMatrix, metric.getPrediction())));
-            }
-
-        } else {
-            //Specail Operation output Global result
-
-            //            EvaluationMetrics globalResult = recmder.evaluate(testMatrix);
-            //            SparseRowMatrix wTest = new SparseRowMatrix(testMatrix.length()[0],
-            //                testMatrix.length()[1]);
-            //            SparseRowMatrix wPredicted = globalResult.getPrediction();
-            //            for (int u = 0; u < testMatrix.length()[0]; u++) {
-            //                int[] indexList = testMatrix.getRowRef(u).indexList();
+            //            SparseRowMatrix localMatrix = testMatrix.partition(rows, cols);
+            //            for (int u = 0; u < localMatrix.length()[0]; u++) {
+            //                int[] indexList = localMatrix.getRowRef(u).indexList();
             //                if (indexList == null) {
             //                    continue;
             //                }
             //
             //                for (int v : indexList) {
-            //                    double real = testMatrix.getValue(u, v);
-            //                    double realWeight = getWeight(u, v, real);
-            //                    wTest.setValue(u, v, realWeight * real);
+            //                    double prediction = recmder.getPredictedRating(u, v);
+            //                    double weight = getWeight(u, v, prediction);
             //
-            //                    double prediction = wPredicted.getValue(u, v);
-            //                    double estWeight = getWeight(u, v, prediction);
-            //                    wPredicted.setValue(u, v, estWeight * prediction);
+            //                    double newCumPrediction = prediction * weight + cumPrediction.getValue(u, v);
+            //                    double newCumWeight = weight + cumWeight.getValue(u, v);
+            //
+            //                    cumPrediction.setValue(u, v, newCumPrediction);
+            //                    cumWeight.setValue(u, v, newCumWeight);
             //                }
             //            }
-            //            globalResult = recmder.evaluate(testMatrix);
-            //            LoggerUtil.info(logger, MatrixInformationUtil.PredictionReliabilityAnalysis(
-            //                globalResult.getPrediction(), wTest, wPredicted));
 
-            //            LoggerUtil.info(logger, "Singleton Model : \n" + EvaluationMetrics.printTitle() + "\n"
-            //                                    + globalResult.printOneLine());
+            //for analyzing beta1 and beta2 
+            SparseRowMatrix ltestMatrix = testMatrix.partition(rows, cols);
+
+            int itemCount = 0;
+            StringBuilder buffer = new StringBuilder();
+            for (int u = 0; u < ltestMatrix.length()[0]; u++) {
+                int[] indexList = ltestMatrix.getRowRef(u).indexList();
+                if (indexList == null) {
+                    continue;
+                }
+
+                for (int i : indexList) {
+                    double AuiEst = recmder.getPredictedRating(u, i);
+                    double weight = getWeight(u, i, AuiEst);
+
+                    double newCumPrediction = AuiEst * weight + cumPrediction.getValue(u, i);
+                    double newCumWeight = weight + cumWeight.getValue(u, i);
+
+                    cumPrediction.setValue(u, i, newCumPrediction);
+                    cumWeight.setValue(u, i, newCumWeight);
+
+                    //record local prediction
+                    //userId, itemId, AuiReal, AuiEst, Pu, Pi, GroupId
+                    double AuiReal = testMatrix.getValue(u, i);
+                    buffer.append(u).append(',').append(i).append(',').append(AuiReal).append(',')
+                        .append(AuiEst).append(',').append(getPu(u, AuiEst)).append(',')
+                        .append(getPi(i, AuiEst)).append(',').append(groupId).append('\n');
+                    itemCount++;
+                }
+
+                // if greater than buffer size, then clear the buffer.
+                if (itemCount >= 1000 * 1000) {
+                    FileUtil.writeAsAppend(resultFile, buffer.toString());
+
+                    //reset buffer
+                    itemCount = 0;
+                    buffer = new StringBuilder();
+                }
+            }
+            FileUtil.writeAsAppend(resultFile, buffer.toString());
+
+            // release local model memory
+            if (recmder.userCount > 400 * 1000 & recmder.itemCount > 12 * 1000) {
+                ltestMatrix.clear();
+            }
+        } else {
+            //Specail Operation output Global result
+            EvaluationMetrics globalResult = recmder.evaluate(testMatrix);
+            LoggerUtil.info(logger, "Singleton Model : \n" + EvaluationMetrics.printTitle() + "\n"
+                                    + globalResult.printOneLine());
 
             // catch global model
             for (int u = 0; u < testMatrix.length()[0]; u++) {
@@ -210,26 +161,8 @@ public class Model {
 
                     cumPrediction.setValue(u, v, newCumPrediction);
                     cumWeight.setValue(u, v, newCumWeight);
-
                 }
             }
-
-            //TODO
-            if (logger.isDebugEnabled()) {
-                for (Entry<Integer, SparseRowMatrix> entry : TEST.entrySet()) {
-                    EvaluationMetrics eResult = recmder.evaluate(entry.getValue());
-                    LoggerUtil.debug(
-                        logger,
-                        (new StringBuilder())
-                            .append("ThreadId: ")
-                            .append(entry.getKey())
-                            .append("\t")
-                            .append(
-                                MatrixInformationUtil.RMSEAnalysis(entry.getValue(),
-                                    eResult.getPrediction())));
-                }
-            }
-
         }
 
         // release recommender memory
@@ -241,6 +174,16 @@ public class Model {
     public double getWeight(int u, int v, double prediction) {
         int weightIndex = Double.valueOf(prediction / recmder.minValue - 1).intValue();
         return recmder.getWeight(u, v, weightIndex);
+    }
+
+    public double getPu(int u, double prediction) {
+        int weightIndex = Double.valueOf(prediction / recmder.minValue - 1).intValue();
+        return recmder.getPu(u, weightIndex);
+    }
+
+    public double getPi(int i, double prediction) {
+        int weightIndex = Double.valueOf(prediction / recmder.minValue - 1).intValue();
+        return recmder.getPi(i, weightIndex);
     }
 
     public double getDefaultRating() {
@@ -317,12 +260,21 @@ public class Model {
     }
 
     /**
-     * Getter method for property <tt>sparsity</tt>.
+     * Getter method for property <tt>groupId</tt>.
      * 
-     * @return property value of sparsity
+     * @return property value of groupId
      */
-    public double getSparsity() {
-        return sparsity;
+    public int getGroupId() {
+        return groupId;
+    }
+
+    /**
+     * Setter method for property <tt>groupId</tt>.
+     * 
+     * @param groupId value to be assigned to property groupId
+     */
+    public void setGroupId(int groupId) {
+        this.groupId = groupId;
     }
 
 }
