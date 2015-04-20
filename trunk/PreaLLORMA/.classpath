@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="Backup0701/" kind="src" path="src/main/java"/>
+	<classpathentry kind="src" path="src/main/resources"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/UJMP_src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="F:/Workspace/Dependency/log4j-1.2.15.jar" sourcepath="F:/Maven/.m2/log4j/log4j/1.2.15/log4j-1.2.15-sources.jar"/>
+	<classpathentry kind="lib" path="F:/Workspace/Dependency/spring-core-2.5.5.jar"/>
+	<classpathentry kind="output" path="build/classes"/>
+</classpath>
