@@ -194,8 +194,10 @@ public final class CoclusterUtil {
             LoggerUtil.info(logger, round + "B:\t" + err);
 
             //update Lagrange multipliers
-            comConExpectationAsConjugateDist(points, K, L, rowCluster, colCluster, E_Uc_Vc, E_U,
-                E_Uc, E_V, E_Vc, E_U_Vc, E_Uc_V);
+            if (round < maxIteration) {
+                comConExpectationAsConjugateDist(points, K, L, rowCluster, colCluster, E_Uc_Vc,
+                    E_U, E_Uc, E_V, E_Vc, E_U_Vc, E_Uc_V);
+            }
 
         }
 

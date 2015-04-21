@@ -39,13 +39,13 @@ public final class RecResultUtil {
      * @param piMatrix
      * @return
      */
-    public static boolean readRec(String resultFile, SparseRowMatrix[] estMatrix,
+    public static boolean readRec(String predctFile, SparseRowMatrix[] estMatrix,
                                   SparseRowMatrix testMatrix, SparseRowMatrix puMatrix,
                                   SparseRowMatrix piMatrix) {
-        File file = new File(resultFile);
+        File file = new File(predctFile);
         if (!file.isFile() | !file.exists()) {
             ExceptionUtil.caught(new FileNotFoundException("File Not Found"), "读取文件发生异常，校验文件路径: "
-                                                                              + resultFile);
+                                                                              + predctFile);
             return false;
         }
 
@@ -73,7 +73,7 @@ public final class RecResultUtil {
             }
             return true;
         } catch (FileNotFoundException e) {
-            ExceptionUtil.caught(e, "无法找到对应的加载文件: " + resultFile);
+            ExceptionUtil.caught(e, "无法找到对应的加载文件: " + predctFile);
         } catch (IOException e) {
             ExceptionUtil.caught(e, "读取文件发生异常，校验文件格式");
         } finally {
