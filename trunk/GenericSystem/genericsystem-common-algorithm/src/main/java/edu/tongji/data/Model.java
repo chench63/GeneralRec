@@ -75,22 +75,22 @@ public class Model {
                          SparseRowMatrix cumWeight) {
         if (rows != null | cols != null) {
             // catch paralleled local model
-            //            SparseRowMatrix localMatrix = testMatrix.partition(rows, cols);
-            //            for (int u = 0; u < localMatrix.length()[0]; u++) {
-            //                int[] indexList = localMatrix.getRowRef(u).indexList();
-            //                if (indexList == null) {
+            //            SparseRowMatrix ltestMatrix = testMatrix.partition(rows, cols);
+            //            for (int u = 0; u < ltestMatrix.length()[0]; u++) {
+            //                int[] itemList = ltestMatrix.getRowRef(u).indexList();
+            //                if (itemList == null) {
             //                    continue;
             //                }
             //
-            //                for (int v : indexList) {
-            //                    double prediction = recmder.getPredictedRating(u, v);
-            //                    double weight = getWeight(u, v, prediction);
+            //                for (int i : itemList) {
+            //                    double prediction = recmder.getPredictedRating(u, i);
+            //                    double weight = getWeight(u, i, prediction);
             //
-            //                    double newCumPrediction = prediction * weight + cumPrediction.getValue(u, v);
-            //                    double newCumWeight = weight + cumWeight.getValue(u, v);
+            //                    double newCumPrediction = prediction * weight + cumPrediction.getValue(u, i);
+            //                    double newCumWeight = weight + cumWeight.getValue(u, i);
             //
-            //                    cumPrediction.setValue(u, v, newCumPrediction);
-            //                    cumWeight.setValue(u, v, newCumWeight);
+            //                    cumPrediction.setValue(u, i, newCumPrediction);
+            //                    cumWeight.setValue(u, i, newCumWeight);
             //                }
             //            }
 
