@@ -1,9 +1,18 @@
 package paper.sigir15.experiment;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
+import org.apache.commons.io.IOUtils;
+
 import prea.util.EvaluationMetrics;
 import prea.util.RecResultUtil;
 import edu.tongji.data.SparseRowMatrix;
 import edu.tongji.data.SparseVector;
+import edu.tongji.util.ExceptionUtil;
 import edu.tongji.util.FileUtil;
 
 public class EnsembleEffectExperiment {
@@ -30,6 +39,7 @@ public class EnsembleEffectExperiment {
 
         for (String rootDir : rootDirs) {
             cmp(rootDir, beta1s, beta2s);
+            //            cmpWithSaving(rootDir, beta1s, beta2s);
         }
 
     }
@@ -120,7 +130,70 @@ public class EnsembleEffectExperiment {
 
         //evaluation
         return new EvaluationMetrics(testMatrix, cumWeight, maxValue, minValue);
+    }
 
+    public static void cmpWithSaving(String rootDir, double[] beta1s, double[] beta2s) {
+        String predctFile = rootDir + "WEMAREC";
+        String resltFile = rootDir + "EnsmblHMP";
+
+        StringBuilder content = new StringBuilder();
+        for (double beta1 : beta1s) {
+            for (double beta2 : beta2s) {
+                //read testing set
+                SparseRowMatrix testMatrix = new SparseRowMatrix(userCount, itemCount);
+                RecResultUtil.readTestMatrix(predctFile, testMatrix);
+
+                //ensemble & evaluate 
+                EvaluationMetrics metric = evlWithSaving(predctFile, beta1, beta2, testMatrix);
+                content.append(beta1).append('\t').append(beta2).append('\t')
+                    .append(metric.printOneLine()).append('\n');
+            }
+            content.append('\n');
+        }
+
+        FileUtil.write(resltFile, content.toString());
+    }
+
+    protected static EvaluationMetrics evlWithSaving(String predctFile, double beta1, double beta2,
+                                                     SparseRowMatrix testMatrix) {
+        BufferedReader reader = null;
+        try {
+            //Ensemble steps
+            SparseRowMatrix cumPrediction = new SparseRowMatrix(userCount, itemCount);
+            SparseRowMatrix cumWeight = new SparseRowMatrix(userCount, itemCount);
+
+            File file = new File(predctFile);
+            reader = new BufferedReader(new FileReader(file));
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                //userId, itemId, AuiReal, AuiEst, Pu, Pi, GroupId
+                String[] elemnts = line.split("\\,");
+                int u = Integer.valueOf(elemnts[0]);
+                int i = Integer.valueOf(elemnts[1]);
+                double curPrediciton = Double.valueOf(elemnts[3]);
+                double curPu = Double.valueOf(elemnts[4]);
+                double curPi = Double.valueOf(elemnts[5]);
+                double curWeight = weight(beta1, beta2, curPu, curPi);
+                double newCumPrediction = curPrediciton * curWeight + cumPrediction.getValue(u, i);
+                double newCumWeight = curWeight + cumWeight.getValue(u, i);
+
+                //update old values
+                cumPrediction.setValue(u, i, newCumPrediction);
+                cumWeight.setValue(u, i, newCumWeight);
+            }
+
+            //Evaluation steps
+            EvaluationMetrics metric = evaluate(cumPrediction, cumWeight, testMatrix);
+            return metric;
+        } catch (FileNotFoundException e) {
+            ExceptionUtil.caught(e, "无法找到对应的加载文件: " + predctFile);
+        } catch (IOException e) {
+            ExceptionUtil.caught(e, "读取文件发生异常，校验文件格式");
+        } finally {
+            IOUtils.closeQuietly(reader);
+        }
+
+        return null;
     }
 
     public static double weight(double beta1, double beta2, double Pu, double Pi) {
