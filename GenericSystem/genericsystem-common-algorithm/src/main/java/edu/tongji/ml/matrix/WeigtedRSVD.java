@@ -248,14 +248,14 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
         //               + userWeights[u][weightIndx] * userWeights[u][weightIndx]
         //               + itemWeights[i][weightIndx] * itemWeights[i][weightIndx];
 
-        //        return userWeights[u][weightIndx] + itemWeights[i][weightIndx];
+        return 1.0 + base1 * userWeights[u][weightIndx] + base2 * itemWeights[i][weightIndx];
 
         //        return 1.0;
 
         //        return 1.0 + base3 * totalWeights[weightIndx];
 
         //b1 + (b2 + Pu)(b2 + Pi)
-        return base1 + (base2 + userWeights[u][weightIndx]) * (base2 + itemWeights[i][weightIndx]);
+        //        return base1 + (base2 + userWeights[u][weightIndx]) * (base2 + itemWeights[i][weightIndx]);
     }
 
     public double getPu(int u, int weightIndx) {

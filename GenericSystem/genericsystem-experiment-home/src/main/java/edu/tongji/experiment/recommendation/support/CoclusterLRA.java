@@ -31,38 +31,29 @@ public class CoclusterLRA {
     //      Common variable
     //==========================
     /** file to store the original data and cocluster directory, make sure the data is compact.*/
-    public final static String[] ROOTDIRS     = { "E:/MovieLens/ml-10M100K/1/",
-            "E:/MovieLens/ml-10M100K/2/", "E:/MovieLens/ml-10M100K/3/",
-            "E:/MovieLens/ml-10M100K/5/"     };
+    public final static String[] ROOTDIRS      = { "E:/MovieLens/zWarmStart/ml-10M100K/1/",
+            "E:/MovieLens/zWarmStart/ml-10M100K/2/", "E:/MovieLens/zWarmStart/ml-10M100K/3/",
+            "E:/MovieLens/zWarmStart/ml-10M100K/4/", "E:/MovieLens/zWarmStart/ml-10M100K/5/" };
 
     /** The parser to parse the dataset file  **/
-    public final static Parser   parser       = new MovielensRatingTemplateParser();
-
-    public final static int[]    DIVERGENCE   = { CoclusterUtil.EUCLIDEAN_DIVERGENCE,
-            CoclusterUtil.I_DIVERGENCE       };
-
-    public final static String[] DIR          = { "EW", "IW" };
-
-    public final static int[]    CONSTRAINTS  = { CoclusterUtil.C_1, CoclusterUtil.C_3,
-            CoclusterUtil.C_4, CoclusterUtil.C_6 };
-
-    /** the number of  row classes*/
-    public final static int[]    K            = { 5 };
-
-    /** the number of column classes*/
-    public final static int[]    L            = { 5 };
-
+    public final static Parser   parser        = new MovielensRatingTemplateParser();
+    public final static int[]    DIVERGENCE    = { CoclusterUtil.EUCLIDEAN_DIVERGENCE,
+            CoclusterUtil.I_DIVERGENCE        };
+    public final static String[] DIR           = { "EW", "IW" };
+    public final static int[]    CONSTRAINTS   = { CoclusterUtil.C_1, CoclusterUtil.C_2,
+            CoclusterUtil.C_3, CoclusterUtil.C_4, CoclusterUtil.C_5, CoclusterUtil.C_6 };
+    /** the number of  row_column classes*/
+    public final static String[] DIMEN_SETTING = { "5_2" };
     /** the number of rows*/
-    public final static int      rowCount     = 69878;
-
+    public final static int      rowCount      = 69878;
     /** the number of columns*/
-    public final static int      colCount     = 10677;
-
+    public final static int      colCount      = 10677;
     /** the maximum number of iterations*/
-    public final static int      maxIteration = 6;
+    public final static int      maxIteration  = 10;
 
     /** logger */
-    private final static Logger  logger       = Logger.getLogger(LoggerDefineConstant.SERVICE_TEST);
+    private final static Logger  logger        = Logger
+                                                   .getLogger(LoggerDefineConstant.SERVICE_TEST);
 
     /**
      * 
@@ -80,27 +71,29 @@ public class CoclusterLRA {
 
             for (int diverIndx = 0; diverIndx < DIVERGENCE.length; diverIndx++) {
                 for (int consts : CONSTRAINTS) {
-                    for (int k : K) {
-                        for (int l : L) {
-                            String settingFile = (new StringBuilder(targetCoclusterRoot))
-                                .append(DIR[diverIndx]).append(consts).append('_').append(k)
-                                .append('_').append(l).append(FileUtil.UNION_DIR_SEPERATOR)
-                                .append("SETTING").toString();
-                            String rowMappingFile = (new StringBuilder(targetCoclusterRoot))
-                                .append(DIR[diverIndx]).append(consts).append('_').append(k)
-                                .append('_').append(l).append(FileUtil.UNION_DIR_SEPERATOR)
-                                .append("RM").toString();
-                            String colMappingFile = (new StringBuilder(targetCoclusterRoot))
-                                .append(DIR[diverIndx]).append(consts).append('_').append(k)
-                                .append('_').append(l).append(FileUtil.UNION_DIR_SEPERATOR)
-                                .append("CM").toString();
+                    for (String dimsn : DIMEN_SETTING) {
+                        String[] dimenVal = dimsn.split("\\_");
+                        int k = Integer.valueOf(dimenVal[0]);
+                        int l = Integer.valueOf(dimenVal[1]);
 
-                            LoggerUtil.info(logger, (new StringBuilder("1. start to cocluster. "))
-                                .append(DIR[diverIndx]).append(consts).append('_').append(k)
-                                .append('_').append(l));
-                            doCocluster(rateMatrix, settingFile, rowMappingFile, colMappingFile,
-                                DIVERGENCE[diverIndx], consts, k, l);
-                        }
+                        String settingFile = (new StringBuilder(targetCoclusterRoot))
+                            .append(DIR[diverIndx]).append(consts).append('_').append(k)
+                            .append('_').append(l).append(FileUtil.UNION_DIR_SEPERATOR)
+                            .append("SETTING").toString();
+                        String rowMappingFile = (new StringBuilder(targetCoclusterRoot))
+                            .append(DIR[diverIndx]).append(consts).append('_').append(k)
+                            .append('_').append(l).append(FileUtil.UNION_DIR_SEPERATOR)
+                            .append("RM").toString();
+                        String colMappingFile = (new StringBuilder(targetCoclusterRoot))
+                            .append(DIR[diverIndx]).append(consts).append('_').append(k)
+                            .append('_').append(l).append(FileUtil.UNION_DIR_SEPERATOR)
+                            .append("CM").toString();
+
+                        LoggerUtil.info(logger, (new StringBuilder("1. start to cocluster. "))
+                            .append(DIR[diverIndx]).append(consts).append('_').append(k)
+                            .append('_').append(l));
+                        doCocluster(rateMatrix, settingFile, rowMappingFile, colMappingFile,
+                            DIVERGENCE[diverIndx], consts, k, l);
                     }
                 }
             }

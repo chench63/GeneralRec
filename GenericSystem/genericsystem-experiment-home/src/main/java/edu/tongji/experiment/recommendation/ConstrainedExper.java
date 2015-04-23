@@ -29,20 +29,21 @@ import prea.util.MatrixFileUtil;
 public class ConstrainedExper {
 
     /** file to store the original data and cocluster directory. 10M100K 1m*/
-    public static String[]      rootDirs     = { "E:/MovieLens/ml-10M100K/fetch50/2/",
-            "E:/MovieLens/ml-10M100K/fetch50/3/", "E:/MovieLens/ml-10M100K/fetch50/1/" };
+    public static String[]      rootDirs     = { "E:/MovieLens/zWarmStart/ml-10M100K/2/",
+            "E:/MovieLens/zWarmStart/ml-10M100K/3/", "E:/MovieLens/zWarmStart/ml-10M100K/4/",
+            "E:/MovieLens/zWarmStart/ml-10M100K/5/" };
     /** The number of users. 943 6040 69878*/
     public final static int     userCount    = 69878;
     /** The number of items. 1682 3706 10677*/
     public final static int     itemCount    = 10677;
     public final static double  maxValue     = 5.0;
     public final static double  minValue     = 0.5;
-    public final static double  lrate        = 0.001;
-    public final static double  regularized  = 0.06;
-    public final static int     maxIteration = 200;
+    public final static double  lrate        = 0.01;
+    public final static double  regularized  = 0.001;
+    public final static int     maxIteration = 100;
     public final static boolean showProgress = false;
 
-    public final static String  resultDir    = "E:/";
+    public final static String  resultDir    = "E:/MovieLens/zWarmStart/";
 
     /**
      * 
