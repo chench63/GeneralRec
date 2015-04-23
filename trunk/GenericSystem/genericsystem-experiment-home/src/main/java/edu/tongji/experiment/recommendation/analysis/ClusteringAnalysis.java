@@ -24,9 +24,9 @@ import prea.util.MatrixInformationUtil;
 public class ClusteringAnalysis {
 
     /** file to store the original data and cocluster directory. 10M100K 1m*/
-    public final static String   rootDir     = "E:/MovieLens/ml-10M100K/1/";
-    public final static String[] clusterDirs = { "Kmeanspp/KL_2_2/", "Kmeanspp/KL_3_3/",
-            "Kmeanspp/KL_4_4/", "Kmeanspp/KL_5_5/", "Kmeanspp/KL_10_10/", "Kmeanspp/KL_20_20/" };
+    public final static String   rootDir     = "E:/MovieLens/zWarmStart/ml-1m/1/";
+    public final static String[] clusterDirs = { "Cocluster/EW1_2_2/", "Cocluster/EW2_2_2/",
+            "Cocluster/EW3_2_2/", "Cocluster/EW4_2_2/", "Cocluster/EW5_2_2/", "Cocluster/EW6_2_2/" };
 
     /** The number of users. 943 6040 69878*/
     public final static int      userCount   = 6040;
@@ -51,9 +51,10 @@ public class ClusteringAnalysis {
             String rowMappingFile = rootDir + clusterDir + "RM";
             String colMappingFile = rootDir + clusterDir + "CM";
 
-            centroids(trainFile, settingFile, rowMappingFile, colMappingFile, clusterDir);
-            //            averagedEntropy(trainFile, settingFile, rowMappingFile, colMappingFile, clusterDir);
+            //            centroids(trainFile, settingFile, rowMappingFile, colMappingFile, clusterDir);
+            averagedEntropy(trainFile, settingFile, rowMappingFile, colMappingFile, clusterDir);
             //            distribution(trainFile, settingFile, rowMappingFile, colMappingFile, clusterDir);
+            //            individualEntropy(trainFile, settingFile, rowMappingFile, colMappingFile, clusterDir);
         }
 
     }
@@ -177,4 +178,26 @@ public class ClusteringAnalysis {
         LoggerUtil.info(logger, clusterIndentity + "\tAvgEntropy: " + averEntropy);
     }
 
+    public static void individualEntropy(String sourceFile, String settingFile,
+                                         String rowMappingFile, String colMappingFile,
+                                         String clusterIndentity) {
+        BlockMatrix blck = MatrixFileUtil.reads(sourceFile, settingFile, rowMappingFile,
+            colMappingFile, userCount, itemCount, null);
+        List<SparseMatrix> matrices = blck.getList();
+
+        StringBuilder result = new StringBuilder();
+        for (SparseMatrix matrix : matrices) {
+            double[] distrbtn = MatrixInformationUtil
+                .ratingDistribution(matrix, maxValue, minValue);
+
+            double entropy = 0.0d;
+            for (double prob : distrbtn) {
+                entropy -= prob * Math.log(prob);
+            }
+
+            result.append(String.format("%.6f", entropy)).append('\t');
+        }
+
+        LoggerUtil.info(logger, clusterIndentity + "\tIndividualEntropy:\t" + result.toString());
+    }
 }

@@ -13,27 +13,27 @@ import edu.tongji.util.FileUtil;
  */
 public class WeightsEffectExperiment {
     /** file to store the original data and cocluster directory. 10M100K 1m*/
-    public static String[]      rootDirs     = { "E:/MovieLens/ml-1m/1/" };
+    public static String[]      rootDirs     = { "E:/MovieLens/zWarmStart/ml-10M100K/3/" };
     /** The number of users. 943 6040 69878  480189*/
-    public final static int     userCount    = 6040;
-    /** The number of items. 1682 3706 10677 17770*/
-    public final static int     itemCount    = 3706;
+    public final static int     userCount    = 69878;
+    /** The number of items. 1682 3706 10677 10677*/
+    public final static int     itemCount    = 10677;
     public final static double  maxValue     = 5.0d;
-    public final static double  minValue     = 1.0d;
-    public final static int     featureCount = 5;
+    public final static double  minValue     = 0.5d;
+    public final static int     featureCount = 20;
     public final static double  lrate        = 0.01d;
     public final static double  regularized  = 0.001d;
     public final static int     maxIteration = 100;
-    public final static boolean showProgress = true;
+    public final static boolean showProgress = false;
 
-    public final static String  resultDir    = "E:/[1m]";
+    public final static String  resultDir    = "E:/MovieLens/zWarmStart/";
 
     /**
      * 
      * @param args
      */
     public static void main(String[] args) {
-        double[] beta0s = { 0.0d, 1.0d };
+        double[] beta0s = { 0.1d, 0.2d, 0.3d, 0.4d, 0.5d, 0.6d, 0.7d, 0.8d, 0.9d, 1.0d };
 
         for (String rootDir : rootDirs) {
             WSVD(rootDir, beta0s);
@@ -55,7 +55,7 @@ public class WeightsEffectExperiment {
             //evaluation
             EvaluationMetrics metric = recmmd.evaluate(testMatrix);
             System.out.println(metric.printMultiLine());
-            FileUtil.writeAsAppend(resultDir + "WSVD", beta0 + "\t" + metric.printOneLine() + "\n");
+            FileUtil.writeAsAppend(resultDir + "WSVD[3]", beta0 + "\t" + metric.printOneLine() + "\n");
         }
     }
 
