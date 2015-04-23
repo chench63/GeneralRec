@@ -29,6 +29,43 @@ public final class RecResultUtil {
 
     }
 
+    public static boolean readTestMatrix(String predctFile, SparseRowMatrix testMatrix) {
+        File file = new File(predctFile);
+        if (!file.isFile() | !file.exists()) {
+            ExceptionUtil.caught(new FileNotFoundException("File Not Found"), "读取文件发生异常，校验文件路径: "
+                                                                              + predctFile);
+            return false;
+        }
+
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(file));
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                //userId, itemId, AuiReal, AuiEst, Pu, Pi, GroupId
+                String[] elemnts = line.split("\\,");
+                int usrId = Integer.valueOf(elemnts[0]);
+                int itemId = Integer.valueOf(elemnts[1]);
+                double AuiReal = Double.valueOf(elemnts[2]);
+                int groupId = Integer.valueOf(elemnts[6]);
+
+                if (groupId == 0) {
+                    testMatrix.setValue(usrId, itemId, AuiReal);
+                }
+            }
+            return true;
+        } catch (FileNotFoundException e) {
+            ExceptionUtil.caught(e, "无法找到对应的加载文件: " + predctFile);
+        } catch (IOException e) {
+            ExceptionUtil.caught(e, "读取文件发生异常，校验文件格式");
+        } finally {
+            IOUtils.closeQuietly(reader);
+        }
+
+        //出现异常，返回null
+        return false;
+    }
+
     /**
      * Read recommendation results
      * 
