@@ -101,6 +101,21 @@ public class SparseColumnMatrix {
     }
 
     /**
+     * Capacity of this matrix.
+     * 
+     * @return An array containing the length of this matrix. Index 0 contains
+     *         row count, while index 1 column count.
+     */
+    public int[] length() {
+        int[] lengthArray = new int[2];
+
+        lengthArray[0] = this.M;
+        lengthArray[1] = this.N;
+
+        return lengthArray;
+    }
+
+    /**
      * convert to object of SparseMatrix
      * 
      * @return
