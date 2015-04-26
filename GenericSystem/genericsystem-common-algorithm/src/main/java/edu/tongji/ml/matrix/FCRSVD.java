@@ -22,8 +22,6 @@ public class FCRSVD extends MatrixFactorizationRecommender {
     protected int[]                iAssigmnt;
     protected int[]                uAssigmnt;
 
-    public SparseRowMatrix         test;
-
     /*========================================
      * Constructors
      *========================================*/
@@ -122,8 +120,8 @@ public class FCRSVD extends MatrixFactorizationRecommender {
             currErr = Math.sqrt(sum / rateCount);
 
             round++;
-            if (showProgress && (round % 10 == 0) && test != null) {
-                EvaluationMetrics metric = this.evaluate(test);
+            if (showProgress && (round % 10 == 0) && tMatrix != null) {
+                EvaluationMetrics metric = this.evaluate(tMatrix);
                 FileUtil.writeAsAppend(
                     "E://10m[" + featureCount + "]_k" + userFeaturesAss.length + "_" + maxIter,
                     round + "\t" + String.format("%.4f", currErr) + "\t"
@@ -203,8 +201,8 @@ public class FCRSVD extends MatrixFactorizationRecommender {
             currErr = Math.sqrt(sum / rateCount);
 
             round++;
-            if (showProgress && (round % 10 == 0) && test != null) {
-                EvaluationMetrics metric = this.evaluate(test);
+            if (showProgress && (round % 10 == 0) && tMatrix != null) {
+                EvaluationMetrics metric = this.evaluate(tMatrix);
                 FileUtil.writeAsAppend(
                     "E://10m[" + featureCount + "]_k" + userFeaturesAss.length + "_" + maxIter,
                     round + "\t" + String.format("%.4f", currErr) + "\t"

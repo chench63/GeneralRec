@@ -185,7 +185,7 @@ public class ConstrainedExper {
         for (int featureCount : featureCounts) {
             FCRSVD recmmd = new FCRSVD(userCount, itemCount, maxValue, minValue, featureCount,
                 lrate, regularized, 0, maxIteration, dimnsn[0], dimnsn[1], ua, ia, showProgress);
-            recmmd.test = testMatrix;
+            recmmd.tMatrix = testMatrix;
             recmmd.buildModel(rateMatrix);
 
             //evaluation

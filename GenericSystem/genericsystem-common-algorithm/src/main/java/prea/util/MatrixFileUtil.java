@@ -390,7 +390,7 @@ public final class MatrixFileUtil {
             SparseMatrix[] result = new SparseMatrix[2];
             int discreteCount = (int) (maxVal / minVal);
             SparseMatrix rowDistriInfo = new SparseMatrix(rowCount, discreteCount);
-            float[][] rowDist = valMatrix.probability(null, null, maxVal, minVal, true);
+            double[][] rowDist = valMatrix.probability(null, null, maxVal, minVal, true);
             for (int row = 0; row < rowCount; row++) {
                 for (int indx = 0; indx < discreteCount; indx++) {
                     rowDistriInfo.setValue(row, indx, rowDist[row][indx]);
@@ -399,7 +399,7 @@ public final class MatrixFileUtil {
             result[0] = rowDistriInfo;
 
             SparseMatrix colDistriInfo = new SparseMatrix(colCount, discreteCount);
-            float[][] colDist = valMatrix.probability(null, null, maxVal, minVal, false);
+            double[][] colDist = valMatrix.probability(null, null, maxVal, minVal, false);
             for (int col = 0; col < colCount; col++) {
                 for (int indx = 0; indx < discreteCount; indx++) {
                     colDistriInfo.setValue(col, indx, colDist[col][indx]);

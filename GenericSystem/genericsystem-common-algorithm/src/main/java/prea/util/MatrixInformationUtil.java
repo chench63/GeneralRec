@@ -334,7 +334,7 @@ public final class MatrixInformationUtil {
                 int u = rating.getUsrId();
                 int i = rating.getMovieId();
                 double AuiReal = rating.getRatingReal();
-                double AuiEst = recmmd.getPredictedRating(u, i);
+                double AuiEst = recmmd.predict(u, i);
                 RMSE += Math.pow(AuiReal - AuiEst, 2.0d);
                 itemCount++;
             }
@@ -379,7 +379,7 @@ public final class MatrixInformationUtil {
             // compute Sum Square Error
             for (int i : itemList) {
                 double AuiReal = testMatrix.getValue(u, i);
-                double AuiEstm = recmmd.getPredictedRating(u, i);
+                double AuiEstm = recmmd.predict(u, i);
                 SSEs[pivot] += Math.pow(AuiReal - AuiEstm, 2.0d);
                 itemCounts[pivot]++;
             }
@@ -422,7 +422,7 @@ public final class MatrixInformationUtil {
             // compute Sum Square Error
             for (int u : usrList) {
                 double AuiReal = testMatrix.getValue(u, i);
-                double AuiEstm = recmmd.getPredictedRating(u, i);
+                double AuiEstm = recmmd.predict(u, i);
                 SSEs[pivot] += Math.pow(AuiReal - AuiEstm, 2.0d);
                 itemCounts[pivot]++;
             }

@@ -12,7 +12,7 @@ import edu.tongji.data.Model;
 import edu.tongji.data.ModelGroup;
 import edu.tongji.data.SparseMatrix;
 import edu.tongji.data.SparseRowMatrix;
-import edu.tongji.engine.recommendation.thread.WeightedSVDLearner;
+import edu.tongji.engine.recommendation.thread.ScalableSVDLearner;
 import edu.tongji.parser.Parser;
 import edu.tongji.util.ExceptionUtil;
 import edu.tongji.util.LoggerUtil;
@@ -23,26 +23,20 @@ import edu.tongji.util.StringUtil;
  * @author Hanke
  * @version $Id: MixtureWLRARcmdEngine.java, v 0.1 2014-11-2 下午2:37:12 Exp $
  */
-public class MixtureWLRARcmdEngine extends RcmdtnEngine {
-
+public class ScalableRcmdEngine extends RcmdtnEngine {
     /** the directory contains training, test dataset and coclustering setting file*/
     private String           rootDir;
-
     /** file with training data */
     private String           trainingSetFile;
-
     /** file with testing data */
     private String           testingSetFile;
-
     /** The number of users. */
     private int              userCount;
-
     /** The number of items. */
     private int              itemCount;
 
     /** groups of model */
     private List<ModelGroup> groups;
-
     /** the content parser w.r.t certain dataset */
     private Parser           parser;
 
@@ -51,7 +45,7 @@ public class MixtureWLRARcmdEngine extends RcmdtnEngine {
      */
     @Override
     protected void loadDataSet() {
-        LoggerUtil.info(logger, "1. loading data set. Groups: " + groups.size());
+        LoggerUtil.info(logger, "1. loading models. Groups: " + groups.size());
         // construct queue of models
         if (StringUtil.isBlank(trainingSetFile) && StringUtil.isBlank(testingSetFile)) {
             trainingSetFile = rootDir + "trainingset";
@@ -59,19 +53,6 @@ public class MixtureWLRARcmdEngine extends RcmdtnEngine {
         }
         ModelGroup.setRootDir(rootDir);
         joinGroup();
-
-        // construct training matrix
-        LoggerUtil.info(logger, "\t\td. loading rateMatrix and testMatrix. ");
-        WeightedSVDLearner.rateMatrix = MatrixFileUtil.reads(trainingSetFile, userCount, itemCount,
-            parser);
-        // construct test matrix
-        WeightedSVDLearner.testMatrix = MatrixFileUtil.reads(testingSetFile, userCount, itemCount,
-            parser);
-        WeightedSVDLearner.cumPrediction = new SparseRowMatrix(userCount, itemCount);
-        WeightedSVDLearner.cumWeight = new SparseRowMatrix(userCount, itemCount);
-        WeightedSVDLearner.curRMSE = 0;
-        LoggerUtil.info(logger, "Train: " + WeightedSVDLearner.rateMatrix.itemCount() + "\tTest: "
-                                + WeightedSVDLearner.testMatrix.itemCount());
     }
 
     /**
@@ -87,14 +68,13 @@ public class MixtureWLRARcmdEngine extends RcmdtnEngine {
         for (int g = 0; g < groups.size(); g++) {
             groups.get(g).join(models, rateMatrix, g);
         }
-        WeightedSVDLearner.models = models;
+        ScalableSVDLearner.models = models;
 
         // suggest JVM to release memory
         if (userCount > 400 * 1000 & itemCount > 12 * 1000) {
             LoggerUtil.info(logger, "\t\tc. releasing mem. ");
             rateMatrix.clear();
             groups.clear();
-            groups = null;
             System.gc();
         }
     }
@@ -111,12 +91,24 @@ public class MixtureWLRARcmdEngine extends RcmdtnEngine {
      */
     @Override
     protected void evaluate() {
+        LoggerUtil.info(logger, "3. loading rateMatrix and testMatrix. ");
+        SparseRowMatrix rateMatrix = MatrixFileUtil.reads(trainingSetFile, userCount, itemCount,
+            parser);
+        SparseRowMatrix testMatrix = MatrixFileUtil.reads(testingSetFile, userCount, itemCount,
+            parser);
+        LoggerUtil.info(logger,
+            "Train: " + rateMatrix.itemCount() + "\tTest: " + testMatrix.itemCount());
+
+        LoggerUtil.info(logger, "4. starting engine. ");
         try {
+            ScalableSVDLearner.cumPrediction = new SparseRowMatrix(userCount, itemCount);
+            ScalableSVDLearner.cumWeight = new SparseRowMatrix(userCount, itemCount);
+
             ExecutorService exec = Executors.newCachedThreadPool();
-            exec.execute(new WeightedSVDLearner());
-            exec.execute(new WeightedSVDLearner());
-            exec.execute(new WeightedSVDLearner());
-            exec.execute(new WeightedSVDLearner());
+            exec.execute(new ScalableSVDLearner(rateMatrix, testMatrix));
+            exec.execute(new ScalableSVDLearner(rateMatrix, testMatrix));
+            exec.execute(new ScalableSVDLearner(rateMatrix, testMatrix));
+            exec.execute(new ScalableSVDLearner(rateMatrix, testMatrix));
             exec.shutdown();
             exec.awaitTermination(Integer.MAX_VALUE, TimeUnit.DAYS);
         } catch (InterruptedException e) {

@@ -17,35 +17,36 @@ import edu.tongji.util.LoggerUtil;
  * @author Hanke
  * @version $Id: WeightedSVDLearner.java, v 0.1 2014-11-2 下午3:48:46 Exp $
  */
-public class WeightedSVDLearner extends Thread {
+public class ScalableSVDLearner extends Thread {
+    /**  matrix with training data */
+    protected SparseRowMatrix     rateMatrix;
+    /** matrix with testing data*/
+    protected SparseRowMatrix     testMatrix;
 
     /** concurrent task list*/
     public static Queue<Model>    models;
-
-    /**  matrix with training data */
-    public static SparseRowMatrix rateMatrix;
-
-    /** matrix with testing data*/
-    public static SparseRowMatrix testMatrix;
-
     /** cumulative prediction*/
     public static SparseRowMatrix cumPrediction;
-
     /** cumulative weights*/
     public static SparseRowMatrix cumWeight;
 
-    /** current RMSE value*/
-    public static double          curRMSE     = 0.0d;
-
     /** task mutex object*/
     private final static Object   mutexTask   = new Object();
-
     /** evaluate mutex object*/
     private final static Object   mutexMatrix = new Object();
-
     /** logger */
     protected final static Logger logger      = Logger
                                                   .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
+
+    /**
+     * @param rateMatrix
+     * @param testMatrix
+     */
+    public ScalableSVDLearner(SparseRowMatrix rateMatrix, SparseRowMatrix testMatrix) {
+        super();
+        this.rateMatrix = rateMatrix;
+        this.testMatrix = testMatrix;
+    }
 
     /** 
      * assign the task
@@ -93,9 +94,6 @@ public class WeightedSVDLearner extends Thread {
                         prediction.setValue(u, v, rateEsti);
                     }
                 }
-
-                //update current RMSE
-                //                curRMSE = metric.getRMSE();
             }
 
             //logger

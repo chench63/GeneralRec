@@ -4,9 +4,11 @@ import org.apache.log4j.Logger;
 
 import prea.util.EvaluationMetrics;
 import edu.tongji.log4j.LoggerDefineConstant;
+import edu.tongji.ml.matrix.MatrixFactorizationRecommender;
 import edu.tongji.ml.matrix.WeigtedRSVD;
 import edu.tongji.util.FileUtil;
 import edu.tongji.util.LoggerUtil;
+import edu.tongji.util.StringUtil;
 
 /**
  * 
@@ -15,30 +17,50 @@ import edu.tongji.util.LoggerUtil;
  */
 public class Model {
     /** matrix factorization */
-    public WeigtedRSVD            recmder;
+    public MatrixFactorizationRecommender recmmd;
     /** included index of rows */
-    private int[]                 rows;
+    private int[]                         rows;
     /** included index of columns */
-    private int[]                 cols;
+    private int[]                         cols;
     /** the unique id of model*/
-    private int                   id;
+    private int                           id;
     /** the unique id of the model group */
-    private int                   groupId;
-    /** logger */
-    protected final static Logger logger     = Logger
-                                                 .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
+    private int                           groupId;
+    /** the file to store the predictions*/
+    private String                        resultFile;
 
-    protected final static String resultFile = "C:/netflix/WEMAREC";
+    /** logger */
+    protected final static Logger         logger = Logger
+                                                     .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
 
     /**
-     * 
-     * @param settingFile
-     * @param rowMappingFile
-     * @param colMappingFile
+     * @param recmmd
+     * @param resultFile
      */
-    public Model(int uc, int ic, double max, double min, int fc, double lr, double r, double m,
-                 int iter, float b1, float b2) {
-        recmder = new WeigtedRSVD(uc, ic, max, min, fc, lr, r, m, iter, b1, b2);
+    public Model(MatrixFactorizationRecommender recmmd, String resultFile) {
+        super();
+        this.recmmd = recmmd;
+        this.resultFile = resultFile;
+    }
+
+    /**
+     * process before building the model.
+     * 
+     * @param rateMatrix
+     */
+    public void preProc(final SparseMatrix rateMatrix) {
+
+        if (recmmd instanceof WeigtedRSVD) {
+            WeigtedRSVD lRecmmd = (WeigtedRSVD) recmmd;
+            double[][] ensnblWeightInU = rateMatrix.probability(rows, cols, recmmd.maxValue,
+                recmmd.minValue, true);
+            lRecmmd.setEnsnblWeightInU(ensnblWeightInU);
+
+            double[][] ensnblWeightInI = rateMatrix.probability(rows, cols, recmmd.maxValue,
+                recmmd.minValue, false);
+            lRecmmd.setEnsnblWeightInI(ensnblWeightInI);
+        }
+
     }
 
     /**
@@ -48,13 +70,13 @@ public class Model {
      */
     public void buildModel(final SparseRowMatrix rateMatrix) {
         if (rows == null | cols == null) {
-            recmder.buildModel(rateMatrix);
+            recmmd.buildModel(rateMatrix);
         } else {
             SparseRowMatrix localMatrix = rateMatrix.partition(rows, cols);
-            recmder.buildModel(localMatrix);
+            recmmd.buildModel(localMatrix);
 
             // suggest JVM to gc
-            if (recmder.userCount > 400 * 1000 & recmder.itemCount > 12 * 1000) {
+            if (recmmd.userCount > 400 * 1000 & recmmd.itemCount > 12 * 1000) {
                 localMatrix.clear();
                 System.gc();
             }
@@ -74,74 +96,16 @@ public class Model {
     public void evaluate(final SparseRowMatrix testMatrix, SparseRowMatrix cumPrediction,
                          SparseRowMatrix cumWeight) {
         if (rows != null | cols != null) {
-            // catch paralleled local model
-            //            SparseRowMatrix ltestMatrix = testMatrix.partition(rows, cols);
-            //            for (int u = 0; u < ltestMatrix.length()[0]; u++) {
-            //                int[] itemList = ltestMatrix.getRowRef(u).indexList();
-            //                if (itemList == null) {
-            //                    continue;
-            //                }
-            //
-            //                for (int i : itemList) {
-            //                    double prediction = recmder.getPredictedRating(u, i);
-            //                    double weight = getWeight(u, i, prediction);
-            //
-            //                    double newCumPrediction = prediction * weight + cumPrediction.getValue(u, i);
-            //                    double newCumWeight = weight + cumWeight.getValue(u, i);
-            //
-            //                    cumPrediction.setValue(u, i, newCumPrediction);
-            //                    cumWeight.setValue(u, i, newCumWeight);
-            //                }
-            //            }
 
-            //for analyzing beta1 and beta2 
-            SparseRowMatrix ltestMatrix = testMatrix.partition(rows, cols);
-
-            int itemCount = 0;
-            StringBuilder buffer = new StringBuilder();
-            for (int u = 0; u < ltestMatrix.length()[0]; u++) {
-                int[] indexList = ltestMatrix.getRowRef(u).indexList();
-                if (indexList == null) {
-                    continue;
-                }
-
-                for (int i : indexList) {
-                    double AuiEst = recmder.getPredictedRating(u, i);
-                    double weight = getWeight(u, i, AuiEst);
-
-                    double newCumPrediction = AuiEst * weight + cumPrediction.getValue(u, i);
-                    double newCumWeight = weight + cumWeight.getValue(u, i);
-
-                    cumPrediction.setValue(u, i, newCumPrediction);
-                    cumWeight.setValue(u, i, newCumWeight);
-
-                    //record local prediction
-                    //userId, itemId, AuiReal, AuiEst, Pu, Pi, GroupId
-                    double AuiReal = testMatrix.getValue(u, i);
-                    buffer.append(u).append(',').append(i).append(',').append(AuiReal).append(',')
-                        .append(AuiEst).append(',').append(getPu(u, AuiEst)).append(',')
-                        .append(getPi(i, AuiEst)).append(',').append(groupId).append('\n');
-                    itemCount++;
-                }
-
-                // if greater than buffer size, then clear the buffer.
-                if (itemCount >= 1000 * 1000) {
-                    FileUtil.writeAsAppend(resultFile, buffer.toString());
-
-                    //reset buffer
-                    itemCount = 0;
-                    buffer = new StringBuilder();
-                }
+            if (StringUtil.isBlank(resultFile)) {
+                lEvaInner(testMatrix, cumPrediction, cumWeight);
+            } else {
+                lEvaAndRecordWSVD(testMatrix, cumPrediction, cumWeight);
             }
-            FileUtil.writeAsAppend(resultFile, buffer.toString());
 
-            // release local model memory
-            if (recmder.userCount > 400 * 1000 & recmder.itemCount > 12 * 1000) {
-                ltestMatrix.clear();
-            }
         } else {
             //Specail Operation output Global result
-            EvaluationMetrics globalResult = recmder.evaluate(testMatrix);
+            EvaluationMetrics globalResult = recmmd.evaluate(testMatrix);
             LoggerUtil.info(logger, "Singleton Model : \n" + EvaluationMetrics.printTitle() + "\n"
                                     + globalResult.printOneLine());
 
@@ -153,8 +117,8 @@ public class Model {
                 }
 
                 for (int v : indexList) {
-                    double prediction = recmder.getPredictedRating(u, v);
-                    double weight = getWeight(u, v, prediction);
+                    double prediction = recmmd.predict(u, v);
+                    double weight = recmmd.weight(u, v, prediction);
 
                     double newCumPrediction = prediction * weight + cumPrediction.getValue(u, v);
                     double newCumWeight = weight + cumWeight.getValue(u, v);
@@ -168,39 +132,124 @@ public class Model {
         // release recommender memory
         rows = null;
         cols = null;
-        recmder.explicitClear();
+        recmmd.explicitClear();
     }
 
-    public double getWeight(int u, int v, double prediction) {
-        int weightIndex = Double.valueOf(prediction / recmder.minValue - 1).intValue();
-        return recmder.getWeight(u, v, weightIndex);
+    /**
+     * locally evaluate the model
+     * 
+     * @param testMatrix
+     * @param cumPrediction
+     * @param cumWeight
+     */
+    protected void lEvaInner(final SparseRowMatrix testMatrix, SparseRowMatrix cumPrediction,
+                             SparseRowMatrix cumWeight) {
+        SparseRowMatrix ltestMatrix = testMatrix.partition(rows, cols);
+        for (int u = 0; u < ltestMatrix.length()[0]; u++) {
+            int[] itemList = ltestMatrix.getRowRef(u).indexList();
+            if (itemList == null) {
+                continue;
+            }
+
+            for (int i : itemList) {
+                double prediction = recmmd.predict(u, i);
+                double weight = recmmd.weight(u, i, prediction);
+
+                double newCumPrediction = prediction * weight + cumPrediction.getValue(u, i);
+                double newCumWeight = weight + cumWeight.getValue(u, i);
+
+                cumPrediction.setValue(u, i, newCumPrediction);
+                cumWeight.setValue(u, i, newCumWeight);
+            }
+        }
     }
 
-    public double getPu(int u, double prediction) {
-        int weightIndex = Double.valueOf(prediction / recmder.minValue - 1).intValue();
-        return recmder.getPu(u, weightIndex);
+    /**
+     * locally evaluate the WeightedSVD model
+     * 
+     * @param testMatrix
+     * @param cumPrediction
+     * @param cumWeight
+     */
+    protected void lEvaAndRecordWSVD(final SparseRowMatrix testMatrix,
+                                     SparseRowMatrix cumPrediction, SparseRowMatrix cumWeight) {
+        //check whether the object belongs to WSVD
+        if (!(recmmd instanceof WeigtedRSVD)) {
+            throw new RuntimeException("The instance inf lEvaAndRecordWSVD is not WSVD!");
+        }
+
+        SparseRowMatrix ltestMatrix = testMatrix.partition(rows, cols);
+        WeigtedRSVD lRecmmd = (WeigtedRSVD) recmmd;
+
+        int itemCount = 0;
+        StringBuilder buffer = new StringBuilder();
+        for (int u = 0; u < ltestMatrix.length()[0]; u++) {
+            int[] indexList = ltestMatrix.getRowRef(u).indexList();
+            if (indexList == null) {
+                continue;
+            }
+
+            for (int i : indexList) {
+                double AuiEst = lRecmmd.predict(u, i);
+                double weight = lRecmmd.weight(u, i, AuiEst);
+
+                double newCumPrediction = AuiEst * weight + cumPrediction.getValue(u, i);
+                double newCumWeight = weight + cumWeight.getValue(u, i);
+
+                cumPrediction.setValue(u, i, newCumPrediction);
+                cumWeight.setValue(u, i, newCumWeight);
+
+                //record local prediction
+                //userId, itemId, AuiReal, AuiEst, Pu, Pi, GroupId
+                double AuiReal = testMatrix.getValue(u, i);
+                buffer.append(u).append(',').append(i).append(',').append(AuiReal).append(',')
+                    .append(AuiEst).append(',').append(lRecmmd.getPu(u, AuiEst)).append(',')
+                    .append(lRecmmd.getPi(i, AuiEst)).append(',').append(groupId).append('\n');
+                itemCount++;
+            }
+
+            // if greater than buffer size, then clear the buffer.
+            if (itemCount >= 1000 * 1000) {
+                FileUtil.writeAsAppend(resultFile, buffer.toString());
+
+                //reset buffer
+                itemCount = 0;
+                buffer = new StringBuilder();
+            }
+        }
+        FileUtil.writeAsAppend(resultFile, buffer.toString());
+
+        // release local model memory
+        if (recmmd.userCount > 400 * 1000 & recmmd.itemCount > 12 * 1000) {
+            ltestMatrix.clear();
+        }
     }
 
-    public double getPi(int i, double prediction) {
-        int weightIndex = Double.valueOf(prediction / recmder.minValue - 1).intValue();
-        return recmder.getPi(i, weightIndex);
-    }
-
+    /**
+     * get the default predicted rating
+     * 
+     * @return
+     */
     public double getDefaultRating() {
-        return (recmder.maxValue + recmder.minValue) / 2.0;
+        return (recmmd.maxValue + recmmd.minValue) / 2.0;
     }
 
+    /**
+     * max rating value
+     * 
+     * @return
+     */
     public double maxValue() {
-        return recmder.maxValue;
+        return recmmd.maxValue;
     }
 
+    /**
+     * min rating value
+     * 
+     * @return
+     */
     public double minValue() {
-        return recmder.minValue;
-    }
-
-    public void setWeights(float[][] userWeights, float[][] itemWeights) {
-        recmder.setUserWeights(userWeights);
-        recmder.setItemWeights(itemWeights);
+        return recmmd.minValue;
     }
 
     /**
@@ -275,6 +324,24 @@ public class Model {
      */
     public void setGroupId(int groupId) {
         this.groupId = groupId;
+    }
+
+    /**
+     * Getter method for property <tt>recmmd</tt>.
+     * 
+     * @return property value of recmmd
+     */
+    public MatrixFactorizationRecommender getRecmmd() {
+        return recmmd;
+    }
+
+    /**
+     * Setter method for property <tt>recmmd</tt>.
+     * 
+     * @param recmmd value to be assigned to property recmmd
+     */
+    public void setRecmmd(MatrixFactorizationRecommender recmmd) {
+        this.recmmd = recmmd;
     }
 
 }

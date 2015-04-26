@@ -51,6 +51,9 @@ public abstract class MatrixFactorizationRecommender {
     /** Item profile in low-rank matrix form. */
     protected SparseColumnMatrix  itemFeatures;
 
+    /** testMatrix used to render the fitted process. */
+    public SparseRowMatrix        tMatrix;
+
     /** logger */
     protected final static Logger logger = Logger.getLogger(LoggerDefineConstant.SERVICE_CORE);
 
@@ -190,7 +193,7 @@ public abstract class MatrixFactorizationRecommender {
      * @param i the given item index
      * @return the predicted rating
      */
-    public double getPredictedRating(int u, int i) {
+    public double predict(int u, int i) {
         double prediction = this.offset
                             + userFeatures.getRowRef(u).innerProduct(itemFeatures.getColRef(i));
 
@@ -201,5 +204,25 @@ public abstract class MatrixFactorizationRecommender {
         } else {
             return prediction;
         }
+    }
+
+    /**
+     * Return the weight of the given rating
+     * 
+     * @param u
+     * @param i
+     * @param weightIndx
+     * @return
+     */
+    public double weight(int u, int i, double rating) {
+        return 1.0;
+    }
+
+    /**
+     * explicit clear the reference
+     */
+    public void explicitClear() {
+        itemFeatures.clear();
+        userFeatures.clear();
     }
 }
