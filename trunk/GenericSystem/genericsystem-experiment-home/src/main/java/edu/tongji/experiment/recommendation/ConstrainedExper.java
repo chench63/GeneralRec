@@ -95,7 +95,7 @@ public class ConstrainedExper {
         for (int featureCount : featureCounts) {
             RegularizedSVD recmmd = new RegularizedSVD(userCount, itemCount, maxValue, minValue,
                 featureCount, lrate, regularized, 0, maxIteration, showProgress);
-            recmmd.test = testMatrix;
+            recmmd.tMatrix = testMatrix;
             recmmd.buildModel(rateMatrix);
 
             //evaluation

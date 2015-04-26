@@ -1,0 +1,1297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.2.xsd
+		http://www.springframework.org/schema/util
+		http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+	<!-- ******************************************** Algorithm Setting ************************************************ -->
+	<bean id="WSVDRecmmd" class="edu.tongji.ml.matrix.WeigtedRSVD"
+		scope="prototype">
+		<constructor-arg index="0" type="int" value="${USER_COUNT}" />
+		<constructor-arg index="1" type="int" value="${ITEM_COUNT}" />
+		<constructor-arg index="2" type="double" value="${MAX_RATING}" />
+		<constructor-arg index="3" type="double" value="${MIN_RATING}" />
+		<constructor-arg index="4" type="int" value="${FEATURE_COUNT}" />
+		<constructor-arg index="5" type="double" value="${LEARNING_RATE}" />
+		<constructor-arg index="6" type="double" value="${REGULARIZED_PARAM}" />
+		<constructor-arg index="7" type="double" value="${MOMENTUM}" />
+		<constructor-arg index="8" type="int" value="${MAX_ITERATION}" />
+		<constructor-arg index="9" type="double" value="${BETA0}" />
+		<constructor-arg index="10" type="double" value="${BETA1}" />
+		<constructor-arg index="11" type="double" value="${BETA2}" />
+	</bean>
+
+	<bean id="model" class="edu.tongji.data.Model" scope="prototype">
+		<constructor-arg index="0"
+			type="edu.tongji.ml.matrix.MatrixFactorizationRecommender" ref="WSVDRecmmd" />
+		<constructor-arg index="1" type="java.lang.String"
+			value="${RESULT_FILE}" />
+	</bean>
+
+	<bean id="cocluster" class="edu.tongji.data.Model" scope="prototype">
+		<constructor-arg index="0"
+			type="edu.tongji.ml.matrix.MatrixFactorizationRecommender" ref="WSVDRecmmd" />
+		<constructor-arg index="1" type="java.lang.String"
+			value="${RESULT_FILE}" />
+	</bean>
+
+	<!-- ******************************************** Engine Setting************************************************ -->
+	<bean id="mixtureRcmd" class="edu.tongji.engine.recommendation.ScalableRcmdEngine">
+		<property name="rootDir" value="${ROOT_DIR}" />
+		<property name="userCount" value="${USER_COUNT}" />
+		<property name="itemCount" value="${ITEM_COUNT}" />
+		<property name="parser" ref="movielensRatingTemplateParser" />
+		<property name="groups">
+			<list>
+				<ref bean="cocluter_IW2_2_2"></ref>
+				<ref bean="cocluter_IW2_3_2"></ref>
+				<ref bean="cocluter_IW5_2_2"></ref>
+				<ref bean="cocluter_IW5_3_2"></ref>
+				<ref bean="cocluter_EW2_2_2"></ref>
+				<ref bean="cocluter_EW2_3_2"></ref>
+				<ref bean="cocluter_EW5_2_2"></ref>
+				<ref bean="cocluter_EW5_3_2"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<!-- *********************** Kmeanspp-EW Setting************************************** -->
+	<bean id="KMeans_EU_2_2" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Kmeanspp/EU_2_2/SETTING" />
+		<property name="rowMappingFile" value="Kmeanspp/EU_2_2/RM" />
+		<property name="colMappingFile" value="Kmeanspp/EU_2_2/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+
+	<!-- *********************** Cocluster-IW Cocluster Setting************************************** -->
+	<bean id="cocluter_IW1_2_2" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/IW1_2_2/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/IW1_2_2/RM" />
+		<property name="colMappingFile" value="Cocluster/IW1_2_2/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_IW1_3_3" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/IW1_3_3/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/IW1_3_3/RM" />
+		<property name="colMappingFile" value="Cocluster/IW1_3_3/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_IW1_4_4" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/IW1_4_4/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/IW1_4_4/RM" />
+		<property name="colMappingFile" value="Cocluster/IW1_4_4/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_IW1_5_5" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/IW1_5_5/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/IW1_5_5/RM" />
+		<property name="colMappingFile" value="Cocluster/IW1_5_5/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_IW2_2_2" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/IW2_2_2/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/IW2_2_2/RM" />
+		<property name="colMappingFile" value="Cocluster/IW2_2_2/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_IW2_3_3" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/IW2_3_3/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/IW2_3_3/RM" />
+		<property name="colMappingFile" value="Cocluster/IW2_3_3/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_IW2_4_4" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/IW2_4_4/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/IW2_4_4/RM" />
+		<property name="colMappingFile" value="Cocluster/IW2_4_4/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_IW2_5_5" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/IW2_5_5/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/IW2_5_5/RM" />
+		<property name="colMappingFile" value="Cocluster/IW2_5_5/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_IW2_3_2" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/IW2_3_2/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/IW2_3_2/RM" />
+		<property name="colMappingFile" value="Cocluster/IW2_3_2/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_IW3_2_2" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/IW3_2_2/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/IW3_2_2/RM" />
+		<property name="colMappingFile" value="Cocluster/IW3_2_2/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_IW3_3_3" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/IW3_3_3/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/IW3_3_3/RM" />
+		<property name="colMappingFile" value="Cocluster/IW3_3_3/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_IW3_4_4" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/IW3_4_4/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/IW3_4_4/RM" />
+		<property name="colMappingFile" value="Cocluster/IW3_4_4/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_IW3_5_5" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/IW3_5_5/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/IW3_5_5/RM" />
+		<property name="colMappingFile" value="Cocluster/IW3_5_5/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_IW4_2_2" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/IW4_2_2/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/IW4_2_2/RM" />
+		<property name="colMappingFile" value="Cocluster/IW4_2_2/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_IW4_3_3" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/IW4_3_3/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/IW4_3_3/RM" />
+		<property name="colMappingFile" value="Cocluster/IW4_3_3/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_IW4_4_4" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/IW4_4_4/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/IW4_4_4/RM" />
+		<property name="colMappingFile" value="Cocluster/IW4_4_4/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_IW4_5_5" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/IW4_5_5/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/IW4_5_5/RM" />
+		<property name="colMappingFile" value="Cocluster/IW4_5_5/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_IW5_2_2" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/IW5_2_2/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/IW5_2_2/RM" />
+		<property name="colMappingFile" value="Cocluster/IW5_2_2/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_IW5_3_3" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/IW2_3_3/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/IW2_3_3/RM" />
+		<property name="colMappingFile" value="Cocluster/IW2_3_3/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_IW5_4_4" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/IW2_4_4/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/IW2_4_4/RM" />
+		<property name="colMappingFile" value="Cocluster/IW2_4_4/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_IW5_5_5" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/IW2_5_5/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/IW2_5_5/RM" />
+		<property name="colMappingFile" value="Cocluster/IW2_5_5/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_IW5_3_2" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/IW5_3_2/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/IW5_3_2/RM" />
+		<property name="colMappingFile" value="Cocluster/IW5_3_2/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_IW6_2_2" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/IW6_2_2/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/IW6_2_2/RM" />
+		<property name="colMappingFile" value="Cocluster/IW6_2_2/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_IW6_3_3" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/IW6_3_3/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/IW6_3_3/RM" />
+		<property name="colMappingFile" value="Cocluster/IW6_3_3/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_IW6_4_4" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/IW6_4_4/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/IW6_4_4/RM" />
+		<property name="colMappingFile" value="Cocluster/IW6_4_4/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_IW6_5_5" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/IW6_5_5/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/IW6_5_5/RM" />
+		<property name="colMappingFile" value="Cocluster/IW6_5_5/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<!-- *********************** Cocluster-IW Cocluster Setting************************************** -->
+	<bean id="cocluter_EW1_2_2" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/EW1_2_2/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/EW1_2_2/RM" />
+		<property name="colMappingFile" value="Cocluster/EW1_2_2/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_EW1_3_3" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/EW1_3_3/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/EW1_3_3/RM" />
+		<property name="colMappingFile" value="Cocluster/EW1_3_3/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_EW1_4_4" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/EW1_4_4/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/EW1_4_4/RM" />
+		<property name="colMappingFile" value="Cocluster/EW1_4_4/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_EW1_5_5" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/EW1_5_5/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/EW1_5_5/RM" />
+		<property name="colMappingFile" value="Cocluster/EW1_5_5/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_EW2_2_2" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/EW2_2_2/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/EW2_2_2/RM" />
+		<property name="colMappingFile" value="Cocluster/EW2_2_2/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_EW2_3_3" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/IW2_3_3/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/IW2_3_3/RM" />
+		<property name="colMappingFile" value="Cocluster/IW2_3_3/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_EW2_4_4" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/IW2_4_4/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/IW2_4_4/RM" />
+		<property name="colMappingFile" value="Cocluster/IW2_4_4/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_EW2_5_5" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/IW2_5_5/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/IW2_5_5/RM" />
+		<property name="colMappingFile" value="Cocluster/IW2_5_5/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_EW2_3_2" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/EW2_3_2/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/EW2_3_2/RM" />
+		<property name="colMappingFile" value="Cocluster/EW2_3_2/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_EW3_2_2" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/EW3_2_2/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/EW3_2_2/RM" />
+		<property name="colMappingFile" value="Cocluster/EW3_2_2/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_EW3_3_3" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/EW3_3_3/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/EW3_3_3/RM" />
+		<property name="colMappingFile" value="Cocluster/EW3_3_3/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_EW3_4_4" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/EW3_4_4/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/EW3_4_4/RM" />
+		<property name="colMappingFile" value="Cocluster/EW3_4_4/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_EW3_5_5" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/EW3_5_5/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/EW3_5_5/RM" />
+		<property name="colMappingFile" value="Cocluster/EW3_5_5/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_EW4_2_2" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/EW4_2_2/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/EW4_2_2/RM" />
+		<property name="colMappingFile" value="Cocluster/EW4_2_2/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_EW4_3_3" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/EW4_3_3/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/EW4_3_3/RM" />
+		<property name="colMappingFile" value="Cocluster/EW4_3_3/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_EW4_4_4" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/EW4_4_4/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/EW4_4_4/RM" />
+		<property name="colMappingFile" value="Cocluster/EW4_4_4/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_EW4_5_5" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/EW4_5_5/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/EW4_5_5/RM" />
+		<property name="colMappingFile" value="Cocluster/EW4_5_5/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_EW5_2_2" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/EW5_2_2/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/EW5_2_2/RM" />
+		<property name="colMappingFile" value="Cocluster/EW5_2_2/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_EW5_3_3" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/IW2_3_3/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/IW2_3_3/RM" />
+		<property name="colMappingFile" value="Cocluster/IW2_3_3/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_EW5_4_4" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/IW2_4_4/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/IW2_4_4/RM" />
+		<property name="colMappingFile" value="Cocluster/IW2_4_4/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_EW5_5_5" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/IW2_5_5/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/IW2_5_5/RM" />
+		<property name="colMappingFile" value="Cocluster/IW2_5_5/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_EW5_3_2" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/EW5_3_2/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/EW5_3_2/RM" />
+		<property name="colMappingFile" value="Cocluster/EW5_3_2/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_EW6_2_2" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/EW6_2_2/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/EW6_2_2/RM" />
+		<property name="colMappingFile" value="Cocluster/EW6_2_2/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_EW6_3_3" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/EW6_3_3/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/EW6_3_3/RM" />
+		<property name="colMappingFile" value="Cocluster/EW6_3_3/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_EW6_4_4" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/EW6_4_4/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/EW6_4_4/RM" />
+		<property name="colMappingFile" value="Cocluster/EW6_4_4/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="cocluter_EW6_5_5" class="edu.tongji.data.ModelGroup">
+		<property name="settingFile" value="Cocluster/EW6_5_5/SETTING" />
+		<property name="rowMappingFile" value="Cocluster/EW6_5_5/RM" />
+		<property name="colMappingFile" value="Cocluster/EW6_5_5/CM" />
+		<property name="models">
+			<list>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+				<ref bean="cocluster"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<!-- ******************************************** Global Cocluster Setting************************************************ -->
+	<bean id="global" class="edu.tongji.data.ModelGroup">
+		<property name="models">
+			<list>
+				<ref bean="model"></ref>
+			</list>
+		</property>
+	</bean>
+
+
+
+	<!-- ******************************************** Thread Setting************************************************ -->
+	<bean id="movielensRatingTemplateParser" class="edu.tongji.parser.MovielensRatingTemplateParser" />
+
+
+	<!-- **************************** Outter Setting Connector ************************************************ -->
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="location">
+			<value>
+				classpath:experiment/recommendation/wemarec/z_wema.properties
+			</value>
+		</property>
+	</bean>
+
+</beans>

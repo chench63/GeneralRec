@@ -19,8 +19,6 @@ import edu.tongji.util.LoggerUtil;
  */
 public class RegularizedSVD extends MatrixFactorizationRecommender {
 
-    public SparseRowMatrix test;
-
     /*========================================
      * Constructors
      *========================================*/
@@ -95,7 +93,7 @@ public class RegularizedSVD extends MatrixFactorizationRecommender {
 
             // Show progress:
             if (showProgress && (round % 10 == 0)) {
-                EvaluationMetrics metric = this.evaluate(test);
+                EvaluationMetrics metric = this.evaluate(tMatrix);
                 FileUtil.writeAsAppend("E://RSVD", round + "\t" + String.format("%.4f", currErr)
                                                    + "\t" + String.format("%.4f", metric.getRMSE())
                                                    + "\n");
@@ -151,7 +149,7 @@ public class RegularizedSVD extends MatrixFactorizationRecommender {
 
             // Show progress:
             if (showProgress && (round % 10 == 0)) {
-                EvaluationMetrics metric = this.evaluate(test);
+                EvaluationMetrics metric = this.evaluate(tMatrix);
                 FileUtil.writeAsAppend("E://RSVD", round + "\t" + String.format("%.4f", currErr)
                                                    + "\t" + String.format("%.4f", metric.getRMSE())
                                                    + "\n");
