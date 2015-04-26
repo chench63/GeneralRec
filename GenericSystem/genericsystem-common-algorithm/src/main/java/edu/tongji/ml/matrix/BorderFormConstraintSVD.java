@@ -15,7 +15,7 @@ import edu.tongji.util.LoggerUtil;
 public class BorderFormConstraintSVD extends MatrixFactorizationRecommender {
 
     /** A global SVD model. */
-    public static RegularizedSVD baseline;
+    public MatrixFactorizationRecommender auxRec;
 
     /*========================================
      * Constructors
@@ -69,20 +69,20 @@ public class BorderFormConstraintSVD extends MatrixFactorizationRecommender {
                         sum += Math.pow(errAui, 2.0d);
 
                         // item clustering local models
-                        SparseVector fu = baseline.getU().getRowRef(u);
+                        SparseVector fu = auxRec.getU().getRowRef(u);
                         double IuiEst = fu.innerProduct(Gi);
                         double errIui = AuiReal - IuiEst;
 
                         // user clustering local models
-                        SparseVector gi = baseline.getV().getCol(i);
+                        SparseVector gi = auxRec.getV().getCol(i);
                         double UuiEst = Fu.innerProduct(gi);
                         double errUui = AuiReal - UuiEst;
 
                         for (int s = 0; s < featureCount; s++) {
                             double Fus = userFeatures.getValue(u, s);
-                            double fus = baseline.getU().getValue(u, s);
+                            double fus = auxRec.getU().getValue(u, s);
                             double Gis = itemFeatures.getValue(s, i);
-                            double gis = baseline.getV().getValue(s, i);
+                            double gis = auxRec.getV().getValue(s, i);
 
                             //global model updates
                             userFeatures.setValue(u, s,
@@ -143,20 +143,20 @@ public class BorderFormConstraintSVD extends MatrixFactorizationRecommender {
                         sum += Math.pow(errAui, 2.0d);
 
                         // item clustering local models
-                        SparseVector fu = baseline.getU().getRowRef(u);
+                        SparseVector fu = auxRec.getU().getRowRef(u);
                         double IuiEst = fu.innerProduct(Gi);
                         double errIui = AuiReal - IuiEst;
 
                         // user clustering local models
-                        SparseVector gi = baseline.getV().getCol(i);
+                        SparseVector gi = auxRec.getV().getCol(i);
                         double UuiEst = Fu.innerProduct(gi);
                         double errUui = AuiReal - UuiEst;
 
                         for (int s = 0; s < featureCount; s++) {
                             double Fus = userFeatures.getValue(u, s);
-                            double fus = baseline.getU().getValue(u, s);
+                            double fus = auxRec.getU().getValue(u, s);
                             double Gis = itemFeatures.getValue(s, i);
-                            double gis = baseline.getV().getValue(s, i);
+                            double gis = auxRec.getV().getValue(s, i);
 
                             //global model updates
                             userFeatures.setValue(u, s,
@@ -185,6 +185,15 @@ public class BorderFormConstraintSVD extends MatrixFactorizationRecommender {
             // Show progress:
             LoggerUtil.info(logger, round + "\t" + currErr);
         }
+    }
+
+    /**
+     * Setter method for property <tt>auxRec</tt>.
+     * 
+     * @param auxRec value to be assigned to property auxRec
+     */
+    public void setAuxRec(MatrixFactorizationRecommender auxRec) {
+        this.auxRec = auxRec;
     }
 
 }

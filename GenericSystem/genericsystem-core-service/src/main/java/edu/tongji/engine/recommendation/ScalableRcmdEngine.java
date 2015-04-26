@@ -13,6 +13,8 @@ import edu.tongji.data.ModelGroup;
 import edu.tongji.data.SparseMatrix;
 import edu.tongji.data.SparseRowMatrix;
 import edu.tongji.engine.recommendation.thread.ScalableSVDLearner;
+import edu.tongji.ml.matrix.BorderFormConstraintSVD;
+import edu.tongji.ml.matrix.MatrixFactorizationRecommender;
 import edu.tongji.parser.Parser;
 import edu.tongji.util.ExceptionUtil;
 import edu.tongji.util.LoggerUtil;
@@ -25,20 +27,22 @@ import edu.tongji.util.StringUtil;
  */
 public class ScalableRcmdEngine extends RcmdtnEngine {
     /** the directory contains training, test dataset and coclustering setting file*/
-    private String           rootDir;
+    private String                         rootDir;
     /** file with training data */
-    private String           trainingSetFile;
+    private String                         trainingSetFile;
     /** file with testing data */
-    private String           testingSetFile;
+    private String                         testingSetFile;
     /** The number of users. */
-    private int              userCount;
+    private int                            userCount;
     /** The number of items. */
-    private int              itemCount;
+    private int                            itemCount;
 
+    /** The auxiliary recommender model*/
+    private MatrixFactorizationRecommender auxRec;
     /** groups of model */
-    private List<ModelGroup> groups;
+    private List<ModelGroup>               groups;
     /** the content parser w.r.t certain dataset */
-    private Parser           parser;
+    private Parser                         parser;
 
     /**
      * @see edu.tongji.engine.recommendation.RcmdtnEngine#loadDataSet()
@@ -60,20 +64,19 @@ public class ScalableRcmdEngine extends RcmdtnEngine {
      */
     protected void joinGroup() {
         LoggerUtil.info(logger, "\t\ta. loading trainingset. ");
-        SparseMatrix rateMatrix = MatrixFileUtil
-            .read(trainingSetFile, userCount, itemCount, parser);
+        SparseMatrix tMatrix = MatrixFileUtil.read(trainingSetFile, userCount, itemCount, parser);
 
         LoggerUtil.info(logger, "\t\tb. loading model. ");
         Queue<Model> models = new LinkedList<Model>();
         for (int g = 0; g < groups.size(); g++) {
-            groups.get(g).join(models, rateMatrix, g);
+            groups.get(g).join(models, tMatrix, g);
         }
         ScalableSVDLearner.models = models;
 
         // suggest JVM to release memory
         if (userCount > 400 * 1000 & itemCount > 12 * 1000) {
             LoggerUtil.info(logger, "\t\tc. releasing mem. ");
-            rateMatrix.clear();
+            tMatrix.clear();
             groups.clear();
             System.gc();
         }
@@ -84,6 +87,7 @@ public class ScalableRcmdEngine extends RcmdtnEngine {
      */
     @Override
     protected void excuteInner() {
+
     }
 
     /**
@@ -91,6 +95,7 @@ public class ScalableRcmdEngine extends RcmdtnEngine {
      */
     @Override
     protected void evaluate() {
+        //load datasets
         LoggerUtil.info(logger, "3. loading rateMatrix and testMatrix. ");
         SparseRowMatrix rateMatrix = MatrixFileUtil.reads(trainingSetFile, userCount, itemCount,
             parser);
@@ -99,6 +104,21 @@ public class ScalableRcmdEngine extends RcmdtnEngine {
         LoggerUtil.info(logger,
             "Train: " + rateMatrix.itemCount() + "\tTest: " + testMatrix.itemCount());
 
+        //BFSVD unique logics
+        if (ScalableSVDLearner.models.element().getRecmmd() instanceof BorderFormConstraintSVD) {
+            LoggerUtil.info(logger, "3+. entering BorderFormSVD unique process.");
+
+            LoggerUtil.info(logger, "\t\ta. building auxiliary model.");
+            auxRec.buildModel(rateMatrix);
+
+            LoggerUtil.info(logger, "\t\tb. setting it to local models.");
+            for (Model model : ScalableSVDLearner.models) {
+                BorderFormConstraintSVD lRecmmd = (BorderFormConstraintSVD) model.recmmd;
+                lRecmmd.setAuxRec(auxRec);
+            }
+        }
+
+        //main business logics
         LoggerUtil.info(logger, "4. starting engine. ");
         try {
             ScalableSVDLearner.cumPrediction = new SparseRowMatrix(userCount, itemCount);
@@ -192,6 +212,15 @@ public class ScalableRcmdEngine extends RcmdtnEngine {
      */
     public List<ModelGroup> getGroups() {
         return groups;
+    }
+
+    /**
+     * Setter method for property <tt>auxRec</tt>.
+     * 
+     * @param auxRec value to be assigned to property auxRec
+     */
+    public void setAuxRec(MatrixFactorizationRecommender auxRec) {
+        this.auxRec = auxRec;
     }
 
 }
