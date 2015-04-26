@@ -34,7 +34,7 @@ public class TestMatrix {
 
         int[] rows = { 5, 6, 7, 8, 152, 54, 12, 102 };
         int[] cols = { 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 54, 49 };
-        float[][] rowPro = matrix.probability(rows, cols, 5.0, 1.0, true);
+        double[][] rowPro = matrix.probability(rows, cols, 5.0, 1.0, true);
         Assert.isTrue(rowPro[5][0] == 0.25);
         Assert.isTrue(rowPro[5][1] == 0.25);
     }

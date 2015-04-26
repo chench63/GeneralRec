@@ -13,7 +13,6 @@ import prea.util.ModelUtil;
  * @version $Id: Cocluster.java, v 0.1 2014-11-2 下午12:53:29 Exp $
  */
 public class ModelGroup {
-
     /** root file directory*/
     private static String rootDir;
     /** file contains setting*/
@@ -39,17 +38,12 @@ public class ModelGroup {
             settingFile = rootDir + settingFile;
 
         }
-
         ModelUtil.readModels(settingFile, rowMappingFile, colMappingFile, models);
 
         //join models
         int currId = m.size();
         for (Model model : models) {
-            float[][] userWeights = rateMatrix.probability(model.getRows(), model.getCols(),
-                model.maxValue(), model.minValue(), true);
-            float[][] itemWeights = rateMatrix.probability(model.getRows(), model.getCols(),
-                model.maxValue(), model.minValue(), false);
-            model.setWeights(userWeights, itemWeights);
+            model.preProc(rateMatrix);
             model.setId(currId);
             model.setGroupId(groupId);
             m.add(model);
@@ -59,7 +53,6 @@ public class ModelGroup {
 
         //clear reference
         models.clear();
-        models = null;
     }
 
     /**
