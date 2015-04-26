@@ -43,7 +43,7 @@ public class MFNormalExp {
      * @param args
      */
     public static void main(String[] args) {
-        int[] featureCounts = { 50 };
+        int featureCounts = 50;
         for (int i = 0; i < rootDirs.length; i++) {
             String train = rootDirs[i] + "trainingset";
             String test = rootDirs[i] + "testingset";
@@ -57,121 +57,113 @@ public class MFNormalExp {
 
     }
 
-    public static void doNMF(String train, String test, int[] featureCounts) {
+    public static void doNMF(String train, String test, int featureCount) {
         double lrate = 0.005;
         double regularized = 0.02;
         int maxIter = 200;
 
-        for (int featureCount : featureCounts) {
-            System.out.println("1. load trainingset." + new Date());
-            SparseMatrix rateMatrix = MatrixFileUtil.read(train, userCount + 1, itemCount + 1);
+        System.out.println("1. load trainingset." + new Date());
+        SparseMatrix rateMatrix = MatrixFileUtil.read(train, userCount + 1, itemCount + 1);
 
-            System.out.println("2. excute NMF. rank: " + featureCount + "\t" + new Date());
-            NMF baseline = new NMF(userCount, itemCount, maxValue, minValue, featureCount, 0,
-                regularized, 0, maxIter, lrate, true);
-            baseline.buildModel(rateMatrix);
-            rateMatrix.clear();
-            System.gc();
+        System.out.println("2. excute NMF. rank: " + featureCount + "\t" + new Date());
+        NMF baseline = new NMF(userCount, itemCount, maxValue, minValue, featureCount, 0,
+            regularized, 0, maxIter, lrate, true);
+        baseline.buildModel(rateMatrix);
+        rateMatrix.clear();
+        System.gc();
 
-            System.out.println("3. load testset." + new Date());
-            SparseMatrix testMatrix = MatrixFileUtil.read(test, itemCount + 1, itemCount + 1);
+        System.out.println("3. load testset." + new Date());
+        SparseMatrix testMatrix = MatrixFileUtil.read(test, itemCount + 1, itemCount + 1);
 
-            EvaluationMetrics metric = baseline.evaluate(testMatrix);
-            System.out.println(metric.printMultiLine());
-            LoggerUtil.info(logger,
-                "Train: " + train + "\tTest: " + test + "\n" + metric.printMultiLine());
+        EvaluationMetrics metric = baseline.evaluate(testMatrix);
+        System.out.println(metric.printMultiLine());
+        LoggerUtil.info(logger,
+            "Train: " + train + "\tTest: " + test + "\n" + metric.printMultiLine());
 
-            FileUtil.writeAsAppend(
-                resultDir + "zNMF",
-                "fc: " + featureCount + "\tlr: " + lrate + "\tr: " + regularized + "\n"
-                        + metric.printOneLine() + "\n");
-        }
+        FileUtil.writeAsAppend(
+            resultDir + "zNMF",
+            "fc: " + featureCount + "\tlr: " + lrate + "\tr: " + regularized + "\n"
+                    + metric.printOneLine() + "\n");
 
     }
 
-    public static void doPMF(String train, String test, int[] featureCounts) {
+    public static void doPMF(String train, String test, int featureCount) {
         int maxIter = 200;
 
-        for (int featureCount : featureCounts) {
-            System.out.println("1. load trainingset." + new Date());
-            SparseMatrix rateMatrix = MatrixFileUtil.read(train, userCount + 1, itemCount + 1);
+        System.out.println("1. load trainingset." + new Date());
+        SparseMatrix rateMatrix = MatrixFileUtil.read(train, userCount + 1, itemCount + 1);
 
-            System.out.println("2. excute PMF. rank: " + featureCount + "\t" + new Date());
-            PMF baseline = new PMF(userCount, itemCount, maxValue, minValue, featureCount, 50, 0.4,
-                0.8, maxIter, true);
-            baseline.buildModel(rateMatrix);
-            rateMatrix.clear();
-            System.gc();
+        System.out.println("2. excute PMF. rank: " + featureCount + "\t" + new Date());
+        PMF baseline = new PMF(userCount, itemCount, maxValue, minValue, featureCount, 50, 0.4,
+            0.8, maxIter, true);
+        baseline.buildModel(rateMatrix);
+        rateMatrix.clear();
+        System.gc();
 
-            System.out.println("3. load testset." + new Date());
-            SparseMatrix testMatrix = MatrixFileUtil.read(test, itemCount + 1, itemCount + 1);
+        System.out.println("3. load testset." + new Date());
+        SparseMatrix testMatrix = MatrixFileUtil.read(test, itemCount + 1, itemCount + 1);
 
-            EvaluationMetrics metric = baseline.evaluate(testMatrix);
-            System.out.println(metric.printMultiLine());
-            LoggerUtil.info(logger,
-                "Train: " + train + "\tTest: " + test + "\n" + metric.printMultiLine());
+        EvaluationMetrics metric = baseline.evaluate(testMatrix);
+        System.out.println(metric.printMultiLine());
+        LoggerUtil.info(logger,
+            "Train: " + train + "\tTest: " + test + "\n" + metric.printMultiLine());
 
-            FileUtil.writeAsAppend(resultDir + "zPMF",
-                "fc: " + featureCount + "\n" + metric.printOneLine() + "\n");
-        }
+        FileUtil.writeAsAppend(resultDir + "zPMF",
+            "fc: " + featureCount + "\n" + metric.printOneLine() + "\n");
     }
 
-    public static void doBPMF(String train, String test, int[] featureCounts) {
+    public static void doBPMF(String train, String test, int featureCount) {
         int maxIter = 20;
-        for (int featureCount : featureCounts) {
-            System.out.println("1. load trainingset." + new Date());
-            SparseMatrix rateMatrix = MatrixFileUtil.read(train, userCount + 1, itemCount + 1);
+        System.out.println("1. load trainingset." + new Date());
+        SparseMatrix rateMatrix = MatrixFileUtil.read(train, userCount + 1, itemCount + 1);
 
-            System.out.println("2. excute BPMF. rank: " + featureCount + "\t" + new Date());
-            BayesianPMF baseline = new BayesianPMF(userCount, itemCount, maxValue, minValue,
-                featureCount, 0, 0, 0, maxIter, true);
-            baseline.buildModel(rateMatrix);
-            rateMatrix.clear();
-            System.gc();
+        System.out.println("2. excute BPMF. rank: " + featureCount + "\t" + new Date());
+        BayesianPMF baseline = new BayesianPMF(userCount, itemCount, maxValue, minValue,
+            featureCount, 0, 0, 0, maxIter, true);
+        baseline.buildModel(rateMatrix);
+        rateMatrix.clear();
+        System.gc();
 
-            //load testing set
-            System.out.println("3. load testset." + new Date());
-            SparseMatrix testMatrix = MatrixFileUtil.read(test, itemCount + 1, itemCount + 1);
+        //load testing set
+        System.out.println("3. load testset." + new Date());
+        SparseMatrix testMatrix = MatrixFileUtil.read(test, itemCount + 1, itemCount + 1);
 
-            EvaluationMetrics metric = baseline.evaluate(testMatrix);
-            System.out.println(metric.printMultiLine());
-            LoggerUtil.info(logger,
-                "Train: " + train + "\tTest: " + test + "\n" + metric.printMultiLine());
+        EvaluationMetrics metric = baseline.evaluate(testMatrix);
+        System.out.println(metric.printMultiLine());
+        LoggerUtil.info(logger,
+            "Train: " + train + "\tTest: " + test + "\n" + metric.printMultiLine());
 
-            FileUtil.writeAsAppend(resultDir + "zBPMF",
-                "fc: " + featureCount + "\n" + metric.printOneLine() + "\n");
-        }
+        FileUtil.writeAsAppend(resultDir + "zBPMF",
+            "fc: " + featureCount + "\n" + metric.printOneLine() + "\n");
     }
 
-    public static void doRSVD(String train, String test, int[] featureCounts) {
+    public static void doRSVD(String train, String test, int featureCount) {
         double lrate = 0.001;
         double regularized = 0.08;
         int maxIter = 250;
 
-        for (int featureCount : featureCounts) {
-            System.out.println("1. load trainingset." + new Date());
-            SparseMatrix rateMatrix = MatrixFileUtil.read(train, userCount + 1, itemCount + 1);
+        System.out.println("1. load trainingset." + new Date());
+        SparseMatrix rateMatrix = MatrixFileUtil.read(train, userCount + 1, itemCount + 1);
 
-            System.out.println("2. excute RSVD. rank: " + featureCount + "\t" + new Date());
-            RegularizedSVD baseline = new RegularizedSVD(userCount, itemCount, maxValue, minValue,
-                featureCount, lrate, regularized, 0, maxIter, true);
-            baseline.buildModel(rateMatrix);
-            rateMatrix.clear();
-            System.gc();
+        System.out.println("2. excute RSVD. rank: " + featureCount + "\t" + new Date());
+        RegularizedSVD baseline = new RegularizedSVD(userCount, itemCount, maxValue, minValue,
+            featureCount, lrate, regularized, 0, maxIter, true);
+        baseline.buildModel(rateMatrix);
+        rateMatrix.clear();
+        System.gc();
 
-            System.out.println("3. load testset." + new Date());
-            SparseMatrix testMatrix = MatrixFileUtil.read(test, itemCount + 1, itemCount + 1);
+        System.out.println("3. load testset." + new Date());
+        SparseMatrix testMatrix = MatrixFileUtil.read(test, itemCount + 1, itemCount + 1);
 
-            EvaluationMetrics metric = baseline.evaluate(testMatrix);
-            System.out.println(metric.printMultiLine());
-            LoggerUtil.info(logger,
-                "Train: " + train + "\tTest: " + test + "\n" + metric.printMultiLine());
+        EvaluationMetrics metric = baseline.evaluate(testMatrix);
+        System.out.println(metric.printMultiLine());
+        LoggerUtil.info(logger,
+            "Train: " + train + "\tTest: " + test + "\n" + metric.printMultiLine());
 
-            FileUtil.writeAsAppend(
-                resultDir + "zSVD",
-                "fc: " + featureCount + "\tlr: " + lrate + "\tr: " + regularized + "\n"
-                        + metric.printOneLine() + "\n");
-        }
+        FileUtil.writeAsAppend(
+            resultDir + "zSVD",
+            "fc: " + featureCount + "\tlr: " + lrate + "\tr: " + regularized + "\n"
+                    + metric.printOneLine() + "\n");
     }
 
 }
