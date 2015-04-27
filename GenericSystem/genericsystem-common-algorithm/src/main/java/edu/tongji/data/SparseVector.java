@@ -12,6 +12,7 @@ import java.util.Map;
  * @version 1.1
  */
 public class SparseVector implements Serializable {
+    /** SerialVersionNum */
     private static final long    serialVersionUID = 8002;
 
     /** The length (maximum number of items to be stored) of sparse vector. */

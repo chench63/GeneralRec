@@ -128,7 +128,7 @@ public class ConstrainedExper {
             UserConstraintRSVD recmmd = new UserConstraintRSVD(userCount, itemCount, maxValue,
                 minValue, featureCount, lrate, regularized, 0, maxIteration, dimnsn[0], ua,
                 showProgress);
-            recmmd.test = testMatrix;
+            recmmd.tMatrix = testMatrix;
             recmmd.buildModel(rateMatrix);
 
             //evaluation
@@ -156,7 +156,7 @@ public class ConstrainedExper {
             ItemConstraintRSVD recmmd = new ItemConstraintRSVD(userCount, itemCount, maxValue,
                 minValue, featureCount, lrate, regularized, 0, maxIteration, dimnsn[1], ia,
                 showProgress);
-            recmmd.test = testMatrix;
+            recmmd.tMatrix = testMatrix;
             recmmd.buildModel(rateMatrix);
 
             //evaluation

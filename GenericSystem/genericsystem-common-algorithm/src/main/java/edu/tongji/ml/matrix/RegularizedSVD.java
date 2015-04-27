@@ -18,6 +18,8 @@ import edu.tongji.util.LoggerUtil;
  * @version 1.1
  */
 public class RegularizedSVD extends MatrixFactorizationRecommender {
+    /** SerialVersionNum */
+    private static final long serialVersionUID = 1L;
 
     /*========================================
      * Constructors

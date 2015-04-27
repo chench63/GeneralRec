@@ -11,6 +11,7 @@ import java.util.Arrays;
  * @version 1.1
  */
 public class SparseMatrix implements Serializable {
+    /** SerialVersionNum */
     private static final long serialVersionUID = 8003;
 
     /** The number of rows. */

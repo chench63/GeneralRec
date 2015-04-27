@@ -1,17 +1,22 @@
 package edu.tongji.data;
 
+import java.io.Serializable;
+
 /**
  * 
  * @author Hanke
  * @version $Id: SparseColumnMatrix.java, v 0.1 2014-11-14 下午5:31:24 Exp $
  */
-public class SparseColumnMatrix {
+public class SparseColumnMatrix implements Serializable {
+    /** SerialVersionNum */
+    private static final long serialVersionUID = 9004;
+
     /** The number of rows. */
-    private int            M;
+    private int               M;
     /** The number of columns. */
-    private int            N;
+    private int               N;
     /** The array of column references. */
-    private SparseVector[] cols;
+    private SparseVector[]    cols;
 
     /*========================================
      * Constructors

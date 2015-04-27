@@ -13,6 +13,8 @@ import edu.tongji.util.LoggerUtil;
  * @version $Id: BorderFormConstraintSVD.java, v 0.1 2015-4-26 下午12:30:34 Exp $
  */
 public class BorderFormConstraintSVD extends MatrixFactorizationRecommender {
+    /** SerialVersionNum */
+    private static final long             serialVersionUID = 1L;
 
     /** A global SVD model. */
     public MatrixFactorizationRecommender auxRec;

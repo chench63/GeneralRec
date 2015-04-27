@@ -14,13 +14,13 @@ import edu.tongji.util.LoggerUtil;
  * @version $Id: UserCOnstraintRSVD.java, v 0.1 2015-4-9 下午2:36:53 Exp $
  */
 public class UserConstraintRSVD extends MatrixFactorizationRecommender {
+    /** SerialVersionNum */
+    private static final long      serialVersionUID = 1L;
+
     /** User profile in low-rank matrix form. */
     protected SparseColumnMatrix[] itemFeaturesAss;
-
     /** User profile in low-rank matrix form. */
     protected int[]                iAssigmnt;
-
-    public SparseRowMatrix         test;
 
     /*========================================
      * Constructors
@@ -111,7 +111,7 @@ public class UserConstraintRSVD extends MatrixFactorizationRecommender {
 
             round++;
             if (showProgress && (round % 10 == 0)) {
-                EvaluationMetrics metric = this.evaluate(test);
+                EvaluationMetrics metric = this.evaluate(tMatrix);
                 FileUtil.writeAsAppend(
                     "E://UC[" + featureCount + "]_k" + itemFeaturesAss.length + "_" + maxIter,
                     round + "\t" + String.format("%.4f", currErr) + "\t"
@@ -182,7 +182,7 @@ public class UserConstraintRSVD extends MatrixFactorizationRecommender {
 
             round++;
             if (showProgress && (round % 10 == 0)) {
-                EvaluationMetrics metric = this.evaluate(test);
+                EvaluationMetrics metric = this.evaluate(tMatrix);
                 FileUtil.writeAsAppend(
                     "E://UC[" + featureCount + "]_k" + itemFeaturesAss.length + "_" + maxIter,
                     round + "\t" + String.format("%.4f", currErr) + "\t"

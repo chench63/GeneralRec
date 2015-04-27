@@ -15,22 +15,25 @@ import edu.tongji.util.LoggerUtil;
  * @version $Id: WeigtedRSVD.java, v 0.1 2014-10-19 上午11:20:27 chench Exp $
  */
 public class WeigtedRSVD extends MatrixFactorizationRecommender {
+    /** SerialVersionNum */
+    private static final long serialVersionUID = 1L;
+
     /** the rating distribution w.r.t each user*/
-    public double[][] ensnblWeightInU;
+    public double[][]         ensnblWeightInU;
     /** the rating distribution w.r.t each item*/
-    public double[][] ensnblWeightInI;
+    public double[][]         ensnblWeightInI;
     /** the rating distribution w.r.t the whole rating matrix*/
-    public double[]   trainWeight;
+    public double[]           trainWeight;
 
     //===================================
     //      parameter
     //===================================
     /** parameter used in training*/
-    public double     beta0 = 0.4f;
+    public double             beta0            = 0.4f;
     /** parameter used in ensemble */
-    public double     beta1 = 0.7f;
+    public double             beta1            = 0.7f;
     /** parameter used in ensemble*/
-    public double     beta2 = 0.8f;
+    public double             beta2            = 0.8f;
 
     /*========================================
      * Constructors

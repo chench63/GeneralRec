@@ -13,6 +13,9 @@ import edu.tongji.util.LoggerUtil;
  * @version $Id: DynamicCRSVD.java, v 0.1 2015-4-9 下午3:54:32 Exp $
  */
 public class DynamicCRSVD extends MatrixFactorizationRecommender {
+    /** SerialVersionNum */
+    private static final long      serialVersionUID = 1L;
+
     /** User profile in low-rank matrix form. */
     protected SparseRowMatrix[]    userFeaturesAss;
     protected SparseColumnMatrix[] itemFeaturesAss;

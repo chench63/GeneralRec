@@ -11,12 +11,14 @@ import edu.tongji.util.LoggerUtil;
  * @version $Id: WRSVD.java, v 0.1 2015-4-19 下午4:34:02 Exp $
  */
 public class WRSVD extends MatrixFactorizationRecommender {
+    /** SerialVersionNum */
+    private static final long serialVersionUID = 1L;
 
     //===================================
     //      parameter
     //===================================
-    public double[] totalWeights;
-    public double   beta0 = 0.0f;
+    public double[]           totalWeights;
+    public double             beta0            = 0.0f;
 
     /*========================================
      * Constructors
