@@ -1,19 +1,23 @@
 package edu.tongji.data;
 
+import java.io.Serializable;
+
 /**
  * This class implements sparse matrix, containing empty values for most space.
  * 
  * @author Hanke
  * @version $Id: SparseColumnMatrix.java, v 0.1 2014-11-13 下午7:54:31 Exp $
  */
-public class SparseRowMatrix {
+public class SparseRowMatrix implements Serializable {
+    /** SerialVersionNum */
+    private static final long serialVersionUID = 9003;
 
     /** The number of rows. */
-    private int            M;
+    private int               M;
     /** The number of columns. */
-    private int            N;
+    private int               N;
     /** The array of row references. */
-    private SparseVector[] rows;
+    private SparseVector[]    rows;
 
     /*
      * ======================================== Constructors

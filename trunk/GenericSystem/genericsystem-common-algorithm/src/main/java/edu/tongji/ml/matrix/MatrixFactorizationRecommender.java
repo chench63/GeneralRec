@@ -1,5 +1,7 @@
 package edu.tongji.ml.matrix;
 
+import java.io.Serializable;
+
 import prea.util.EvaluationMetrics;
 
 import org.apache.log4j.Logger;
@@ -17,45 +19,49 @@ import edu.tongji.log4j.LoggerDefineConstant;
  * @since 2012. 4. 20
  * @version 1.1
  */
-public abstract class MatrixFactorizationRecommender {
+public abstract class MatrixFactorizationRecommender implements Serializable {
+    /** SerialVersionNum */
+    private static final long        serialVersionUID = 1L;
+
     /*========================================
      * Common Variables
      *========================================*/
     /** The number of users. */
-    public int                    userCount;
+    public int                       userCount;
     /** The number of items. */
-    public int                    itemCount;
+    public int                       itemCount;
     /** Maximum value of rating, existing in the dataset. */
-    public double                 maxValue;
+    public double                    maxValue;
     /** Minimum value of rating, existing in the dataset. */
-    public double                 minValue;
+    public double                    minValue;
 
     /** The number of features. */
-    public int                    featureCount;
+    public int                       featureCount;
     /** Learning rate parameter. */
-    public double                 learningRate;
+    public double                    learningRate;
     /** Regularization factor parameter. */
-    public double                 regularizer;
+    public double                    regularizer;
     /** Momentum parameter. */
-    public double                 momentum;
+    public double                    momentum;
     /** Maximum number of iteration. */
-    public int                    maxIter;
+    public int                       maxIter;
 
     /** Indicator whether to show progress of iteration. */
-    public boolean                showProgress;
+    public boolean                   showProgress;
     /** Offset to rating estimation. Usually this is the average of ratings. */
-    protected double              offset;
+    protected double                 offset;
 
     /** User profile in low-rank matrix form. */
-    protected SparseRowMatrix     userFeatures;
+    protected SparseRowMatrix        userFeatures;
     /** Item profile in low-rank matrix form. */
-    protected SparseColumnMatrix  itemFeatures;
+    protected SparseColumnMatrix     itemFeatures;
 
     /** testMatrix used to render the fitted process. */
-    public SparseRowMatrix        tMatrix;
+    transient public SparseRowMatrix tMatrix;
 
     /** logger */
-    protected final static Logger logger = Logger.getLogger(LoggerDefineConstant.SERVICE_CORE);
+    protected final static Logger    logger           = Logger
+                                                          .getLogger(LoggerDefineConstant.SERVICE_CORE);
 
     /*========================================
      * Constructors

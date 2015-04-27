@@ -14,6 +14,9 @@ import edu.tongji.util.LoggerUtil;
  * @version $Id: FCRSVD.java, v 0.1 2015-4-1 上午11:40:24 Exp $
  */
 public class FCRSVD extends MatrixFactorizationRecommender {
+    /** SerialVersionNum */
+    private static final long      serialVersionUID = 1L;
+
     /** User profile in low-rank matrix form. */
     protected SparseRowMatrix[]    userFeaturesAss;
     protected SparseColumnMatrix[] itemFeaturesAss;

@@ -142,7 +142,7 @@ public class BiSVDExper {
             ItemConstraintRSVD recmmd = new ItemConstraintRSVD(userCount, itemCount, maxValue,
                 minValue, featureCount, lrate, regularized, 0, maxIteration, dimnsn[1], ia,
                 showProgress);
-            recmmd.test = testMatrix;
+            recmmd.tMatrix = testMatrix;
             recmmd.buildModel(rateMatrix);
 
             //evaluation
@@ -178,8 +178,9 @@ public class BiSVDExper {
             System.out.println("BC\tfc: " + featureCount + "\tlr: " + lrate + "\tr: " + regularized
                                + "\tk: " + dimnsn[0] + "\tl: " + dimnsn[1] + "\n" + RMSE + "\n");
             FileUtil.writeAsAppend(resultDir + "zBC[50]", "fc: " + featureCount + "\tlr: " + lrate
-                                                      + "\tr: " + regularized + "\tk: " + dimnsn[0]
-                                                      + "\tl: " + dimnsn[1] + "\n" + RMSE + "\n");
+                                                          + "\tr: " + regularized + "\tk: "
+                                                          + dimnsn[0] + "\tl: " + dimnsn[1] + "\n"
+                                                          + RMSE + "\n");
             stat.addValue(RMSE);
         }
         //        FileUtil.writeAsAppend(
