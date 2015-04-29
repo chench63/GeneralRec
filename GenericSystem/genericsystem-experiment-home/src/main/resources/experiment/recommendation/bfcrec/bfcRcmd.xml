@@ -47,6 +47,7 @@
 	<!-- ******************************************** Engine Setting************************************************ -->
 	<bean id="mixtureRcmd" class="edu.tongji.engine.recommendation.ScalableRcmdEngine">
 		<property name="rootDir" value="${ROOT_DIR}" />
+		<property name="auxRecIdentity" value="${AUX_REC_ID}" />
 		<property name="userCount" value="${USER_COUNT}" />
 		<property name="itemCount" value="${ITEM_COUNT}" />
 		<property name="parser" ref="movielensRatingTemplateParser" />

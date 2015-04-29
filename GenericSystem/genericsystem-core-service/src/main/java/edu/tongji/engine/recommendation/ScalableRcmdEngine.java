@@ -17,7 +17,9 @@ import edu.tongji.ml.matrix.BorderFormConstraintSVD;
 import edu.tongji.ml.matrix.MatrixFactorizationRecommender;
 import edu.tongji.parser.Parser;
 import edu.tongji.util.ExceptionUtil;
+import edu.tongji.util.FileUtil;
 import edu.tongji.util.LoggerUtil;
+import edu.tongji.util.SerializeUtil;
 import edu.tongji.util.StringUtil;
 
 /**
@@ -32,6 +34,8 @@ public class ScalableRcmdEngine extends RcmdtnEngine {
     private String                         trainingSetFile;
     /** file with testing data */
     private String                         testingSetFile;
+    /** file with  auxiliary recommender serialized file*/
+    private String                         auxRecIdentity;
     /** The number of users. */
     private int                            userCount;
     /** The number of items. */
@@ -107,9 +111,15 @@ public class ScalableRcmdEngine extends RcmdtnEngine {
         //BFSVD unique logics
         if (ScalableSVDLearner.models.element().getRecmmd() instanceof BorderFormConstraintSVD) {
             LoggerUtil.info(logger, "3+. entering BorderFormSVD unique process.");
+            String auxRecFile = rootDir + "Model/" + auxRecIdentity;
 
-            LoggerUtil.info(logger, "\t\ta. building auxiliary model.");
-            auxRec.buildModel(rateMatrix);
+            if (StringUtil.isNotBlank(auxRecIdentity) & FileUtil.exists(auxRecFile)) {
+                LoggerUtil.info(logger, "\t\ta. loading auxiliary model: " + auxRecIdentity);
+                auxRec = (MatrixFactorizationRecommender) SerializeUtil.readObject(auxRecFile);
+            } else {
+                LoggerUtil.info(logger, "\t\ta. building auxiliary model.");
+                auxRec.buildModel(rateMatrix);
+            }
 
             LoggerUtil.info(logger, "\t\tb. setting it to local models.");
             for (Model model : ScalableSVDLearner.models) {
@@ -221,6 +231,15 @@ public class ScalableRcmdEngine extends RcmdtnEngine {
      */
     public void setAuxRec(MatrixFactorizationRecommender auxRec) {
         this.auxRec = auxRec;
+    }
+
+    /**
+     * Setter method for property <tt>auxRecIdentity</tt>.
+     * 
+     * @param auxRecIdentity value to be assigned to property auxRecIdentity
+     */
+    public void setAuxRecIdentity(String auxRecIdentity) {
+        this.auxRecIdentity = auxRecIdentity;
     }
 
 }
