@@ -14,10 +14,10 @@ import edu.tongji.util.LoggerUtil;
  */
 public class BorderFormConstraintSVD extends MatrixFactorizationRecommender {
     /** SerialVersionNum */
-    private static final long             serialVersionUID = 1L;
+    private static final long                       serialVersionUID = 1L;
 
     /** A global SVD model. */
-    public MatrixFactorizationRecommender auxRec;
+    public transient MatrixFactorizationRecommender auxRec;
 
     /*========================================
      * Constructors
@@ -54,14 +54,21 @@ public class BorderFormConstraintSVD extends MatrixFactorizationRecommender {
         double prevErr = 99999;
         double currErr = 9999;
 
+        // Available Feature:
+        boolean[] uAvail = new boolean[userCount];
+        boolean[] iAvail = new boolean[itemCount];
+
         while (Math.abs(prevErr - currErr) > 0.0001 && round < maxIter) {
             double sum = 0.0;
             for (int u = 0; u < userCount; u++) {
                 SparseVector items = rateMatrix.getRowRef(u);
                 int[] itemIndexList = items.indexList();
 
+                uAvail[u] = true;
                 if (itemIndexList != null) {
                     for (int i : itemIndexList) {
+                        iAvail[i] = true;
+
                         //global model
                         SparseVector Fu = userFeatures.getRowRef(u);
                         SparseVector Gi = itemFeatures.getColRef(i);
@@ -112,6 +119,18 @@ public class BorderFormConstraintSVD extends MatrixFactorizationRecommender {
 
             // Show progress:
             LoggerUtil.info(logger, round + "\t" + currErr);
+        }
+
+        //minimize the storage
+        for (int u = 0; u < userCount; u++) {
+            if (!uAvail[u]) {
+                userFeatures.getRowRef(u).clear();
+            }
+        }
+        for (int i = 0; i < itemCount; i++) {
+            if (!iAvail[i]) {
+                itemFeatures.getColRef(i).clear();
+            }
         }
     }
 
@@ -120,73 +139,7 @@ public class BorderFormConstraintSVD extends MatrixFactorizationRecommender {
      */
     @Override
     public void buildModel(SparseMatrix rateMatrix) {
-        super.buildModel(rateMatrix);
-
-        // Gradient Descent:
-        int round = 0;
-        int rateCount = rateMatrix.itemCount();
-        double prevErr = 99999;
-        double currErr = 9999;
-
-        while (Math.abs(prevErr - currErr) > 0.0001 && round < maxIter) {
-            double sum = 0.0;
-            for (int u = 0; u < userCount; u++) {
-                SparseVector items = rateMatrix.getRowRef(u);
-                int[] itemIndexList = items.indexList();
-
-                if (itemIndexList != null) {
-                    for (int i : itemIndexList) {
-                        //global model
-                        SparseVector Fu = userFeatures.getRowRef(u);
-                        SparseVector Gi = itemFeatures.getColRef(i);
-                        double AuiEst = Fu.innerProduct(Gi);
-                        double AuiReal = rateMatrix.getValue(u, i);
-                        double errAui = AuiReal - AuiEst;
-                        sum += Math.pow(errAui, 2.0d);
-
-                        // item clustering local models
-                        SparseVector fu = auxRec.getU().getRowRef(u);
-                        double IuiEst = fu.innerProduct(Gi);
-                        double errIui = AuiReal - IuiEst;
-
-                        // user clustering local models
-                        SparseVector gi = auxRec.getV().getCol(i);
-                        double UuiEst = Fu.innerProduct(gi);
-                        double errUui = AuiReal - UuiEst;
-
-                        for (int s = 0; s < featureCount; s++) {
-                            double Fus = userFeatures.getValue(u, s);
-                            double fus = auxRec.getU().getValue(u, s);
-                            double Gis = itemFeatures.getValue(s, i);
-                            double gis = auxRec.getV().getValue(s, i);
-
-                            //global model updates
-                            userFeatures.setValue(u, s,
-                                Fus + learningRate
-                                        * (errAui * Gis + errUui * gis - regularizer * Fus));
-                            itemFeatures.setValue(s, i,
-                                Gis + learningRate
-                                        * (errAui * Fus + errIui * fus - regularizer * Gis));
-                        }
-                    }
-                }
-            }
-
-            prevErr = currErr;
-            currErr = Math.sqrt(sum / rateCount);
-
-            round++;
-            if (showProgress && (round % 10 == 0) && tMatrix != null) {
-                EvaluationMetrics metric = this.evaluate(tMatrix);
-                FileUtil.writeAsAppend(
-                    "E://BFCSVD[" + featureCount + "]" + "_" + maxIter,
-                    round + "\t" + String.format("%.6f", currErr) + "\t"
-                            + String.format("%.6f", metric.getRMSE()) + "\n");
-            }
-
-            // Show progress:
-            LoggerUtil.info(logger, round + "\t" + currErr);
-        }
+        throw new RuntimeException("buildModel for SparseMatrix requires implementation!");
     }
 
     /**

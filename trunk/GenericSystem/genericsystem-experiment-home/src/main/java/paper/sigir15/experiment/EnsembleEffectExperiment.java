@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Date;
 
 import org.apache.commons.io.IOUtils;
 
@@ -17,22 +18,22 @@ import edu.tongji.util.FileUtil;
 
 public class EnsembleEffectExperiment {
     /** file to store the original data and cocluster directory. 10M100K 1m*/
-    public static String[]     rootDirs  = { "E:/MovieLens/ml-1m/1/" };
+    public static String[]     rootDirs  = { "C:/netflix/" };
     /** The number of users. 943 6040 69878  480189*/
-    public final static int    userCount = 6040;
+    public final static int    userCount = 480189;
     /** The number of items. 1682 3706 10677 17770*/
-    public final static int    itemCount = 3706;
+    public final static int    itemCount = 17770;
     public final static double maxValue  = 5.0d;
     public final static double minValue  = 1.0d;
-    public final static int    modelNum  = 4;
+    public final static int    modelNum  = 8;
 
     /**
      * 
      * @param args
      */
     public static void main(String[] args) {
-        double[] beta1s = new double[11];
-        for (int i = 0; i <= 10; i++) {
+        double[] beta1s = new double[21];
+        for (int i = 0; i <= 20; i++) {
             beta1s[i] = i * 0.1;
         }
         double[] beta2s = beta1s;
@@ -45,20 +46,22 @@ public class EnsembleEffectExperiment {
     }
 
     public static void cmp(String rootDir, double[] beta1s, double[] beta2s) {
-        String predctFile = rootDir + "WEMAREC";
+        String predctFile = rootDir + "zWEMAREC[20]_1";
         String resltFile = rootDir + "EnsmblHMP";
+
+        //load prediction information
+        SparseRowMatrix[] estMatrix = new SparseRowMatrix[modelNum];
+        for (int i = 0; i < modelNum; i++) {
+            estMatrix[i] = new SparseRowMatrix(userCount, itemCount);
+        }
+        SparseRowMatrix testMatrix = new SparseRowMatrix(userCount, itemCount);
+        SparseRowMatrix puMatrix = new SparseRowMatrix(userCount, modelNum);
+        SparseRowMatrix piMatrix = new SparseRowMatrix(itemCount, modelNum);
+        RecResultUtil.readRec(predctFile, estMatrix, testMatrix, puMatrix, piMatrix);
 
         StringBuilder content = new StringBuilder();
         for (double beta1 : beta1s) {
             for (double beta2 : beta2s) {
-                SparseRowMatrix[] estMatrix = new SparseRowMatrix[modelNum];
-                for (int i = 0; i < modelNum; i++) {
-                    estMatrix[i] = new SparseRowMatrix(userCount, itemCount);
-                }
-                SparseRowMatrix testMatrix = new SparseRowMatrix(userCount, itemCount);
-                SparseRowMatrix puMatrix = new SparseRowMatrix(userCount, modelNum);
-                SparseRowMatrix piMatrix = new SparseRowMatrix(itemCount, modelNum);
-                RecResultUtil.readRec(predctFile, estMatrix, testMatrix, puMatrix, piMatrix);
 
                 SparseRowMatrix cumPrediction = new SparseRowMatrix(userCount, itemCount);
                 SparseRowMatrix cumWeight = new SparseRowMatrix(userCount, itemCount);
@@ -68,6 +71,8 @@ public class EnsembleEffectExperiment {
                 EvaluationMetrics metric = evaluate(cumPrediction, cumWeight, testMatrix);
                 content.append(beta1).append('\t').append(beta2).append('\t')
                     .append(metric.printOneLine()).append('\n');
+                System.out.println("beta1: " + beta1 + "\tbeta2: " + beta2 + "\tRMSE: "
+                                   + metric.getRMSE() + "\t" + (new Date()));
             }
             content.append('\n');
         }
@@ -115,10 +120,10 @@ public class EnsembleEffectExperiment {
             }
 
             for (int i : itemList) {
-                double cW = cumWeight.getValue(u, i);
                 double cP = cumPrediction.getValue(u, i);
+                double cW = cumWeight.getValue(u, i);
 
-                double AuiEst = cW / cP;
+                double AuiEst = cP / cW;
                 if (AuiEst > maxValue) {
                     AuiEst = maxValue;
                 } else if (AuiEst < minValue) {
@@ -133,20 +138,24 @@ public class EnsembleEffectExperiment {
     }
 
     public static void cmpWithSaving(String rootDir, double[] beta1s, double[] beta2s) {
-        String predctFile = rootDir + "WEMAREC";
+        String predctFile = rootDir + "zWEMAREC[20]_1";
         String resltFile = rootDir + "EnsmblHMP";
+
+        //read testing set
+        System.out.println("1. load testing set. " + (new Date()));
+        SparseRowMatrix testMatrix = new SparseRowMatrix(userCount, itemCount);
+        RecResultUtil.readTestMatrix(predctFile, testMatrix);
 
         StringBuilder content = new StringBuilder();
         for (double beta1 : beta1s) {
             for (double beta2 : beta2s) {
-                //read testing set
-                SparseRowMatrix testMatrix = new SparseRowMatrix(userCount, itemCount);
-                RecResultUtil.readTestMatrix(predctFile, testMatrix);
 
                 //ensemble & evaluate 
                 EvaluationMetrics metric = evlWithSaving(predctFile, beta1, beta2, testMatrix);
                 content.append(beta1).append('\t').append(beta2).append('\t')
                     .append(metric.printOneLine()).append('\n');
+                System.out.println("beta1: " + beta1 + "\tbeta2: " + beta2 + "\tRMSE: "
+                                   + metric.getRMSE() + "\t" + (new Date()));
             }
             content.append('\n');
         }
