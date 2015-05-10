@@ -4,13 +4,8 @@
  */
 package edu.tongji.experiment.recommendation;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-
 import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
 
-import edu.tongji.data.BlockMatrix;
 import edu.tongji.data.SparseRowMatrix;
 import edu.tongji.ml.matrix.DynamicCRSVD;
 import edu.tongji.ml.matrix.FCRSVD;
@@ -18,6 +13,7 @@ import edu.tongji.ml.matrix.ItemConstraintRSVD;
 import edu.tongji.ml.matrix.RegularizedSVD;
 import edu.tongji.ml.matrix.UserConstraintRSVD;
 import edu.tongji.util.FileUtil;
+import prea.util.ClusteringInformationUtil;
 import prea.util.EvaluationMetrics;
 import prea.util.MatrixFileUtil;
 
@@ -32,9 +28,9 @@ public class ConstrainedExper {
     public static String[]      rootDirs     = { "E:/MovieLens/zWarmStart/ml-10M100K/2/",
             "E:/MovieLens/zWarmStart/ml-10M100K/3/", "E:/MovieLens/zWarmStart/ml-10M100K/4/",
             "E:/MovieLens/zWarmStart/ml-10M100K/5/" };
-    /** The number of users. 943 6040 69878*/
+    /** The number of users. 943 6040 69878  480189*/
     public final static int     userCount    = 69878;
-    /** The number of items. 1682 3706 10677*/
+    /** The number of items. 1682 3706 10677 17770*/
     public final static int     itemCount    = 10677;
     public final static double  maxValue     = 5.0;
     public final static double  minValue     = 0.5;
@@ -121,7 +117,7 @@ public class ConstrainedExper {
         SparseRowMatrix testMatrix = MatrixFileUtil.reads(testFile, userCount, itemCount, null);
 
         int[] ua = new int[userCount];
-        int[] dimnsn = readBiAssigmnt(ua, null, clusterDir, rootDir);
+        int[] dimnsn = ClusteringInformationUtil.readBiAssigmnt(ua, null, clusterDir, rootDir);
 
         //build model
         for (int featureCount : featureCounts) {
@@ -149,7 +145,7 @@ public class ConstrainedExper {
         SparseRowMatrix testMatrix = MatrixFileUtil.reads(testFile, userCount, itemCount, null);
 
         int[] ia = new int[itemCount];
-        int[] dimnsn = readBiAssigmnt(null, ia, clusterDir, rootDir);
+        int[] dimnsn = ClusteringInformationUtil.readBiAssigmnt(null, ia, clusterDir, rootDir);
 
         //build model
         for (int featureCount : featureCounts) {
@@ -178,7 +174,7 @@ public class ConstrainedExper {
 
         int[] ua = new int[userCount];
         int[] ia = new int[itemCount];
-        int[] dimnsn = readBiAssigmnt(ua, ia, clusterDir, rootDir);
+        int[] dimnsn = ClusteringInformationUtil.readBiAssigmnt(ua, ia, clusterDir, rootDir);
 
         //build model
         DescriptiveStatistics stat = new DescriptiveStatistics();
@@ -212,7 +208,7 @@ public class ConstrainedExper {
 
         int[] ia = new int[itemCount];
         int[] ua = new int[userCount];
-        int[] dimnsn = readBiAssigmnt(ua, ia, clusterDir, rootDir);
+        int[] dimnsn = ClusteringInformationUtil.readBiAssigmnt(ua, ia, clusterDir, rootDir);
 
         //build model
         for (int featureCount : featureCounts) {
@@ -232,43 +228,4 @@ public class ConstrainedExper {
         }
     }
 
-    public static int[] readBiAssigmnt(int[] ua, int[] ia, String clusterDir, String rootDir) {
-        String settingFile = rootDir + clusterDir + "SETTING";
-        String rowMappingFile = rootDir + clusterDir + "RM";
-        String colMappingFile = rootDir + clusterDir + "CM";
-
-        Map<Integer, Integer> rowAssig = new HashMap<Integer, Integer>();
-        Map<Integer, Integer> colAssig = new HashMap<Integer, Integer>();
-        BlockMatrix blockMatrix = MatrixFileUtil.readEmptyBlock(settingFile, rowMappingFile,
-            colMappingFile, rowAssig, colAssig);
-        int[] biSize = new int[2];
-
-        if (ua != null) {
-            int[] userClusterBounds = blockMatrix.rowBound();
-            for (Entry<Integer, Integer> uIndex : rowAssig.entrySet()) {
-                for (int i = 0; i < userClusterBounds.length; i++) {
-                    if (uIndex.getValue() < userClusterBounds[i]) {
-                        ua[uIndex.getKey()] = i;
-                        break;
-                    }
-                }
-            }
-            biSize[0] = userClusterBounds.length;
-        }
-
-        if (ia != null) {
-            int[] itemClusterBounds = blockMatrix.structure()[0];
-            for (Entry<Integer, Integer> iIndex : colAssig.entrySet()) {
-                for (int i = 0; i < itemClusterBounds.length; i++) {
-                    if (iIndex.getValue() < itemClusterBounds[i]) {
-                        ia[iIndex.getKey()] = i;
-                        break;
-                    }
-                }
-            }
-            biSize[1] = itemClusterBounds.length;
-        }
-
-        return biSize;
-    }
 }

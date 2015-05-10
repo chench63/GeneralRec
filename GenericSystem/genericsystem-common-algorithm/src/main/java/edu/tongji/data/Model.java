@@ -8,6 +8,7 @@ import edu.tongji.ml.matrix.MatrixFactorizationRecommender;
 import edu.tongji.ml.matrix.WeigtedRSVD;
 import edu.tongji.util.FileUtil;
 import edu.tongji.util.LoggerUtil;
+import edu.tongji.util.SerializeUtil;
 import edu.tongji.util.StringUtil;
 
 /**
@@ -99,8 +100,10 @@ public class Model {
 
             if (StringUtil.isBlank(resultFile)) {
                 lEvaInner(testMatrix, cumPrediction, cumWeight);
-            } else {
+            } else if (resultFile.endsWith("RWSVD")) {
                 lEvaAndRecordWSVD(testMatrix, cumPrediction, cumWeight);
+            } else if (resultFile.endsWith("Serial")) {
+                lEvaAndSerialWSVD(testMatrix, cumPrediction, cumWeight);
             }
 
         } else {
@@ -223,6 +226,15 @@ public class Model {
         if (recmmd.userCount > 400 * 1000 & recmmd.itemCount > 12 * 1000) {
             ltestMatrix.clear();
         }
+    }
+
+    protected void lEvaAndSerialWSVD(final SparseRowMatrix testMatrix,
+                                     SparseRowMatrix cumPrediction, SparseRowMatrix cumWeight) {
+        lEvaInner(testMatrix, cumPrediction, cumWeight);
+
+        //serialize the recommender
+        String serialFile = resultFile + id + ".obj";
+        SerializeUtil.writeObject(recmmd, serialFile);
     }
 
     /**
