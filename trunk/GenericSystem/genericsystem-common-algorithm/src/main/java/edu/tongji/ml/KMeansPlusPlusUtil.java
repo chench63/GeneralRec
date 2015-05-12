@@ -124,6 +124,7 @@ public class KMeansPlusPlusUtil {
                 LoggerUtil.info(logger, round + "\t" + curErr + ">" + oldErr);
                 break;
             } else {
+                oldErr = curErr;
                 resultSet = newSet;
                 LoggerUtil.info(logger, round + "\t" + curErr);
             }
