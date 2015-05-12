@@ -317,6 +317,35 @@ public final class MatrixInformationUtil {
         return result;
     }
 
+    public static double[] ratingDistribution(SparseRowMatrix matrix, double maxValue,
+                                              double minValue) {
+        int len = (int) (maxValue / minValue);
+        int[] countTable = new int[len];
+
+        int M = matrix.length()[0];
+        for (int u = 0; u < M; u++) {
+            SparseVector Ru = matrix.getRowRef(u);
+            int[] indexList = Ru.indexList();
+            if (indexList == null) {
+                continue;
+            }
+
+            for (int v : indexList) {
+                double val = Ru.getValue(v);
+                int pivot = Double.valueOf(val / minValue - 1).intValue();
+                countTable[pivot]++;
+            }
+        }
+
+        double[] result = new double[len];
+        int itemCount = matrix.itemCount();
+        for (int i = 0; i < len; i++) {
+            result[i] = countTable[i] * 1.0 / itemCount;
+        }
+
+        return result;
+    }
+
     public static double offlineRMSE(MatrixFactorizationRecommender recmmd, String testFile,
                                      int rowCount, int colCount, Parser parser) {
         if (parser == null) {
