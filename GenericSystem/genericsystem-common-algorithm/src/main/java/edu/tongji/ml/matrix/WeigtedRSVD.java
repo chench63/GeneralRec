@@ -4,6 +4,7 @@
  */
 package edu.tongji.ml.matrix;
 
+import prea.util.MatrixInformationUtil;
 import edu.tongji.data.SparseMatrix;
 import edu.tongji.data.SparseRowMatrix;
 import edu.tongji.data.SparseVector;
@@ -22,6 +23,8 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
     public double[][]         ensnblWeightInU;
     /** the rating distribution w.r.t each item*/
     public double[][]         ensnblWeightInI;
+    /** the rating distribution in the entire rating matrix*/
+    public double[]           ensnblWeightEntire;
     /** the rating distribution w.r.t the whole rating matrix*/
     public double[]           trainWeight;
 
@@ -85,7 +88,8 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
     @Override
     public void buildModel(SparseRowMatrix rateMatrix) {
         super.buildModel(rateMatrix);
-        init(rateMatrix);
+        trainWeight = MatrixInformationUtil.ratingDistribution(rateMatrix, maxValue, minValue);
+        ensnblWeightEntire = MatrixInformationUtil.ratingDistribution(rateMatrix, maxValue, 1.0d);
 
         // Gradient Descent:
         int round = 0;
@@ -164,34 +168,6 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
     }
 
     /**
-     * initialize the training parameters
-     * 
-     * @param rateMatrix
-     */
-    public void init(SparseRowMatrix rateMatrix) {
-        trainWeight = new double[Double.valueOf(maxValue / minValue).intValue()];
-
-        for (int u = 0; u < userCount; u++) {
-            SparseVector items = rateMatrix.getRowRef(u);
-            int[] itemIndexList = items.indexList();
-
-            if (itemIndexList == null) {
-                continue;
-            }
-            for (int i : itemIndexList) {
-                double AuiReal = items.getValue(i);
-                int weightIndx = Double.valueOf(AuiReal / minValue - 1).intValue();
-                trainWeight[weightIndx] += 1;
-            }
-        }
-
-        int totalCount = rateMatrix.itemCount();
-        for (int i = 0; i < trainWeight.length; i++) {
-            trainWeight[i] /= totalCount;
-        }
-    }
-
-    /**
      * Return the weight of the given rating
      * 
      * @param u
@@ -215,6 +191,12 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
         return ensnblWeightInI[i][weightIndx];
     }
 
+    public double getPr(double rating) {
+        //movielens minVal is 0.5, here is set as 1.0 too.
+        int weightIndx = Double.valueOf(rating / 1.0d - 1).intValue();
+        return this.ensnblWeightEntire[weightIndx];
+    }
+
     /**
      * Setter method for property <tt>ensnblWeightInU</tt>.
      * 
@@ -231,6 +213,15 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
      */
     public void setEnsnblWeightInI(double[][] ensnblWeightInI) {
         this.ensnblWeightInI = ensnblWeightInI;
+    }
+
+    /**
+     * Setter method for property <tt>ensnblWeightEntire</tt>.
+     * 
+     * @param ensnblWeightEntire value to be assigned to property ensnblWeightEntire
+     */
+    public void setEnsnblWeightEntire(double[] ensnblWeightEntire) {
+        this.ensnblWeightEntire = ensnblWeightEntire;
     }
 
 }

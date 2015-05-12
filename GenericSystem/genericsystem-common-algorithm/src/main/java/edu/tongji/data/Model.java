@@ -104,6 +104,8 @@ public class Model {
                 lEvaAndRecordWSVD(testMatrix, cumPrediction, cumWeight);
             } else if (resultFile.endsWith("Serial")) {
                 lEvaAndSerialWSVD(testMatrix, cumPrediction, cumWeight);
+            } else {
+                throw new RuntimeException("the setting of resultFile is not matched.");
             }
 
         } else {
@@ -203,11 +205,12 @@ public class Model {
                 cumWeight.setValue(u, i, newCumWeight);
 
                 //record local prediction
-                //userId, itemId, AuiReal, AuiEst, Pu, Pi, GroupId
+                //userId, itemId, AuiReal, AuiEst, Pu, Pi, Pr, GroupId
                 double AuiReal = testMatrix.getValue(u, i);
                 buffer.append(u).append(',').append(i).append(',').append(AuiReal).append(',')
                     .append(AuiEst).append(',').append(lRecmmd.getPu(u, AuiEst)).append(',')
-                    .append(lRecmmd.getPi(i, AuiEst)).append(',').append(groupId).append('\n');
+                    .append(lRecmmd.getPi(i, AuiEst)).append(',').append(lRecmmd.getPr(AuiEst))
+                    .append(',').append(groupId).append('\n');
                 itemCount++;
             }
 
