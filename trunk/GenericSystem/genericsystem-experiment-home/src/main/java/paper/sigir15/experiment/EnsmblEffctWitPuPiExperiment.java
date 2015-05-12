@@ -19,16 +19,16 @@ import edu.tongji.util.FileUtil;
 
 public class EnsmblEffctWitPuPiExperiment {
     /** file to store the original data and cocluster directory. 10M100K 1m*/
-    public static String[]     rootDirs  = { "C:/netflix/" };
-    /** The number of users. 943 6040 69878  480189*/
+    public static String[]     rootDirs  = { "E:/MovieLens/zWarmStart/ml-10M100K/1/" };
+    /** The number of users. 943 6040 69878  69878*/
     public final static int    userCount = 480189;
     /** The number of items. 1682 3706 10677 17770*/
-    public final static int    itemCount = 17770;
+    public final static int    itemCount = 10677;
     public final static double maxValue  = 5.0d;
-    public final static double minValue  = 1.0d;
+    public final static double minValue  = 0.5d;
     public final static int    modelNum  = 8;
 
-    public final static String pFile     = "zWEMAREC[20]_1";
+    public final static String pFile     = "WEMAREC[20]_C25_IWEW_[23]x2_RWSVD";
     public final static String rFile     = "EnsmblHMP";
 
     /**
@@ -36,7 +36,7 @@ public class EnsmblEffctWitPuPiExperiment {
      * @param args
      */
     public static void main(String[] args) {
-
+        doEnsembleWithPiPu();
     }
 
     public static void doEnsembleWithPiPu() {
@@ -80,10 +80,12 @@ public class EnsmblEffctWitPuPiExperiment {
                 ensemble(0.0d, beta1, beta2, cumPrediction, cumWeight, estMatrix, testMatrix,
                     puMatrix, piMatrix, null);
                 EvaluationMetrics metric = evaluate(cumPrediction, cumWeight, testMatrix);
-                content.append(beta1).append('\t').append(beta2).append('\t')
+                content.append(String.format("%.2f", beta1)).append('\t')
+                    .append(String.format("%.2f", beta2)).append('\t')
                     .append(metric.printOneLine()).append('\n');
-                System.out.println("beta1: " + beta1 + "\tbeta2: " + beta2 + "\tRMSE: "
-                                   + metric.getRMSE() + "\t" + (new Date()));
+                System.out.println("beta1: " + String.format("%.2f", beta1) + "\tbeta2: "
+                                   + String.format("%.2f", beta2) + "\tRMSE: " + metric.getRMSE()
+                                   + "\t" + (new Date()));
             }
             content.append('\n');
         }
@@ -164,10 +166,12 @@ public class EnsmblEffctWitPuPiExperiment {
             for (double beta2 : beta2s) {
                 //ensemble & evaluate 
                 EvaluationMetrics metric = evlWithSaving(predctFile, 0.0d, beta1, beta2, testMatrix);
-                content.append(beta1).append('\t').append(beta2).append('\t')
+                content.append(String.format("%.2f", beta1)).append('\t')
+                    .append(String.format("%.2f", beta2)).append('\t')
                     .append(metric.printOneLine()).append('\n');
-                System.out.println("beta1: " + beta1 + "\tbeta2: " + beta2 + "\tRMSE: "
-                                   + metric.getRMSE() + "\t" + (new Date()));
+                System.out.println("beta1: " + String.format("%.2f", beta1) + "\tbeta2: "
+                                   + String.format("%.2f", beta2) + "\tRMSE: " + metric.getRMSE()
+                                   + "\t" + (new Date()));
             }
             content.append('\n');
         }

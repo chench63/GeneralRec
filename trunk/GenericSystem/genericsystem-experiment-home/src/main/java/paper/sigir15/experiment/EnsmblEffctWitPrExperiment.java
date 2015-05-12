@@ -19,18 +19,18 @@ import edu.tongji.util.FileUtil;
 
 public class EnsmblEffctWitPrExperiment {
     /** file to store the original data and cocluster directory. 10M100K 1m*/
-    public static String[]      rootDirs        = { "C:/netflix/" };
+    public static String[]      rootDirs        = { "E:/MovieLens/zWarmStart/ml-10M100K/1/" };
     /** The number of users. 943 6040 69878  480189*/
-    public final static int     userCount       = 480189;
+    public final static int     userCount       = 69878;
     /** The number of items. 1682 3706 10677 17770*/
-    public final static int     itemCount       = 17770;
+    public final static int     itemCount       = 10677;
     public final static double  maxValue        = 5.0d;
-    public final static double  minValue        = 1.0d;
+    public final static double  minValue        = 0.5d;
     public final static int     modelNum        = 8;
 
-    public final static String  pFile           = "zWEMAREC[20]_1";
-    public final static String  rFile           = "EnsmblHMP";
-    public final static boolean isLocalDistrbtn = true;
+    public final static String  pFile           = "WEMAREC[20]_C25_IWEW_[23]x2_RWSVD";
+    public final static String  rFile           = "EnsmblHMP_GlobalPR";
+    public final static boolean isLocalDistrbtn = false;
 
     /**
      * 
@@ -41,8 +41,8 @@ public class EnsmblEffctWitPrExperiment {
     }
 
     public static void doEnsembleWithPr() {
-        double[] beta0s = new double[21];
-        for (int i = 0; i <= 20; i++) {
+        double[] beta0s = new double[51];
+        for (int i = 0; i <= 50; i++) {
             beta0s[i] = i * 0.1;
         }
 
@@ -212,13 +212,14 @@ public class EnsmblEffctWitPrExperiment {
         return 1.0d + beta0 * Pr;
     }
 
-    protected final static double[] ml10m   = {};
-    protected final static double[] netflix = {};
+    protected final static double[] ml10m   = { 0.00940 + 0.03833, 0.01195 + 0.07892,
+            0.03707 + 0.23649, 0.08748 + 0.28764, 0.05830 + 0.15444 };
+    protected final static double[] netflix = { 0.04586, 0.10088, 0.28681, 0.33591, 0.23055 };
 
     public static double weightWithGlobalPr(double beta0, double AuiEstm) {
         int indx = (int) (AuiEstm / 1.0 - 1);
-        //        return 1.0d + beta0 * ml10m[indx];
-        return 1.0d + beta0 * netflix[indx];
+        return 1.0d + beta0 * ml10m[indx];
+        //        return 1.0d + beta0 * netflix[indx];
     }
 
 }
