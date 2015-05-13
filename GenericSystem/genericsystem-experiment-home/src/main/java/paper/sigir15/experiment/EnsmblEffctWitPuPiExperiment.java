@@ -19,23 +19,27 @@ import edu.tongji.util.FileUtil;
 
 public class EnsmblEffctWitPuPiExperiment {
     /** file to store the original data and cocluster directory. 10M100K 1m*/
-    public static String[]     rootDirs  = { "E:/MovieLens/zWarmStart/ml-10M100K/1/" };
+    public static String[]     rootDirs      = { "E:/MovieLens/zWarmStart/ml-10M100K/1/" };
     /** The number of users. 943 6040 69878  69878*/
-    public final static int    userCount = 480189;
+    public final static int    userCount     = 480189;
     /** The number of items. 1682 3706 10677 17770*/
-    public final static int    itemCount = 10677;
-    public final static double maxValue  = 5.0d;
-    public final static double minValue  = 0.5d;
-    public final static int    modelNum  = 8;
+    public final static int    itemCount     = 10677;
+    public final static double maxValue      = 5.0d;
+    public final static double minValue      = 0.5d;
+    public static int          modelNum      = 8;
+    public final static int[]  groupIncluded = {};
 
-    public final static String pFile     = "WEMAREC[20]_C25_IWEW_[23]x2_RWSVD";
-    public final static String rFile     = "EnsmblHMP";
+    public final static String pFile         = "WEMAREC[20]_C25_IWEW_[23]x2_RWSVD";
+    public final static String rFile         = "EnsmblHMP";
 
     /**
      * 
      * @param args
      */
     public static void main(String[] args) {
+        // set the number of models in Ensemble Process
+        modelNum = (groupIncluded == null | groupIncluded.length == 0) ? modelNum
+            : groupIncluded.length;
         doEnsembleWithPiPu();
     }
 
@@ -68,7 +72,7 @@ public class EnsmblEffctWitPuPiExperiment {
             piMatrix[i] = new SparseRowMatrix(userCount, itemCount);
         }
 
-        RecResultUtil.readRec(predctFile, estMatrix, testMatrix, puMatrix, piMatrix);
+        RecResultUtil.readRec(predctFile, estMatrix, testMatrix, puMatrix, piMatrix, groupIncluded);
 
         // ensemble process
         for (double beta1 : beta1s) {
