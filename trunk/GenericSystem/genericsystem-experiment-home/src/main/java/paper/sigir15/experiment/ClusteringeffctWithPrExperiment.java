@@ -12,7 +12,7 @@ import edu.tongji.data.SparseVector;
  * @author Hanke
  * @version $Id: ClusteringeffctExperiment.java, v 0.1 2015-5-12 下午8:36:46 Exp $
  */
-public final class ClusteringeffctExperiment {
+public final class ClusteringeffctWithPrExperiment {
     /** file to store the original data and cocluster directory. 10M100K 1m*/
     public static String[]      rootDirs        = { "E:/MovieLens/zWarmStart/ml-10M100K/1/" };
     /** The number of users. 943 6040 69878  480189*/
