@@ -12,6 +12,7 @@ import java.io.IOException;
 import org.apache.commons.io.IOUtils;
 
 import edu.tongji.data.BlockMatrix;
+import edu.tongji.data.MatlabFasionSparseMatrix;
 import edu.tongji.data.SparseMatrix;
 import edu.tongji.data.SparseRowMatrix;
 import edu.tongji.data.SparseVector;
@@ -312,6 +313,28 @@ public final class MatrixInformationUtil {
         int itemCount = matrix.itemCount();
         for (int i = 0; i < len; i++) {
             result[i] = countTable[i] * 1.0 / itemCount;
+        }
+
+        return result;
+    }
+
+    public static double[] ratingDistribution(MatlabFasionSparseMatrix matrix, double maxValue,
+                                              double minValue) {
+        int len = (int) (maxValue / minValue);
+        int[] countTable = new int[len];
+
+        int nnz = matrix.getNnz();
+        double[] vals = matrix.getVals();
+
+        for (int i = 0; i < nnz; i++) {
+            double val = vals[i];
+            int pivot = Double.valueOf(val / minValue - 1).intValue();
+            countTable[pivot]++;
+        }
+
+        double[] result = new double[len];
+        for (int i = 0; i < len; i++) {
+            result[i] = countTable[i] * 1.0 / nnz;
         }
 
         return result;
