@@ -5,6 +5,8 @@
 package edu.tongji.ml.matrix;
 
 import prea.util.MatrixInformationUtil;
+import edu.tongji.data.DenseMatrix;
+import edu.tongji.data.MatlabFasionSparseMatrix;
 import edu.tongji.data.SparseMatrix;
 import edu.tongji.data.SparseRowMatrix;
 import edu.tongji.data.SparseVector;
@@ -27,6 +29,11 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
     public double[]           ensnblWeightEntire;
     /** the rating distribution w.r.t the whole rating matrix*/
     public double[]           trainWeight;
+
+    /** User profile in low-rank matrix form. */
+    protected DenseMatrix     userDenseFeatures;
+    /** Item profile in low-rank matrix form. */
+    protected DenseMatrix     itemDenseFeatures;
 
     //===================================
     //      parameter
@@ -165,6 +172,99 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
      */
     public void buildModel(SparseMatrix rateMatrix) {
         throw new RuntimeException("buildModel for SparseMatrix requires implementation!");
+    }
+
+    public void buildModel(MatlabFasionSparseMatrix rateMatrix, int[] rows, int[] cols) {
+        // Initialize user/item features:
+        userDenseFeatures = new DenseMatrix(userCount, featureCount);
+        itemDenseFeatures = new DenseMatrix(featureCount, itemCount);
+        for (int u : rows) {
+            for (int f = 0; f < featureCount; f++) {
+                double rdm = Math.random() / featureCount;
+                userDenseFeatures.setValue(u, f, rdm);
+            }
+        }
+        for (int i : cols) {
+            for (int f = 0; f < featureCount; f++) {
+                double rdm = Math.random() / featureCount;
+                itemDenseFeatures.setValue(f, i, rdm);
+            }
+        }
+
+        //build model
+        trainWeight = MatrixInformationUtil.ratingDistribution(rateMatrix, maxValue, minValue);
+
+        // Gradient Descent:
+        int round = 0;
+        int rateCount = rateMatrix.getNnz();
+        double prevErr = 99999;
+        double currErr = 9999;
+
+        int[] uIndx = rateMatrix.getRowIndx();
+        int[] iIndx = rateMatrix.getColIndx();
+        double[] Auis = rateMatrix.getVals();
+        while (Math.abs(prevErr - currErr) > 0.0001 && round < maxIter) {
+            double sum = 0.0;
+
+            for (int numSeq = 0; numSeq < rateCount; numSeq++) {
+                int u = uIndx[numSeq];
+                int i = iIndx[numSeq];
+                double AuiReal = Auis[numSeq];
+                double AuiEst = 0.0d;
+                for (int f = 0; f < featureCount; f++) {
+                    AuiEst += userDenseFeatures.getValue(u, f) * itemDenseFeatures.getValue(f, i);
+                }
+
+                double err = AuiReal - AuiEst;
+                sum += Math.abs(err);
+                int weightIndx = Double.valueOf(AuiReal / minValue - 1).intValue();
+                for (int s = 0; s < featureCount; s++) {
+                    double Fus = userDenseFeatures.getValue(u, s);
+                    double Gis = itemDenseFeatures.getValue(s, i);
+
+                    userDenseFeatures.setValue(u, s,
+                        Fus
+                                + learningRate
+                                * (err * Gis * (1 + beta0 * trainWeight[weightIndx]) - regularizer
+                                                                                       * Fus));
+                    itemDenseFeatures.setValue(s, i,
+                        Gis
+                                + learningRate
+                                * (err * Fus * (1 + beta0 * trainWeight[weightIndx]) - regularizer
+                                                                                       * Gis));
+                }
+            }
+
+            prevErr = currErr;
+            currErr = sum / rateCount;
+
+            round++;
+
+            // Show progress:
+            LoggerUtil.info(logger, round + "\t" + currErr);
+        }
+    }
+
+    /**
+     * return the predicted rating
+     * 
+     * @param u the given user index
+     * @param i the given item index
+     * @return the predicted rating
+     */
+    public double predicts(int u, int i) {
+        double prediction = this.offset;
+        for (int f = 0; f < featureCount; f++) {
+            prediction += userDenseFeatures.getValue(u, f) * itemDenseFeatures.getValue(f, i);
+        }
+
+        if (prediction > maxValue) {
+            return maxValue;
+        } else if (prediction < minValue) {
+            return minValue;
+        } else {
+            return prediction;
+        }
     }
 
     /**

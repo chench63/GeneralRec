@@ -319,6 +319,40 @@ public class SparseRowMatrix implements Serializable {
     }
 
     /**
+     * part of the matrix w.r.t the given row and column index set
+     * 
+     * @param rows the rows to be partitioned to sub-matrix
+     * @param cols the columns to be partitioned to sub-matrix
+     * @return the sub-matrix with the given row and column index set
+     */
+    public MatlabFasionSparseMatrix partition(int nnz, int[] rows, int[] cols) {
+        //construct row tables
+        boolean[] colTable = new boolean[N];
+        for (int col : cols) {
+            colTable[col] = true;
+        }
+
+        //copy data
+        MatlabFasionSparseMatrix result = new MatlabFasionSparseMatrix(nnz);
+        for (int row : rows) {
+            SparseVector Fr = this.getRowRef(row);
+            int[] indexList = Fr.indexList();
+            if (indexList == null) {
+                continue;
+            }
+
+            for (int col : indexList) {
+                if (colTable[col]) {
+                    double val = this.getValue(row, col);
+                    result.setValue(row, col, val);
+                }
+            }
+        }
+        result.reduceMem();
+        return result;
+    }
+
+    /**
      * convert to object of SparseMatrix
      * 
      * @return

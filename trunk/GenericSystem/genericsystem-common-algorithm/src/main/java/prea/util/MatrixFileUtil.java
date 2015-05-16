@@ -15,6 +15,7 @@ import java.util.Map.Entry;
 import org.apache.commons.io.IOUtils;
 
 import edu.tongji.data.BlockMatrix;
+import edu.tongji.data.MatlabFasionSparseMatrix;
 import edu.tongji.data.SparseColumnMatrix;
 import edu.tongji.data.SparseMatrix;
 import edu.tongji.data.SparseRowMatrix;
@@ -687,6 +688,43 @@ public final class MatrixFileUtil {
         matrix.initialize(rowBound, coclusterStructure);
 
         return matrix;
+    }
+
+    /**
+     * Read matrix from file
+     * 
+     * @param file          file contain matrix data
+     * @param rowCount      the number of rows
+     * @param colCount      the number of columns
+     * @param parser        the parser to parse the data structure
+     * @return
+     */
+    public static MatlabFasionSparseMatrix reads(String file, int rowCount, int colCount, int nnz,
+                                                 Parser parser) {
+        if (parser == null) {
+            parser = new MovielensRatingTemplateParser();
+        }
+
+        MatlabFasionSparseMatrix result = new MatlabFasionSparseMatrix(nnz);
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(file));
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                RatingVO rating = (RatingVO) parser.parse(line);
+                result.setValue(rating.getUsrId(), rating.getMovieId(), rating.getRatingReal());
+            }
+            result.reduceMem();
+
+            return result;
+        } catch (FileNotFoundException e) {
+            ExceptionUtil.caught(e, "无法找到对应的加载文件: " + file);
+        } catch (IOException e) {
+            ExceptionUtil.caught(e, "读取文件发生异常，校验文件格式");
+        } finally {
+            IOUtils.closeQuietly(reader);
+        }
+        return null;
     }
 
 }

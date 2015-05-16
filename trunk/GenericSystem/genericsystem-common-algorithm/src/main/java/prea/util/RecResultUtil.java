@@ -96,23 +96,43 @@ public final class RecResultUtil {
             reader = new BufferedReader(new FileReader(file));
             String line = null;
             while ((line = reader.readLine()) != null) {
-                //userId, itemId, AuiReal, AuiEst, Pu, Pi, Pr, GroupId
-                String[] elemnts = line.split("\\,");
-                int usrId = Integer.valueOf(elemnts[0]);
-                int itemId = Integer.valueOf(elemnts[1]);
-                double AuiReal = Double.valueOf(elemnts[2]);
-                double AuiEst = Double.valueOf(elemnts[3]);
-                double Pu = Double.valueOf(elemnts[4]);
-                double Pi = Double.valueOf(elemnts[5]);
-                //                double Pr = Double.valueOf(elemnts[6]);
-                int groupId = Integer.valueOf(elemnts[7]);
 
-                estMatrix[groupId].setValue(usrId, itemId, AuiEst);
-                puMatrix[groupId].setValue(usrId, itemId, Pu);
-                piMatrix[groupId].setValue(usrId, itemId, Pi);
-                if (groupId == 0) {
-                    testMatrix.setValue(usrId, itemId, AuiReal);
+                String[] elemnts = line.split("\\,");
+                if (elemnts.length == 6) {
+                    //userId, itemId, AuiReal, AuiEst, Pu, Pi, GroupId
+                    int usrId = Integer.valueOf(elemnts[0]);
+                    int itemId = Integer.valueOf(elemnts[1]);
+                    double AuiReal = Double.valueOf(elemnts[2]);
+                    double AuiEst = Double.valueOf(elemnts[3]);
+                    double Pu = Double.valueOf(elemnts[4]);
+                    double Pi = Double.valueOf(elemnts[5]);
+                    int groupId = Integer.valueOf(elemnts[6]);
+
+                    estMatrix[groupId].setValue(usrId, itemId, AuiEst);
+                    puMatrix[groupId].setValue(usrId, itemId, Pu);
+                    piMatrix[groupId].setValue(usrId, itemId, Pi);
+                    if (groupId == 0) {
+                        testMatrix.setValue(usrId, itemId, AuiReal);
+                    }
+                } else if (elemnts.length == 7) {
+                    //userId, itemId, AuiReal, AuiEst, Pu, Pi, Pr, GroupId
+                    int usrId = Integer.valueOf(elemnts[0]);
+                    int itemId = Integer.valueOf(elemnts[1]);
+                    double AuiReal = Double.valueOf(elemnts[2]);
+                    double AuiEst = Double.valueOf(elemnts[3]);
+                    double Pu = Double.valueOf(elemnts[4]);
+                    double Pi = Double.valueOf(elemnts[5]);
+                    //                double Pr = Double.valueOf(elemnts[6]);
+                    int groupId = Integer.valueOf(elemnts[7]);
+
+                    estMatrix[groupId].setValue(usrId, itemId, AuiEst);
+                    puMatrix[groupId].setValue(usrId, itemId, Pu);
+                    piMatrix[groupId].setValue(usrId, itemId, Pi);
+                    if (groupId == 0) {
+                        testMatrix.setValue(usrId, itemId, AuiReal);
+                    }
                 }
+
             }
             return true;
         } catch (FileNotFoundException e) {
@@ -141,7 +161,7 @@ public final class RecResultUtil {
                                   SparseRowMatrix testMatrix, SparseRowMatrix[] puMatrix,
                                   SparseRowMatrix[] piMatrix, int[] groupIncluded) {
         if (groupIncluded == null | groupIncluded.length == 0) {
-            readRec(predctFile, estMatrix, testMatrix, puMatrix, piMatrix);
+            return readRec(predctFile, estMatrix, testMatrix, puMatrix, piMatrix);
         }
 
         File file = new File(predctFile);
@@ -164,25 +184,45 @@ public final class RecResultUtil {
             reader = new BufferedReader(new FileReader(file));
             String line = null;
             while ((line = reader.readLine()) != null) {
-                //userId, itemId, AuiReal, AuiEst, Pu, Pi, Pr, GroupId
                 String[] elemnts = line.split("\\,");
-                int groupId = Integer.valueOf(elemnts[7]);
-                if (newGid[groupId] == -1) {
-                    continue;
+                if (elemnts.length == 6) {
+                    //userId, itemId, AuiReal, AuiEst, Pu, Pi, GroupId
+                    int groupId = Integer.valueOf(elemnts[6]);
+                    if (newGid[groupId] == -1) {
+                        continue;
+                    }
+
+                    int usrId = Integer.valueOf(elemnts[0]);
+                    int itemId = Integer.valueOf(elemnts[1]);
+                    double AuiReal = Double.valueOf(elemnts[2]);
+                    double AuiEst = Double.valueOf(elemnts[3]);
+                    double Pu = Double.valueOf(elemnts[4]);
+                    double Pi = Double.valueOf(elemnts[5]);
+
+                    estMatrix[newGid[groupId]].setValue(usrId, itemId, AuiEst);
+                    puMatrix[newGid[groupId]].setValue(usrId, itemId, Pu);
+                    piMatrix[newGid[groupId]].setValue(usrId, itemId, Pi);
+                    testMatrix.setValue(usrId, itemId, AuiReal);
+                } else if (elemnts.length == 7) {
+                    //userId, itemId, AuiReal, AuiEst, Pu, Pi, Pr, GroupId
+                    int groupId = Integer.valueOf(elemnts[7]);
+                    if (newGid[groupId] == -1) {
+                        continue;
+                    }
+
+                    int usrId = Integer.valueOf(elemnts[0]);
+                    int itemId = Integer.valueOf(elemnts[1]);
+                    double AuiReal = Double.valueOf(elemnts[2]);
+                    double AuiEst = Double.valueOf(elemnts[3]);
+                    double Pu = Double.valueOf(elemnts[4]);
+                    double Pi = Double.valueOf(elemnts[5]);
+                    //                double Pr = Double.valueOf(elemnts[6]);
+
+                    estMatrix[newGid[groupId]].setValue(usrId, itemId, AuiEst);
+                    puMatrix[newGid[groupId]].setValue(usrId, itemId, Pu);
+                    piMatrix[newGid[groupId]].setValue(usrId, itemId, Pi);
+                    testMatrix.setValue(usrId, itemId, AuiReal);
                 }
-
-                int usrId = Integer.valueOf(elemnts[0]);
-                int itemId = Integer.valueOf(elemnts[1]);
-                double AuiReal = Double.valueOf(elemnts[2]);
-                double AuiEst = Double.valueOf(elemnts[3]);
-                double Pu = Double.valueOf(elemnts[4]);
-                double Pi = Double.valueOf(elemnts[5]);
-                //                double Pr = Double.valueOf(elemnts[6]);
-
-                estMatrix[newGid[groupId]].setValue(usrId, itemId, AuiEst);
-                puMatrix[newGid[groupId]].setValue(usrId, itemId, Pu);
-                piMatrix[newGid[groupId]].setValue(usrId, itemId, Pi);
-                testMatrix.setValue(usrId, itemId, AuiReal);
             }
             return true;
         } catch (FileNotFoundException e) {

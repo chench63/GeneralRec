@@ -70,16 +70,23 @@ public class Model {
      * @param rateMatrix
      */
     public void buildModel(final SparseRowMatrix rateMatrix) {
-        if (rows == null | cols == null) {
-            recmmd.buildModel(rateMatrix);
+        if (recmmd instanceof WeigtedRSVD) {
+            WeigtedRSVD lRecmmd = (WeigtedRSVD) recmmd;
+            MatlabFasionSparseMatrix lrMatrix = rateMatrix.partition(80 * 1000 * 1000, rows, cols);
+            lRecmmd.buildModel(lrMatrix, rows, cols);
         } else {
-            SparseRowMatrix localMatrix = rateMatrix.partition(rows, cols);
-            recmmd.buildModel(localMatrix);
 
-            // suggest JVM to gc
-            if (recmmd.userCount > 400 * 1000 & recmmd.itemCount > 12 * 1000) {
-                localMatrix.clear();
-                System.gc();
+            if (rows == null | cols == null) {
+                recmmd.buildModel(rateMatrix);
+            } else {
+                SparseRowMatrix localMatrix = rateMatrix.partition(rows, cols);
+                recmmd.buildModel(localMatrix);
+
+                // suggest JVM to gc
+                if (recmmd.userCount > 400 * 1000 & recmmd.itemCount > 12 * 1000) {
+                    localMatrix.clear();
+                    System.gc();
+                }
             }
         }
     }
@@ -138,6 +145,59 @@ public class Model {
         rows = null;
         cols = null;
         recmmd.explicitClear();
+    }
+
+    /**
+     * evaluate the model
+     * 
+     * @param testMatrix
+     *            the matrix with testing data
+     * @param cumPrediction
+     *            the cumulative prediction
+     * @param cumWeight
+     *            the cumulative weights
+     */
+    public void evaluate(final MatlabFasionSparseMatrix testMatrix) {
+        //check whether the object belongs to WSVD
+        if (!(recmmd instanceof WeigtedRSVD)) {
+            throw new RuntimeException("The instance inf lEvaAndRecordWSVD is not WSVD!");
+        }
+
+        WeigtedRSVD lRecmmd = (WeigtedRSVD) recmmd;
+
+        int[] uIndx = testMatrix.getRowIndx();
+        int[] iIndx = testMatrix.getColIndx();
+        double[] Auis = testMatrix.getVals();
+        int nnz = testMatrix.getNnz();
+
+        int bufferUsed = 0;
+        StringBuilder buffer = new StringBuilder();
+        for (int numSeq = 0; numSeq < nnz; numSeq++) {
+            int u = uIndx[numSeq];
+            int i = iIndx[numSeq];
+            double AuiReal = Auis[numSeq];
+            double AuiEst = lRecmmd.predicts(u, i);
+
+            //record local prediction
+            //userId, itemId, AuiReal, AuiEst, Pu, Pi, Pr, GroupId
+            buffer.append(u).append(',').append(i).append(',').append(AuiReal).append(',')
+                .append(AuiEst).append(',').append(lRecmmd.getPu(u, AuiEst)).append(',')
+                .append(lRecmmd.getPi(i, AuiEst)).append(',').append(lRecmmd.getPr(AuiEst))
+                .append(',').append(groupId).append('\n');
+            bufferUsed++;
+
+            // if greater than buffer size, then clear the buffer.
+            if (bufferUsed >= 1000 * 1000) {
+                FileUtil.writeAsAppend(resultFile, buffer.toString());
+
+                //reset buffer
+                bufferUsed = 0;
+                buffer = new StringBuilder();
+            }
+        }
+
+        FileUtil.writeAsAppend(resultFile, buffer.toString());
+
     }
 
     /**

@@ -8,6 +8,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import prea.util.MatrixFileUtil;
+import edu.tongji.data.MatlabFasionSparseMatrix;
 import edu.tongji.data.Model;
 import edu.tongji.data.ModelGroup;
 import edu.tongji.data.SparseMatrix;
@@ -103,30 +104,10 @@ public class ScalableRcmdEngine extends RcmdtnEngine {
         LoggerUtil.info(logger, "3. loading rateMatrix and testMatrix. ");
         SparseRowMatrix rateMatrix = MatrixFileUtil.reads(trainingSetFile, userCount, itemCount,
             parser);
-        SparseRowMatrix testMatrix = MatrixFileUtil.reads(testingSetFile, userCount, itemCount,
-            parser);
-        LoggerUtil.info(logger,
-            "Train: " + rateMatrix.itemCount() + "\tTest: " + testMatrix.itemCount());
-
-        //BFSVD unique logics
-        if (ScalableSVDLearner.models.element().getRecmmd() instanceof BorderFormConstraintSVD) {
-            LoggerUtil.info(logger, "3+. entering BorderFormSVD unique process.");
-            String auxRecFile = rootDir + "Model/" + auxRecIdentity;
-
-            if (StringUtil.isNotBlank(auxRecIdentity) & FileUtil.exists(auxRecFile)) {
-                LoggerUtil.info(logger, "\t\ta. loading auxiliary model: " + auxRecIdentity);
-                auxRec = (MatrixFactorizationRecommender) SerializeUtil.readObject(auxRecFile);
-            } else {
-                LoggerUtil.info(logger, "\t\ta. building auxiliary model.");
-                auxRec.buildModel(rateMatrix);
-            }
-
-            LoggerUtil.info(logger, "\t\tb. setting it to local models.");
-            for (Model model : ScalableSVDLearner.models) {
-                BorderFormConstraintSVD lRecmmd = (BorderFormConstraintSVD) model.recmmd;
-                lRecmmd.setAuxRec(auxRec);
-            }
-        }
+        MatlabFasionSparseMatrix tmMatrix = MatrixFileUtil.reads(testingSetFile, userCount,
+            itemCount, 20 * 1000 * 1000, parser);
+        LoggerUtil
+            .info(logger, "Train: " + rateMatrix.itemCount() + "\tTest: " + tmMatrix.getNnz());
 
         //main business logics
         LoggerUtil.info(logger, "4. starting engine. ");
@@ -135,15 +116,61 @@ public class ScalableRcmdEngine extends RcmdtnEngine {
             ScalableSVDLearner.cumWeight = new SparseRowMatrix(userCount, itemCount);
 
             ExecutorService exec = Executors.newCachedThreadPool();
-            exec.execute(new ScalableSVDLearner(rateMatrix, testMatrix));
-            exec.execute(new ScalableSVDLearner(rateMatrix, testMatrix));
-            exec.execute(new ScalableSVDLearner(rateMatrix, testMatrix));
-            exec.execute(new ScalableSVDLearner(rateMatrix, testMatrix));
+            exec.execute(new ScalableSVDLearner(rateMatrix, tmMatrix));
+            exec.execute(new ScalableSVDLearner(rateMatrix, tmMatrix));
+            exec.execute(new ScalableSVDLearner(rateMatrix, tmMatrix));
+            exec.execute(new ScalableSVDLearner(rateMatrix, tmMatrix));
             exec.shutdown();
             exec.awaitTermination(Integer.MAX_VALUE, TimeUnit.DAYS);
         } catch (InterruptedException e) {
             ExceptionUtil.caught(e, "ExecutorService await crush! ");
         }
+
+        //        //load datasets
+        //        LoggerUtil.info(logger, "3. loading rateMatrix and testMatrix. ");
+        //        SparseRowMatrix rateMatrix = MatrixFileUtil.reads(trainingSetFile, userCount, itemCount,
+        //            parser);
+        //        SparseRowMatrix testMatrix = MatrixFileUtil.reads(testingSetFile, userCount, itemCount,
+        //            parser);
+        //        LoggerUtil.info(logger,
+        //            "Train: " + rateMatrix.itemCount() + "\tTest: " + testMatrix.itemCount());
+        //
+        //        //BFSVD unique logics
+        //        if (ScalableSVDLearner.models.element().getRecmmd() instanceof BorderFormConstraintSVD) {
+        //            LoggerUtil.info(logger, "3+. entering BorderFormSVD unique process.");
+        //            String auxRecFile = rootDir + "Model/" + auxRecIdentity;
+        //
+        //            if (StringUtil.isNotBlank(auxRecIdentity) & FileUtil.exists(auxRecFile)) {
+        //                LoggerUtil.info(logger, "\t\ta. loading auxiliary model: " + auxRecIdentity);
+        //                auxRec = (MatrixFactorizationRecommender) SerializeUtil.readObject(auxRecFile);
+        //            } else {
+        //                LoggerUtil.info(logger, "\t\ta. building auxiliary model.");
+        //                auxRec.buildModel(rateMatrix);
+        //            }
+        //
+        //            LoggerUtil.info(logger, "\t\tb. setting it to local models.");
+        //            for (Model model : ScalableSVDLearner.models) {
+        //                BorderFormConstraintSVD lRecmmd = (BorderFormConstraintSVD) model.recmmd;
+        //                lRecmmd.setAuxRec(auxRec);
+        //            }
+        //        }
+        //
+        //        //main business logics
+        //        LoggerUtil.info(logger, "4. starting engine. ");
+        //        try {
+        //            ScalableSVDLearner.cumPrediction = new SparseRowMatrix(userCount, itemCount);
+        //            ScalableSVDLearner.cumWeight = new SparseRowMatrix(userCount, itemCount);
+        //
+        //            ExecutorService exec = Executors.newCachedThreadPool();
+        //            exec.execute(new ScalableSVDLearner(rateMatrix, testMatrix));
+        //            exec.execute(new ScalableSVDLearner(rateMatrix, testMatrix));
+        //            exec.execute(new ScalableSVDLearner(rateMatrix, testMatrix));
+        //            exec.execute(new ScalableSVDLearner(rateMatrix, testMatrix));
+        //            exec.shutdown();
+        //            exec.awaitTermination(Integer.MAX_VALUE, TimeUnit.DAYS);
+        //        } catch (InterruptedException e) {
+        //            ExceptionUtil.caught(e, "ExecutorService await crush! ");
+        //        }
     }
 
     /**
