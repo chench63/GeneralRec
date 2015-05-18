@@ -8,9 +8,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import prea.util.MatrixFileUtil;
+import edu.tongji.data.MatlabFasionSparseMatrix;
 import edu.tongji.data.Model;
 import edu.tongji.data.ModelGroup;
-import edu.tongji.data.SparseMatrix;
 import edu.tongji.data.SparseRowMatrix;
 import edu.tongji.engine.recommendation.thread.ScalableSVDLearner;
 import edu.tongji.ml.matrix.BorderFormConstraintSVD;
@@ -25,9 +25,9 @@ import edu.tongji.util.StringUtil;
 /**
  * 
  * @author Hanke
- * @version $Id: MixtureWLRARcmdEngine.java, v 0.1 2014-11-2 下午2:37:12 Exp $
+ * @version $Id: FastScalableRcmdEngine.java, v 0.1 2015-5-18 下午3:37:14 Exp $
  */
-public class ScalableRcmdEngine extends RcmdtnEngine {
+public class FastScalableRcmdEngine extends RcmdtnEngine {
     /** the directory contains training, test dataset and coclustering setting file*/
     private String                         rootDir;
     /** file with training data */
@@ -67,20 +67,16 @@ public class ScalableRcmdEngine extends RcmdtnEngine {
      * join model of group to task list
      */
     protected void joinGroup() {
-        LoggerUtil.info(logger, "\t\ta. loading trainingset. ");
-        SparseMatrix tMatrix = MatrixFileUtil.read(trainingSetFile, userCount, itemCount, parser);
-
-        LoggerUtil.info(logger, "\t\tb. loading model. ");
+        LoggerUtil.info(logger, "\t\ta. loading model. ");
         Queue<Model> models = new LinkedList<Model>();
         for (int g = 0; g < groups.size(); g++) {
-            groups.get(g).join(models, tMatrix, g);
+            groups.get(g).join(models, null, g);
         }
         ScalableSVDLearner.models = models;
 
         // suggest JVM to release memory
         if (userCount > 400 * 1000 & itemCount > 12 * 1000) {
-            LoggerUtil.info(logger, "\t\tc. releasing mem. ");
-            tMatrix.clear();
+            LoggerUtil.info(logger, "\t\tb. releasing mem. ");
             groups.clear();
             System.gc();
         }
@@ -103,10 +99,10 @@ public class ScalableRcmdEngine extends RcmdtnEngine {
         LoggerUtil.info(logger, "3. loading rateMatrix and testMatrix. ");
         SparseRowMatrix rateMatrix = MatrixFileUtil.reads(trainingSetFile, userCount, itemCount,
             parser);
-        SparseRowMatrix testMatrix = MatrixFileUtil.reads(testingSetFile, userCount, itemCount,
-            parser);
-        LoggerUtil.info(logger,
-            "Train: " + rateMatrix.itemCount() + "\tTest: " + testMatrix.itemCount());
+        MatlabFasionSparseMatrix tmMatrix = MatrixFileUtil.reads(testingSetFile, userCount,
+            itemCount, 20 * 1000 * 1000, parser);
+        LoggerUtil
+            .info(logger, "Train: " + rateMatrix.itemCount() + "\tTest: " + tmMatrix.getNnz());
 
         //BFSVD unique logics
         if (ScalableSVDLearner.models.element().getRecmmd() instanceof BorderFormConstraintSVD) {
@@ -135,10 +131,10 @@ public class ScalableRcmdEngine extends RcmdtnEngine {
             ScalableSVDLearner.cumWeight = new SparseRowMatrix(userCount, itemCount);
 
             ExecutorService exec = Executors.newCachedThreadPool();
-            exec.execute(new ScalableSVDLearner(rateMatrix, testMatrix));
-            exec.execute(new ScalableSVDLearner(rateMatrix, testMatrix));
-            exec.execute(new ScalableSVDLearner(rateMatrix, testMatrix));
-            exec.execute(new ScalableSVDLearner(rateMatrix, testMatrix));
+            exec.execute(new ScalableSVDLearner(rateMatrix, tmMatrix));
+            exec.execute(new ScalableSVDLearner(rateMatrix, tmMatrix));
+            exec.execute(new ScalableSVDLearner(rateMatrix, tmMatrix));
+            exec.execute(new ScalableSVDLearner(rateMatrix, tmMatrix));
             exec.shutdown();
             exec.awaitTermination(Integer.MAX_VALUE, TimeUnit.DAYS);
         } catch (InterruptedException e) {
@@ -241,5 +237,4 @@ public class ScalableRcmdEngine extends RcmdtnEngine {
     public void setAuxRecIdentity(String auxRecIdentity) {
         this.auxRecIdentity = auxRecIdentity;
     }
-
 }

@@ -4,8 +4,7 @@
  */
 package edu.tongji.experiment.recommendation;
 
-import org.apache.commons.math3.stat.descriptive.DescriptiveStatistics;
-
+import edu.tongji.data.MatlabFasionSparseMatrix;
 import edu.tongji.data.SparseRowMatrix;
 import edu.tongji.ml.matrix.DynamicCRSVD;
 import edu.tongji.ml.matrix.FCRSVD;
@@ -87,7 +86,6 @@ public class ConstrainedExper {
         SparseRowMatrix testMatrix = MatrixFileUtil.reads(testFile, userCount, itemCount, null);
 
         //build model
-        DescriptiveStatistics stat = new DescriptiveStatistics();
         for (int featureCount : featureCounts) {
             RegularizedSVD recmmd = new RegularizedSVD(userCount, itemCount, maxValue, minValue,
                 featureCount, lrate, regularized, 0, maxIteration, showProgress);
@@ -101,12 +99,7 @@ public class ConstrainedExper {
                 resultDir + "zRSVD",
                 "fc: " + featureCount + "\tlr: " + lrate + "\tr: " + regularized + "\n"
                         + metric.printOneLine() + "\n");
-            stat.addValue(metric.getRMSE());
         }
-        FileUtil.writeAsAppend(
-            resultDir + "zRSVD",
-            "Mean: " + stat.getMean() + "\tSD:"
-                    + String.format("%.6f", stat.getStandardDeviation()) + "\n");
     }
 
     public static void UserConstrainedRSVD(int[] featureCounts, String clusterDir, String rootDir) {
@@ -177,7 +170,6 @@ public class ConstrainedExper {
         int[] dimnsn = ClusteringInformationUtil.readBiAssigmnt(ua, ia, clusterDir, rootDir);
 
         //build model
-        DescriptiveStatistics stat = new DescriptiveStatistics();
         for (int featureCount : featureCounts) {
             FCRSVD recmmd = new FCRSVD(userCount, itemCount, maxValue, minValue, featureCount,
                 lrate, regularized, 0, maxIteration, dimnsn[0], dimnsn[1], ua, ia, showProgress);
@@ -190,12 +182,33 @@ public class ConstrainedExper {
             FileUtil.writeAsAppend(resultDir + "zBC",
                 "fc: " + featureCount + "\tlr: " + lrate + "\tr: " + regularized + "\tk: "
                         + dimnsn[0] + "\tl: " + dimnsn[1] + "\n" + metric.printOneLine() + "\n");
-            stat.addValue(metric.getRMSE());
         }
-        FileUtil.writeAsAppend(
-            resultDir + "zBC",
-            "Mean: " + stat.getMean() + "\tSD:"
-                    + String.format("%.6f", stat.getStandardDeviation()) + "\n");
+    }
+
+    public static void BiConstrainedRSVDSaving(int[] featureCounts, String clusterDir,
+                                               String rootDir) {
+        //loading dataset
+        String trainFile = rootDir + "trainingset";
+        String testFile = rootDir + "testingset";
+        MatlabFasionSparseMatrix rateMatrix = MatrixFileUtil.reads(trainFile, userCount, itemCount,
+            20 * 1000 * 1000, null);
+        MatlabFasionSparseMatrix testMatrix = MatrixFileUtil.reads(testFile, userCount, itemCount,
+            20 * 1000 * 1000, null);
+
+        int[] ua = new int[userCount];
+        int[] ia = new int[itemCount];
+        int[] dimnsn = ClusteringInformationUtil.readBiAssigmnt(ua, ia, clusterDir, rootDir);
+
+        //build model
+        for (int featureCount : featureCounts) {
+            FCRSVD recmmd = new FCRSVD(userCount, itemCount, maxValue, minValue, featureCount,
+                lrate, regularized, 0, maxIteration, dimnsn[0], dimnsn[1], ua, ia, showProgress);
+            recmmd.buildModel(rateMatrix, testMatrix);
+
+            //evaluation
+            double rmse = recmmd.evaluate(testMatrix);
+            System.out.println(rmse);
+        }
     }
 
     public static void DynamicConstrainedRSVD(int[] featureCounts, String clusterDir,

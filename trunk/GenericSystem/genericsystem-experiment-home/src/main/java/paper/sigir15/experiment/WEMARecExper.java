@@ -21,6 +21,11 @@ public final class WEMARecExper {
      * @param args
      */
     public static void main(String[] args) {
+        //        doWEMAREC();
+        doFastWEMAREC();
+    }
+
+    public static void doWEMAREC() {
         ClassPathXmlApplicationContext ctx = null;
         try {
             ctx = new ClassPathXmlApplicationContext(
@@ -36,4 +41,19 @@ public final class WEMARecExper {
         }
     }
 
+    public static void doFastWEMAREC() {
+        ClassPathXmlApplicationContext ctx = null;
+        try {
+            ctx = new ClassPathXmlApplicationContext(
+                "experiment/recommendation/wemarec/wemaRcmd.xml");
+            Engine engine = (Engine) ctx.getBean("fastRcmd");
+            engine.excute();
+        } catch (Exception e) {
+            ExceptionUtil.caught(e, WEMARecExper.class + " 发生致命错误");
+        } finally {
+            if (ctx != null) {
+                ctx.close();
+            }
+        }
+    }
 }

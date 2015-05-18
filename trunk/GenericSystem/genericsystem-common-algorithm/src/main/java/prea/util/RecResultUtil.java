@@ -98,36 +98,36 @@ public final class RecResultUtil {
             while ((line = reader.readLine()) != null) {
 
                 String[] elemnts = line.split("\\,");
-                if (elemnts.length == 6) {
+                if (elemnts.length == 7) {
                     //userId, itemId, AuiReal, AuiEst, Pu, Pi, GroupId
                     int usrId = Integer.valueOf(elemnts[0]);
                     int itemId = Integer.valueOf(elemnts[1]);
                     double AuiReal = Double.valueOf(elemnts[2]);
                     double AuiEst = Double.valueOf(elemnts[3]);
-                    double Pu = Double.valueOf(elemnts[4]);
-                    double Pi = Double.valueOf(elemnts[5]);
+                    //                    double Pu = Double.valueOf(elemnts[4]);
+                    //                    double Pi = Double.valueOf(elemnts[5]);
                     int groupId = Integer.valueOf(elemnts[6]);
 
                     estMatrix[groupId].setValue(usrId, itemId, AuiEst);
-                    puMatrix[groupId].setValue(usrId, itemId, Pu);
-                    piMatrix[groupId].setValue(usrId, itemId, Pi);
+                    //                    puMatrix[groupId].setValue(usrId, itemId, Pu);
+                    //                    piMatrix[groupId].setValue(usrId, itemId, Pi);
                     if (groupId == 0) {
                         testMatrix.setValue(usrId, itemId, AuiReal);
                     }
-                } else if (elemnts.length == 7) {
+                } else if (elemnts.length == 8) {
                     //userId, itemId, AuiReal, AuiEst, Pu, Pi, Pr, GroupId
                     int usrId = Integer.valueOf(elemnts[0]);
                     int itemId = Integer.valueOf(elemnts[1]);
                     double AuiReal = Double.valueOf(elemnts[2]);
                     double AuiEst = Double.valueOf(elemnts[3]);
-                    double Pu = Double.valueOf(elemnts[4]);
-                    double Pi = Double.valueOf(elemnts[5]);
+                    //                    double Pu = Double.valueOf(elemnts[4]);
+                    //                    double Pi = Double.valueOf(elemnts[5]);
                     //                double Pr = Double.valueOf(elemnts[6]);
                     int groupId = Integer.valueOf(elemnts[7]);
 
                     estMatrix[groupId].setValue(usrId, itemId, AuiEst);
-                    puMatrix[groupId].setValue(usrId, itemId, Pu);
-                    piMatrix[groupId].setValue(usrId, itemId, Pi);
+                    //                    puMatrix[groupId].setValue(usrId, itemId, Pu);
+                    //                    piMatrix[groupId].setValue(usrId, itemId, Pi);
                     if (groupId == 0) {
                         testMatrix.setValue(usrId, itemId, AuiReal);
                     }
@@ -185,7 +185,7 @@ public final class RecResultUtil {
             String line = null;
             while ((line = reader.readLine()) != null) {
                 String[] elemnts = line.split("\\,");
-                if (elemnts.length == 6) {
+                if (elemnts.length == 7) {
                     //userId, itemId, AuiReal, AuiEst, Pu, Pi, GroupId
                     int groupId = Integer.valueOf(elemnts[6]);
                     if (newGid[groupId] == -1) {
@@ -196,14 +196,14 @@ public final class RecResultUtil {
                     int itemId = Integer.valueOf(elemnts[1]);
                     double AuiReal = Double.valueOf(elemnts[2]);
                     double AuiEst = Double.valueOf(elemnts[3]);
-                    double Pu = Double.valueOf(elemnts[4]);
-                    double Pi = Double.valueOf(elemnts[5]);
+                    //                    double Pu = Double.valueOf(elemnts[4]);
+                    //                    double Pi = Double.valueOf(elemnts[5]);
 
                     estMatrix[newGid[groupId]].setValue(usrId, itemId, AuiEst);
-                    puMatrix[newGid[groupId]].setValue(usrId, itemId, Pu);
-                    piMatrix[newGid[groupId]].setValue(usrId, itemId, Pi);
+                    //                    puMatrix[newGid[groupId]].setValue(usrId, itemId, Pu);
+                    //                    piMatrix[newGid[groupId]].setValue(usrId, itemId, Pi);
                     testMatrix.setValue(usrId, itemId, AuiReal);
-                } else if (elemnts.length == 7) {
+                } else if (elemnts.length == 8) {
                     //userId, itemId, AuiReal, AuiEst, Pu, Pi, Pr, GroupId
                     int groupId = Integer.valueOf(elemnts[7]);
                     if (newGid[groupId] == -1) {
@@ -214,13 +214,13 @@ public final class RecResultUtil {
                     int itemId = Integer.valueOf(elemnts[1]);
                     double AuiReal = Double.valueOf(elemnts[2]);
                     double AuiEst = Double.valueOf(elemnts[3]);
-                    double Pu = Double.valueOf(elemnts[4]);
-                    double Pi = Double.valueOf(elemnts[5]);
+                    //                    double Pu = Double.valueOf(elemnts[4]);
+                    //                    double Pi = Double.valueOf(elemnts[5]);
                     //                double Pr = Double.valueOf(elemnts[6]);
 
                     estMatrix[newGid[groupId]].setValue(usrId, itemId, AuiEst);
-                    puMatrix[newGid[groupId]].setValue(usrId, itemId, Pu);
-                    piMatrix[newGid[groupId]].setValue(usrId, itemId, Pi);
+                    //                    puMatrix[newGid[groupId]].setValue(usrId, itemId, Pu);
+                    //                    piMatrix[newGid[groupId]].setValue(usrId, itemId, Pi);
                     testMatrix.setValue(usrId, itemId, AuiReal);
                 }
             }
