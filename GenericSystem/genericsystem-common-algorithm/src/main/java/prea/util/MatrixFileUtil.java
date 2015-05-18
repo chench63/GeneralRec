@@ -699,8 +699,7 @@ public final class MatrixFileUtil {
      * @param parser        the parser to parse the data structure
      * @return
      */
-    public static MatlabFasionSparseMatrix reads(String file, int rowCount, int colCount, int nnz,
-                                                 Parser parser) {
+    public static MatlabFasionSparseMatrix reads(String file, int nnz, Parser parser) {
         if (parser == null) {
             parser = new MovielensRatingTemplateParser();
         }

@@ -15,22 +15,41 @@ import edu.tongji.util.ExceptionUtil;
 import edu.tongji.util.FileUtil;
 
 public class EnsmblEffctWitPuPiExperiment {
-    /** file to store the original data and cocluster directory. 10M100K 1m*/
-    public static String[]       rootDirs      = { "E:/MovieLens/zWarmStart/ml-10M100K/1/" };
-    /** The number of users. 943 6040 69878  480189*/
-    public final static int      userCount     = 69878;
-    /** The number of items. 1682 3706 10677 17770*/
-    public final static int      itemCount     = 10677;
+    /** file to store the original data and cocluster directory. 10M100K 1m */
+    public static String[]       rootDirs      = { "E:/Netflix/zWarmStart/5/" };
+    /** The number of users. 943 6040 69878 480189 */
+    public final static int      userCount     = 480189;
+    /** The number of items. 1682 3706 10677 17770 */
+    public final static int      itemCount     = 17770;
     public final static double   maxValue      = 5.0d;
-    public final static double   minValue      = 0.5d;
+    public final static double   minValue      = 1.0d;
     public static int            modelNum      = 8;
-    public static int            offset        = 0;
-    public final static int[]    groupIncluded = {};
+    public static double         offset        = 150.0;
 
-    public final static String   pFile         = "WEMAREC[20]_C25_IWEW_[23]x2_RWSVD";
-    public final static String[] rFiles        = { "EnsmblHMP[20]_GlobalPuPi_Step1",
-            "EnsmblHMP[20]_GlobalPuPi_Step2", "EnsmblHMP[20]_GlobalPuPi_Step3",
-            "EnsmblHMP[20]_GlobalPuPi_Step4"  };
+    //netflix
+    //    public final static int[]    groupIncluded = { 0, 2 };
+    //    public final static int[]    groupIncluded = { 1, 3 };
+    //    public final static int[]    groupIncluded = { 4, 6 };
+    //    public final static int[]    groupIncluded = { 5, 7 };
+    //    public final static int[]    groupIncluded = { 0, 2, 4, 6 };
+    public final static int[]    groupIncluded = { 1, 3, 5, 7 };
+
+    //Movielens
+    //    public final static int[]    groupIncluded = { 0, 4 };
+    //    public final static int[]    groupIncluded = { 1, 5 };
+    //    public final static int[]    groupIncluded = { 2, 6 };
+    //    public final static int[]    groupIncluded = { 3, 7 };
+    //    public final static int[]    groupIncluded = { 8, 12 };
+    //    public final static int[]    groupIncluded = { 9, 13 };
+    //    public final static int[]    groupIncluded = { 10, 14 };
+    //    public final static int[]    groupIncluded = { 11, 15 };
+    //    public final static int[]    groupIncluded = { 0, 4, 8, 12 };
+    //    public final static int[]    groupIncluded = { 1, 5, 9, 13 };
+    //    public final static int[]    groupIncluded = { 2, 6, 10, 14 };
+    //    public final static int[]    groupIncluded = { 3, 7, 11, 15 };
+
+    public final static String   pFile         = "WEMAREC[5]_C25_IWEW_[23]x2_RWSVD";
+    public final static String[] rFiles        = { "EnsmblHMP[20]_GlobalPuPi_Step100" };
     public static double[][]     gInU;
     public static double[][]     gInI;
 
@@ -45,7 +64,7 @@ public class EnsmblEffctWitPuPiExperiment {
     public static void doEnsembleWithPiPu() {
 
         for (String rootDir : rootDirs) {
-            //1. load prediction information
+            // 1. load prediction information
             preproc(rootDir);
             SparseRowMatrix testMatrix = new SparseRowMatrix(userCount, itemCount);
             SparseRowMatrix[] estMatrix = new SparseRowMatrix[modelNum];
@@ -59,30 +78,34 @@ public class EnsmblEffctWitPuPiExperiment {
             RecResultUtil.readRec(rootDir + pFile, estMatrix, testMatrix, puMatrix, piMatrix,
                 groupIncluded);
 
-            //2. create multiple thread settings
-            double[][] beta1s = new double[rFiles.length][50];
-            for (int i = 0; i < rFiles.length; i++) {
-                for (int j = 0; j < 10; j++) {
-                    beta1s[i][j] = offset + i + j * 0.1;
-                }
-            }
+            // 2. create multiple thread settings
+            //            double[][] beta1s = new double[rFiles.length][10];
+            //            for (int i = 0; i < rFiles.length; i++) {
+            //                for (int j = 1; j <= 10; j++) {
+            //                    beta1s[i][j - 1] = offset + i * 10 + j * 1;
+            //                }
+            //            }
 
-            double[] beta2s = new double[51];
-            for (int i = 0; i <= 50; i++) {
-                beta2s[i] = i * 0.1;
-            }
+            //            double[] beta2s = new double[51];
+            //            for (int i = 0; i <= 50; i++) {
+            //                beta2s[i] = i * 0.1;
+            //            }
 
-            //3. ensemble in parallel
+            double[] beta1s = { 40.0d };
+            double[] beta2s = { 3.0d };
+
+            // 3. ensemble in parallel
             try {
                 ExecutorService exec = Executors.newCachedThreadPool();
-                exec.execute(new EnsembleWorker(testMatrix, estMatrix, puMatrix, piMatrix,
-                    beta1s[0], beta2s, rootDir + rFiles[0]));
-                exec.execute(new EnsembleWorker(testMatrix, estMatrix, puMatrix, piMatrix,
-                    beta1s[1], beta2s, rootDir + rFiles[1]));
-                exec.execute(new EnsembleWorker(testMatrix, estMatrix, puMatrix, piMatrix,
-                    beta1s[2], beta2s, rootDir + rFiles[2]));
-                exec.execute(new EnsembleWorker(testMatrix, estMatrix, puMatrix, piMatrix,
-                    beta1s[3], beta2s, rootDir + rFiles[3]));
+                exec.execute(new EnsembleWorker(testMatrix, estMatrix, puMatrix, piMatrix, beta1s,
+                    beta2s, rootDir + rFiles[0]));
+                //                exec.execute(new EnsembleWorker(testMatrix, estMatrix, puMatrix, piMatrix,
+                //                    beta1s[1], beta2s, rootDir + rFiles[1]));
+                //                exec.execute(new EnsembleWorker(testMatrix, estMatrix, puMatrix, piMatrix,
+                //                    beta1s[2], beta2s, rootDir + rFiles[2]));
+                // exec.execute(new EnsembleWorker(testMatrix, estMatrix,
+                // puMatrix, piMatrix, beta1s[3], beta2s, rootDir
+                // + rFiles[3]));
                 exec.shutdown();
                 exec.awaitTermination(Integer.MAX_VALUE, TimeUnit.DAYS);
             } catch (InterruptedException e) {
@@ -135,7 +158,7 @@ public class EnsmblEffctWitPuPiExperiment {
             this.resltFile = resltFile;
         }
 
-        /** 
+        /**
          * @see java.lang.Thread#run()
          */
         @Override
@@ -189,7 +212,7 @@ public class EnsmblEffctWitPuPiExperiment {
                                               + cumPrediction.getValue(u, i);
                     double newCumWeight = curWeight + cumWeight.getValue(u, i);
 
-                    //update old values
+                    // update old values
                     cumPrediction.setValue(u, i, newCumPrediction);
                     cumWeight.setValue(u, i, newCumWeight);
                 }
@@ -200,7 +223,7 @@ public class EnsmblEffctWitPuPiExperiment {
     protected static EvaluationMetrics evaluate(SparseRowMatrix cumPrediction,
                                                 SparseRowMatrix cumWeight,
                                                 SparseRowMatrix testMatrix) {
-        //compute predictions
+        // compute predictions
         for (int u = 0; u < userCount; u++) {
             int[] itemList = testMatrix.getRowRef(u).indexList();
             if (itemList == null) {
@@ -221,7 +244,7 @@ public class EnsmblEffctWitPuPiExperiment {
             }
         }
 
-        //evaluation
+        // evaluation
         return new EvaluationMetrics(testMatrix, cumWeight, maxValue, minValue);
     }
 
@@ -232,74 +255,82 @@ public class EnsmblEffctWitPuPiExperiment {
         return 1.0d + beta1 * gPu + beta2 * gPi;
     }
 
-    //    public static void cmpWithSaving(String rootDir, double[] beta0s, double[] beta1s,
-    //                                     double[] beta2s) {
-    //        //read testing set
-    //        System.out.println("1. load testing set. " + (new Date()));
-    //        String testFile = rootDir + "testingset";
-    //        SparseRowMatrix testMatrix = MatrixFileUtil.reads(testFile, userCount, itemCount, null);
+    // public static void cmpWithSaving(String rootDir, double[] beta0s,
+    // double[] beta1s,
+    // double[] beta2s) {
+    // //read testing set
+    // System.out.println("1. load testing set. " + (new Date()));
+    // String testFile = rootDir + "testingset";
+    // SparseRowMatrix testMatrix = MatrixFileUtil.reads(testFile, userCount,
+    // itemCount, null);
     //
-    //        String predctFile = rootDir + pFile;
-    //        String resltFile = rootDir + rFile;
-    //        StringBuilder content = new StringBuilder();
-    //        for (double beta1 : beta1s) {
-    //            for (double beta2 : beta2s) {
-    //                //ensemble & evaluate 
-    //                EvaluationMetrics metric = evlWithSaving(predctFile, 0.0d, beta1, beta2, testMatrix);
-    //                content.append(String.format("%.2f", beta1)).append('\t')
-    //                    .append(String.format("%.2f", beta2)).append('\t')
-    //                    .append(metric.printOneLine()).append('\n');
-    //                System.out.println("beta1: " + String.format("%.2f", beta1) + "\tbeta2: "
-    //                                   + String.format("%.2f", beta2) + "\tRMSE: " + metric.getRMSE()
-    //                                   + "\t" + (new Date()));
-    //            }
-    //            content.append('\n');
-    //        }
+    // String predctFile = rootDir + pFile;
+    // String resltFile = rootDir + rFile;
+    // StringBuilder content = new StringBuilder();
+    // for (double beta1 : beta1s) {
+    // for (double beta2 : beta2s) {
+    // //ensemble & evaluate
+    // EvaluationMetrics metric = evlWithSaving(predctFile, 0.0d, beta1, beta2,
+    // testMatrix);
+    // content.append(String.format("%.2f", beta1)).append('\t')
+    // .append(String.format("%.2f", beta2)).append('\t')
+    // .append(metric.printOneLine()).append('\n');
+    // System.out.println("beta1: " + String.format("%.2f", beta1) + "\tbeta2: "
+    // + String.format("%.2f", beta2) + "\tRMSE: " + metric.getRMSE()
+    // + "\t" + (new Date()));
+    // }
+    // content.append('\n');
+    // }
     //
-    //        FileUtil.write(resltFile, content.toString());
-    //    }
+    // FileUtil.write(resltFile, content.toString());
+    // }
     //
-    //    protected static EvaluationMetrics evlWithSaving(String predctFile, double beta0, double beta1,
-    //                                                     double beta2, SparseRowMatrix testMatrix) {
-    //        BufferedReader reader = null;
-    //        try {
-    //            //Ensemble steps
-    //            SparseRowMatrix cumPrediction = new SparseRowMatrix(userCount, itemCount);
-    //            SparseRowMatrix cumWeight = new SparseRowMatrix(userCount, itemCount);
+    // protected static EvaluationMetrics evlWithSaving(String predctFile,
+    // double beta0, double beta1,
+    // double beta2, SparseRowMatrix testMatrix) {
+    // BufferedReader reader = null;
+    // try {
+    // //Ensemble steps
+    // SparseRowMatrix cumPrediction = new SparseRowMatrix(userCount,
+    // itemCount);
+    // SparseRowMatrix cumWeight = new SparseRowMatrix(userCount, itemCount);
     //
-    //            File file = new File(predctFile);
-    //            reader = new BufferedReader(new FileReader(file));
-    //            String line = null;
-    //            while ((line = reader.readLine()) != null) {
-    //                //userId, itemId, AuiReal, AuiEst, Pu, Pi, Pr, GroupId
-    //                String[] elemnts = line.split("\\,");
-    //                int u = Integer.valueOf(elemnts[0]);
-    //                int i = Integer.valueOf(elemnts[1]);
-    //                double curPrediciton = Double.valueOf(elemnts[3]);
-    //                double curWeight = 0.0d;
-    //                double curPu = Double.valueOf(elemnts[4]);
-    //                double curPi = Double.valueOf(elemnts[5]);
-    //                curWeight = weightWithPuPi(u, i, beta1, beta2, curPu, curPi, curPrediciton);
+    // File file = new File(predctFile);
+    // reader = new BufferedReader(new FileReader(file));
+    // String line = null;
+    // while ((line = reader.readLine()) != null) {
+    // //userId, itemId, AuiReal, AuiEst, Pu, Pi, Pr, GroupId
+    // String[] elemnts = line.split("\\,");
+    // int u = Integer.valueOf(elemnts[0]);
+    // int i = Integer.valueOf(elemnts[1]);
+    // double curPrediciton = Double.valueOf(elemnts[3]);
+    // double curWeight = 0.0d;
+    // double curPu = Double.valueOf(elemnts[4]);
+    // double curPi = Double.valueOf(elemnts[5]);
+    // curWeight = weightWithPuPi(u, i, beta1, beta2, curPu, curPi,
+    // curPrediciton);
     //
-    //                double newCumPrediction = curPrediciton * curWeight + cumPrediction.getValue(u, i);
-    //                double newCumWeight = curWeight + cumWeight.getValue(u, i);
+    // double newCumPrediction = curPrediciton * curWeight +
+    // cumPrediction.getValue(u, i);
+    // double newCumWeight = curWeight + cumWeight.getValue(u, i);
     //
-    //                //update old values
-    //                cumPrediction.setValue(u, i, newCumPrediction);
-    //                cumWeight.setValue(u, i, newCumWeight);
-    //            }
+    // //update old values
+    // cumPrediction.setValue(u, i, newCumPrediction);
+    // cumWeight.setValue(u, i, newCumWeight);
+    // }
     //
-    //            //Evaluation steps
-    //            EvaluationMetrics metric = evaluate(cumPrediction, cumWeight, testMatrix);
-    //            return metric;
-    //        } catch (FileNotFoundException e) {
-    //            ExceptionUtil.caught(e, "无法找到对应的加载文件: " + predctFile);
-    //        } catch (IOException e) {
-    //            ExceptionUtil.caught(e, "读取文件发生异常，校验文件格式");
-    //        } finally {
-    //            IOUtils.closeQuietly(reader);
-    //        }
+    // //Evaluation steps
+    // EvaluationMetrics metric = evaluate(cumPrediction, cumWeight,
+    // testMatrix);
+    // return metric;
+    // } catch (FileNotFoundException e) {
+    // ExceptionUtil.caught(e, "无法找到对应的加载文件: " + predctFile);
+    // } catch (IOException e) {
+    // ExceptionUtil.caught(e, "读取文件发生异常，校验文件格式");
+    // } finally {
+    // IOUtils.closeQuietly(reader);
+    // }
     //
-    //        return null;
-    //    }
+    // return null;
+    // }
 }

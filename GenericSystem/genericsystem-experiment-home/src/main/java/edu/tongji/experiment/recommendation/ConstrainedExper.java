@@ -33,10 +33,10 @@ public class ConstrainedExper {
     public final static int     itemCount    = 10677;
     public final static double  maxValue     = 5.0;
     public final static double  minValue     = 0.5;
-    public final static double  lrate        = 0.01;
-    public final static double  regularized  = 0.001;
-    public final static int     maxIteration = 100;
-    public final static boolean showProgress = false;
+    public final static double  lrate        = 0.001;
+    public final static double  regularized  = 0.06;
+    public final static int     maxIteration = 400;
+    public final static boolean showProgress = true;
 
     public final static String  resultDir    = "E:/MovieLens/zWarmStart/";
 
@@ -52,19 +52,21 @@ public class ConstrainedExper {
      * Experiments
      *========================================*/
     public static void rankExp() {
-        String clusterDir = "Kmeanspp/KL_2_2/";
+        String clusterDir = "KmeansppConvex/KL_2_2/";
 
         int[] featureCounts = { 20 };
         for (String rootDir : rootDirs) {
             //            RSVD(featureCounts, rootDir);
             //            UserConstrainedRSVD(featureCounts, clusterDir, rootDir);
             //            ItemConstrainedRSVD(featureCounts, clusterDir, rootDir);
-            BiConstrainedRSVD(featureCounts, clusterDir, rootDir);
+            //            BiConstrainedRSVD(featureCounts, clusterDir, rootDir);
+            BiConstrainedRSVDSaving(featureCounts, clusterDir, rootDir);
+
         }
     }
 
     public static void clusteringExp() {
-        String[] clusterDirs = { "Kmeanspp/KL_2_2/" };
+        String[] clusterDirs = { "KmeansppConvex/KL_2_2/" };
         int[] featureCounts = { 20 };
 
         for (String rootDir : rootDirs) {
@@ -190,10 +192,10 @@ public class ConstrainedExper {
         //loading dataset
         String trainFile = rootDir + "trainingset";
         String testFile = rootDir + "testingset";
-        MatlabFasionSparseMatrix rateMatrix = MatrixFileUtil.reads(trainFile, userCount, itemCount,
-            20 * 1000 * 1000, null);
-        MatlabFasionSparseMatrix testMatrix = MatrixFileUtil.reads(testFile, userCount, itemCount,
-            20 * 1000 * 1000, null);
+        MatlabFasionSparseMatrix rateMatrix = MatrixFileUtil.reads(trainFile, 20 * 1000 * 1000,
+            null);
+        MatlabFasionSparseMatrix testMatrix = MatrixFileUtil
+            .reads(testFile, 20 * 1000 * 1000, null);
 
         int[] ua = new int[userCount];
         int[] ia = new int[itemCount];

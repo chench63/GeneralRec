@@ -101,7 +101,7 @@ public class FCRSVD extends MatrixFactorizationRecommender {
             for (int k = 0; k < itemFeaturesAss.length; k++) {
                 for (int f = 0; f < featureCount; f++) {
                     double rdm = Math.random() / featureCount;
-                    itemFeaturesAss[k].setValue(i, f, rdm);
+                    itemFeaturesAss[k].setValue(f, i, rdm);
                 }
             }
         }
@@ -167,7 +167,7 @@ public class FCRSVD extends MatrixFactorizationRecommender {
             currErr = Math.sqrt(sum / rateCount);
 
             round++;
-            if (showProgress && (round % 10 == 0) && tMatrix != null) {
+            if (showProgress && (round % 5 == 0) && tMatrix != null) {
                 EvaluationMetrics metric = this.evaluate(tMatrix);
                 FileUtil.writeAsAppend(
                     "E://10m[" + featureCount + "]_k" + userFeaturesAss.length + "_" + maxIter,
@@ -219,7 +219,7 @@ public class FCRSVD extends MatrixFactorizationRecommender {
             for (int k = 0; k < itemDenseFeaturesAss.length; k++) {
                 for (int f = 0; f < featureCount; f++) {
                     double rdm = Math.random() / featureCount;
-                    itemDenseFeaturesAss[k].setValue(i, f, rdm);
+                    itemDenseFeaturesAss[k].setValue(f, i, rdm);
                 }
             }
         }
@@ -272,10 +272,14 @@ public class FCRSVD extends MatrixFactorizationRecommender {
                                                                                         * gis));
 
                     //global model updates
-                    userDenseFeatures.setValue(u, s, Fus + learningRate
-                                                     * (err * Gis - regularizer * Fus));
-                    itemDenseFeatures.setValue(s, i, Gis + learningRate
-                                                     * (err * Fus - regularizer * Gis));
+                    userDenseFeatures.setValue(u, s, Fus
+                                                     + learningRate
+                                                     * (err * Gis + errUui * gis - regularizer
+                                                                                   * Fus));
+                    itemDenseFeatures.setValue(s, i, Gis
+                                                     + learningRate
+                                                     * (err * Fus + errIui * fus - regularizer
+                                                                                   * Gis));
                 }
             }
 
@@ -283,10 +287,11 @@ public class FCRSVD extends MatrixFactorizationRecommender {
             currErr = Math.sqrt(sum / rateCount);
 
             round++;
-            if (showProgress && (round % 10 == 0) && tMatrix != null) {
+            if (showProgress && (round % 5 == 0) && tMatrix != null) {
                 double rmse = this.evaluate(tMatrix);
                 FileUtil.writeAsAppend(
-                    "E://10m[" + featureCount + "]_k" + userFeaturesAss.length + "_" + maxIter,
+                    "E://10m[" + featureCount + "]_" + itemFeaturesAss.length + "_"
+                            + userFeaturesAss.length + "_" + maxIter,
                     round + "\t" + String.format("%.4f", currErr) + "\t"
                             + String.format("%.4f", rmse) + "\n");
             }

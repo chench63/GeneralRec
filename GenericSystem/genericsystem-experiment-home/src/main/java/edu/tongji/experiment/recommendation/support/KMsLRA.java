@@ -29,15 +29,15 @@ public class KMsLRA {
     //      Common variable
     //==========================
     /** file to store the original data and cocluster directory, make sure the data is compact.*/
-    public final static String[] ROOTDIRS      = { "E:/MovieLens/ml-10M100K/1/"
-                                               //                                                   ,"E:/MovieLens/ml-1m/2/", "E:/MovieLens/ml-10M100K/1/" 
-                                               };
+    public final static String[] ROOTDIRS      = { "E:/MovieLens/zWarmStart/ml-10M100K/1/",
+            "E:/MovieLens/zWarmStart/ml-10M100K/2/", "E:/MovieLens/zWarmStart/ml-10M100K/3/",
+            "E:/MovieLens/zWarmStart/ml-10M100K/4/", "E:/MovieLens/zWarmStart/ml-10M100K/5/" };
     /** the number of rows 69878 6040*/
     public final static int      rowCount      = 69878;
     /** the number of columns 10677 3706*/
     public final static int      colCount      = 10677;
     /** the type of distance involved*/
-    public final static int[]    DIVERGENCE    = { KMeansPlusPlusUtil.KL_DISTANCE,
+    public final static int[]    DIVERGENCE    = { KMeansPlusPlusUtil.KL_DISTANCE_CONVEX,
                                                //            KMeansPlusPlusUtil.SQUARE_EUCLIDEAN_DISTANCE, KMeansPlusPlusUtil.SINE_DISTANCE 
                                                };
     /** the nickname of distance type involved*/
@@ -45,7 +45,7 @@ public class KMsLRA {
                                                //"EU", "SI" 
                                                };
     /** the number of  row_column classes*/
-    public final static String[] DIMEN_SETTING = { "5_5" };
+    public final static String[] DIMEN_SETTING = { "2_2", "3_2", "4_2", "3_3" };
     /** the maximum number of iterations*/
     public final static int      maxIteration  = 70;
     /** Maximum value of rating, existing in the dataset. */
@@ -72,7 +72,7 @@ public class KMsLRA {
             // load dataset
             String sourceFile = rootDir + "trainingset";
 
-            String targetCoclusterRoot = rootDir + "Kmeanspp/";
+            String targetCoclusterRoot = rootDir + "KmeansppConvex/";
             SparseMatrix rateMatrix = MatrixFileUtil.read(sourceFile, rowCount, colCount, null);
             //                      String targetCoclusterRoot = rootDir + "KmeansppLimited/";
             //                        SparseMatrix rateMatrix = MatrixFileUtil.read(sourceFile, rowCount, colCount, parser,
@@ -110,7 +110,7 @@ public class KMsLRA {
             // load dataset
             String sourceFile = rootDir + "trainingset";
 
-            String targetCoclusterRoot = rootDir + "Kmeanspp/";
+            String targetCoclusterRoot = rootDir + "KmeansppConvex/";
             SparseMatrix[] distriInfoMatrix = MatrixFileUtil.readDistriInfo(sourceFile, rowCount,
                 colCount, maxValue, minValue, null);
             LoggerUtil.info(logger, (new StringBuilder("0. load dataset: ")).append(sourceFile));
