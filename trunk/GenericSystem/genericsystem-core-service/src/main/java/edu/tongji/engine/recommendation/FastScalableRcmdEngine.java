@@ -99,8 +99,8 @@ public class FastScalableRcmdEngine extends RcmdtnEngine {
         LoggerUtil.info(logger, "3. loading rateMatrix and testMatrix. ");
         SparseRowMatrix rateMatrix = MatrixFileUtil.reads(trainingSetFile, userCount, itemCount,
             parser);
-        MatlabFasionSparseMatrix tmMatrix = MatrixFileUtil.reads(testingSetFile, userCount,
-            itemCount, 20 * 1000 * 1000, parser);
+        MatlabFasionSparseMatrix tmMatrix = MatrixFileUtil.reads(testingSetFile, 20 * 1000 * 1000,
+            parser);
         LoggerUtil
             .info(logger, "Train: " + rateMatrix.itemCount() + "\tTest: " + tmMatrix.getNnz());
 

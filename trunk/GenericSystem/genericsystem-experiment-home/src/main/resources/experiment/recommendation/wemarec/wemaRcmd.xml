@@ -47,14 +47,19 @@
 		<property name="parser" ref="movielensRatingTemplateParser" />
 		<property name="groups">
 			<list>
-				<ref bean="cocluter_IW2_4_2"></ref>
-				<ref bean="cocluter_IW2_3_3"></ref>
-				<ref bean="cocluter_IW5_4_2"></ref>
-				<ref bean="cocluter_IW5_3_3"></ref>
-				<ref bean="cocluter_EW2_4_2"></ref>
-				<ref bean="cocluter_EW2_3_3"></ref>
-				<ref bean="cocluter_EW5_4_2"></ref>
-				<ref bean="cocluter_EW5_3_3"></ref>
+				<ref bean="cocluter_IW2_2_2"></ref>
+				<ref bean="cocluter_IW2_3_2"></ref>
+				<ref bean="cocluter_IW5_2_2"></ref>
+				<ref bean="cocluter_IW5_3_2"></ref>
+				<ref bean="cocluter_EW2_2_2"></ref>
+				<ref bean="cocluter_EW2_3_2"></ref>
+				<ref bean="cocluter_EW5_2_2"></ref>
+				<ref bean="cocluter_EW5_3_2"></ref>
+
+				<!-- <ref bean="cocluter_IW2_4_2"></ref> <ref bean="cocluter_IW2_3_3"></ref> 
+					<ref bean="cocluter_IW5_4_2"></ref> <ref bean="cocluter_IW5_3_3"></ref> <ref 
+					bean="cocluter_EW2_4_2"></ref> <ref bean="cocluter_EW2_3_3"></ref> <ref bean="cocluter_EW5_4_2"></ref> 
+					<ref bean="cocluter_EW5_3_3"></ref> -->
 			</list>
 		</property>
 	</bean>

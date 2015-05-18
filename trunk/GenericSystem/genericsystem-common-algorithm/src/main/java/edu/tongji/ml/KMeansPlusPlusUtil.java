@@ -32,6 +32,8 @@ public class KMeansPlusPlusUtil {
     public final static int     PEARSON_CORRELATION_DISTANCE = 203;
     /** KL divergence*/
     public final static int     KL_DISTANCE                  = 204;
+    /** KL divergence with convergence insurance*/
+    public final static int     KL_DISTANCE_CONVEX           = 205;
 
     /** logger */
     private final static Logger logger                       = Logger
@@ -233,6 +235,13 @@ public class KMeansPlusPlusUtil {
                            * Math.log(centroid.getValue(indx) / a.getValue(indx));
                 }
                 return Dkl;
+            case KL_DISTANCE_CONVEX:
+                double DklCon = 0.0d;
+                for (int indx : centroid.indexList()) {
+                    DklCon += a.getValue(indx)
+                              * Math.log(a.getValue(indx) / centroid.getValue(indx));
+                }
+                return DklCon;
             default:
                 throw new RuntimeException("Wrong Distance Type! ");
         }

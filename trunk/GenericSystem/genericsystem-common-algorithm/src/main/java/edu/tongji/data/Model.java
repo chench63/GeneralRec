@@ -51,16 +51,16 @@ public class Model {
      */
     public void preProc(final SparseMatrix rateMatrix) {
 
-        if (recmmd instanceof WeigtedRSVD) {
-            WeigtedRSVD lRecmmd = (WeigtedRSVD) recmmd;
-            double[][] ensnblWeightInU = rateMatrix.probability(rows, cols, recmmd.maxValue,
-                recmmd.minValue, true);
-            lRecmmd.setEnsnblWeightInU(ensnblWeightInU);
-
-            double[][] ensnblWeightInI = rateMatrix.probability(rows, cols, recmmd.maxValue,
-                recmmd.minValue, false);
-            lRecmmd.setEnsnblWeightInI(ensnblWeightInI);
-        }
+        //        if (recmmd instanceof WeigtedRSVD) {
+        //            WeigtedRSVD lRecmmd = (WeigtedRSVD) recmmd;
+        //            double[][] ensnblWeightInU = rateMatrix.probability(rows, cols, recmmd.maxValue,
+        //                recmmd.minValue, true);
+        //            lRecmmd.setEnsnblWeightInU(ensnblWeightInU);
+        //
+        //            double[][] ensnblWeightInI = rateMatrix.probability(rows, cols, recmmd.maxValue,
+        //                recmmd.minValue, false);
+        //            lRecmmd.setEnsnblWeightInI(ensnblWeightInI);
+        //        }
 
     }
 
@@ -72,7 +72,7 @@ public class Model {
     public void buildModel(final SparseRowMatrix rateMatrix) {
         if (recmmd instanceof WeigtedRSVD) {
             WeigtedRSVD lRecmmd = (WeigtedRSVD) recmmd;
-            MatlabFasionSparseMatrix lrMatrix = rateMatrix.partition(80 * 1000 * 1000, rows, cols);
+            MatlabFasionSparseMatrix lrMatrix = rateMatrix.partition(50 * 1000 * 1000, rows, cols);
             lRecmmd.buildModel(lrMatrix, rows, cols);
         } else {
 
@@ -163,8 +163,16 @@ public class Model {
             throw new RuntimeException("The instance inf lEvaAndRecordWSVD is not WSVD!");
         }
 
-        WeigtedRSVD lRecmmd = (WeigtedRSVD) recmmd;
+        boolean[] rowAvl = new boolean[recmmd.userCount];
+        for (int row : rows) {
+            rowAvl[row] = true;
+        }
+        boolean[] colAvl = new boolean[recmmd.itemCount];
+        for (int col : cols) {
+            colAvl[col] = true;
+        }
 
+        WeigtedRSVD lRecmmd = (WeigtedRSVD) recmmd;
         int[] uIndx = testMatrix.getRowIndx();
         int[] iIndx = testMatrix.getColIndx();
         double[] Auis = testMatrix.getVals();
@@ -175,11 +183,14 @@ public class Model {
         for (int numSeq = 0; numSeq < nnz; numSeq++) {
             int u = uIndx[numSeq];
             int i = iIndx[numSeq];
-            double AuiReal = Auis[numSeq];
-            double AuiEst = lRecmmd.predicts(u, i);
+            if (!rowAvl[u] | !colAvl[i]) {
+                continue;
+            }
 
             //record local prediction
             //userId, itemId, AuiReal, AuiEst, Pu, Pi, Pr, GroupId
+            double AuiReal = Auis[numSeq];
+            double AuiEst = lRecmmd.predicts(u, i);
             buffer.append(u).append(',').append(i).append(',').append(AuiReal).append(',')
                 .append(AuiEst).append(',').append(lRecmmd.getPu(u, AuiEst)).append(',')
                 .append(lRecmmd.getPi(i, AuiEst)).append(',').append(lRecmmd.getPr(AuiEst))
@@ -198,6 +209,10 @@ public class Model {
 
         FileUtil.writeAsAppend(resultFile, buffer.toString());
 
+        // release local model memory
+        if (recmmd.userCount > 400 * 1000 & recmmd.itemCount > 12 * 1000) {
+            System.gc();
+        }
     }
 
     /**
