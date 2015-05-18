@@ -30,11 +30,6 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
     /** the rating distribution w.r.t the whole rating matrix*/
     public double[]           trainWeight;
 
-    /** User profile in low-rank matrix form. */
-    protected DenseMatrix     userDenseFeatures;
-    /** Item profile in low-rank matrix form. */
-    protected DenseMatrix     itemDenseFeatures;
-
     //===================================
     //      parameter
     //===================================

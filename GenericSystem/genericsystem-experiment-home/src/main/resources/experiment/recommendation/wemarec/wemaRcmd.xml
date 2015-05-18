@@ -59,6 +59,25 @@
 		</property>
 	</bean>
 
+	<bean id="fastRcmd" class="edu.tongji.engine.recommendation.FastScalableRcmdEngine">
+		<property name="rootDir" value="${ROOT_DIR}" />
+		<property name="userCount" value="${USER_COUNT}" />
+		<property name="itemCount" value="${ITEM_COUNT}" />
+		<property name="parser" ref="movielensRatingTemplateParser" />
+		<property name="groups">
+			<list>
+				<ref bean="cocluter_IW2_4_2"></ref>
+				<ref bean="cocluter_IW2_3_3"></ref>
+				<ref bean="cocluter_IW5_4_2"></ref>
+				<ref bean="cocluter_IW5_3_3"></ref>
+				<ref bean="cocluter_EW2_4_2"></ref>
+				<ref bean="cocluter_EW2_3_3"></ref>
+				<ref bean="cocluter_EW5_4_2"></ref>
+				<ref bean="cocluter_EW5_3_3"></ref>
+			</list>
+		</property>
+	</bean>
+
 	<!-- *********************** Kmeanspp-EW Setting************************************** -->
 	<bean id="KMeans_EU_2_2" class="edu.tongji.data.ModelGroup">
 		<property name="settingFile" value="Kmeanspp/EU_2_2/SETTING" />

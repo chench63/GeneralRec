@@ -6,6 +6,8 @@ import prea.util.EvaluationMetrics;
 
 import org.apache.log4j.Logger;
 
+import edu.tongji.data.DenseMatrix;
+import edu.tongji.data.MatlabFasionSparseMatrix;
 import edu.tongji.data.SparseColumnMatrix;
 import edu.tongji.data.SparseMatrix;
 import edu.tongji.data.SparseRowMatrix;
@@ -55,6 +57,10 @@ public abstract class MatrixFactorizationRecommender implements Serializable {
     protected SparseRowMatrix        userFeatures;
     /** Item profile in low-rank matrix form. */
     protected SparseColumnMatrix     itemFeatures;
+    /** User profile in low-rank matrix form. */
+    protected DenseMatrix            userDenseFeatures;
+    /** Item profile in low-rank matrix form. */
+    protected DenseMatrix            itemDenseFeatures;
 
     /** testMatrix used to render the fitted process. */
     transient public SparseRowMatrix tMatrix;
@@ -193,6 +199,40 @@ public abstract class MatrixFactorizationRecommender implements Serializable {
     }
 
     /**
+     * Evaluate the designated algorithm with the given test data.
+     * 
+     * @param testMatrix The rating matrix with test data.
+     * 
+     * @return The result of evaluation, such as MAE, RMSE, and rank-score.
+     */
+    public double evaluate(MatlabFasionSparseMatrix testMatrix) {
+        double RMSE = 0.0d;
+
+        int rateCount = testMatrix.getNnz();
+        int[] uIndx = testMatrix.getRowIndx();
+        int[] iIndx = testMatrix.getColIndx();
+        double[] Auis = testMatrix.getVals();
+        for (int numSeq = 0; numSeq < rateCount; numSeq++) {
+
+            int u = uIndx[numSeq];
+            int i = iIndx[numSeq];
+            double AuiReal = Auis[numSeq];
+            double AuiEst = this.offset
+                            + innerPrediction(u, i, userDenseFeatures, itemDenseFeatures);
+
+            if (AuiEst > maxValue) {
+                AuiEst = maxValue;
+            } else if (AuiEst < minValue) {
+                AuiEst = minValue;
+            }
+
+            RMSE += Math.pow(AuiReal - AuiEst, 2.0d);
+        }
+
+        return Math.sqrt(RMSE / rateCount);
+    }
+
+    /**
      * return the predicted rating
      * 
      * @param u the given user index
@@ -210,6 +250,15 @@ public abstract class MatrixFactorizationRecommender implements Serializable {
         } else {
             return prediction;
         }
+    }
+
+    protected double innerPrediction(int u, int i, DenseMatrix uDenseFeature,
+                                     DenseMatrix iDenseFeature) {
+        double AuiEst = 0.0d;
+        for (int f = 0; f < featureCount; f++) {
+            AuiEst += uDenseFeature.getValue(u, f) * iDenseFeature.getValue(f, i);
+        }
+        return AuiEst;
     }
 
     /**
