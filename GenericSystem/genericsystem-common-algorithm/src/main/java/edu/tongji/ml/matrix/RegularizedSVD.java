@@ -1,6 +1,8 @@
 package edu.tongji.ml.matrix;
 
 import prea.util.EvaluationMetrics;
+import edu.tongji.data.DenseMatrix;
+import edu.tongji.data.MatlabFasionSparseMatrix;
 import edu.tongji.data.SparseMatrix;
 import edu.tongji.data.SparseRowMatrix;
 import edu.tongji.data.SparseVector;
@@ -160,4 +162,66 @@ public class RegularizedSVD extends MatrixFactorizationRecommender {
         }
     }
 
+    public void buildModel(MatlabFasionSparseMatrix rateMatrix, MatlabFasionSparseMatrix tMatrix) {
+        // Initialize user/item features:
+        userDenseFeatures = new DenseMatrix(userCount, featureCount);
+        for (int u = 0; u < userCount; u++) {
+            for (int f = 0; f < featureCount; f++) {
+                double rdm = Math.random() / featureCount;
+                userDenseFeatures.setValue(u, f, rdm);
+            }
+
+        }
+        itemDenseFeatures = new DenseMatrix(featureCount, itemCount);
+        for (int i = 0; i < itemCount; i++) {
+            for (int f = 0; f < featureCount; f++) {
+                double rdm = Math.random() / featureCount;
+                itemDenseFeatures.setValue(f, i, rdm);
+            }
+
+        }
+
+        // Gradient Descent:
+        int round = 0;
+        int rateCount = rateMatrix.getNnz();
+        double prevErr = 99999;
+        double currErr = 9999;
+
+        int[] uIndx = rateMatrix.getRowIndx();
+        int[] iIndx = rateMatrix.getColIndx();
+        double[] Auis = rateMatrix.getVals();
+        while (Math.abs(prevErr - currErr) > 0.0001 && round < maxIter) {
+            double sum = 0.0;
+
+            for (int numSeq = 0; numSeq < rateCount; numSeq++) {
+                int u = uIndx[numSeq];
+                int i = iIndx[numSeq];
+
+                //global model
+                double AuiReal = Auis[numSeq];
+                double AuiEst = innerPrediction(u, i, userDenseFeatures, itemDenseFeatures);
+                double err = AuiReal - AuiEst;
+                sum += Math.pow(err, 2.0d);
+
+                for (int s = 0; s < featureCount; s++) {
+                    double Fus = userDenseFeatures.getValue(u, s);
+                    double Gis = itemDenseFeatures.getValue(s, i);
+
+                    //global model updates
+                    userDenseFeatures.setValue(u, s, Fus + learningRate
+                                                     * (err * Gis - regularizer * Fus));
+                    itemDenseFeatures.setValue(s, i, Gis + learningRate
+                                                     * (err * Fus - regularizer * Gis));
+                }
+            }
+
+            prevErr = currErr;
+            currErr = Math.sqrt(sum / rateCount);
+
+            round++;
+
+            // Show progress:
+            LoggerUtil.info(logger, round + "\t" + currErr);
+        }
+    }
 }
