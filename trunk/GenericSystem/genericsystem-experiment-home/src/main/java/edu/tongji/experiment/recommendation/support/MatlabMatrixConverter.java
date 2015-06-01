@@ -20,33 +20,36 @@ import edu.tongji.util.LoggerUtil;
  */
 public final class MatlabMatrixConverter {
     /** file to store the original data and cocluster directory, make sure the data is compact.*/
-    public final static String[] rootDirs = { "E:/MovieLens/zWarmStart/ml-10M100K/1/",
-            "E:/MovieLens/zWarmStart/ml-10M100K/2/", "E:/MovieLens/zWarmStart/ml-10M100K/3/",
-            "E:/MovieLens/zWarmStart/ml-10M100K/4/", "E:/MovieLens/zWarmStart/ml-10M100K/5/" };
+    public final static String[] rootDirs  = { "E:/MovieLens/zColdStart/ml-10M100K/Fetch50/1/",
+            "E:/MovieLens/zColdStart/ml-10M100K/Fetch50/2/",
+            "E:/MovieLens/zColdStart/ml-10M100K/Fetch50/3/" };
+    public final static String   resultDir = "E:/";
     /** logger */
-    private final static Logger  logger   = Logger.getLogger(LoggerDefineConstant.SERVICE_TEST);
+    private final static Logger  logger    = Logger.getLogger(LoggerDefineConstant.SERVICE_TEST);
 
     /**
      * 
      * @param args
      */
     public static void main(String[] args) {
+        int seq = 0;
         for (String rootDir : rootDirs) {
-            doConvert(rootDir);
+            seq++;
+            doConvert(rootDir, seq);
         }
     }
 
-    public static void doConvert(String rootDir) {
+    public static void doConvert(String rootDir, int seq) {
         LoggerUtil.info(logger, "Entering rootDir: " + rootDir);
 
         LoggerUtil.info(logger, "\t\ta)Converting trainingFile.");
         String trainIn = rootDir + "trainingset";
-        String trainOut = rootDir + "train.mm";
+        String trainOut = resultDir + "train" + seq + ".mm";
         innerConvert(trainIn, trainOut);
 
         LoggerUtil.info(logger, "\t\tb)Converting trainingFile.");
         String testIn = rootDir + "testingset";
-        String testOut = rootDir + "test.mm";
+        String testOut = resultDir + "test" + seq + ".mm";
         innerConvert(testIn, testOut);
     }
 
@@ -63,11 +66,11 @@ public final class MatlabMatrixConverter {
             String line = null;
             while ((line = reader.readLine()) != null) {
                 String[] elements = line.split("\\::");
-                int userId = Integer.valueOf(elements[0]);
-                int itemId = Integer.valueOf(elements[1]);
+                int userId = Integer.valueOf(elements[0]) + 1;
+                int itemId = Integer.valueOf(elements[1]) + 1;
                 //ItemId,UserId,Rating
-                ratingContent.append('\n').append(elements[1]).append(' ').append(elements[0])
-                    .append(' ').append(elements[2]);
+                ratingContent.append('\n').append(itemId).append(' ').append(userId).append(' ')
+                    .append(elements[2]);
 
                 if (userId > maxUId) {
                     maxUId = userId;
@@ -87,9 +90,9 @@ public final class MatlabMatrixConverter {
         }
 
         //recording
-        StringBuilder header = new StringBuilder("%%MatrixMarket matrix array real general\n"
-                                                 + "% Generated 22-May-2015\n" + maxIId + ' '
-                                                 + maxUId + ' ' + num);
+        StringBuilder header = new StringBuilder("%%MatrixMarket matrix coordinate real general\n"
+                                                 + "% Generated 22-May-2015\n" + (maxIId) + ' '
+                                                 + (maxUId) + ' ' + num);
         header.append(ratingContent);
         FileUtil.write(fileOutput, header.toString());
     }
