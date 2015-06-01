@@ -1,11 +1,11 @@
 package prea.recommender.matrix;
 
+import prea.data.structure.FeatureMatrix;
 import prea.data.structure.SparseColumnMatrix;
 import prea.data.structure.SparseMatrix;
 import prea.data.structure.SparseRowMatrix;
 import prea.recommender.Recommender;
 import prea.util.EvaluationMetrics;
-
 import prea.util.LoggerDefineConstant;
 
 //import java.io.FileOutputStream;
@@ -62,6 +62,10 @@ public abstract class MatrixFactorizationRecommender implements Recommender, Ser
     protected SparseRowMatrix     userFeatures;
     /** Item profile in low-rank matrix form. */
     protected SparseColumnMatrix  itemFeatures;
+    /** User profile in low-rank matrix form. */
+    protected FeatureMatrix       userDenseFeatures;
+    /** Item profile in low-rank matrix form. */
+    protected FeatureMatrix       itemDenseFeatures;
 
     /*
      * ======================================== Constructors
@@ -203,6 +207,15 @@ public abstract class MatrixFactorizationRecommender implements Recommender, Ser
         }
 
         return new EvaluationMetrics(testMatrix, predicted, maxValue, minValue);
+    }
+
+    protected double innerPrediction(int u, int i, FeatureMatrix uDenseFeature,
+                                     FeatureMatrix iDenseFeature) {
+        double AuiEst = 0.0d;
+        for (int f = 0; f < featureCount; f++) {
+            AuiEst += uDenseFeature.getValue(u, f) * iDenseFeature.getValue(f, i);
+        }
+        return AuiEst;
     }
 
 }

@@ -5,7 +5,10 @@
 package prea.main;
 
 import java.util.Date;
+
 import org.apache.log4j.Logger;
+
+import prea.data.structure.MatlabFasionSparseMatrix;
 import prea.data.structure.SparseRowMatrix;
 import prea.recommender.llorma.SingletonParallelLLORMA;
 import prea.recommender.matrix.RegularizedSVD;
@@ -45,10 +48,6 @@ public class LLORMA {
     }
 
     public static void doLLORMA(String rootDir, int[] featureCounts) {
-        System.out.println("1. load trainingset." + new Date());
-        String train = rootDir + "trainingset";
-        SparseRowMatrix rateMatrix = MatrixFileUtil.reads(train, userCount + 1, itemCount + 1);
-
         double maxValue = 5.0;
         double minValue = 0.5;
         double learningRate = 0.01;
@@ -57,21 +56,36 @@ public class LLORMA {
         int modelCount = 50;
         int ml = 4;
 
+        System.out.println("1. load trainingset." + new Date());
+        String train = rootDir + "trainingset";
+        MatlabFasionSparseMatrix trainSeq = MatrixFileUtil.reads(train, 60 * 1000 * 1000);
+        int[] anchorUser = new int[modelCount];
+        int[] anchorItem = new int[modelCount];
+        for (int modelSeq = 0; modelSeq < modelCount; modelSeq++) {
+            int seq = (int) (Math.random() * trainSeq.getNnz());
+            anchorUser[modelSeq] = trainSeq.getRowIndx()[seq];
+            anchorItem[modelSeq] = trainSeq.getColIndx()[seq];
+        }
+
         System.out.println("2. excute SVD to cmp sim. " + new Date());
         RegularizedSVD baseline = new RegularizedSVD(userCount, itemCount, maxValue, minValue, 20,
-            0.005, 0.2, 0, 100, true);
-        baseline.buildModel(rateMatrix);
+            0.005, 0.2, 0, 30, true);
+        baseline.buildModel(trainSeq, null);
 
         System.out.println("3. load testset." + new Date());
         String test = rootDir + "testingset";
-        SparseRowMatrix testMatrix = MatrixFileUtil.reads(test, userCount + 1, itemCount + 1);
+        MatlabFasionSparseMatrix testSeq = MatrixFileUtil.reads(test, 20 * 1000 * 1000);
 
         for (int featureCount : featureCounts) {
             System.out.println("4. excute LLORMA." + new Date());
             SingletonParallelLLORMA sgllorma = new SingletonParallelLLORMA(userCount, itemCount,
                 maxValue, minValue, featureCount, learningRate, regularized, maxIter, modelCount,
-                KernelSmoothing.EPANECHNIKOV_KERNEL, 0.8, baseline, testMatrix, ml, true);
-            sgllorma.buildModel(rateMatrix);
+                KernelSmoothing.EPANECHNIKOV_KERNEL, 0.8, baseline, null, ml, true);
+            sgllorma.testSeq = testSeq;
+            sgllorma.trainSeq = trainSeq;
+            sgllorma.anchorItem = anchorItem;
+            sgllorma.anchorUser = anchorUser;
+            sgllorma.buildModel((SparseRowMatrix) null);
         }
     }
 
