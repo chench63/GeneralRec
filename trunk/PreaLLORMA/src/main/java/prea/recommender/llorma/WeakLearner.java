@@ -1,8 +1,12 @@
 package prea.recommender.llorma;
 
-import prea.data.structure.SparseColumnMatrix;
-import prea.data.structure.SparseRowMatrix;
+import org.apache.log4j.Logger;
+
+import prea.data.structure.FeatureMatrix;
+import prea.data.structure.MatlabFasionSparseMatrix;
 import prea.data.structure.SparseVector;
+import prea.util.LoggerDefineConstant;
+import prea.util.LoggerUtil;
 
 /**
  * A class learning each local model used in singleton LLORMA.
@@ -17,35 +21,41 @@ import prea.data.structure.SparseVector;
  */
 public class WeakLearner extends Thread {
     /** The unique identifier of the thread. */
-    private int                threadId;
+    private int                      threadId;
     /** The number of features. */
-    private int                rank;
+    private int                      rank;
     /** The number of users. */
-    private int                userCount;
+    private int                      userCount;
     /** The number of items. */
-    private int                itemCount;
+    private int                      itemCount;
     /** The anchor user used to learn this local model. */
-    private int                anchorUser;
+    private int                      anchorUser;
     /** The anchor item used to learn this local model. */
-    private int                anchorItem;
+    private int                      anchorItem;
     /** Learning rate parameter. */
-    public double              learningRate;
+    public double                    learningRate;
     /** The maximum number of iteration. */
-    public int                 maxIter;
+    public int                       maxIter;
     /** Regularization factor parameter. */
-    public double              regularizer;
+    public double                    regularizer;
     /** The vector containing each user's weight. */
-    private SparseVector       w;
+    private SparseVector             w;
     /** The vector containing each item's weight. */
-    private SparseVector       v;
+    private SparseVector             v;
     /** User profile in low-rank matrix form. */
-    private SparseRowMatrix    userFeatures;
+    //    private SparseRowMatrix       userFeatures;
     /** Item profile in low-rank matrix form. */
-    private SparseColumnMatrix itemFeatures;
+    //    private SparseColumnMatrix    itemFeatures;
     /** The rating matrix used for learning. */
-    private SparseRowMatrix    rateMatrix;
+    private MatlabFasionSparseMatrix rateMatrix;
     /** The current train error. */
-    private double             trainErr;
+    private double                   trainErr;
+
+    private FeatureMatrix            uDenseFeature;
+    private FeatureMatrix            iDenseFeature;
+
+    /** logger */
+    protected final static Logger    logger = Logger.getLogger(LoggerDefineConstant.SERVICE_CORE);
 
     /**
      * Construct a local model for singleton LLORMA.
@@ -63,7 +73,7 @@ public class WeakLearner extends Thread {
      * @param rm The rating matrix used for learning.
      */
     public WeakLearner(int id, int rk, int u, int i, int au, int ai, double lr, double r, int iter,
-                       SparseVector w0, SparseVector v0, SparseRowMatrix rm) {
+                       SparseVector w0, SparseVector v0, MatlabFasionSparseMatrix rm) {
         threadId = id;
         rank = rk;
         userCount = u;
@@ -75,8 +85,10 @@ public class WeakLearner extends Thread {
         maxIter = iter;
         w = w0;
         v = v0;
-        userFeatures = new SparseRowMatrix(userCount + 1, rank);
-        itemFeatures = new SparseColumnMatrix(rank, itemCount + 1);
+        //        userFeatures = new SparseRowMatrix(userCount + 1, rank);
+        //        itemFeatures = new SparseColumnMatrix(rank, itemCount + 1);
+        uDenseFeature = new FeatureMatrix(userCount + 1, rank);
+        iDenseFeature = new FeatureMatrix(rank, itemCount + 1);
         rateMatrix = rm;
     }
 
@@ -121,18 +133,18 @@ public class WeakLearner extends Thread {
      * 
      * @return The user profile of this local model.
      */
-    public SparseRowMatrix getUserFeatures() {
-        return userFeatures;
-    }
+    //    public SparseRowMatrix getUserFeatures() {
+    //        return userFeatures;
+    //    }
 
     /**
      * Getter method for item profile of this local model.
      * 
      * @return The item profile of this local model.
      */
-    public SparseColumnMatrix getItemFeatures() {
-        return itemFeatures;
-    }
+    //    public SparseColumnMatrix getItemFeatures() {
+    //        return itemFeatures;
+    //    }
 
     /**
      * Getter method for current train error.
@@ -147,12 +159,8 @@ public class WeakLearner extends Thread {
      * clear memory
      */
     public void explicitClear() {
-        userFeatures.clear();
-        itemFeatures.clear();
         w.clear();
         v.clear();
-        userFeatures = null;
-        itemFeatures = null;
         rateMatrix = null;
         w = null;
         v = null;
@@ -166,62 +174,62 @@ public class WeakLearner extends Thread {
         //System.out.println("[START] Learning thread " + threadId);
 
         trainErr = Double.MAX_VALUE;
-        boolean showProgress = false;
+        boolean showProgress = true;
 
         for (int u = 1; u <= userCount; u++) {
             for (int r = 0; r < rank; r++) {
                 double rdm = Math.random();
-                userFeatures.setValue(u, r, rdm);
+                uDenseFeature.setValue(u, r, rdm);
             }
         }
         for (int i = 1; i <= itemCount; i++) {
             for (int r = 0; r < rank; r++) {
                 double rdm = Math.random();
-                itemFeatures.setValue(r, i, rdm);
+                iDenseFeature.setValue(r, i, rdm);
             }
         }
 
         // Learn by Weighted RegSVD
         int round = 0;
-        int rateCount = rateMatrix.itemCount();
+        int rateCount = rateMatrix.getNnz();
         double prevErr = 99999;
         double currErr = 9999;
 
+        int[] uIndx = rateMatrix.getRowIndx();
+        int[] iIndx = rateMatrix.getColIndx();
+        double[] Auis = rateMatrix.getVals();
         while (Math.abs(prevErr - currErr) > 0.0001 && round < maxIter) {
             double sum = 0.0;
-            for (int u = 1; u <= userCount; u++) {
-                SparseVector items = rateMatrix.getRowRef(u);
-                int[] itemIndexList = items.indexList();
 
-                if (itemIndexList != null) {
-                    for (int i : itemIndexList) {
-                        double RuiEst = 0.0;
-                        for (int r = 0; r < rank; r++) {
-                            RuiEst += userFeatures.getValue(u, r) * itemFeatures.getValue(r, i);
-                        }
-                        double RuiReal = rateMatrix.getValue(u, i);
-                        double err = RuiReal - RuiEst;
-                        sum += Math.pow(err, 2);
+            for (int numSeq = 0; numSeq < rateCount; numSeq++) {
+                int u = uIndx[numSeq];
+                int i = iIndx[numSeq];
+                double RuiReal = Auis[numSeq];
 
-                        double weight = w.getValue(u) * v.getValue(i);
+                double RuiEst = prediction(u, i);
+                //                        for (int r = 0; r < rank; r++) {
+                //                            RuiEst += userFeatures.getValue(u, r) * itemFeatures.getValue(r, i);
+                //                        }
+                double err = RuiReal - RuiEst;
+                sum += Math.pow(err, 2);
 
-                        for (int r = 0; r < rank; r++) {
-                            double Fus = userFeatures.getValue(u, r);
-                            double Gis = itemFeatures.getValue(r, i);
+                double weight = w.getValue(u) * v.getValue(i);
 
-                            userFeatures.setValue(u, r, Fus + learningRate
-                                                        * (err * Gis * weight - regularizer * Fus));
-                            if (Double.isNaN(Fus + learningRate
-                                             * (err * Gis * weight - regularizer * Fus))) {
-                                System.out.println("a");
-                            }
-                            itemFeatures.setValue(r, i, Gis + learningRate
-                                                        * (err * Fus * weight - regularizer * Gis));
-                            if (Double.isNaN(Gis + learningRate
-                                             * (err * Fus * weight - regularizer * Gis))) {
-                                System.out.println("b");
-                            }
-                        }
+                for (int r = 0; r < rank; r++) {
+                    double Fus = uDenseFeature.getValue(u, r);
+                    double Gis = iDenseFeature.getValue(r, i);
+                    //                            double Fus = userFeatures.getValue(u, r);
+                    //                            double Gis = itemFeatures.getValue(r, i);
+
+                    uDenseFeature.setValue(u, r, Fus + learningRate
+                                                 * (err * Gis * weight - regularizer * Fus));
+                    if (Double.isNaN(Fus + learningRate * (err * Gis * weight - regularizer * Fus))) {
+                        System.out.println("a");
+                    }
+                    iDenseFeature.setValue(r, i, Gis + learningRate
+                                                 * (err * Fus * weight - regularizer * Gis));
+                    if (Double.isNaN(Gis + learningRate * (err * Fus * weight - regularizer * Gis))) {
+                        System.out.println("b");
                     }
                 }
             }
@@ -234,10 +242,20 @@ public class WeakLearner extends Thread {
 
             // Show progress:
             if (showProgress) {
-                System.out.println(round + "\t" + currErr);
+                LoggerUtil.info(logger, "[" + threadId + "]\t" + round + "\t" + currErr);
+                //                System.out.println(round + "\t" + currErr);
             }
         }
 
         //System.out.println("[END] Learning thread " + threadId);
     }
+
+    public double prediction(int u, int i) {
+        double AuiEst = 0.0d;
+        for (int f = 0; f < rank; f++) {
+            AuiEst += uDenseFeature.getValue(u, f) * iDenseFeature.getValue(f, i);
+        }
+        return AuiEst;
+    }
+
 }

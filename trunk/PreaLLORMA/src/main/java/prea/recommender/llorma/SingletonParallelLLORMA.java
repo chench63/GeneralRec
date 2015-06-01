@@ -8,6 +8,7 @@ import prea.util.LoggerDefineConstant;
 import prea.util.LoggerUtil;
 import prea.recommender.Recommender;
 import prea.recommender.matrix.RegularizedSVD;
+import prea.data.structure.MatlabFasionSparseMatrix;
 import prea.data.structure.SparseRowMatrix;
 import prea.data.structure.SparseVector;
 import prea.data.structure.SparseMatrix;
@@ -28,64 +29,65 @@ public class SingletonParallelLLORMA implements Recommender {
      * ========================================
      */
     /** Rating matrix for each user (row) and item (column) */
-    public SparseRowMatrix         rateMatrix;
+    //    public SparseRowMatrix          rateMatrix;
     /**
      * Rating matrix for test items. Not allowed to refer during training and
      * validation phase.
      */
-    public static SparseRowMatrix  testMatrix;
+    //    public static SparseRowMatrix  testMatrix;
 
     /** The number of users. */
-    public int                     userCount;
+    public int                      userCount;
     /** The number of items. */
-    public int                     itemCount;
+    public int                      itemCount;
     /** Maximum value of rating, existing in the dataset. */
-    public double                  maxValue;
+    public double                   maxValue;
     /** Minimum value of rating, existing in the dataset. */
-    public double                  minValue;
+    public double                   minValue;
     /** Average of ratings for each user. */
-    public static SparseVector     userRateAverage;
+    public static SparseVector      userRateAverage;
     /** Average of ratings for each item. */
-    public static SparseVector     itemRateAverage;
+    public static SparseVector      itemRateAverage;
     /** Similarity matrix between users. */
-    private static SparseRowMatrix userSimilarity;
+    private static SparseRowMatrix  userSimilarity;
     /** Similarity matrix between items. */
-    private static SparseRowMatrix itemSimilarity;
+    private static SparseRowMatrix  itemSimilarity;
     /** A global SVD model used for calculating user/item similarity. */
-    public static RegularizedSVD   baseline;
+    public static RegularizedSVD    baseline;
 
     // Local model parameters:
     /** The number of features. */
-    public int                     featureCount;
+    public int                      featureCount;
     /** Learning rate parameter. */
-    public double                  learningRate;
+    public double                   learningRate;
     /** Regularization factor parameter. */
-    public double                  regularizer;
+    public double                   regularizer;
     /** Maximum number of iteration. */
-    public int                     maxIter;
+    public int                      maxIter;
 
     // Global combination parameters:
     /** Maximum number of local models. */
-    public int                     modelMax;
+    public int                      modelMax;
     /** Type of kernel used in kernel smoothing. */
-    public int                     kernelType;
+    public int                      kernelType;
     /** Width of kernel used in kernel smoothing. */
-    public double                  kernelWidth;
+    public double                   kernelWidth;
     /**
      * The maximum number of threads which will run simultaneously. We recommend
      * not to exceed physical limit of your machine.
      */
-    private int                    multiThreadCount;
+    private int                     multiThreadCount;
 
     /** Indicator whether to show progress of iteration. */
-    public boolean                 showProgress;
+    public boolean                  showProgress;
 
-    /** A data structure to store intermediate evaluation result. */
-    private EvaluationMetrics      preservedEvalMet = null;
+    public MatlabFasionSparseMatrix testSeq;
+    public MatlabFasionSparseMatrix trainSeq;
+    public int[]                    anchorUser;
+    public int[]                    anchorItem;
 
     /** logger */
-    protected final static Logger  logger           = Logger
-                                                        .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
+    protected final static Logger   logger = Logger.getLogger(LoggerDefineConstant.SERVICE_NORMAL);
 
     /*
      * ======================================== Constructors
@@ -144,7 +146,7 @@ public class SingletonParallelLLORMA implements Recommender {
         kernelWidth = kw;
 
         baseline = base;
-        testMatrix = tm;
+        //        testMatrix = tm;
         multiThreadCount = ml;
         showProgress = verbose;
     }
@@ -160,16 +162,13 @@ public class SingletonParallelLLORMA implements Recommender {
      *            The rating matrix with train data.
      */
     @Override
-    public void buildModel(SparseRowMatrix rateMatrix) {
+    public void buildModel(SparseRowMatrix lRateMatrix) {
         // Pre-calculating similarity:
         userSimilarity = new SparseRowMatrix(userCount + 1, userCount + 1);
         itemSimilarity = new SparseRowMatrix(itemCount + 1, itemCount + 1);
 
         int completeModelCount = 0;
-
         WeakLearner[] learners = new WeakLearner[multiThreadCount];
-        int[] anchorUser = new int[modelMax];
-        int[] anchorItem = new int[modelMax];
 
         int modelCount = 0;
         double anchorErrCum = 0.0;
@@ -177,145 +176,128 @@ public class SingletonParallelLLORMA implements Recommender {
         int runningThreadCount = 0;
         int waitingThreadPointer = 0;
         int nextRunningSlot = 0;
+        int pTestItemCount = testSeq.getNnz();
 
         double anchorErr = 0.0;
         double lowestRMSE = Double.MAX_VALUE;
-        preservedEvalMet = null;
 
-        SparseRowMatrix cumPrediction = new SparseRowMatrix(userCount + 1, itemCount + 1);
-        SparseRowMatrix cumWeight = new SparseRowMatrix(userCount + 1, itemCount + 1);
+        double[] cumPrediction = new double[pTestItemCount];
+        double[] cumWeight = new double[pTestItemCount];
 
         // Parallel training:
+        int[] uSeq = testSeq.getRowIndx();
+        int[] iSeq = testSeq.getColIndx();
+        double[] valSeq = testSeq.getVals();
         while (modelCount < modelMax) {
-            int u_t = (int) Math.floor(Math.random() * userCount) + 1;
-            int[] itemList = rateMatrix.getRow(u_t).indexList();
 
-            if (itemList != null) {
-                if (runningThreadCount < multiThreadCount) {
-                    // Selecting a new anchor point:
-                    int idx = (int) Math.floor(Math.random() * itemList.length);
-                    int i_t = itemList[idx];
+            if (runningThreadCount < multiThreadCount) {
+                // Selecting a new anchor point:
+                int u_t = anchorUser[modelCount];
+                int i_t = anchorItem[modelCount];
 
-                    anchorUser[modelCount] = u_t;
-                    anchorItem[modelCount] = i_t;
+                // Preparing weight vectors:
+                SparseVector w = kernelSmoothing(userCount + 1, u_t, kernelType, kernelWidth, false);
+                SparseVector v = kernelSmoothing(itemCount + 1, i_t, kernelType, kernelWidth, true);
 
-                    // Preparing weight vectors:
-                    SparseVector w = kernelSmoothing(userCount + 1, u_t, kernelType, kernelWidth,
-                        false);
-                    SparseVector v = kernelSmoothing(itemCount + 1, i_t, kernelType, kernelWidth,
-                        true);
+                // Starting a new local model learning:
+                learners[nextRunningSlot] = new WeakLearner(modelCount, featureCount, userCount,
+                    itemCount, u_t, i_t, learningRate, regularizer, maxIter, w, v, trainSeq);
+                learners[nextRunningSlot].start();
 
-                    // Starting a new local model learning:
-                    learners[nextRunningSlot] = new WeakLearner(modelCount, featureCount,
-                        userCount, itemCount, u_t, i_t, learningRate, regularizer, maxIter, w, v,
-                        rateMatrix);
-                    learners[nextRunningSlot].start();
+                runningThreadList[runningThreadCount] = modelCount;
+                runningThreadCount++;
+                modelCount++;
+                nextRunningSlot++;
+            } else if (runningThreadCount > 0) {
+                // Joining a local model which was done with learning:
+                try {
+                    learners[waitingThreadPointer].join();
+                } catch (InterruptedException ie) {
+                    System.out.println("Join failed: " + ie);
+                }
 
-                    runningThreadList[runningThreadCount] = modelCount;
-                    runningThreadCount++;
-                    modelCount++;
-                    nextRunningSlot++;
-                } else if (runningThreadCount > 0) {
-                    // Joining a local model which was done with learning:
-                    try {
-                        learners[waitingThreadPointer].join();
-                    } catch (InterruptedException ie) {
-                        System.out.println("Join failed: " + ie);
+                int mp = waitingThreadPointer;
+                int mc = completeModelCount;
+                completeModelCount++;
+
+                // Predicting with the new local model and all previous
+                // models:
+                double pRMSE = 0.0d;
+                for (int indx = 0; indx < pTestItemCount; indx++) {
+                    int u = uSeq[indx];
+                    int i = iSeq[indx];
+
+                    double weight = KernelSmoothing.kernelize(getUserSimilarity(anchorUser[mc], u),
+                        kernelWidth, kernelType)
+                                    * KernelSmoothing.kernelize(
+                                        getItemSimilarity(anchorItem[mc], i), kernelWidth,
+                                        kernelType);
+                    double newPrediction = learners[mp].prediction(u, i) * weight;
+                    cumWeight[indx] += weight;
+                    cumPrediction[indx] += newPrediction;
+
+                    double prediction = cumPrediction[indx] / cumWeight[indx];
+                    if (Double.isNaN(prediction) || prediction == 0.0) {
+                        prediction = (maxValue + minValue) / 2;
+                    }
+                    if (prediction < minValue) {
+                        prediction = minValue;
+                    } else if (prediction > maxValue) {
+                        prediction = maxValue;
                     }
 
-                    int mp = waitingThreadPointer;
-                    int mc = completeModelCount;
-                    completeModelCount++;
+                    pRMSE += Math.pow(prediction - valSeq[indx], 2.0d);
 
-                    // Predicting with the new local model and all previous
-                    // models:
-                    SparseRowMatrix predicted = new SparseRowMatrix(userCount + 1, itemCount + 1);
-                    for (int u = 1; u <= userCount; u++) {
-                        int[] testItems = testMatrix.getRowRef(u).indexList();
-
-                        if (testItems != null) {
-                            for (int i : testItems) {
-                                double weight = KernelSmoothing.kernelize(
-                                    getUserSimilarity(anchorUser[mc], u), kernelWidth, kernelType)
-                                                * KernelSmoothing.kernelize(
-                                                    getItemSimilarity(anchorItem[mc], i),
-                                                    kernelWidth, kernelType);
-                                double newPrediction = learners[mp].getUserFeatures().getRowRef(u)
-                                    .innerProduct(learners[mp].getItemFeatures().getColRef(i))
-                                                       * weight;
-                                cumWeight.setValue(u, i, cumWeight.getValue(u, i) + weight);
-                                cumPrediction.setValue(u, i, cumPrediction.getValue(u, i)
-                                                             + newPrediction);
-                                double prediction = cumPrediction.getValue(u, i)
-                                                    / cumWeight.getValue(u, i);
-
-                                if (Double.isNaN(prediction) || prediction == 0.0) {
-                                    prediction = (maxValue + minValue) / 2;
-                                }
-
-                                if (prediction < minValue) {
-                                    prediction = minValue;
-                                } else if (prediction > maxValue) {
-                                    prediction = maxValue;
-                                }
-
-                                predicted.setValue(u, i, prediction);
-
-                                if (u == anchorUser[mc] && i == anchorItem[mc]) {
-                                    anchorErr = Math.abs(prediction - testMatrix.getValue(u, i));
-                                    anchorErrCum += Math.pow(anchorErr, 2);
-                                }
-                            }
-                        }
+                    if (u == anchorUser[mc] && i == anchorItem[mc]) {
+                        anchorErr = Math.abs(prediction - valSeq[indx]);
+                        anchorErrCum += Math.pow(anchorErr, 2);
                     }
+                }
 
-                    EvaluationMetrics e = new EvaluationMetrics(testMatrix, predicted, maxValue,
-                        minValue);
+                pRMSE = Math.sqrt(pRMSE / pTestItemCount);
+                if (showProgress) {
+                    System.out.println((modelCount - multiThreadCount + 1) + "\t"
+                                       + learners[mp].getAnchorUser() + "\t"
+                                       + learners[mp].getAnchorItem() + "\t"
+                                       + learners[mp].getTrainErr() + "\t" + pRMSE + "\t"
+                                       + anchorErr + "\t" + Math.sqrt(anchorErrCum / (mp + 1)));
+                    LoggerUtil.info(
+                        logger,
+                        (modelCount - multiThreadCount + 1) + "\t" + learners[mp].getAnchorUser()
+                                + "\t" + learners[mp].getAnchorItem() + "\t"
+                                + learners[mp].getTrainErr() + "\t" + pRMSE + "\t" + anchorErr
+                                + "\t" + Math.sqrt(anchorErrCum / (mp + 1)));
+                }
+                learners[mp].explicitClear();
+                learners[mp] = null;
 
-                    if (showProgress) {
-                        System.out.println((modelCount - multiThreadCount + 1) + "\t"
-                                           + learners[mp].getAnchorUser() + "\t"
-                                           + learners[mp].getAnchorItem() + "\t"
-                                           + learners[mp].getTrainErr() + "\t" + e.getRMSE() + "\t"
-                                           + anchorErr + "\t" + Math.sqrt(anchorErrCum / (mp + 1)));
-                        LoggerUtil.info(
-                            logger,
-                            (modelCount - multiThreadCount + 1) + "\t"
-                                    + learners[mp].getAnchorUser() + "\t"
-                                    + learners[mp].getAnchorItem() + "\t"
-                                    + learners[mp].getTrainErr() + "\t" + e.getRMSE() + "\t"
-                                    + anchorErr + "\t" + Math.sqrt(anchorErrCum / (mp + 1)));
+                if (pRMSE < lowestRMSE) {
+                    lowestRMSE = pRMSE;
+                }
+
+                nextRunningSlot = waitingThreadPointer;
+                waitingThreadPointer = (waitingThreadPointer + 1) % multiThreadCount;
+                runningThreadCount--;
+
+                // Release memory used for similarity prefetch:
+                int au = anchorUser[mc];
+                for (int u = 1; u <= userCount; u++) {
+                    if (au <= u) {
+                        userSimilarity.setValue(au, u, 0.0);
+                    } else {
+                        userSimilarity.setValue(u, au, 0.0);
                     }
-                    learners[mp].explicitClear();
-
-                    if (e.getRMSE() < lowestRMSE) {
-                        lowestRMSE = e.getRMSE();
-                        preservedEvalMet = e;
-                    }
-
-                    nextRunningSlot = waitingThreadPointer;
-                    waitingThreadPointer = (waitingThreadPointer + 1) % multiThreadCount;
-                    runningThreadCount--;
-
-                    // Release memory used for similarity prefetch:
-                    int au = anchorUser[mc];
-                    for (int u = 1; u <= userCount; u++) {
-                        if (au <= u) {
-                            userSimilarity.setValue(au, u, 0.0);
-                        } else {
-                            userSimilarity.setValue(u, au, 0.0);
-                        }
-                    }
-                    int ai = anchorItem[mc];
-                    for (int i = 1; i <= itemCount; i++) {
-                        if (ai <= i) {
-                            itemSimilarity.setValue(ai, i, 0.0);
-                        } else {
-                            itemSimilarity.setValue(i, ai, 0.0);
-                        }
+                }
+                int ai = anchorItem[mc];
+                for (int i = 1; i <= itemCount; i++) {
+                    if (ai <= i) {
+                        itemSimilarity.setValue(ai, i, 0.0);
+                    } else {
+                        itemSimilarity.setValue(i, ai, 0.0);
                     }
                 }
             }
+
         }
     }
 
@@ -333,7 +315,7 @@ public class SingletonParallelLLORMA implements Recommender {
      */
     @Override
     public EvaluationMetrics evaluate(SparseRowMatrix testMatrix) {
-        return preservedEvalMet;
+        return null;
     }
 
     /**
@@ -355,11 +337,7 @@ public class SingletonParallelLLORMA implements Recommender {
         }
 
         if (sim == 0.0) {
-            SparseVector u_vec = baseline.getU().getRowRef(idx1);
-            SparseVector v_vec = baseline.getU().getRowRef(idx2);
-
-            sim = 1 - 2.0 / Math.PI
-                  * Math.acos(u_vec.innerProduct(v_vec) / (u_vec.norm() * v_vec.norm()));
+            sim = 1 - 2.0 / Math.PI * baseline.ACosInU(idx1, idx2);
 
             if (Double.isNaN(sim)) {
                 sim = 0.0;
@@ -394,11 +372,7 @@ public class SingletonParallelLLORMA implements Recommender {
         }
 
         if (sim == 0.0) {
-            SparseVector i_vec = baseline.getV().getColRef(idx1);
-            SparseVector j_vec = baseline.getV().getColRef(idx2);
-
-            sim = 1 - 2.0 / Math.PI
-                  * Math.acos(i_vec.innerProduct(j_vec) / (i_vec.norm() * j_vec.norm()));
+            sim = 1 - 2.0 / Math.PI * baseline.ACosInV(idx1, idx2);
 
             if (Double.isNaN(sim)) {
                 sim = 0.0;
@@ -451,7 +425,7 @@ public class SingletonParallelLLORMA implements Recommender {
     }
 
     @Override
-    public void buildModel(SparseMatrix tm) {
-
+    public void buildModel(SparseMatrix rm) {
     }
+
 }

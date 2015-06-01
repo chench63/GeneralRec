@@ -13,6 +13,7 @@ import java.util.Map.Entry;
 
 import org.apache.commons.io.IOUtils;
 
+import prea.data.structure.MatlabFasionSparseMatrix;
 import prea.data.structure.SparseColumnMatrix;
 import prea.data.structure.SparseMatrix;
 import prea.data.structure.SparseRowMatrix;
@@ -390,6 +391,44 @@ public final class MatrixFileUtil {
      * @param parser        the parser to parse the data structure
      * @return
      */
+    public static int reads(String file, int[] uSeq, int[] iSeq, double[] valSeq) {
+        int itemCount = 0;
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(file));
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                String[] elems = line.split("\\::");
+                int row = Integer.valueOf(elems[0]) + 1;
+                int col = Integer.valueOf(elems[1]) + 1;
+                double val = Double.valueOf(elems[2]);
+
+                uSeq[itemCount] = row;
+                iSeq[itemCount] = col;
+                valSeq[itemCount] = val;
+                itemCount++;
+            }
+
+        } catch (FileNotFoundException e) {
+            ExceptionUtil.caught(e, "无法找到对应的加载文件: " + file);
+        } catch (IOException e) {
+            ExceptionUtil.caught(e, "读取文件发生异常，校验文件格式");
+        } finally {
+            IOUtils.closeQuietly(reader);
+        }
+
+        return itemCount;
+    }
+
+    /**
+     * Read matrix from file
+     * 
+     * @param file          file contain matrix data
+     * @param rowCount      the number of rows
+     * @param colCount      the number of columns
+     * @param parser        the parser to parse the data structure
+     * @return
+     */
     public static SparseColumnMatrix readCols(String file, int rowCount, int colCount) {
 
         SparseColumnMatrix result = new SparseColumnMatrix(rowCount, colCount);
@@ -405,6 +444,43 @@ public final class MatrixFileUtil {
 
                 result.setValue(row, col, val);
             }
+
+            return result;
+        } catch (FileNotFoundException e) {
+            ExceptionUtil.caught(e, "无法找到对应的加载文件: " + file);
+        } catch (IOException e) {
+            ExceptionUtil.caught(e, "读取文件发生异常，校验文件格式");
+        } finally {
+            IOUtils.closeQuietly(reader);
+        }
+        return null;
+    }
+
+    /**
+     * Read matrix from file
+     * 
+     * @param file          file contain matrix data
+     * @param rowCount      the number of rows
+     * @param colCount      the number of columns
+     * @param parser        the parser to parse the data structure
+     * @return
+     */
+    public static MatlabFasionSparseMatrix reads(String file, int nnz) {
+
+        MatlabFasionSparseMatrix result = new MatlabFasionSparseMatrix(nnz);
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(file));
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                String[] elems = line.split("\\::");
+                int row = Integer.valueOf(elems[0]) + 1;
+                int col = Integer.valueOf(elems[1]) + 1;
+                double val = Double.valueOf(elems[2]);
+
+                result.setValue(row, col, val);
+            }
+            result.reduceMem();
 
             return result;
         } catch (FileNotFoundException e) {
