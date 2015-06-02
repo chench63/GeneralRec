@@ -73,7 +73,7 @@ public class MFNormalExp {
         System.gc();
 
         System.out.println("3. load testset." + new Date());
-        SparseMatrix testMatrix = MatrixFileUtil.read(test, itemCount + 1, itemCount + 1);
+        SparseMatrix testMatrix = MatrixFileUtil.read(test, userCount + 1, itemCount + 1);
 
         EvaluationMetrics metric = baseline.evaluate(testMatrix);
         System.out.println(metric.printMultiLine());
@@ -101,7 +101,7 @@ public class MFNormalExp {
         System.gc();
 
         System.out.println("3. load testset." + new Date());
-        SparseMatrix testMatrix = MatrixFileUtil.read(test, itemCount + 1, itemCount + 1);
+        SparseMatrix testMatrix = MatrixFileUtil.read(test, userCount + 1, itemCount + 1);
 
         EvaluationMetrics metric = baseline.evaluate(testMatrix);
         System.out.println(metric.printMultiLine());
@@ -126,7 +126,7 @@ public class MFNormalExp {
 
         //load testing set
         System.out.println("3. load testset." + new Date());
-        SparseMatrix testMatrix = MatrixFileUtil.read(test, itemCount + 1, itemCount + 1);
+        SparseMatrix testMatrix = MatrixFileUtil.read(test, userCount + 1, itemCount + 1);
 
         EvaluationMetrics metric = baseline.evaluate(testMatrix);
         System.out.println(metric.printMultiLine());
@@ -153,7 +153,7 @@ public class MFNormalExp {
         System.gc();
 
         System.out.println("3. load testset." + new Date());
-        SparseMatrix testMatrix = MatrixFileUtil.read(test, itemCount + 1, itemCount + 1);
+        SparseMatrix testMatrix = MatrixFileUtil.read(test, userCount + 1, itemCount + 1);
 
         EvaluationMetrics metric = baseline.evaluate(testMatrix);
         System.out.println(metric.printMultiLine());
