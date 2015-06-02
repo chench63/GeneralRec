@@ -1,12 +1,14 @@
 package prea.recommender.matrix;
 
 import prea.data.structure.FeatureMatrix;
+import prea.data.structure.MatlabFasionSparseMatrix;
 import prea.data.structure.SparseColumnMatrix;
 import prea.data.structure.SparseMatrix;
 import prea.data.structure.SparseRowMatrix;
 import prea.recommender.Recommender;
 import prea.util.EvaluationMetrics;
 import prea.util.LoggerDefineConstant;
+
 
 //import java.io.FileOutputStream;
 //import java.io.PrintWriter;
@@ -207,6 +209,40 @@ public abstract class MatrixFactorizationRecommender implements Recommender, Ser
         }
 
         return new EvaluationMetrics(testMatrix, predicted, maxValue, minValue);
+    }
+
+    /**
+     * Evaluate the designated algorithm with the given test data.
+     * 
+     * @param testMatrix The rating matrix with test data.
+     * 
+     * @return The result of evaluation, such as MAE, RMSE, and rank-score.
+     */
+    public double evaluate(MatlabFasionSparseMatrix testMatrix) {
+        double RMSE = 0.0d;
+
+        int rateCount = testMatrix.getNnz();
+        int[] uIndx = testMatrix.getRowIndx();
+        int[] iIndx = testMatrix.getColIndx();
+        double[] Auis = testMatrix.getVals();
+        for (int numSeq = 0; numSeq < rateCount; numSeq++) {
+
+            int u = uIndx[numSeq];
+            int i = iIndx[numSeq];
+            double AuiReal = Auis[numSeq];
+            double AuiEst = this.offset
+                            + innerPrediction(u, i, userDenseFeatures, itemDenseFeatures);
+
+            if (AuiEst > maxValue) {
+                AuiEst = maxValue;
+            } else if (AuiEst < minValue) {
+                AuiEst = minValue;
+            }
+
+            RMSE += Math.pow(AuiReal - AuiEst, 2.0d);
+        }
+
+        return Math.sqrt(RMSE / rateCount);
     }
 
     protected double innerPrediction(int u, int i, FeatureMatrix uDenseFeature,
