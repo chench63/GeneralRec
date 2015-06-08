@@ -6,11 +6,10 @@ package edu.tongji.experiment.recommendation;
 
 import edu.tongji.data.MatlabFasionSparseMatrix;
 import edu.tongji.data.SparseRowMatrix;
-import edu.tongji.ml.matrix.DynamicCRSVD;
-import edu.tongji.ml.matrix.FCRSVD;
-import edu.tongji.ml.matrix.ItemConstraintRSVD;
+import edu.tongji.ml.matrix.BiSVD;
 import edu.tongji.ml.matrix.RegularizedSVD;
-import edu.tongji.ml.matrix.UserConstraintRSVD;
+import edu.tongji.ml.matrix.variant.ISVD;
+import edu.tongji.ml.matrix.variant.USVD;
 import edu.tongji.util.FileUtil;
 import prea.util.ClusteringInformationUtil;
 import prea.util.EvaluationMetrics;
@@ -116,9 +115,8 @@ public class ConstrainedExper {
 
         //build model
         for (int featureCount : featureCounts) {
-            UserConstraintRSVD recmmd = new UserConstraintRSVD(userCount, itemCount, maxValue,
-                minValue, featureCount, lrate, regularized, 0, maxIteration, dimnsn[0], ua,
-                showProgress);
+            USVD recmmd = new USVD(userCount, itemCount, maxValue, minValue, featureCount, lrate,
+                regularized, 0, maxIteration, dimnsn[0], ua, showProgress);
             recmmd.tMatrix = testMatrix;
             recmmd.buildModel(rateMatrix);
 
@@ -144,9 +142,8 @@ public class ConstrainedExper {
 
         //build model
         for (int featureCount : featureCounts) {
-            ItemConstraintRSVD recmmd = new ItemConstraintRSVD(userCount, itemCount, maxValue,
-                minValue, featureCount, lrate, regularized, 0, maxIteration, dimnsn[1], ia,
-                showProgress);
+            ISVD recmmd = new ISVD(userCount, itemCount, maxValue, minValue, featureCount, lrate,
+                regularized, 0, maxIteration, dimnsn[1], ia, showProgress);
             recmmd.tMatrix = testMatrix;
             recmmd.buildModel(rateMatrix);
 
@@ -173,8 +170,8 @@ public class ConstrainedExper {
 
         //build model
         for (int featureCount : featureCounts) {
-            FCRSVD recmmd = new FCRSVD(userCount, itemCount, maxValue, minValue, featureCount,
-                lrate, regularized, 0, maxIteration, dimnsn[0], dimnsn[1], ua, ia, showProgress);
+            BiSVD recmmd = new BiSVD(userCount, itemCount, maxValue, minValue, featureCount, lrate,
+                regularized, 0, maxIteration, dimnsn[0], dimnsn[1], ua, ia, showProgress);
             recmmd.tMatrix = testMatrix;
             recmmd.buildModel(rateMatrix);
 
@@ -203,43 +200,13 @@ public class ConstrainedExper {
 
         //build model
         for (int featureCount : featureCounts) {
-            FCRSVD recmmd = new FCRSVD(userCount, itemCount, maxValue, minValue, featureCount,
-                lrate, regularized, 0, maxIteration, dimnsn[0], dimnsn[1], ua, ia, showProgress);
+            BiSVD recmmd = new BiSVD(userCount, itemCount, maxValue, minValue, featureCount, lrate,
+                regularized, 0, maxIteration, dimnsn[0], dimnsn[1], ua, ia, showProgress);
             recmmd.buildModel(rateMatrix, testMatrix);
 
             //evaluation
             double rmse = recmmd.evaluate(testMatrix);
             System.out.println(rmse);
-        }
-    }
-
-    public static void DynamicConstrainedRSVD(int[] featureCounts, String clusterDir,
-                                              double balanced, String rootDir) {
-        //loading dataset
-        String trainFile = rootDir + "trainingset";
-        String testFile = rootDir + "testingset";
-        SparseRowMatrix rateMatrix = MatrixFileUtil.reads(trainFile, userCount, itemCount, null);
-        SparseRowMatrix testMatrix = MatrixFileUtil.reads(testFile, userCount, itemCount, null);
-
-        int[] ia = new int[itemCount];
-        int[] ua = new int[userCount];
-        int[] dimnsn = ClusteringInformationUtil.readBiAssigmnt(ua, ia, clusterDir, rootDir);
-
-        //build model
-        for (int featureCount : featureCounts) {
-            DynamicCRSVD recmmd = new DynamicCRSVD(userCount, itemCount, maxValue, minValue,
-                featureCount, lrate, regularized, 0, maxIteration, dimnsn[0], dimnsn[1], ua, ia,
-                balanced, showProgress);
-            recmmd.test = testMatrix;
-            recmmd.buildModel(rateMatrix);
-
-            //evaluation
-            EvaluationMetrics metric = recmmd.evaluate(testMatrix);
-            System.out.println(metric.printMultiLine());
-            FileUtil.writeAsAppend(resultDir + "zDC", "fc: " + featureCount + "\tlr: " + lrate
-                                                      + "\tr: " + regularized + "\tk: " + dimnsn[0]
-                                                      + "\tl: " + dimnsn[1] + "\tb: " + balanced
-                                                      + "\n" + metric.printOneLine() + "\n");
         }
     }
 

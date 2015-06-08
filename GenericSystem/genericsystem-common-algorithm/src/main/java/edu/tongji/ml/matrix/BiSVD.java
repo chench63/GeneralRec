@@ -15,9 +15,13 @@ import edu.tongji.util.LoggerUtil;
  * @author Hanke
  * @version $Id: FCRSVD.java, v 0.1 2015-4-1 上午11:40:24 Exp $
  */
-public class FCRSVD extends MatrixFactorizationRecommender {
+public class BiSVD extends MatrixFactorizationRecommender {
     /** SerialVersionNum */
     private static final long      serialVersionUID = 1L;
+
+    /** number of user/item clusters */
+    protected int                  k;
+    protected int                  l;
 
     /** User profile in low-rank matrix form. */
     protected DenseMatrix[]        userDenseFeaturesAss;
@@ -46,11 +50,11 @@ public class FCRSVD extends MatrixFactorizationRecommender {
      * @param m Momentum used in gradient-based or iterative optimization.
      * @param iter The maximum number of iterations.
      */
-    public FCRSVD(int uc, int ic, double max, double min, int fc, double lr, double r, double m,
-                  int iter, int k, int l, int[] ua, int[] ia, boolean verbose) {
+    public BiSVD(int uc, int ic, double max, double min, int fc, double lr, double r, double m,
+                 int iter, int k, int l, int[] ua, int[] ia, boolean verbose) {
         super(uc, ic, max, min, fc, lr, r, m, iter, verbose);
-        userFeaturesAss = new SparseRowMatrix[l];
-        itemFeaturesAss = new SparseColumnMatrix[k];
+        this.k = k;
+        this.l = l;
         iAssigmnt = ua;
         uAssigmnt = ia;
 
@@ -62,23 +66,18 @@ public class FCRSVD extends MatrixFactorizationRecommender {
      * Model Builder
      *========================================*/
     /**
-     * Build a model with given training set.
-     * 
-     * @param rateMatrix Training data set.
+     * @see edu.tongji.ml.matrix.MatrixFactorizationRecommender#buildModel(edu.tongji.data.SparseRowMatrix)
      */
     @Override
     public void buildModel(SparseRowMatrix rateMatrix) {
+        super.buildModel(rateMatrix);
+
         // Initialize user features:
-        userFeatures = new SparseRowMatrix(userCount, featureCount);
+        userFeaturesAss = new SparseRowMatrix[l];
         for (int k = 0; k < userFeaturesAss.length; k++) {
             userFeaturesAss[k] = new SparseRowMatrix(userCount, featureCount);
         }
         for (int u = 0; u < userCount; u++) {
-            for (int f = 0; f < featureCount; f++) {
-                double rdm = Math.random() / featureCount;
-                userFeatures.setValue(u, f, rdm);
-            }
-
             for (int k = 0; k < userFeaturesAss.length; k++) {
                 for (int f = 0; f < featureCount; f++) {
                     double rdm = Math.random() / featureCount;
@@ -88,16 +87,11 @@ public class FCRSVD extends MatrixFactorizationRecommender {
         }
 
         // Initialize item features:
-        itemFeatures = new SparseColumnMatrix(featureCount, itemCount);
+        itemFeaturesAss = new SparseColumnMatrix[k];
         for (int k = 0; k < itemFeaturesAss.length; k++) {
             itemFeaturesAss[k] = new SparseColumnMatrix(featureCount, itemCount);
         }
         for (int i = 0; i < itemCount; i++) {
-            for (int f = 0; f < featureCount; f++) {
-                double rdm = Math.random() / featureCount;
-                itemFeatures.setValue(f, i, rdm);
-            }
-
             for (int k = 0; k < itemFeaturesAss.length; k++) {
                 for (int f = 0; f < featureCount; f++) {
                     double rdm = Math.random() / featureCount;
@@ -188,17 +182,18 @@ public class FCRSVD extends MatrixFactorizationRecommender {
         throw new RuntimeException("buildModel for SparseMatrix requires implementation!");
     }
 
+    /**
+     * @see edu.tongji.ml.matrix.MatrixFactorizationRecommender#buildModel(edu.tongji.data.MatlabFasionSparseMatrix, edu.tongji.data.MatlabFasionSparseMatrix)
+     */
+    @Override
     public void buildModel(MatlabFasionSparseMatrix rateMatrix, MatlabFasionSparseMatrix tMatrix) {
+        super.buildModel(rateMatrix, tMatrix);
+
         // Initialize user/item features:
-        userDenseFeatures = new DenseMatrix(userCount, featureCount);
         for (int k = 0; k < userDenseFeaturesAss.length; k++) {
             userDenseFeaturesAss[k] = new DenseMatrix(userCount, featureCount);
         }
         for (int u = 0; u < userCount; u++) {
-            for (int f = 0; f < featureCount; f++) {
-                double rdm = Math.random() / featureCount;
-                userDenseFeatures.setValue(u, f, rdm);
-            }
             for (int k = 0; k < userDenseFeaturesAss.length; k++) {
                 for (int f = 0; f < featureCount; f++) {
                     double rdm = Math.random() / featureCount;
@@ -207,15 +202,10 @@ public class FCRSVD extends MatrixFactorizationRecommender {
             }
         }
 
-        itemDenseFeatures = new DenseMatrix(featureCount, itemCount);
         for (int k = 0; k < itemDenseFeaturesAss.length; k++) {
             itemDenseFeaturesAss[k] = new DenseMatrix(featureCount, itemCount);
         }
         for (int i = 0; i < itemCount; i++) {
-            for (int f = 0; f < featureCount; f++) {
-                double rdm = Math.random() / featureCount;
-                itemDenseFeatures.setValue(f, i, rdm);
-            }
             for (int k = 0; k < itemDenseFeaturesAss.length; k++) {
                 for (int f = 0; f < featureCount; f++) {
                     double rdm = Math.random() / featureCount;
@@ -289,11 +279,9 @@ public class FCRSVD extends MatrixFactorizationRecommender {
             round++;
             if (showProgress && (round % 5 == 0) && tMatrix != null) {
                 double rmse = this.evaluate(tMatrix);
-                FileUtil.writeAsAppend(
-                    "E://10m[" + featureCount + "]_" + itemFeaturesAss.length + "_"
-                            + userFeaturesAss.length + "_" + maxIter,
-                    round + "\t" + String.format("%.4f", currErr) + "\t"
-                            + String.format("%.4f", rmse) + "\n");
+                FileUtil.writeAsAppend("E://10m[" + featureCount + "]_" + k + "_" + l + "_"
+                                       + maxIter, round + "\t" + String.format("%.4f", currErr)
+                                                  + "\t" + String.format("%.4f", rmse) + "\n");
             }
 
             // Show progress:

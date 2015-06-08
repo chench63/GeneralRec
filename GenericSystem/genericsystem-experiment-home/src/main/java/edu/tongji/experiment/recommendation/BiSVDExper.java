@@ -10,10 +10,10 @@ import prea.util.MatrixFileUtil;
 import prea.util.MatrixInformationUtil;
 import edu.tongji.data.BlockMatrix;
 import edu.tongji.data.SparseRowMatrix;
-import edu.tongji.ml.matrix.FCRSVD;
-import edu.tongji.ml.matrix.ItemConstraintRSVD;
+import edu.tongji.ml.matrix.BiSVD;
 import edu.tongji.ml.matrix.RegularizedSVD;
-import edu.tongji.ml.matrix.UserConstraintRSVD;
+import edu.tongji.ml.matrix.variant.ISVD;
+import edu.tongji.ml.matrix.variant.USVD;
 import edu.tongji.util.FileUtil;
 
 public class BiSVDExper {
@@ -112,7 +112,7 @@ public class BiSVDExper {
 
         //build model
         for (int featureCount : featureCounts) {
-            UserConstraintRSVD recmmd = new UserConstraintRSVD(userCount, itemCount, maxValue,
+            USVD recmmd = new USVD(userCount, itemCount, maxValue,
                 minValue, featureCount, lrate, regularized, 0, maxIteration, dimnsn[0], ua,
                 showProgress);
             recmmd.buildModel(rateMatrix);
@@ -139,7 +139,7 @@ public class BiSVDExper {
 
         //build model
         for (int featureCount : featureCounts) {
-            ItemConstraintRSVD recmmd = new ItemConstraintRSVD(userCount, itemCount, maxValue,
+            ISVD recmmd = new ISVD(userCount, itemCount, maxValue,
                 minValue, featureCount, lrate, regularized, 0, maxIteration, dimnsn[1], ia,
                 showProgress);
             recmmd.tMatrix = testMatrix;
@@ -168,7 +168,7 @@ public class BiSVDExper {
         //build model
         DescriptiveStatistics stat = new DescriptiveStatistics();
         for (int featureCount : featureCounts) {
-            FCRSVD recmmd = new FCRSVD(userCount, itemCount, maxValue, minValue, featureCount,
+            BiSVD recmmd = new BiSVD(userCount, itemCount, maxValue, minValue, featureCount,
                 lrate, regularized, 0, maxIteration, dimnsn[0], dimnsn[1], ua, ia, showProgress);
             recmmd.buildModel(rateMatrix);
 

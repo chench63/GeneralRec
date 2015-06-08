@@ -161,6 +161,32 @@ public abstract class MatrixFactorizationRecommender implements Serializable {
         }
     }
 
+    /**
+     * Build a model with given training set.
+     * 
+     * @param rateMatrix
+     * @param tMatrix
+     */
+    public void buildModel(MatlabFasionSparseMatrix rateMatrix, MatlabFasionSparseMatrix tMatrix) {
+        //user features
+        userDenseFeatures = new DenseMatrix(userCount, featureCount);
+        for (int u = 0; u < userCount; u++) {
+            for (int f = 0; f < featureCount; f++) {
+                double rdm = Math.random() / featureCount;
+                userDenseFeatures.setValue(u, f, rdm);
+            }
+        }
+
+        //item features
+        itemDenseFeatures = new DenseMatrix(featureCount, itemCount);
+        for (int i = 0; i < itemCount; i++) {
+            for (int f = 0; f < featureCount; f++) {
+                double rdm = Math.random() / featureCount;
+                itemDenseFeatures.setValue(f, i, rdm);
+            }
+        }
+    }
+
     /*========================================
      * Prediction
      *========================================*/
@@ -240,8 +266,14 @@ public abstract class MatrixFactorizationRecommender implements Serializable {
      * @return the predicted rating
      */
     public double predict(int u, int i) {
-        double prediction = this.offset
-                            + userFeatures.getRowRef(u).innerProduct(itemFeatures.getColRef(i));
+        double prediction = this.offset;
+        if (userFeatures != null && itemFeatures != null) {
+            prediction += userFeatures.getRowRef(u).innerProduct(itemFeatures.getColRef(i));
+        } else if (userDenseFeatures != null && itemDenseFeatures != null) {
+            prediction += userDenseFeatures.innerProduct(u, i, itemDenseFeatures);
+        } else {
+            throw new RuntimeException("features were not initialized.");
+        }
 
         if (prediction > maxValue) {
             return maxValue;

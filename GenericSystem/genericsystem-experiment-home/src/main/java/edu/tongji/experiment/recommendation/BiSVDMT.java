@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 import prea.util.ClusteringInformationUtil;
 import prea.util.MatrixFileUtil;
 import edu.tongji.data.MatlabFasionSparseMatrix;
-import edu.tongji.ml.matrix.FCRSVD;
+import edu.tongji.ml.matrix.BiSVD;
 import edu.tongji.util.ExceptionUtil;
 
 public class BiSVDMT {
@@ -94,7 +94,7 @@ public class BiSVDMT {
             int[] dimnsn = ClusteringInformationUtil.readBiAssigmnt(ua, ia, clusterDir, rootDir);
 
             //build model
-            FCRSVD recmmd = new FCRSVD(userCount, itemCount, maxValue, minValue, featureCount,
+            BiSVD recmmd = new BiSVD(userCount, itemCount, maxValue, minValue, featureCount,
                 lrate, regularized, 0, maxIteration, dimnsn[0], dimnsn[1], ua, ia, showProgress);
             recmmd.buildModel(rateMatrix, testMatrix);
 
