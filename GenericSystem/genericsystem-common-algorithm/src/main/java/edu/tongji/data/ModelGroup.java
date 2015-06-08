@@ -22,14 +22,14 @@ public class ModelGroup {
     /** file contains mapping w.r.t columns*/
     private String        colMappingFile;
     /** real models*/
-    private List<Model>   models;
+    private List<LocalModel>   models;
 
     /**
      * join the contained models to the given queue
      * 
      * @param m the queue to add
      */
-    public void join(Queue<Model> m, SparseMatrix rateMatrix, int groupId) {
+    public void join(Queue<LocalModel> m, SparseMatrix rateMatrix, int groupId) {
         //read configuration
         if (StringUtil.isNotBlank(colMappingFile) && StringUtil.isNotBlank(rowMappingFile)
             && StringUtil.isNotBlank(settingFile)) {
@@ -42,7 +42,7 @@ public class ModelGroup {
 
         //join models
         int currId = m.size();
-        for (Model model : models) {
+        for (LocalModel model : models) {
             model.preProc(rateMatrix);
             model.setId(currId);
             model.setGroupId(groupId);
@@ -87,7 +87,7 @@ public class ModelGroup {
      * 
      * @param models value to be assigned to property models
      */
-    public void setModels(List<Model> models) {
+    public void setModels(List<LocalModel> models) {
         this.models = models;
     }
 
@@ -105,7 +105,7 @@ public class ModelGroup {
      * 
      * @return property value of models
      */
-    public List<Model> getModels() {
+    public List<LocalModel> getModels() {
         return models;
     }
 

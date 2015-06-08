@@ -232,17 +232,17 @@ public class BiSVD extends MatrixFactorizationRecommender {
 
                 //global model
                 double AuiReal = Auis[numSeq];
-                double AuiEst = innerPrediction(u, i, userDenseFeatures, itemDenseFeatures);
+                double AuiEst = userDenseFeatures.innerProduct(u, i, itemDenseFeatures);
                 double err = AuiReal - AuiEst;
                 sum += Math.pow(err, 2.0d);
 
                 // item clustering local models
-                double IuiEst = innerPrediction(u, i, userDenseFeaturesAss[uAssigmnt[i]],
+                double IuiEst = userDenseFeaturesAss[uAssigmnt[i]].innerProduct(u, i,
                     itemDenseFeatures);
                 double errIui = AuiReal - IuiEst;
 
                 // user clustering local models
-                double UuiEst = innerPrediction(u, i, userDenseFeatures,
+                double UuiEst = userDenseFeatures.innerProduct(u, i,
                     itemDenseFeaturesAss[iAssigmnt[u]]);
                 double errUui = AuiReal - UuiEst;
 

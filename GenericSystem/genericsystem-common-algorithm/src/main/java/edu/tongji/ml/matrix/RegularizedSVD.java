@@ -136,7 +136,7 @@ public class RegularizedSVD extends MatrixFactorizationRecommender {
 
                 //global model
                 double AuiReal = Auis[numSeq];
-                double AuiEst = innerPrediction(u, i, userDenseFeatures, itemDenseFeatures);
+                double AuiEst = userDenseFeatures.innerProduct(u, i, itemDenseFeatures);
                 double err = AuiReal - AuiEst;
                 sum += Math.pow(err, 2.0d);
 

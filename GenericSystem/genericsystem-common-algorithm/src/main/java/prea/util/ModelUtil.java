@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import edu.tongji.data.BlockMatrix;
-import edu.tongji.data.Model;
+import edu.tongji.data.LocalModel;
 
 /**
  * 
@@ -24,7 +24,7 @@ public class ModelUtil {
      * @param models
      */
     public static void readModels(String settingFile, String rowMappingFile, String colMappingFile,
-                                  List<Model> models) {
+                                  List<LocalModel> models) {
         if (settingFile == null && rowMappingFile == null && colMappingFile == null) {
             return;
         }
@@ -72,7 +72,7 @@ public class ModelUtil {
                     break;
                 }
 
-                Model model = models.get(indx);
+                LocalModel model = models.get(indx);
                 model.setRows(clusters[i][j].getRowSet());
                 model.setCols(clusters[i][j].getColSet());
                 clusters[i][j] = null;

@@ -16,7 +16,7 @@ import edu.tongji.util.LoggerUtil;
  * @author Hanke Chen
  * @version $Id: WeigtedRSVD.java, v 0.1 2014-10-19 上午11:20:27 chench Exp $
  */
-public class WeigtedRSVD extends MatrixFactorizationRecommender {
+public class WeigtedSVD extends MatrixFactorizationRecommender {
     /** SerialVersionNum */
     private static final long serialVersionUID = 1L;
 
@@ -57,8 +57,8 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
      * @param b1 The base of learning rate.
      * @param b2 The base of userWeights or itemWeights.
      */
-    public WeigtedRSVD(int uc, int ic, double max, double min, int fc, double lr, double r,
-                       double m, int iter, double b0, double b1, double b2) {
+    public WeigtedSVD(int uc, int ic, double max, double min, int fc, double lr, double r,
+                      double m, int iter, double b0, double b1, double b2) {
         super(uc, ic, max, min, fc, lr, r, m, iter, false);
         this.beta1 = b1;
         this.beta2 = b2;
@@ -80,8 +80,8 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
      * @param b1 The base of learning rate.
      * @param b2 The base of userWeights or itemWeights.
      */
-    public WeigtedRSVD(int uc, int ic, double max, double min, int fc, double lr, double r,
-                       double m, int iter, double b0, double b1, double b2, boolean verbose) {
+    public WeigtedSVD(int uc, int ic, double max, double min, int fc, double lr, double r,
+                      double m, int iter, double b0, double b1, double b2, boolean verbose) {
         super(uc, ic, max, min, fc, lr, r, m, iter, verbose);
         this.beta1 = b1;
         this.beta2 = b2;
@@ -101,8 +101,8 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
      * @param m Momentum used in gradient-based or iterative optimization.
      * @param iter The maximum number of iterations.
      */
-    public WeigtedRSVD(int uc, int ic, double max, double min, int fc, double lr, double r,
-                       double m, int iter, boolean verbose) {
+    public WeigtedSVD(int uc, int ic, double max, double min, int fc, double lr, double r,
+                      double m, int iter, boolean verbose) {
         super(uc, ic, max, min, fc, lr, r, m, iter, verbose);
     }
 
@@ -244,6 +244,16 @@ public class WeigtedRSVD extends MatrixFactorizationRecommender {
             // Show progress:
             LoggerUtil.info(logger, round + "\t" + currErr);
         }
+    }
+
+    /** 
+     * @see edu.tongji.ml.matrix.MatrixFactorizationRecommender#ensnblWeight(int, int, double)
+     */
+    @Override
+    public double ensnblWeight(int u, int i, double rating) {
+        int weightIndx = Double.valueOf(rating / minValue - 1).intValue();
+        return 1.0 + beta1 * ensnblWeightInU[u][weightIndx] + beta2
+               * ensnblWeightInI[i][weightIndx];
     }
 
     public double getPu(int u, double rating) {

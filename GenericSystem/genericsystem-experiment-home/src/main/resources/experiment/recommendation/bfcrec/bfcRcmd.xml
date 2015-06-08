@@ -37,7 +37,7 @@
 		<constructor-arg index="9" type="boolean" value="false" />
 	</bean>
 
-	<bean id="cocluster" class="edu.tongji.data.Model" scope="prototype">
+	<bean id="cocluster" class="edu.tongji.data.LocalModel" scope="prototype">
 		<constructor-arg index="0"
 			type="edu.tongji.ml.matrix.MatrixFactorizationRecommender" ref="BFCSVDRecmmd" />
 		<constructor-arg index="1" type="java.lang.String"

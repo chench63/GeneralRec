@@ -14,7 +14,7 @@ import recommender.dataset.MatrixKMsUtil;
 import edu.tongji.data.SparseMatrix;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.ml.KMeansPlusPlusUtil;
-import edu.tongji.ml.matrix.WeigtedRSVD;
+import edu.tongji.ml.matrix.WeigtedSVD;
 import edu.tongji.parser.MovielensRatingTemplateParser;
 import edu.tongji.parser.Parser;
 import edu.tongji.util.LoggerUtil;
@@ -85,7 +85,7 @@ public class FeatureBasedKMsLRA {
         double learningRate = 0.005;
         double regularization = 0.1;
         int maxIteration = 100;
-        WeigtedRSVD recommender = new WeigtedRSVD(userCount, itemCount, maxValue, minValue,
+        WeigtedSVD recommender = new WeigtedSVD(userCount, itemCount, maxValue, minValue,
             featureCount, learningRate, regularization, 0, maxIteration, false);
         recommender.buildModel(rateMatrix);
 

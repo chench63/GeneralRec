@@ -9,7 +9,7 @@
 		http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
 	<!-- ******************************************** Algorithm Setting ************************************************ -->
-	<bean id="WSVDRecmmd" class="edu.tongji.ml.matrix.WeigtedRSVD"
+	<bean id="WSVDRecmmd" class="edu.tongji.ml.matrix.WeigtedSVD"
 		scope="prototype">
 		<constructor-arg index="0" type="int" value="${USER_COUNT}" />
 		<constructor-arg index="1" type="int" value="${ITEM_COUNT}" />
@@ -25,7 +25,7 @@
 		<constructor-arg index="11" type="double" value="${BETA2}" />
 	</bean>
 
-	<bean id="model" class="edu.tongji.data.Model" scope="prototype">
+	<bean id="model" class="edu.tongji.data.LocalModel" scope="prototype">
 		<constructor-arg index="0"
 			type="edu.tongji.ml.matrix.MatrixFactorizationRecommender" ref="WSVDRecmmd" />
 		<constructor-arg index="1" type="java.lang.String"
