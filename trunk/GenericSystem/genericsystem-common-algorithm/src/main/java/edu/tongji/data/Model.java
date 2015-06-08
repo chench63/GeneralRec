@@ -73,7 +73,7 @@ public class Model {
         if (recmmd instanceof WeigtedRSVD) {
             WeigtedRSVD lRecmmd = (WeigtedRSVD) recmmd;
             MatlabFasionSparseMatrix lrMatrix = rateMatrix.partition(50 * 1000 * 1000, rows, cols);
-            lRecmmd.buildModel(lrMatrix, rows, cols);
+            lRecmmd.buildModel(lrMatrix, null);
         } else {
 
             if (rows == null | cols == null) {
@@ -190,7 +190,7 @@ public class Model {
             //record local prediction
             //userId, itemId, AuiReal, AuiEst, Pu, Pi, Pr, GroupId
             double AuiReal = Auis[numSeq];
-            double AuiEst = lRecmmd.predicts(u, i);
+            double AuiEst = lRecmmd.predict(u, i);
             buffer.append(u).append(',').append(i).append(',').append(AuiReal).append(',')
                 .append(AuiEst).append(',').append(lRecmmd.getPu(u, AuiEst)).append(',')
                 .append(lRecmmd.getPi(i, AuiEst)).append(',').append(lRecmmd.getPr(AuiEst))

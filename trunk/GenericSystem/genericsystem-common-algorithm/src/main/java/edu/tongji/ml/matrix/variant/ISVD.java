@@ -1,26 +1,28 @@
-package edu.tongji.ml.matrix;
+package edu.tongji.ml.matrix.variant;
 
 import prea.util.EvaluationMetrics;
+import edu.tongji.data.MatlabFasionSparseMatrix;
 import edu.tongji.data.SparseColumnMatrix;
 import edu.tongji.data.SparseMatrix;
 import edu.tongji.data.SparseRowMatrix;
 import edu.tongji.data.SparseVector;
+import edu.tongji.ml.matrix.MatrixFactorizationRecommender;
 import edu.tongji.util.FileUtil;
 import edu.tongji.util.LoggerUtil;
 
 /**
  * 
  * @author Hanke
- * @version $Id: UserCOnstraintRSVD.java, v 0.1 2015-4-9 下午2:36:53 Exp $
+ * @version $Id: ConstraintRSVD.java, v 0.1 2015-3-30 下午7:39:01 Exp $
  */
-public class UserConstraintRSVD extends MatrixFactorizationRecommender {
+public class ISVD extends MatrixFactorizationRecommender {
     /** SerialVersionNum */
-    private static final long      serialVersionUID = 1L;
+    private static final long   serialVersionUID = 1L;
 
     /** User profile in low-rank matrix form. */
-    protected SparseColumnMatrix[] itemFeaturesAss;
+    protected SparseRowMatrix[] userFeaturesAss;
     /** User profile in low-rank matrix form. */
-    protected int[]                iAssigmnt;
+    protected int[]             assigmnt;
 
     /*========================================
      * Constructors
@@ -37,23 +39,19 @@ public class UserConstraintRSVD extends MatrixFactorizationRecommender {
      * @param r Controlling factor for the degree of regularization. 
      * @param m Momentum used in gradient-based or iterative optimization.
      * @param iter The maximum number of iterations.
-     * @param l The number of item clusters.
-     * @param ua 
      */
-    public UserConstraintRSVD(int uc, int ic, double max, double min, int fc, double lr, double r,
-                              double m, int iter, int l, int[] ua, boolean verbose) {
+    public ISVD(int uc, int ic, double max, double min, int fc, double lr, double r, double m,
+                int iter, int k, int[] ia, boolean verbose) {
         super(uc, ic, max, min, fc, lr, r, m, iter, verbose);
-        itemFeaturesAss = new SparseColumnMatrix[l];
-        iAssigmnt = ua;
+        userFeaturesAss = new SparseRowMatrix[k];
+        this.assigmnt = ia;
     }
 
     /*========================================
      * Model Builder
      *========================================*/
     /**
-     * Build a model with given training set.
-     * 
-     * @param rateMatrix Training data set.
+     * @see edu.tongji.ml.matrix.MatrixFactorizationRecommender#buildModel(edu.tongji.data.SparseRowMatrix)
      */
     @Override
     public void buildModel(SparseRowMatrix rateMatrix) {
@@ -81,26 +79,27 @@ public class UserConstraintRSVD extends MatrixFactorizationRecommender {
                         double err = AuiReal - AuiEst;
                         sum += Math.pow(err, 2.0d);
 
-                        // user clustering local models
-                        SparseVector gi = itemFeaturesAss[iAssigmnt[u]].getCol(i);
-                        double UuiEst = Fu.innerProduct(gi);
-                        double errUui = AuiReal - UuiEst;
+                        // item clustering local models
+                        SparseVector Su = userFeaturesAss[assigmnt[i]].getRowRef(u);
+                        double IuiEst = Su.innerProduct(Gi);
+                        double errIui = AuiReal - IuiEst;
 
                         for (int s = 0; s < featureCount; s++) {
                             double Fus = userFeatures.getValue(u, s);
+                            double fus = userFeaturesAss[assigmnt[i]].getValue(u, s);
                             double Gis = itemFeatures.getValue(s, i);
-                            double gis = itemFeaturesAss[iAssigmnt[u]].getValue(s, i);
+
                             //local models updates
-                            itemFeaturesAss[iAssigmnt[u]].setValue(s, i,
-                                gis + learningRate * (errUui * Fus - regularizer * gis));
+                            userFeaturesAss[assigmnt[i]].setValue(u, s,
+                                fus + learningRate * (errIui * Gis - regularizer * fus));
 
                             //global model updates
-                            userFeatures.setValue(u, s, Fus
+                            userFeatures.setValue(u, s, Fus + learningRate
+                                                        * (err * Gis - regularizer * Fus));
+                            itemFeatures.setValue(s, i, Gis
                                                         + learningRate
-                                                        * (err * Gis + errUui * gis - regularizer
-                                                                                      * Fus));
-                            itemFeatures.setValue(s, i, Gis + learningRate
-                                                        * (err * Fus - regularizer * Gis));
+                                                        * (err * Fus + errIui * fus - regularizer
+                                                                                      * Gis));
                         }
                     }
                 }
@@ -113,7 +112,7 @@ public class UserConstraintRSVD extends MatrixFactorizationRecommender {
             if (showProgress && (round % 10 == 0)) {
                 EvaluationMetrics metric = this.evaluate(tMatrix);
                 FileUtil.writeAsAppend(
-                    "E://UC[" + featureCount + "]_k" + itemFeaturesAss.length + "_" + maxIter,
+                    "E://IC[" + featureCount + "]_k" + userFeaturesAss.length + "_" + maxIter,
                     round + "\t" + String.format("%.4f", currErr) + "\t"
                             + String.format("%.4f", metric.getRMSE()) + "\n");
             }
@@ -152,26 +151,27 @@ public class UserConstraintRSVD extends MatrixFactorizationRecommender {
                         double err = AuiReal - AuiEst;
                         sum += Math.pow(err, 2.0d);
 
-                        // user clustering local models
-                        SparseVector gi = itemFeaturesAss[iAssigmnt[u]].getCol(i);
-                        double UuiEst = Fu.innerProduct(gi);
-                        double errUui = AuiReal - UuiEst;
+                        // item clustering local models
+                        SparseVector Su = userFeaturesAss[assigmnt[i]].getRowRef(u);
+                        double IuiEst = Su.innerProduct(Gi);
+                        double errIui = AuiReal - IuiEst;
 
                         for (int s = 0; s < featureCount; s++) {
                             double Fus = userFeatures.getValue(u, s);
+                            double fus = userFeaturesAss[assigmnt[i]].getValue(u, s);
                             double Gis = itemFeatures.getValue(s, i);
-                            double gis = itemFeaturesAss[iAssigmnt[u]].getValue(s, i);
+
                             //local models updates
-                            itemFeaturesAss[iAssigmnt[u]].setValue(s, i,
-                                gis + learningRate * (errUui * Fus - regularizer * gis));
+                            userFeaturesAss[assigmnt[i]].setValue(u, s,
+                                fus + learningRate * (errIui * Gis - regularizer * fus));
 
                             //global model updates
-                            userFeatures.setValue(u, s, Fus
+                            userFeatures.setValue(u, s, Fus + learningRate
+                                                        * (err * Gis - regularizer * Fus));
+                            itemFeatures.setValue(s, i, Gis
                                                         + learningRate
-                                                        * (err * Gis + errUui * gis - regularizer
-                                                                                      * Fus));
-                            itemFeatures.setValue(s, i, Gis + learningRate
-                                                        * (err * Fus - regularizer * Gis));
+                                                        * (err * Fus + errIui * fus - regularizer
+                                                                                      * Gis));
                         }
                     }
                 }
@@ -184,7 +184,7 @@ public class UserConstraintRSVD extends MatrixFactorizationRecommender {
             if (showProgress && (round % 10 == 0)) {
                 EvaluationMetrics metric = this.evaluate(tMatrix);
                 FileUtil.writeAsAppend(
-                    "E://UC[" + featureCount + "]_k" + itemFeaturesAss.length + "_" + maxIter,
+                    "E://IC[" + featureCount + "]_k" + userFeaturesAss.length + "_" + maxIter,
                     round + "\t" + String.format("%.4f", currErr) + "\t"
                             + String.format("%.4f", metric.getRMSE()) + "\n");
             }
@@ -197,30 +197,39 @@ public class UserConstraintRSVD extends MatrixFactorizationRecommender {
     protected void initFeatures() {
         // Initialize user features:
         userFeatures = new SparseRowMatrix(userCount, featureCount);
+        for (int k = 0; k < userFeaturesAss.length; k++) {
+            userFeaturesAss[k] = new SparseRowMatrix(userCount, featureCount);
+        }
         for (int u = 0; u < userCount; u++) {
             for (int f = 0; f < featureCount; f++) {
                 double rdm = Math.random() / featureCount;
                 userFeatures.setValue(u, f, rdm);
             }
+
+            for (int k = 0; k < userFeaturesAss.length; k++) {
+                for (int f = 0; f < featureCount; f++) {
+                    double rdm = Math.random() / featureCount;
+                    userFeaturesAss[k].setValue(u, f, rdm);
+                }
+            }
         }
 
         // Initialize item features:
         itemFeatures = new SparseColumnMatrix(featureCount, itemCount);
-        for (int k = 0; k < itemFeaturesAss.length; k++) {
-            itemFeaturesAss[k] = new SparseColumnMatrix(featureCount, itemCount);
-        }
         for (int i = 0; i < itemCount; i++) {
             for (int f = 0; f < featureCount; f++) {
                 double rdm = Math.random() / featureCount;
                 itemFeatures.setValue(f, i, rdm);
             }
-
-            for (int k = 0; k < itemFeaturesAss.length; k++) {
-                for (int f = 0; f < featureCount; f++) {
-                    double rdm = Math.random() / featureCount;
-                    itemFeaturesAss[k].setValue(i, f, rdm);
-                }
-            }
         }
+    }
+
+    /**
+     * @see edu.tongji.ml.matrix.MatrixFactorizationRecommender#buildModel(edu.tongji.data.MatlabFasionSparseMatrix, edu.tongji.data.MatlabFasionSparseMatrix)
+     */
+    @Override
+    public void buildModel(MatlabFasionSparseMatrix rateMatrix, MatlabFasionSparseMatrix tMatrix) {
+        throw new RuntimeException(
+            "buildModel for MatlabFasionSparseMatrix requires implementation!");
     }
 }

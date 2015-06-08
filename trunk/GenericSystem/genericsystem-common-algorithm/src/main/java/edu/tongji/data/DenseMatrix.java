@@ -67,4 +67,20 @@ public class DenseMatrix {
         vals[i][j] = value;
     }
 
+    /**
+     * nner product of two vectors.
+     * 
+     * @param u                 the index of rows in this object 
+     * @param i                 the index of rows in tDenseFeature
+     * @param tDenseMatrix     the transposed DenseMatrix
+     * @return
+     */
+    public double innerProduct(int u, int i, DenseMatrix tDenseMatrix) {
+        double sum = 0.0d;
+        for (int f = 0; f < N; f++) {
+            sum += this.getValue(u, f) * tDenseMatrix.getValue(f, i);
+        }
+        return sum;
+    }
+
 }

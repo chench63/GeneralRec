@@ -86,7 +86,7 @@ public class FeatureBasedKMsLRA {
         double regularization = 0.1;
         int maxIteration = 100;
         WeigtedRSVD recommender = new WeigtedRSVD(userCount, itemCount, maxValue, minValue,
-            featureCount, learningRate, regularization, 0, maxIteration);
+            featureCount, learningRate, regularization, 0, maxIteration, false);
         recommender.buildModel(rateMatrix);
 
         //divide rows
