@@ -104,8 +104,8 @@ public final class RandomUtil {
      * @param deviation
      * @return
      */
-    public static double nextNormalDistribution(double mean, double deviation) {
-        return (new NormalDistribution(mean, deviation)).sample();
+    public static double nextNormalDistribution(double mean, double sd) {
+        return (new NormalDistribution(mean, sd)).sample();
     }
 
 }
