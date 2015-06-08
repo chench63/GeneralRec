@@ -12,6 +12,7 @@ import edu.tongji.data.SparseColumnMatrix;
 import edu.tongji.data.SparseMatrix;
 import edu.tongji.data.SparseRowMatrix;
 import edu.tongji.log4j.LoggerDefineConstant;
+import edu.tongji.ml.Recommender;
 
 /**
  * This is an abstract class implementing four matrix-factorization-based methods
@@ -21,21 +22,9 @@ import edu.tongji.log4j.LoggerDefineConstant;
  * @since 2012. 4. 20
  * @version 1.1
  */
-public abstract class MatrixFactorizationRecommender implements Serializable {
+public abstract class MatrixFactorizationRecommender extends Recommender implements Serializable {
     /** SerialVersionNum */
     private static final long        serialVersionUID = 1L;
-
-    /*========================================
-     * Common Variables
-     *========================================*/
-    /** The number of users. */
-    public int                       userCount;
-    /** The number of items. */
-    public int                       itemCount;
-    /** Maximum value of rating, existing in the dataset. */
-    public double                    maxValue;
-    /** Minimum value of rating, existing in the dataset. */
-    public double                    minValue;
 
     /** The number of features. */
     public int                       featureCount;
@@ -114,10 +103,9 @@ public abstract class MatrixFactorizationRecommender implements Serializable {
      * Model Builder
      *========================================*/
     /**
-     * Build a model with given training set.
-     * 
-     * @param rateMatrix The rating matrix with train data.
+     * @see edu.tongji.ml.Recommender#buildModel(edu.tongji.data.SparseRowMatrix)
      */
+    @Override
     public void buildModel(SparseRowMatrix rateMatrix) {
         userFeatures = new SparseRowMatrix(userCount, featureCount);
         itemFeatures = new SparseColumnMatrix(featureCount, itemCount);
@@ -138,10 +126,9 @@ public abstract class MatrixFactorizationRecommender implements Serializable {
     }
 
     /**
-     * Build a model with given training set.
-     * 
-     * @param rateMatrix The rating matrix with train data.
+     * @see edu.tongji.ml.Recommender#buildModel(edu.tongji.data.SparseMatrix)
      */
+    @Override
     public void buildModel(SparseMatrix rateMatrix) {
         userFeatures = new SparseRowMatrix(userCount, featureCount);
         itemFeatures = new SparseColumnMatrix(featureCount, itemCount);
@@ -162,11 +149,9 @@ public abstract class MatrixFactorizationRecommender implements Serializable {
     }
 
     /**
-     * Build a model with given training set.
-     * 
-     * @param rateMatrix
-     * @param tMatrix
+     * @see edu.tongji.ml.Recommender#buildModel(edu.tongji.data.MatlabFasionSparseMatrix, edu.tongji.data.MatlabFasionSparseMatrix)
      */
+    @Override
     public void buildModel(MatlabFasionSparseMatrix rateMatrix, MatlabFasionSparseMatrix tMatrix) {
         //user features
         userDenseFeatures = new DenseMatrix(userCount, featureCount);
@@ -191,33 +176,21 @@ public abstract class MatrixFactorizationRecommender implements Serializable {
      * Prediction
      *========================================*/
     /**
-     * Evaluate the designated algorithm with the given test data.
-     * 
-     * @param testMatrix The rating matrix with test data.
-     * 
-     * @return The result of evaluation, such as MAE, RMSE, and rank-score.
+     * @see edu.tongji.ml.Recommender#evaluate(edu.tongji.data.SparseRowMatrix)
      */
+    @Override
     public EvaluationMetrics evaluate(SparseRowMatrix testMatrix) {
         SparseRowMatrix predicted = new SparseRowMatrix(userCount, itemCount);
 
         for (int u = 0; u < userCount; u++) {
             int[] testItems = testMatrix.getRowRef(u).indexList();
+            if (testItems == null) {
+                continue;
+            }
 
-            if (testItems != null) {
-                for (int t = 0; t < testItems.length; t++) {
-                    int i = testItems[t];
-                    double prediction = this.offset
-                                        + userFeatures.getRowRef(u).innerProduct(
-                                            itemFeatures.getColRef(testItems[t]));
-
-                    if (prediction > maxValue) {
-                        prediction = maxValue;
-                    } else if (prediction < minValue) {
-                        prediction = minValue;
-                    }
-
-                    predicted.setValue(u, i, prediction);
-                }
+            for (int i : testItems) {
+                double prediction = predict(u, i);
+                predicted.setValue(u, i, prediction);
             }
         }
 
@@ -239,18 +212,10 @@ public abstract class MatrixFactorizationRecommender implements Serializable {
         int[] iIndx = testMatrix.getColIndx();
         double[] Auis = testMatrix.getVals();
         for (int numSeq = 0; numSeq < rateCount; numSeq++) {
-
             int u = uIndx[numSeq];
             int i = iIndx[numSeq];
             double AuiReal = Auis[numSeq];
-            double AuiEst = this.offset
-                            + innerPrediction(u, i, userDenseFeatures, itemDenseFeatures);
-
-            if (AuiEst > maxValue) {
-                AuiEst = maxValue;
-            } else if (AuiEst < minValue) {
-                AuiEst = minValue;
-            }
+            double AuiEst = predict(u, i);
 
             RMSE += Math.pow(AuiReal - AuiEst, 2.0d);
         }
@@ -259,12 +224,9 @@ public abstract class MatrixFactorizationRecommender implements Serializable {
     }
 
     /**
-     * return the predicted rating
-     * 
-     * @param u the given user index
-     * @param i the given item index
-     * @return the predicted rating
+     * @see edu.tongji.ml.Recommender#predict(int, int)
      */
+    @Override
     public double predict(int u, int i) {
         double prediction = this.offset;
         if (userFeatures != null && itemFeatures != null) {
@@ -284,32 +246,25 @@ public abstract class MatrixFactorizationRecommender implements Serializable {
         }
     }
 
-    protected double innerPrediction(int u, int i, DenseMatrix uDenseFeature,
-                                     DenseMatrix iDenseFeature) {
-        double AuiEst = 0.0d;
-        for (int f = 0; f < featureCount; f++) {
-            AuiEst += uDenseFeature.getValue(u, f) * iDenseFeature.getValue(f, i);
-        }
-        return AuiEst;
-    }
-
     /**
-     * Return the weight of the given rating
-     * 
-     * @param u
-     * @param i
-     * @param weightIndx
-     * @return
+     * @see edu.tongji.ml.Recommender#ensnblWeight(int, int, double)
      */
-    public double weight(int u, int i, double rating) {
+    @Override
+    public double ensnblWeight(int u, int i, double rating) {
         return 1.0;
     }
 
     /**
-     * explicit clear the reference
+     * @see edu.tongji.ml.Recommender#dropRef()
      */
-    public void explicitClear() {
-        itemFeatures.clear();
-        userFeatures.clear();
+    @Override
+    public void dropRef() {
+        if (itemFeatures != null) {
+            itemFeatures.clear();
+        }
+        if (userFeatures != null) {
+            userFeatures.clear();
+        }
     }
+
 }

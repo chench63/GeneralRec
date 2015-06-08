@@ -3,7 +3,7 @@ package paper.sigir15.experiment;
 import prea.util.EvaluationMetrics;
 import prea.util.MatrixFileUtil;
 import edu.tongji.data.SparseRowMatrix;
-import edu.tongji.ml.matrix.WeigtedRSVD;
+import edu.tongji.ml.matrix.WeigtedSVD;
 import edu.tongji.util.FileUtil;
 
 /**
@@ -48,7 +48,7 @@ public class WeightsEffectExperiment {
         SparseRowMatrix testMatrix = MatrixFileUtil.reads(testFile, userCount, itemCount, null);
 
         for (double beta0 : beta0s) {
-            WeigtedRSVD recmmd = new WeigtedRSVD(userCount, itemCount, maxValue, minValue,
+            WeigtedSVD recmmd = new WeigtedSVD(userCount, itemCount, maxValue, minValue,
                 featureCount, lrate, regularized, 0, maxIteration, beta0, 0.0d, 0.0d, showProgress);
             recmmd.buildModel(rateMatrix);
 

@@ -293,6 +293,10 @@ public class SparseRowMatrix implements Serializable {
      * @return the sub-matrix with the given row and column index set
      */
     public SparseRowMatrix partition(int[] rows, int[] cols) {
+        if (rows == null && cols == null) {
+            return this;
+        }
+
         //construct row tables
         boolean[] colTable = new boolean[N];
         for (int col : cols) {

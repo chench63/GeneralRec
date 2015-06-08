@@ -8,7 +8,7 @@ import org.springframework.util.StopWatch;
 import prea.util.EvaluationMetrics;
 import prea.util.MatrixInformationUtil;
 import edu.tongji.data.MatlabFasionSparseMatrix;
-import edu.tongji.data.Model;
+import edu.tongji.data.LocalModel;
 import edu.tongji.data.SparseRowMatrix;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.util.LoggerUtil;
@@ -27,7 +27,7 @@ public class ScalableSVDLearner extends Thread {
     protected MatlabFasionSparseMatrix tmMatrix;
 
     /** concurrent task list*/
-    public static Queue<Model>         models;
+    public static Queue<LocalModel>    models;
     /** cumulative prediction*/
     public static SparseRowMatrix      cumPrediction;
     /** cumulative weights*/
@@ -66,7 +66,7 @@ public class ScalableSVDLearner extends Thread {
      * 
      * @return
      */
-    public static Model task() {
+    public static LocalModel task() {
         synchronized (mutexTask) {
             return models.poll();
         }
@@ -79,7 +79,7 @@ public class ScalableSVDLearner extends Thread {
     public void run() {
 
         if (testMatrix != null) {
-            Model task = null;
+            LocalModel task = null;
             while ((task = task()) != null) {
                 //build the model and establish GC, once the model is builded.
                 StopWatch stopWatch = new StopWatch();
@@ -112,8 +112,8 @@ public class ScalableSVDLearner extends Thread {
                 }
 
                 //logger
-                metric = new EvaluationMetrics(testMatrix, prediction, task.maxValue(),
-                    task.minValue());
+                metric = new EvaluationMetrics(testMatrix, prediction, task.recmmd.maxValue,
+                    task.recmmd.minValue);
                 LoggerUtil.info(
                     logger,
                     (new StringBuilder("ThreadId: " + task.getId()))
@@ -125,7 +125,7 @@ public class ScalableSVDLearner extends Thread {
                         MatrixInformationUtil.RMSEAnalysis(testMatrix, metric.getPrediction())));
             }
         } else if (tmMatrix != null) {
-            Model task = null;
+            LocalModel task = null;
             while ((task = task()) != null) {
                 //build the model and establish GC, once the model is builded.
                 StopWatch stopWatch = new StopWatch();

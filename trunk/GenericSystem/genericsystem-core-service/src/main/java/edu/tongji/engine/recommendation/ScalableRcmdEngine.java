@@ -8,10 +8,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import prea.util.MatrixFileUtil;
-import edu.tongji.data.Model;
+import edu.tongji.data.LocalModel;
 import edu.tongji.data.ModelGroup;
 import edu.tongji.data.SparseMatrix;
 import edu.tongji.data.SparseRowMatrix;
+import edu.tongji.engine.RcmdtnEngine;
 import edu.tongji.engine.recommendation.thread.ScalableSVDLearner;
 import edu.tongji.ml.matrix.BorderFormConstraintSVD;
 import edu.tongji.ml.matrix.MatrixFactorizationRecommender;
@@ -49,7 +50,7 @@ public class ScalableRcmdEngine extends RcmdtnEngine {
     private Parser                         parser;
 
     /**
-     * @see edu.tongji.engine.recommendation.RcmdtnEngine#loadDataSet()
+     * @see edu.tongji.engine.RcmdtnEngine#loadDataSet()
      */
     @Override
     protected void loadDataSet() {
@@ -71,7 +72,7 @@ public class ScalableRcmdEngine extends RcmdtnEngine {
         SparseMatrix tMatrix = MatrixFileUtil.read(trainingSetFile, userCount, itemCount, parser);
 
         LoggerUtil.info(logger, "\t\tb. loading model. ");
-        Queue<Model> models = new LinkedList<Model>();
+        Queue<LocalModel> models = new LinkedList<LocalModel>();
         for (int g = 0; g < groups.size(); g++) {
             groups.get(g).join(models, tMatrix, g);
         }
@@ -87,7 +88,7 @@ public class ScalableRcmdEngine extends RcmdtnEngine {
     }
 
     /**
-     * @see edu.tongji.engine.recommendation.RcmdtnEngine#excuteInner()
+     * @see edu.tongji.engine.RcmdtnEngine#excuteInner()
      */
     @Override
     protected void excuteInner() {
@@ -95,7 +96,7 @@ public class ScalableRcmdEngine extends RcmdtnEngine {
     }
 
     /**
-     * @see edu.tongji.engine.recommendation.RcmdtnEngine#evaluate()
+     * @see edu.tongji.engine.RcmdtnEngine#evaluate()
      */
     @Override
     protected void evaluate() {
@@ -122,7 +123,7 @@ public class ScalableRcmdEngine extends RcmdtnEngine {
             }
 
             LoggerUtil.info(logger, "\t\tb. setting it to local models.");
-            for (Model model : ScalableSVDLearner.models) {
+            for (LocalModel model : ScalableSVDLearner.models) {
                 BorderFormConstraintSVD lRecmmd = (BorderFormConstraintSVD) model.recmmd;
                 lRecmmd.setAuxRec(auxRec);
             }
