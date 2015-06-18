@@ -1,4 +1,4 @@
-package paper.sigir15.experiment;
+package paper.sigir15.exp;
 
 import prea.util.EvaluationMetrics;
 import prea.util.MatrixFileUtil;
@@ -11,7 +11,7 @@ import edu.tongji.util.FileUtil;
  * @author Hanke
  * @version $Id: WeightsEffectExperimnt.java, v 0.1 2015-4-19 下午4:31:07 Exp $
  */
-public class WeightsEffectExperiment {
+public class WeightsEffectExp {
     /** file to store the original data and cocluster directory. 10M100K 1m*/
     public static String[]      rootDirs     = { "E:/MovieLens/zWarmStart/ml-10M100K/3/" };
     /** The number of users. 943 6040 69878  480189*/

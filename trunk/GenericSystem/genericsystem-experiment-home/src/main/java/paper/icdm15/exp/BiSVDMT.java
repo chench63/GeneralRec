@@ -1,4 +1,4 @@
-package paper.icdm15.experiment;
+package paper.icdm15.exp;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;

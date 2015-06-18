@@ -1,4 +1,4 @@
-package paper.sigir15.experiment;
+package paper.sigir15.exp;
 
 import java.util.Date;
 import java.util.concurrent.ExecutorService;
@@ -14,7 +14,7 @@ import edu.tongji.data.SparseVector;
 import edu.tongji.util.ExceptionUtil;
 import edu.tongji.util.FileUtil;
 
-public class EnsmblEffctWitPuPiExperiment {
+public class EnsmblEffctWitPuPiExp {
     /** file to store the original data and cocluster directory. 10M100K 1m */
     public static String[]       rootDirs      = { "E:/Netflix/zWarmStart/5/" };
     /** The number of users. 943 6040 69878 480189 */
