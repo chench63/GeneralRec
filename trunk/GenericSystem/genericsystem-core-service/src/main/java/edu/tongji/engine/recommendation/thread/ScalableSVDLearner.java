@@ -84,7 +84,7 @@ public class ScalableSVDLearner extends Thread {
                 //build the model and establish GC, once the model is builded.
                 StopWatch stopWatch = new StopWatch();
                 stopWatch.start();
-                task.buildModel(rateMatrix);
+                task.buildModel(rateMatrix, testMatrix);
                 stopWatch.stop();
 
                 EvaluationMetrics metric = null;
@@ -130,7 +130,7 @@ public class ScalableSVDLearner extends Thread {
                 //build the model and establish GC, once the model is builded.
                 StopWatch stopWatch = new StopWatch();
                 stopWatch.start();
-                task.buildModel(rateMatrix);
+                task.buildModel(rateMatrix, null);
                 stopWatch.stop();
 
                 synchronized (mutexMatrix) {

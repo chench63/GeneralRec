@@ -7,6 +7,7 @@ import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.ml.Recommender;
 import edu.tongji.ml.matrix.MatrixFactorizationRecommender;
 import edu.tongji.ml.matrix.WeigtedSVD;
+import edu.tongji.ml.memory.MemoryBasedRecommender;
 import edu.tongji.util.FileUtil;
 import edu.tongji.util.LoggerUtil;
 import edu.tongji.util.SerializeUtil;
@@ -69,9 +70,15 @@ public class LocalModel {
      * 
      * @param rateMatrix
      */
-    public void buildModel(final SparseRowMatrix rateMatrix) {
-        SparseRowMatrix lMatrix = rateMatrix.partition(rows, cols);
-        recmmd.buildModel(lMatrix);
+    public void buildModel(final SparseRowMatrix rateMatrix, final SparseRowMatrix testMatrix) {
+        if (recmmd instanceof MemoryBasedRecommender) {
+            SparseRowMatrix lMatrix = rateMatrix.partition(rows, cols);
+            SparseRowMatrix ltestMatrix = testMatrix.partition(rows, cols);
+            recmmd.buildModel(lMatrix, ltestMatrix);
+        } else if (recmmd instanceof MatrixFactorizationRecommender) {
+            SparseRowMatrix lMatrix = rateMatrix.partition(rows, cols);
+            recmmd.buildModel(lMatrix, null);
+        }
     }
 
     /**

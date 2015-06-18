@@ -30,8 +30,9 @@ public abstract class Recommender {
      * Build a model with given training set.
      * 
      * @param rateMatrix The rating matrix with train data.
+     * @param testMatrix The rating matrix with test data.
      */
-    public abstract void buildModel(SparseRowMatrix rateMatrix);
+    public abstract void buildModel(SparseRowMatrix rateMatrix, SparseRowMatrix testMatrix);
 
     /**
      * Build a model with given training set.

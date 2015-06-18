@@ -83,7 +83,7 @@ public class BiSVDExp {
         for (int featureCount : featureCounts) {
             RegularizedSVD recmmd = new RegularizedSVD(userCount, itemCount, maxValue, minValue,
                 featureCount, lrate, regularized, 0, maxIteration, showProgress);
-            recmmd.buildModel(rateMatrix);
+            recmmd.buildModel(rateMatrix, null);
 
             //evaluation
             double RMSE = MatrixInformationUtil.offlineRMSE(recmmd, testFile, userCount, itemCount,
@@ -112,10 +112,9 @@ public class BiSVDExp {
 
         //build model
         for (int featureCount : featureCounts) {
-            USVD recmmd = new USVD(userCount, itemCount, maxValue,
-                minValue, featureCount, lrate, regularized, 0, maxIteration, dimnsn[0], ua,
-                showProgress);
-            recmmd.buildModel(rateMatrix);
+            USVD recmmd = new USVD(userCount, itemCount, maxValue, minValue, featureCount, lrate,
+                regularized, 0, maxIteration, dimnsn[0], ua, showProgress);
+            recmmd.buildModel(rateMatrix, null);
 
             //evaluation
             double RMSE = MatrixInformationUtil.offlineRMSE(recmmd, testFile, userCount, itemCount,
@@ -139,11 +138,10 @@ public class BiSVDExp {
 
         //build model
         for (int featureCount : featureCounts) {
-            ISVD recmmd = new ISVD(userCount, itemCount, maxValue,
-                minValue, featureCount, lrate, regularized, 0, maxIteration, dimnsn[1], ia,
-                showProgress);
+            ISVD recmmd = new ISVD(userCount, itemCount, maxValue, minValue, featureCount, lrate,
+                regularized, 0, maxIteration, dimnsn[1], ia, showProgress);
             recmmd.tMatrix = testMatrix;
-            recmmd.buildModel(rateMatrix);
+            recmmd.buildModel(rateMatrix, null);
 
             //evaluation
             double RMSE = MatrixInformationUtil.offlineRMSE(recmmd, testFile, userCount, itemCount,
@@ -168,9 +166,9 @@ public class BiSVDExp {
         //build model
         DescriptiveStatistics stat = new DescriptiveStatistics();
         for (int featureCount : featureCounts) {
-            BiSVD recmmd = new BiSVD(userCount, itemCount, maxValue, minValue, featureCount,
-                lrate, regularized, 0, maxIteration, dimnsn[0], dimnsn[1], ua, ia, showProgress);
-            recmmd.buildModel(rateMatrix);
+            BiSVD recmmd = new BiSVD(userCount, itemCount, maxValue, minValue, featureCount, lrate,
+                regularized, 0, maxIteration, dimnsn[0], dimnsn[1], ua, ia, showProgress);
+            recmmd.buildModel(rateMatrix, null);
 
             //evaluation
             double RMSE = MatrixInformationUtil.offlineRMSE(recmmd, testFile, userCount, itemCount,

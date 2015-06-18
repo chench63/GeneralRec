@@ -51,8 +51,8 @@ public class RegularizedSVD extends MatrixFactorizationRecommender {
      * @see edu.tongji.ml.matrix.MatrixFactorizationRecommender#buildModel(edu.tongji.data.SparseRowMatrix)
      */
     @Override
-    public void buildModel(SparseRowMatrix rateMatrix) {
-        super.buildModel(rateMatrix);
+    public void buildModel(SparseRowMatrix rateMatrix, SparseRowMatrix testMatrix) {
+        super.buildModel(rateMatrix, null);
 
         // Gradient Descent:
         int round = 0;

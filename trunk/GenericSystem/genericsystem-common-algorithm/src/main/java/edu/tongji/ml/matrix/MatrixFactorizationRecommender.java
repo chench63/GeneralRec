@@ -106,7 +106,7 @@ public abstract class MatrixFactorizationRecommender extends Recommender impleme
      * @see edu.tongji.ml.Recommender#buildModel(edu.tongji.data.SparseRowMatrix)
      */
     @Override
-    public void buildModel(SparseRowMatrix rateMatrix) {
+    public void buildModel(SparseRowMatrix rateMatrix, SparseRowMatrix testMatrix) {
         userFeatures = new SparseRowMatrix(userCount, featureCount);
         itemFeatures = new SparseColumnMatrix(featureCount, itemCount);
 

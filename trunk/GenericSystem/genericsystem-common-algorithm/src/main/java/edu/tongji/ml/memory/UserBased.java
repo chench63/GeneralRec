@@ -13,6 +13,8 @@ import edu.tongji.data.SparseVector;
  * @version $Id: UserBased.java, v 0.1 2015-6-18 下午4:51:26 Exp $
  */
 public class UserBased extends MemoryBasedRecommender {
+    /** Average of ratings for each user. */
+    public double[] userRateAverage;
 
     /**
      * Construct a memory-based model with the given data.
@@ -30,19 +32,18 @@ public class UserBased extends MemoryBasedRecommender {
         super(uc, ic, max, min, ns, sim, df, dv);
     }
 
-    /** Average of ratings for each user. */
-    public double[] userRateAverage;
-
     /** 
      * @see edu.tongji.ml.Recommender#buildModel(edu.tongji.data.SparseRowMatrix)
      */
     @Override
-    public void buildModel(SparseRowMatrix rateMatrix) {
+    public void buildModel(SparseRowMatrix rateMatrix, SparseRowMatrix testMatrix) {
         this.rateMatrix = rateMatrix;
+        pMatrix = new SparseRowMatrix(userCount, itemCount);
         userRateAverage = new double[userCount];
         for (int u = 0; u < userCount; u++) {
             userRateAverage[u] = rateMatrix.getRowRef(u).average();
         }
+
     }
 
     /** 
@@ -75,6 +76,11 @@ public class UserBased extends MemoryBasedRecommender {
      */
     @Override
     public double predict(int uNo, int iNo) {
+        double prediction = pMatrix.getValue(uNo, iNo);
+        if (prediction != 0.0d) {
+            return prediction;
+        }
+
         SparseVector a = rateMatrix.getRow(uNo);
         double a_avg = a.average();
 
