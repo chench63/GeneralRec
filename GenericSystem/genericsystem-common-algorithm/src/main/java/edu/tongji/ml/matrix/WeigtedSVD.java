@@ -113,8 +113,8 @@ public class WeigtedSVD extends MatrixFactorizationRecommender {
      * @see edu.tongji.ml.matrix.MatrixFactorizationRecommender#buildModel(edu.tongji.data.SparseMatrix)
      */
     @Override
-    public void buildModel(SparseRowMatrix rateMatrix) {
-        super.buildModel(rateMatrix);
+    public void buildModel(SparseRowMatrix rateMatrix, SparseRowMatrix testMatrix) {
+        super.buildModel(rateMatrix, null);
         trainWeight = MatrixInformationUtil.ratingDistribution(rateMatrix, maxValue, minValue);
         ensnblWeightEntire = MatrixInformationUtil.ratingDistribution(rateMatrix, maxValue, 1.0d);
 

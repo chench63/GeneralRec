@@ -115,7 +115,7 @@ public class FastScalableRcmdEngine extends RcmdtnEngine {
                 auxRec = (MatrixFactorizationRecommender) SerializeUtil.readObject(auxRecFile);
             } else {
                 LoggerUtil.info(logger, "\t\ta. building auxiliary model.");
-                auxRec.buildModel(rateMatrix);
+                auxRec.buildModel(rateMatrix, null);
             }
 
             LoggerUtil.info(logger, "\t\tb. setting it to local models.");

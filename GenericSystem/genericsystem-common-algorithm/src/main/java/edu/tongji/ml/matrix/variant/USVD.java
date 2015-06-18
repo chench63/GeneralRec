@@ -58,7 +58,7 @@ public class USVD extends MatrixFactorizationRecommender {
      * @param rateMatrix Training data set.
      */
     @Override
-    public void buildModel(SparseRowMatrix rateMatrix) {
+    public void buildModel(SparseRowMatrix rateMatrix, SparseRowMatrix testMatrix) {
         initFeatures();
 
         // Gradient Descent:

@@ -54,7 +54,7 @@ public class ISVD extends MatrixFactorizationRecommender {
      * @see edu.tongji.ml.matrix.MatrixFactorizationRecommender#buildModel(edu.tongji.data.SparseRowMatrix)
      */
     @Override
-    public void buildModel(SparseRowMatrix rateMatrix) {
+    public void buildModel(SparseRowMatrix rateMatrix, SparseRowMatrix testMatrix) {
         initFeatures();
 
         // Gradient Descent:

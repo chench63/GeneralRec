@@ -33,6 +33,8 @@ public abstract class MemoryBasedRecommender extends Recommender {
      *========================================*/
     /** Rating matrix for each user (row) and item (column) */
     public SparseRowMatrix  rateMatrix;
+    /** Prediction matrix for each user (row) and item (column) */
+    public SparseRowMatrix  pMatrix;
     /** Similarity matrix for each user (row) and item (column) */
     public SparseRowMatrix  simMatrix;
     /** The number of neighbors, used for estimation. */

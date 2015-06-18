@@ -50,7 +50,7 @@ public class WeightsEffectExp {
         for (double beta0 : beta0s) {
             WeigtedSVD recmmd = new WeigtedSVD(userCount, itemCount, maxValue, minValue,
                 featureCount, lrate, regularized, 0, maxIteration, beta0, 0.0d, 0.0d, showProgress);
-            recmmd.buildModel(rateMatrix);
+            recmmd.buildModel(rateMatrix, null);
 
             //evaluation
             EvaluationMetrics metric = recmmd.evaluate(testMatrix);
