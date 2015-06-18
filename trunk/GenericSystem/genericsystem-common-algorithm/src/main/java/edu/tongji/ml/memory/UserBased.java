@@ -44,6 +44,17 @@ public class UserBased extends MemoryBasedRecommender {
             userRateAverage[u] = rateMatrix.getRowRef(u).average();
         }
 
+        for (int u = 0; u < userCount; u++) {
+            int[] itemList = testMatrix.getRowRef(u).indexList();
+            if (itemList == null) {
+                continue;
+            }
+
+            for (int i : itemList) {
+                double Aui = predict(u, i);
+                pMatrix.setValue(u, i, Aui);
+            }
+        }
     }
 
     /** 
