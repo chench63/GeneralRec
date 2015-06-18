@@ -141,7 +141,6 @@ public class ScalableSVDLearner extends Thread {
                 //logger
                 LoggerUtil.info(logger, (new StringBuilder("ThreadId: " + task.getId()))
                     .append("\tTime: " + stopWatch.getLastTaskTimeMillis()));
-
             }
         }
     }

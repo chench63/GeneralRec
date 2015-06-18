@@ -1,4 +1,4 @@
-package paper.icdm15.experiment;
+package paper.icdm15.exp;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +16,7 @@ import edu.tongji.ml.matrix.variant.ISVD;
 import edu.tongji.ml.matrix.variant.USVD;
 import edu.tongji.util.FileUtil;
 
-public class BiSVDExper {
+public class BiSVDExp {
 
     /** file to store the original data and cocluster directory. 10M100K 1m*/
     public static String[]      rootDirs     = { "E:/Netflix/Fetch50/2/", "E:/Netflix/Fetch50/3/" };
