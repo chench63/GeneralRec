@@ -38,7 +38,7 @@ public class LocalModel {
      * @param recmmd
      * @param resultFile
      */
-    public LocalModel(MatrixFactorizationRecommender recmmd, String resultFile) {
+    public LocalModel(Recommender recmmd, String resultFile) {
         super();
         this.recmmd = recmmd;
         this.resultFile = resultFile;

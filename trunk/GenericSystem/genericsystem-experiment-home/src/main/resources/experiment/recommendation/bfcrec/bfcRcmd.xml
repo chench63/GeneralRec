@@ -39,7 +39,7 @@
 
 	<bean id="cocluster" class="edu.tongji.data.LocalModel" scope="prototype">
 		<constructor-arg index="0"
-			type="edu.tongji.ml.matrix.MatrixFactorizationRecommender" ref="BFCSVDRecmmd" />
+			type="edu.tongji.ml.matrix.Recommender" ref="BFCSVDRecmmd" />
 		<constructor-arg index="1" type="java.lang.String"
 			value="${RESULT_FILE}" />
 	</bean>

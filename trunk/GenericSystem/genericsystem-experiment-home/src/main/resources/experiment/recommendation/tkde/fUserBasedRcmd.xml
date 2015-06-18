@@ -45,7 +45,7 @@
 			value="${RESULT_FILE}" />
 	</bean>
 
-	<bean id="cocluster" class="edu.tongji.data.Model" scope="prototype">
+	<bean id="cocluster" class="edu.tongji.data.LocalModel" scope="prototype">
 		<constructor-arg index="0" type="edu.tongji.ml.Recommender"
 			ref="UsrBasedRecmmd" />
 		<constructor-arg index="1" type="java.lang.String"
