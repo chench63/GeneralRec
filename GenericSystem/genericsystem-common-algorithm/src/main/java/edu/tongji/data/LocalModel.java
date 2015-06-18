@@ -70,14 +70,8 @@ public class LocalModel {
      * @param rateMatrix
      */
     public void buildModel(final SparseRowMatrix rateMatrix) {
-
-        if (recmmd instanceof MatrixFactorizationRecommender) {
-            SparseRowMatrix lMatrix = rateMatrix.partition(rows, cols);
-            recmmd.buildModel(lMatrix);
-            if (rows == null && cols == null) {
-                lMatrix.clear();
-            }
-        }
+        SparseRowMatrix lMatrix = rateMatrix.partition(rows, cols);
+        recmmd.buildModel(lMatrix);
     }
 
     /**

@@ -176,7 +176,6 @@ public abstract class MemoryBasedRecommender extends Recommender {
      */
     @Override
     public void dropRef() {
-        this.simMatrix.clear();
     }
 
 }
