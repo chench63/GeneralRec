@@ -27,14 +27,14 @@
 
 	<bean id="model" class="edu.tongji.data.LocalModel" scope="prototype">
 		<constructor-arg index="0"
-			type="edu.tongji.ml.matrix.MatrixFactorizationRecommender" ref="WSVDRecmmd" />
+			type="edu.tongji.ml.matrix.Recommender" ref="WSVDRecmmd" />
 		<constructor-arg index="1" type="java.lang.String"
 			value="${RESULT_FILE}" />
 	</bean>
 
-	<bean id="cocluster" class="edu.tongji.data.Model" scope="prototype">
+	<bean id="cocluster" class="edu.tongji.data.LocalModel" scope="prototype">
 		<constructor-arg index="0"
-			type="edu.tongji.ml.matrix.MatrixFactorizationRecommender" ref="WSVDRecmmd" />
+			type="edu.tongji.ml.matrix.Recommender" ref="WSVDRecmmd" />
 		<constructor-arg index="1" type="java.lang.String"
 			value="${RESULT_FILE}" />
 	</bean>
