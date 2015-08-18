@@ -1,6 +1,7 @@
 package edu.tongji.ml.matrix;
 
 import prea.util.EvaluationMetrics;
+import edu.tongji.data.MatlabFasionSparseMatrix;
 import edu.tongji.data.SparseMatrix;
 import edu.tongji.data.SparseRowMatrix;
 import edu.tongji.data.SparseVector;
@@ -150,6 +151,82 @@ public class BorderFormConstraintSVD extends MatrixFactorizationRecommender {
     @Override
     public void buildModel(SparseMatrix rateMatrix) {
         throw new RuntimeException("buildModel for SparseMatrix requires implementation!");
+    }
+
+    /** 
+     * @see edu.tongji.ml.matrix.MatrixFactorizationRecommender#buildModel(edu.tongji.data.MatlabFasionSparseMatrix, edu.tongji.data.MatlabFasionSparseMatrix)
+     */
+    @Override
+    public void buildModel(MatlabFasionSparseMatrix rateMatrix, MatlabFasionSparseMatrix tMatrix) {
+        super.buildModel(rateMatrix, tMatrix);
+
+        // Gradient Descent:
+        int round = 0;
+        int rateCount = rateMatrix.getNnz();
+        double prevErr = 99999;
+        double currErr = 9999;
+
+        int[] uIndx = rateMatrix.getRowIndx();
+        int[] iIndx = rateMatrix.getColIndx();
+        double[] Auis = rateMatrix.getVals();
+        while (Math.abs(prevErr - currErr) > 0.0001 && round < maxIter) {
+            double sum = 0.0;
+
+            for (int numSeq = 0; numSeq < rateCount; numSeq++) {
+                int u = uIndx[numSeq];
+                int i = iIndx[numSeq];
+
+                //global model
+                double AuiEst = userDenseFeatures.innerProduct(u, i, itemDenseFeatures);
+                double AuiReal = Auis[numSeq];
+                double errAui = AuiReal - AuiEst;
+                sum += Math.pow(errAui, 2.0d);
+
+                // item clustering local models
+                double IuiEst = auxRec.userDenseFeatures.innerProduct(u, i, itemDenseFeatures);
+                double errIui = AuiReal - IuiEst;
+
+                // user clustering local models
+                double UuiEst = userDenseFeatures.innerProduct(u, i, auxRec.itemDenseFeatures);
+                double errUui = AuiReal - UuiEst;
+
+                for (int s = 0; s < featureCount; s++) {
+                    double Fus = userDenseFeatures.getValue(u, s);
+                    double fus = auxRec.userDenseFeatures.getValue(u, s);
+                    double Gis = itemDenseFeatures.getValue(s, i);
+                    double gis = auxRec.itemDenseFeatures.getValue(s, i);
+
+                    //global model updates
+                    if (isCommonRow[u] & isCommonCol[i]) {
+                        userDenseFeatures.setValue(u, s,
+                            Fus + learningRate * (errAui * Gis + errUui * gis - regularizer * Fus));
+                        itemDenseFeatures.setValue(s, i,
+                            Gis + learningRate * (errAui * Fus + errIui * fus - regularizer * Gis));
+                    } else if (isCommonRow[u]) {
+                        userDenseFeatures.setValue(u, s, Fus + learningRate
+                                                         * (errUui * gis - regularizer * Fus));
+                    } else if (isCommonCol[i]) {
+                        itemDenseFeatures.setValue(s, i, Gis + learningRate
+                                                         * (errIui * fus - regularizer * Gis));
+                    }
+                }
+            }
+
+            prevErr = currErr;
+            currErr = Math.sqrt(sum / rateCount);
+
+            round++;
+            if (showProgress && (round % 10 == 0) && tMatrix != null) {
+                double rmse = this.evaluate(tMatrix);
+                FileUtil.writeAsAppend(
+                    "E://BFCSVD[" + featureCount + "]" + "_" + maxIter,
+                    round + "\t" + String.format("%.6f", currErr) + "\t"
+                            + String.format("%.6f", rmse) + "\n");
+            }
+
+            // Show progress:
+            LoggerUtil.info(logger, round + "\t" + currErr);
+        }
     }
 
     /**

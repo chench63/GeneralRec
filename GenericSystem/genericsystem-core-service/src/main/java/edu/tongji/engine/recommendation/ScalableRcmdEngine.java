@@ -120,6 +120,7 @@ public class ScalableRcmdEngine extends RcmdtnEngine {
             } else {
                 LoggerUtil.info(logger, "\t\ta. building auxiliary model.");
                 auxRec.buildModel(rateMatrix, null);
+                SerializeUtil.writeObject(auxRec, auxRecFile);
             }
 
             LoggerUtil.info(logger, "\t\tb. setting it to local models.");
