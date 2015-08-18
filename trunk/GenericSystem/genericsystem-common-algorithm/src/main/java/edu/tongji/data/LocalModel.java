@@ -91,6 +91,22 @@ public class LocalModel {
     }
 
     /**
+     * build model
+     * 
+     * @param rateMatrix
+     */
+    public void fBuildModel(final SparseRowMatrix rateMatrix, final SparseRowMatrix testMatrix) {
+        if (recmmd instanceof BorderFormConstraintSVD) {
+            MatlabFasionSparseMatrix lMatrix = rateMatrix.partitionWithBorderDependency(
+                10 * 1000 * 1000, rows, cols);
+            recmmd.buildModel(lMatrix, null);
+        } else if (recmmd instanceof MatrixFactorizationRecommender) {
+            MatlabFasionSparseMatrix lMatrix = rateMatrix.partition(20 * 000 * 1000, rows, cols);
+            recmmd.buildModel(lMatrix, null);
+        }
+    }
+
+    /**
      * evaluate the model
      * 
      * @param testMatrix

@@ -1,11 +1,15 @@
 package edu.tongji.data;
 
+import java.io.Serializable;
+
 /**
  * 
  * @author Hanke
  * @version $Id: DenseMatrix.java, v 0.1 2015-5-16 下午3:15:50 Exp $
  */
-public class DenseMatrix {
+public class DenseMatrix implements Serializable {
+    /**  */
+    private static final long serialVersionUID = 1L;
     /** */
     boolean[]   nzRows;
     /** */

@@ -374,7 +374,7 @@ public class SparseRowMatrix implements Serializable {
      * @return the sub-matrix with the given row and column index set
      */
     public MatlabFasionSparseMatrix partition(int nnz, int[] rows, int[] cols) {
-        //construct row tables
+        //construct column tables
         boolean[] colTable = new boolean[N];
         for (int col : cols) {
             colTable[col] = true;
@@ -393,6 +393,47 @@ public class SparseRowMatrix implements Serializable {
                 if (colTable[col]) {
                     double val = this.getValue(row, col);
                     result.setValue(row, col, val);
+                }
+            }
+        }
+        result.reduceMem();
+        return result;
+    }
+
+    /**
+     * part of the matrix w.r.t the given row and column index set
+     * 
+     * @param rows the rows to be partitioned to sub-matrix
+     * @param cols the columns to be partitioned to sub-matrix
+     * @return the sub-matrix with the given row and column index set
+     */
+    public MatlabFasionSparseMatrix partitionWithBorderDependency(int nnz, int[] rows, int[] cols) {
+        //construct row tables
+        boolean[] rowTable = new boolean[M];
+        for (int row : rows) {
+            rowTable[row] = true;
+        }
+
+        boolean[] colTable = new boolean[N];
+        for (int col : cols) {
+            colTable[col] = true;
+        }
+
+        //copy data
+        MatlabFasionSparseMatrix result = new MatlabFasionSparseMatrix(nnz);
+        for (int u = 0; u < M; u++) {
+            SparseVector Mu = this.getRowRef(u);
+            int[] indexList = Mu.indexList();
+
+            if (rowTable[u]) {
+                for (int i : indexList) {
+                    result.setValue(u, i, Mu.getValue(i));
+                }
+            } else {
+                for (int i : indexList) {
+                    if (colTable[i]) {
+                        result.setValue(u, i, Mu.getValue(i));
+                    }
                 }
             }
         }

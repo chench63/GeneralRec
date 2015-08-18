@@ -100,7 +100,7 @@ public class FastScalableRcmdEngine extends RcmdtnEngine {
         LoggerUtil.info(logger, "3. loading rateMatrix and testMatrix. ");
         SparseRowMatrix rateMatrix = MatrixFileUtil.reads(trainingSetFile, userCount, itemCount,
             parser);
-        MatlabFasionSparseMatrix tmMatrix = MatrixFileUtil.reads(testingSetFile, 20 * 1000 * 1000,
+        MatlabFasionSparseMatrix tmMatrix = MatrixFileUtil.reads(testingSetFile, 2 * 1000 * 1000,
             parser);
         LoggerUtil
             .info(logger, "Train: " + rateMatrix.itemCount() + "\tTest: " + tmMatrix.getNnz());
@@ -114,8 +114,7 @@ public class FastScalableRcmdEngine extends RcmdtnEngine {
                 LoggerUtil.info(logger, "\t\ta. loading auxiliary model: " + auxRecIdentity);
                 auxRec = (MatrixFactorizationRecommender) SerializeUtil.readObject(auxRecFile);
             } else {
-                LoggerUtil.info(logger, "\t\ta. building auxiliary model.");
-                auxRec.buildModel(rateMatrix, null);
+                throw new RuntimeException("Auxiliary model is required");
             }
 
             LoggerUtil.info(logger, "\t\tb. setting it to local models.");

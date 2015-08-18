@@ -211,10 +211,7 @@ public class WeigtedSVD extends MatrixFactorizationRecommender {
                 int u = uIndx[numSeq];
                 int i = iIndx[numSeq];
                 double AuiReal = Auis[numSeq];
-                double AuiEst = 0.0d;
-                for (int f = 0; f < featureCount; f++) {
-                    AuiEst += userDenseFeatures.getValue(u, f) * itemDenseFeatures.getValue(f, i);
-                }
+                double AuiEst = userDenseFeatures.innerProduct(u, i, itemDenseFeatures);
 
                 double err = AuiReal - AuiEst;
                 sum += Math.abs(err);

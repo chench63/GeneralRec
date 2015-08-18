@@ -38,14 +38,28 @@
 	</bean>
 
 	<bean id="cocluster" class="edu.tongji.data.LocalModel" scope="prototype">
-		<constructor-arg index="0"
-			type="edu.tongji.ml.matrix.Recommender" ref="BFCSVDRecmmd" />
+		<constructor-arg index="0" type="edu.tongji.ml.Recommender"
+			ref="BFCSVDRecmmd" />
 		<constructor-arg index="1" type="java.lang.String"
 			value="${RESULT_FILE}" />
 	</bean>
 
 	<!-- ******************************************** Engine Setting************************************************ -->
 	<bean id="mixtureRcmd" class="edu.tongji.engine.recommendation.ScalableRcmdEngine">
+		<property name="rootDir" value="${ROOT_DIR}" />
+		<property name="auxRecIdentity" value="${AUX_REC_ID}" />
+		<property name="userCount" value="${USER_COUNT}" />
+		<property name="itemCount" value="${ITEM_COUNT}" />
+		<property name="parser" ref="movielensRatingTemplateParser" />
+		<property name="auxRec" ref="auxRecmmd" />
+		<property name="groups">
+			<list>
+				<ref bean="cocluter_IW2_2_2"></ref>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="fastRcmd" class="edu.tongji.engine.recommendation.FastScalableRcmdEngine">
 		<property name="rootDir" value="${ROOT_DIR}" />
 		<property name="auxRecIdentity" value="${AUX_REC_ID}" />
 		<property name="userCount" value="${USER_COUNT}" />
