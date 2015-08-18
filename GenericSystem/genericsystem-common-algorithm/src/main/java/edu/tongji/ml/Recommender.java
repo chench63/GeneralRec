@@ -26,6 +26,9 @@ public abstract class Recommender {
     /*========================================
      * Model Builder
      *========================================*/
+
+    public abstract void localizedModel(SparseMatrix rateMatrix, int[] rowInModel, int[] colInModel);
+
     /**
      * Build a model with given training set.
      * 

@@ -15,6 +15,10 @@ import edu.tongji.util.LoggerUtil;
 public class BorderFormConstraintSVD extends MatrixFactorizationRecommender {
     /** SerialVersionNum */
     private static final long                       serialVersionUID = 1L;
+    /** Indicate whether the row is common */
+    private boolean[]                               isCommonRow;
+    /** Indicate whether the column is common */
+    private boolean[]                               isCommonCol;
 
     /** A global SVD model. */
     public transient MatrixFactorizationRecommender auxRec;
@@ -39,6 +43,22 @@ public class BorderFormConstraintSVD extends MatrixFactorizationRecommender {
     public BorderFormConstraintSVD(int uc, int ic, double max, double min, int fc, double lr,
                                    double r, double m, int iter, boolean verbose) {
         super(uc, ic, max, min, fc, lr, r, m, iter, verbose);
+        isCommonRow = new boolean[uc];
+        isCommonCol = new boolean[ic];
+    }
+
+    /** 
+     * @see edu.tongji.ml.matrix.MatrixFactorizationRecommender#localizedModel(edu.tongji.data.SparseMatrix, int[], int[])
+     */
+    @Override
+    public void localizedModel(SparseMatrix rateMatrix, int[] rowInModel, int[] colInModel) {
+        for (int row : rowInModel) {
+            isCommonRow[row] = true;
+        }
+
+        for (int col : colInModel) {
+            isCommonCol[col] = true;
+        }
     }
 
     /** 
@@ -54,20 +74,14 @@ public class BorderFormConstraintSVD extends MatrixFactorizationRecommender {
         double prevErr = 99999;
         double currErr = 9999;
 
-        // Available Feature:
-        boolean[] uAvail = new boolean[userCount];
-        boolean[] iAvail = new boolean[itemCount];
-
         while (Math.abs(prevErr - currErr) > 0.0001 && round < maxIter) {
             double sum = 0.0;
             for (int u = 0; u < userCount; u++) {
                 SparseVector items = rateMatrix.getRowRef(u);
                 int[] itemIndexList = items.indexList();
 
-                uAvail[u] = true;
                 if (itemIndexList != null) {
                     for (int i : itemIndexList) {
-                        iAvail[i] = true;
 
                         //global model
                         SparseVector Fu = userFeatures.getRowRef(u);
@@ -94,12 +108,20 @@ public class BorderFormConstraintSVD extends MatrixFactorizationRecommender {
                             double gis = auxRec.getV().getValue(s, i);
 
                             //global model updates
-                            userFeatures.setValue(u, s,
-                                Fus + learningRate
-                                        * (errAui * Gis + errUui * gis - regularizer * Fus));
-                            itemFeatures.setValue(s, i,
-                                Gis + learningRate
-                                        * (errAui * Fus + errIui * fus - regularizer * Gis));
+                            if (isCommonRow[u] & isCommonCol[i]) {
+                                userFeatures.setValue(u, s,
+                                    Fus + learningRate
+                                            * (errAui * Gis + errUui * gis - regularizer * Fus));
+                                itemFeatures.setValue(s, i,
+                                    Gis + learningRate
+                                            * (errAui * Fus + errIui * fus - regularizer * Gis));
+                            } else if (isCommonRow[u]) {
+                                userFeatures.setValue(u, s, Fus + learningRate
+                                                            * (errUui * gis - regularizer * Fus));
+                            } else if (isCommonCol[i]) {
+                                itemFeatures.setValue(s, i, Gis + learningRate
+                                                            * (errIui * fus - regularizer * Gis));
+                            }
                         }
                     }
                 }
@@ -119,18 +141,6 @@ public class BorderFormConstraintSVD extends MatrixFactorizationRecommender {
 
             // Show progress:
             LoggerUtil.info(logger, round + "\t" + currErr);
-        }
-
-        //minimize the storage
-        for (int u = 0; u < userCount; u++) {
-            if (!uAvail[u]) {
-                userFeatures.getRowRef(u).clear();
-            }
-        }
-        for (int i = 0; i < itemCount; i++) {
-            if (!iAvail[i]) {
-                itemFeatures.getColRef(i).clear();
-            }
         }
     }
 

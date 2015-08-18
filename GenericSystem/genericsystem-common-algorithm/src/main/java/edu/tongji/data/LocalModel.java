@@ -6,6 +6,7 @@ import prea.util.EvaluationMetrics;
 import edu.tongji.log4j.LoggerDefineConstant;
 import edu.tongji.ml.Recommender;
 import edu.tongji.ml.etc.SlopeOne;
+import edu.tongji.ml.matrix.BorderFormConstraintSVD;
 import edu.tongji.ml.matrix.MatrixFactorizationRecommender;
 import edu.tongji.ml.matrix.WeigtedSVD;
 import edu.tongji.ml.memory.MemoryBasedRecommender;
@@ -63,7 +64,7 @@ public class LocalModel {
         //                recmmd.minValue, false);
         //            lRecmmd.setEnsnblWeightInI(ensnblWeightInI);
         //        }
-
+        recmmd.localizedModel(rateMatrix, rows, cols);
     }
 
     /**
@@ -80,6 +81,9 @@ public class LocalModel {
             SparseRowMatrix lMatrix = rateMatrix.partition(rows, cols);
             SparseRowMatrix ltestMatrix = testMatrix.partition(rows, cols);
             recmmd.buildModel(lMatrix, ltestMatrix);
+        } else if (recmmd instanceof BorderFormConstraintSVD) {
+            SparseRowMatrix lMatrix = rateMatrix.partitionWithBorderDependency(rows, cols);
+            recmmd.buildModel(lMatrix, null);
         } else if (recmmd instanceof MatrixFactorizationRecommender) {
             SparseRowMatrix lMatrix = rateMatrix.partition(rows, cols);
             recmmd.buildModel(lMatrix, null);

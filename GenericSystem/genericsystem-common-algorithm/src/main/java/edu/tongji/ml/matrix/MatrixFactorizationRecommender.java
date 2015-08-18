@@ -99,6 +99,13 @@ public abstract class MatrixFactorizationRecommender extends Recommender impleme
         return itemFeatures;
     }
 
+    /** 
+     * @see edu.tongji.ml.Recommender#localizedModel(edu.tongji.data.SparseMatrix, int[], int[])
+     */
+    @Override
+    public void localizedModel(SparseMatrix rateMatrix, int[] rowInModel, int[] colInModel) {
+    }
+
     /*========================================
      * Model Builder
      *========================================*/
