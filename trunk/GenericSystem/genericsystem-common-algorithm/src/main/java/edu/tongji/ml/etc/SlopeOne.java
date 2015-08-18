@@ -27,6 +27,13 @@ public class SlopeOne extends Recommender {
     public SparseRowMatrix  pMatrix;
 
     /** 
+     * @see edu.tongji.ml.Recommender#localizedModel(edu.tongji.data.SparseMatrix, int[], int[])
+     */
+    @Override
+    public void localizedModel(SparseMatrix rateMatrix, int[] rowInModel, int[] colInModel) {
+    }
+
+    /** 
      * @see edu.tongji.ml.Recommender#buildModel(edu.tongji.data.SparseRowMatrix, edu.tongji.data.SparseRowMatrix)
      */
     @Override
