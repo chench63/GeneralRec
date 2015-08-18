@@ -133,14 +133,17 @@ public class ScalableSVDLearner extends Thread {
                 task.fBuildModel(rateMatrix, null);
                 stopWatch.stop();
 
+                double rmse = 0.0d;
                 synchronized (mutexMatrix) {
                     //evaluate the model and establish GC at the same time.
-                    task.evaluate(tmMatrix);
+                    rmse = task.evaluate(tmMatrix, cumPrediction, cumWeight);
                 }
 
                 //logger
-                LoggerUtil.info(logger, (new StringBuilder("ThreadId: " + task.getId()))
-                    .append("\tTime: " + stopWatch.getLastTaskTimeMillis()));
+                LoggerUtil.info(
+                    logger,
+                    (new StringBuilder("ThreadId: " + task.getId())).append(
+                        "\tTime: " + stopWatch.getLastTaskTimeMillis()).append("\tRMSE: " + rmse));
             }
         }
     }

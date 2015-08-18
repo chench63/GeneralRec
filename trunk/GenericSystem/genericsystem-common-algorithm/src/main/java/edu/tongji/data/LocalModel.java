@@ -141,74 +141,6 @@ public class LocalModel {
     }
 
     /**
-     * evaluate the model
-     * 
-     * @param testMatrix
-     *            the matrix with testing data
-     * @param cumPrediction
-     *            the cumulative prediction
-     * @param cumWeight
-     *            the cumulative weights
-     */
-    public void evaluate(final MatlabFasionSparseMatrix testMatrix) {
-        //check whether the object belongs to WSVD
-        if (!(recmmd instanceof WeigtedSVD)) {
-            throw new RuntimeException("The instance inf lEvaAndRecordWSVD is not WSVD!");
-        }
-
-        boolean[] rowAvl = new boolean[recmmd.userCount];
-        for (int row : rows) {
-            rowAvl[row] = true;
-        }
-        boolean[] colAvl = new boolean[recmmd.itemCount];
-        for (int col : cols) {
-            colAvl[col] = true;
-        }
-
-        WeigtedSVD lRecmmd = (WeigtedSVD) recmmd;
-        int[] uIndx = testMatrix.getRowIndx();
-        int[] iIndx = testMatrix.getColIndx();
-        double[] Auis = testMatrix.getVals();
-        int nnz = testMatrix.getNnz();
-
-        int bufferUsed = 0;
-        StringBuilder buffer = new StringBuilder();
-        for (int numSeq = 0; numSeq < nnz; numSeq++) {
-            int u = uIndx[numSeq];
-            int i = iIndx[numSeq];
-            if (!rowAvl[u] | !colAvl[i]) {
-                continue;
-            }
-
-            //record local prediction
-            //userId, itemId, AuiReal, AuiEst, Pu, Pi, Pr, GroupId
-            double AuiReal = Auis[numSeq];
-            double AuiEst = lRecmmd.predict(u, i);
-            buffer.append(u).append(',').append(i).append(',').append(AuiReal).append(',')
-                .append(AuiEst).append(',').append(lRecmmd.getPu(u, AuiEst)).append(',')
-                .append(lRecmmd.getPi(i, AuiEst)).append(',').append(lRecmmd.getPr(AuiEst))
-                .append(',').append(groupId).append('\n');
-            bufferUsed++;
-
-            // if greater than buffer size, then clear the buffer.
-            if (bufferUsed >= 1000 * 1000) {
-                FileUtil.writeAsAppend(resultFile, buffer.toString());
-
-                //reset buffer
-                bufferUsed = 0;
-                buffer = new StringBuilder();
-            }
-        }
-
-        FileUtil.writeAsAppend(resultFile, buffer.toString());
-
-        // release local model memory
-        if (recmmd.userCount > 400 * 1000 & recmmd.itemCount > 12 * 1000) {
-            System.gc();
-        }
-    }
-
-    /**
      * locally evaluate the model
      * 
      * @param testMatrix
@@ -299,6 +231,112 @@ public class LocalModel {
         //serialize the recommender
         String serialFile = resultFile + id + ".obj";
         SerializeUtil.writeObject(recmmd, serialFile);
+    }
+
+    /**
+     * evaluate the model
+     * 
+     * @param testMatrix
+     *            the matrix with testing data
+     * @param cumPrediction
+     *            the cumulative prediction
+     * @param cumWeight
+     *            the cumulative weights
+     */
+    public double evaluate(final MatlabFasionSparseMatrix testMatrix,
+                           SparseRowMatrix cumPrediction, SparseRowMatrix cumWeight) {
+
+        boolean[] rowAvl = new boolean[recmmd.userCount];
+        for (int row : rows) {
+            rowAvl[row] = true;
+        }
+        boolean[] colAvl = new boolean[recmmd.itemCount];
+        for (int col : cols) {
+            colAvl[col] = true;
+        }
+        int[] uIndx = testMatrix.getRowIndx();
+        int[] iIndx = testMatrix.getColIndx();
+        double[] Auis = testMatrix.getVals();
+        int nnz = testMatrix.getNnz();
+
+        //record the detailed ratings
+        //        lEvalAndRecordInner(testMatrix, rowAvl, colAvl, uIndx, iIndx, Auis, nnz);
+
+        //update global approximation
+        return lEvalInner(testMatrix, cumPrediction, cumWeight, rowAvl, colAvl, uIndx, iIndx, Auis,
+            nnz);
+    }
+
+    protected double lEvalInner(final MatlabFasionSparseMatrix testMatrix,
+                                SparseRowMatrix cumPrediction, SparseRowMatrix cumWeight,
+                                boolean[] rowAvl, boolean[] colAvl, int[] uIndx, int[] iIndx,
+                                double[] Auis, int nnz) {
+        double rmse = 0.0d;
+        for (int numSeq = 0; numSeq < nnz; numSeq++) {
+            int u = uIndx[numSeq];
+            int i = iIndx[numSeq];
+
+            // update global approximation model
+            if (rowAvl[u] & colAvl[i]) {
+                double prediction = recmmd.predict(u, i);
+                double weight = recmmd.ensnblWeight(u, i, prediction);
+
+                double newCumPrediction = prediction * weight + cumPrediction.getValue(u, i);
+                double newCumWeight = weight + cumWeight.getValue(u, i);
+
+                cumPrediction.setValue(u, i, newCumPrediction);
+                cumWeight.setValue(u, i, newCumWeight);
+            }
+
+            double AuiEst = (cumWeight.getValue(u, i) == 0.0) ? this.getDefaultRating()
+                : (cumPrediction.getValue(u, i) / cumWeight.getValue(u, i));
+            rmse += Math.pow(AuiEst - Auis[numSeq], 2.0d);
+        }
+
+        return Math.sqrt(rmse / nnz);
+    }
+
+    protected void lEvalAndRecordInner(final MatlabFasionSparseMatrix testMatrix, boolean[] rowAvl,
+                                       boolean[] colAvl, int[] uIndx, int[] iIndx, double[] Auis,
+                                       int nnz) {
+
+        int bufferUsed = 0;
+        StringBuilder buffer = new StringBuilder();
+        for (int numSeq = 0; numSeq < nnz; numSeq++) {
+            int u = uIndx[numSeq];
+            int i = iIndx[numSeq];
+            if (!rowAvl[u] | !colAvl[i]) {
+                continue;
+            }
+
+            //record local prediction
+            //userId, itemId, AuiReal, AuiEst, Pu, Pi, Pr, GroupId
+            double AuiReal = Auis[numSeq];
+            double AuiEst = recmmd.predict(u, i);
+            if (recmmd instanceof WeigtedSVD) {
+                WeigtedSVD lRecmmd = (WeigtedSVD) recmmd;
+                buffer.append(u).append(',').append(i).append(',').append(AuiReal).append(',')
+                    .append(AuiEst).append(',').append(lRecmmd.getPu(u, AuiEst)).append(',')
+                    .append(lRecmmd.getPi(i, AuiEst)).append(',').append(lRecmmd.getPr(AuiEst))
+                    .append(',').append(groupId).append('\n');
+            } else {
+                buffer.append(u).append(',').append(i).append(',').append(AuiReal).append(',')
+                    .append(AuiEst).append(',').append(0.0d).append(',').append(0.0d).append(',')
+                    .append(0.0d).append(',').append(groupId).append('\n');
+            }
+            bufferUsed++;
+
+            // if greater than buffer size, then clear the buffer.
+            if (bufferUsed >= 1000 * 1000) {
+                FileUtil.writeAsAppend(resultFile, buffer.toString());
+
+                //reset buffer
+                bufferUsed = 0;
+                buffer = new StringBuilder();
+            }
+        }
+
+        FileUtil.writeAsAppend(resultFile, buffer.toString());
     }
 
     /**
