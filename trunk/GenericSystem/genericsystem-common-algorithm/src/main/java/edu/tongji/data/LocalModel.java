@@ -101,7 +101,7 @@ public class LocalModel {
                 10 * 1000 * 1000, rows, cols);
             recmmd.buildModel(lMatrix, null);
         } else if (recmmd instanceof MatrixFactorizationRecommender) {
-            MatlabFasionSparseMatrix lMatrix = rateMatrix.partition(20 * 000 * 1000, rows, cols);
+            MatlabFasionSparseMatrix lMatrix = rateMatrix.partition(10 * 1000 * 1000, rows, cols);
             recmmd.buildModel(lMatrix, null);
         }
     }
@@ -260,7 +260,9 @@ public class LocalModel {
         int nnz = testMatrix.getNnz();
 
         //record the detailed ratings
-        //        lEvalAndRecordInner(testMatrix, rowAvl, colAvl, uIndx, iIndx, Auis, nnz);
+        if (StringUtil.isNotBlank(resultFile) & resultFile.endsWith("Serial")) {
+            lEvalAndRecordInner(testMatrix, rowAvl, colAvl, uIndx, iIndx, Auis, nnz);
+        }
 
         //update global approximation
         return lEvalInner(testMatrix, cumPrediction, cumWeight, rowAvl, colAvl, uIndx, iIndx, Auis,

@@ -1,6 +1,7 @@
 package edu.tongji.ml.matrix;
 
 import prea.util.EvaluationMetrics;
+import prea.util.MatrixInformationUtil;
 import edu.tongji.data.MatlabFasionSparseMatrix;
 import edu.tongji.data.SparseMatrix;
 import edu.tongji.data.SparseRowMatrix;
@@ -20,9 +21,18 @@ public class BorderFormConstraintSVD extends MatrixFactorizationRecommender {
     private boolean[]                               isCommonRow;
     /** Indicate whether the column is common */
     private boolean[]                               isCommonCol;
-
+    /** the rating distribution w.r.t the whole rating matrix*/
+    public double[]                                 trainWeight;
     /** A global SVD model. */
     public transient MatrixFactorizationRecommender auxRec;
+
+    //===================================
+    //      parameter
+    //===================================
+    /** parameter used in training*/
+    public double                                   beta0            = 0.8f;
+    public double                                   ru               = 1.0f;
+    public double                                   ri               = 1.0f;
 
     /*========================================
      * Constructors
@@ -68,6 +78,8 @@ public class BorderFormConstraintSVD extends MatrixFactorizationRecommender {
     @Override
     public void buildModel(SparseRowMatrix rateMatrix, SparseRowMatrix testMatrix) {
         super.buildModel(rateMatrix, null);
+        trainWeight = MatrixInformationUtil.ratingDistribution(rateMatrix, maxValue, minValue,
+            isCommonRow, isCommonCol);
 
         // Gradient Descent:
         int round = 0;
@@ -159,6 +171,8 @@ public class BorderFormConstraintSVD extends MatrixFactorizationRecommender {
     @Override
     public void buildModel(MatlabFasionSparseMatrix rateMatrix, MatlabFasionSparseMatrix tMatrix) {
         super.buildModel(rateMatrix, tMatrix);
+        trainWeight = MatrixInformationUtil.ratingDistribution(rateMatrix, maxValue, minValue,
+            isCommonRow, isCommonCol);
 
         // Gradient Descent:
         int round = 0;
@@ -171,16 +185,22 @@ public class BorderFormConstraintSVD extends MatrixFactorizationRecommender {
         double[] Auis = rateMatrix.getVals();
         while (Math.abs(prevErr - currErr) > 0.0001 && round < maxIter) {
             double sum = 0.0;
+            int sensitiveCount = 0;
 
             for (int numSeq = 0; numSeq < rateCount; numSeq++) {
                 int u = uIndx[numSeq];
                 int i = iIndx[numSeq];
 
+                if (!isCommonRow[u] | !isCommonCol[i]) {
+                    if (Math.random() > 0.5) {
+                        continue;
+                    }
+                }
+
                 //global model
                 double AuiEst = userDenseFeatures.innerProduct(u, i, itemDenseFeatures);
                 double AuiReal = Auis[numSeq];
                 double errAui = AuiReal - AuiEst;
-                sum += Math.pow(errAui, 2.0d);
 
                 // item clustering local models
                 double IuiEst = auxRec.userDenseFeatures.innerProduct(u, i, itemDenseFeatures);
@@ -190,6 +210,7 @@ public class BorderFormConstraintSVD extends MatrixFactorizationRecommender {
                 double UuiEst = userDenseFeatures.innerProduct(u, i, auxRec.itemDenseFeatures);
                 double errUui = AuiReal - UuiEst;
 
+                int weightIndx = Double.valueOf(AuiReal / minValue - 1).intValue();
                 for (int s = 0; s < featureCount; s++) {
                     double Fus = userDenseFeatures.getValue(u, s);
                     double fus = auxRec.userDenseFeatures.getValue(u, s);
@@ -199,21 +220,29 @@ public class BorderFormConstraintSVD extends MatrixFactorizationRecommender {
                     //global model updates
                     if (isCommonRow[u] & isCommonCol[i]) {
                         userDenseFeatures.setValue(u, s,
-                            Fus + learningRate * (errAui * Gis + errUui * gis - regularizer * Fus));
+                            Fus
+                                    + learningRate
+                                    * (errAui * Gis * (1 + beta0 * trainWeight[weightIndx])
+                                       + errUui * gis * ru - regularizer * Fus));
                         itemDenseFeatures.setValue(s, i,
-                            Gis + learningRate * (errAui * Fus + errIui * fus - regularizer * Gis));
+                            Gis
+                                    + learningRate
+                                    * (errAui * Fus * (1 + beta0 * trainWeight[weightIndx])
+                                       + errIui * fus * ri - regularizer * Gis));
+                        sum += Math.pow(errAui, 2.0d);
+                        sensitiveCount++;
                     } else if (isCommonRow[u]) {
                         userDenseFeatures.setValue(u, s, Fus + learningRate
-                                                         * (errUui * gis - regularizer * Fus));
+                                                         * (errUui * gis * ru - regularizer * Fus));
                     } else if (isCommonCol[i]) {
                         itemDenseFeatures.setValue(s, i, Gis + learningRate
-                                                         * (errIui * fus - regularizer * Gis));
+                                                         * (errIui * fus * ri - regularizer * Gis));
                     }
                 }
             }
 
             prevErr = currErr;
-            currErr = Math.sqrt(sum / rateCount);
+            currErr = Math.sqrt(sum / sensitiveCount);
 
             round++;
             if (showProgress && (round % 10 == 0) && tMatrix != null) {

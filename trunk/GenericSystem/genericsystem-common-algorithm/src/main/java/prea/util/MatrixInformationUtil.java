@@ -369,6 +369,88 @@ public final class MatrixInformationUtil {
         return result;
     }
 
+    public static double[] ratingDistribution(MatlabFasionSparseMatrix matrix, double maxValue,
+                                              double minValue, boolean[] isCommonRow,
+                                              boolean[] isCommonCol) {
+        int len = (int) (maxValue / minValue);
+        int[] countTable = new int[len];
+
+        int[] uIndx = matrix.getRowIndx();
+        int[] iIndx = matrix.getColIndx();
+        int nnz = matrix.getNnz();
+        double[] vals = matrix.getVals();
+
+        for (int seq = 0; seq < nnz; seq++) {
+            int u = uIndx[seq];
+            int i = iIndx[seq];
+            double val = vals[seq];
+
+            if (isCommonRow[u] & isCommonCol[i]) {
+                int pivot = Double.valueOf(val / minValue - 1).intValue();
+                countTable[pivot]++;
+            }
+        }
+
+        double[] result = new double[len];
+        for (int i = 0; i < len; i++) {
+            result[i] = countTable[i] * 1.0 / nnz;
+        }
+
+        //        // remove the value of the smallest two items
+        //        for (int last = 0; last < 2; last++) {
+        //            int pivot = -1;
+        //            double min = 1.0d;
+        //
+        //            for (int i = 0; i < len; i++) {
+        //                if (result[i] != 0.0 && min > result[i]) {
+        //                    pivot = i;
+        //                    min = result[i];
+        //                }
+        //            }
+        //            result[pivot] = 0.0d;
+        //        }
+
+        return result;
+    }
+
+    public static double[] ratingDistribution(SparseRowMatrix matrix, double maxValue,
+                                              double minValue, boolean[] isCommonRow,
+                                              boolean[] isCommonCol) {
+        int len = (int) (maxValue / minValue);
+        int[] countTable = new int[len];
+
+        int M = matrix.length()[0];
+        for (int u = 0; u < M; u++) {
+            if (!isCommonRow[u]) {
+                continue;
+            }
+
+            SparseVector Ru = matrix.getRowRef(u);
+            int[] indexList = Ru.indexList();
+            if (indexList == null) {
+                continue;
+            }
+
+            for (int v : indexList) {
+                if (!isCommonCol[v]) {
+                    continue;
+                }
+
+                double val = Ru.getValue(v);
+                int pivot = Double.valueOf(val / minValue - 1).intValue();
+                countTable[pivot]++;
+            }
+        }
+
+        double[] result = new double[len];
+        int itemCount = matrix.itemCount();
+        for (int i = 0; i < len; i++) {
+            result[i] = countTable[i] * 1.0 / itemCount;
+        }
+
+        return result;
+    }
+
     public static double offlineRMSE(MatrixFactorizationRecommender recmmd, String testFile,
                                      int rowCount, int colCount, Parser parser) {
         if (parser == null) {
