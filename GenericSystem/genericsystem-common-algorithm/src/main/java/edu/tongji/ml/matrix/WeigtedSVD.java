@@ -106,6 +106,19 @@ public class WeigtedSVD extends MatrixFactorizationRecommender {
         super(uc, ic, max, min, fc, lr, r, m, iter, verbose);
     }
 
+    /** 
+     * @see edu.tongji.ml.matrix.MatrixFactorizationRecommender#localizedModel(edu.tongji.data.SparseMatrix, int[], int[])
+     */
+    @Override
+    public void localizedModel(SparseMatrix rateMatrix, int[] rowInModel, int[] colInModel) {
+        if (rateMatrix == null) {
+            return;
+        }
+
+        ensnblWeightInU = rateMatrix.probability(null, null, maxValue, 1.0d, true);
+        ensnblWeightInI = rateMatrix.probability(null, null, maxValue, 1.0d, false);
+    }
+
     /*========================================
      * Model Builder
      *========================================*/
