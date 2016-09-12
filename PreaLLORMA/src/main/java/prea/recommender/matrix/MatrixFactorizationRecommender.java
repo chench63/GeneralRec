@@ -9,7 +9,6 @@ import prea.recommender.Recommender;
 import prea.util.EvaluationMetrics;
 import prea.util.LoggerDefineConstant;
 
-
 //import java.io.FileOutputStream;
 //import java.io.PrintWriter;
 import java.io.Serializable;
@@ -29,7 +28,7 @@ public abstract class MatrixFactorizationRecommender implements Recommender, Ser
 
     /** logger */
     protected final static Logger logger           = Logger
-                                                       .getLogger(LoggerDefineConstant.SERVICE_CORE);
+        .getLogger(LoggerDefineConstant.SERVICE_CORE);
 
     /*
      * ======================================== Common Variables
@@ -98,8 +97,8 @@ public abstract class MatrixFactorizationRecommender implements Recommender, Ser
      * @param verbose
      *            Indicating whether to show iteration steps and train error.
      */
-    public MatrixFactorizationRecommender(int uc, int ic, double max, double min, int fc,
-                                          double lr, double r, double m, int iter, boolean verbose) {
+    public MatrixFactorizationRecommender(int uc, int ic, double max, double min, int fc, double lr,
+                                          double r, double m, int iter, boolean verbose) {
         userCount = uc;
         itemCount = ic;
         maxValue = max;
@@ -200,10 +199,35 @@ public abstract class MatrixFactorizationRecommender implements Recommender, Ser
             if (testItems != null) {
                 for (int t = 0; t < testItems.length; t++) {
                     int i = testItems[t];
-                    double prediction = this.offset
-                                        + userFeatures.getRowRef(u).innerProduct(
-                                            itemFeatures.getColRef(testItems[t]));
+                    double prediction = this.offset + userFeatures.getRowRef(u)
+                        .innerProduct(itemFeatures.getColRef(testItems[t]));
                     predicted.setValue(u, i, prediction);
+                }
+            }
+        }
+
+        return new EvaluationMetrics(testMatrix, predicted, maxValue, minValue);
+    }
+
+    public EvaluationMetrics evaluateX(SparseRowMatrix testMatrix) {
+        SparseRowMatrix predicted = new SparseRowMatrix(userCount + 1, itemCount + 1);
+
+        for (int u = 0; u < userCount; u++) {
+            int[] testItems = testMatrix.getRowRef(u).indexList();
+
+            if (testItems != null) {
+                for (int t = 0; t < testItems.length; t++) {
+                    int i = testItems[t];
+                    double AuiEst = this.offset
+                                    + innerPrediction(u, i, userDenseFeatures, itemDenseFeatures);
+
+                    if (AuiEst > maxValue) {
+                        AuiEst = maxValue;
+                    } else if (AuiEst < minValue) {
+                        AuiEst = minValue;
+                    }
+
+                    predicted.setValue(u, i, AuiEst);
                 }
             }
         }

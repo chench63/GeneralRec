@@ -56,7 +56,7 @@ public class RegSVD {
         String test = rootDir + "testingset";
 
         SparseRowMatrix ttMatrix = MatrixFileUtil.reads(test, userCount, itemCount);
-        EvaluationMetrics metrix = baseline.evaluate(ttMatrix);
+        EvaluationMetrics metrix = baseline.evaluateX(ttMatrix);
         LoggerUtil.info(logger,
             "Train: " + train + "\tTest: " + test + "\n" + String.format("%.5f", metrix.getRMSE())
                                 + "\t" + String.format("%.5f", metrix.getNDCG2()) + "\t"
