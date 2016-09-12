@@ -5,8 +5,9 @@ import java.util.Date;
 import org.apache.log4j.Logger;
 
 import prea.data.structure.MatlabFasionSparseMatrix;
+import prea.data.structure.SparseRowMatrix;
 import prea.recommender.matrix.RegularizedSVD;
-import prea.util.FileUtil;
+import prea.util.EvaluationMetrics;
 import prea.util.LoggerDefineConstant;
 import prea.util.LoggerUtil;
 import prea.util.MatrixFileUtil;
@@ -14,15 +15,15 @@ import prea.util.MatrixFileUtil;
 public class RegSVD {
     /** training dataset file output path   10M100K*/
     protected final static String[] rootDirs  = { "C:/netflix/1/" };
-    /** the number of rows      6040 69878*/
-    public static int               userCount = 69878;
-    /** the number of cloumns   3706 10677*/
-    public static int               itemCount = 10677;
+    /** the number of rows      6040 69878 480189*/
+    public static int               userCount = 480189;
+    /** the number of cloumns   3706 10677 17770*/
+    public static int               itemCount = 17770;
     public final static double      maxValue  = 5.0;
     public final static double      minValue  = 1.0;
     /** logger */
     protected final static Logger   logger    = Logger
-                                                  .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
+        .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
 
     public final static String      resultDir = "C:/netflix/1/";
 
@@ -53,14 +54,13 @@ public class RegSVD {
 
         System.out.println("3. load testset." + new Date());
         String test = rootDir + "testingset";
-        MatlabFasionSparseMatrix testSeq = MatrixFileUtil.reads(test, 20 * 1000 * 1000);
 
-        double RMSE = baseline.evaluate(testSeq);
-        LoggerUtil.info(logger, "Train: " + train + "\tTest: " + test + "\n" + RMSE);
-
-        FileUtil.writeAsAppend(resultDir + "RSVD", "fc: " + featureCount + "\tlr: " + lrate
-                                                   + "\tr: " + regularized + "\tRMSE: " + RMSE
-                                                   + "\n");
+        SparseRowMatrix ttMatrix = MatrixFileUtil.reads(test, userCount, itemCount);
+        EvaluationMetrics metrix = baseline.evaluate(ttMatrix);
+        LoggerUtil.info(logger,
+            "Train: " + train + "\tTest: " + test + "\n" + String.format("%.5f", metrix.getRMSE())
+                                + "\t" + String.format("%.5f", metrix.getNDCG2()) + "\t"
+                                + String.format("%.5f", metrix.getAveragePrecision()));
     }
 
 }
