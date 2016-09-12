@@ -3,8 +3,8 @@
 	<classpathentry excluding="Backup0701/" kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/main/resources"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="C:/Users/Chao.Chen/Workspace/GeneralRec/PreaLLORMA/ExtLib/commons-io-2.4.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Chao.Chen/Workspace/GeneralRec/PreaLLORMA/ExtLib/log4j-1.2.17.jar"/>
-	<classpathentry kind="lib" path="C:/Users/Chao.Chen/Workspace/GeneralRec/PreaLLORMA/ExtLib/ujmp.jar"/>
+	<classpathentry kind="lib" path="ExtLib/commons-io-2.4.jar"/>
+	<classpathentry kind="lib" path="ExtLib/log4j-1.2.17.jar"/>
+	<classpathentry kind="lib" path="ExtLib/ujmp.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
