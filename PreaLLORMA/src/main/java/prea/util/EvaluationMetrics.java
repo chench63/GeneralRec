@@ -13,38 +13,39 @@ import prea.data.structure.SparseVector;
  * @version 1.1
  */
 public class EvaluationMetrics {
+    private static final int NDCG_THRESHOLD = 10;
     /** Real ratings for test items. */
-    private SparseRowMatrix testMatrix;
+    private SparseRowMatrix  testMatrix;
     /** Predicted ratings by CF algorithms for test items. */
-    private SparseRowMatrix predicted;
+    private SparseRowMatrix  predicted;
     /** Maximum value of rating, existing in the dataset. */
-    private double          maxValue;
+    private double           maxValue;
     /** Minimum value of rating, existing in the dataset. */
-    private double          minValue;
+    private double           minValue;
     /** The number of items to recommend, in rank-based metrics */
-    private int             recommendCount;
+    private int              recommendCount;
     /** Half-life in rank-based metrics */
-    private int             halflife;
+    private int              halflife;
 
     /** Mean Absoulte Error (MAE) */
-    private double          mae;
+    private double           mae;
     /** Mean Squared Error (MSE) */
-    private double          mse;
+    private double           mse;
     /** Rank-based Half-Life Utility (HLU) */
-    private double          hlu;
+    private double           hlu;
     /** Rank-based Normalized Discounted Cumulative Gain (NDCG) */
-    private double          ndcg;
+    private double           ndcg;
     /** Rank-based Kendall's Tau */
-    private double          kendallsTau;
+    private double           kendallsTau;
     /** Rank-based Spear */
-    private double          spearman;
+    private double           spearman;
     /** Asymmetric Loss */
-    private double          asymmetricLoss;
+    private double           asymmetricLoss;
     /** Average Precision */
-    private double          avgPrecision;
+    private double           avgPrecision;
 
     /** The minimum rating which can be considered as relevant one. */
-    private double          relevanceThreshold;
+    private double           relevanceThreshold;
 
     /**
      * Standard constructor for EvaluationMetrics class.
@@ -243,7 +244,8 @@ public class EvaluationMetrics {
 
                     // Average Precision:
                     if (realRate >= relevanceThreshold && cumRecommended[rIndex] > 0) { // if relevant
-                        precisionSum += ((double) cumRelevant[rIndex] / (double) cumRecommended[rIndex]);
+                        precisionSum += ((double) cumRelevant[rIndex]
+                                         / (double) cumRecommended[rIndex]);
                         relevantCount++;
                     }
                     rIndex++;
@@ -295,6 +297,58 @@ public class EvaluationMetrics {
         if (Double.isNaN(avgPrecision)) {
             avgPrecision = 0.0;
         }
+    }
+
+    public double getNDCG2() {
+        int activeUserCount = 0;
+        double lNdcg = 0.0d;
+
+        int userCount = (testMatrix.length())[0] - 1;
+        int itemCount = (testMatrix.length())[1] - 1;
+        for (int u = 0; u < userCount; u++) {
+            SparseVector predictedItems = new SparseVector(itemCount);
+            int[] testItems = testMatrix.getRowRef(u).indexList();
+
+            if (testItems != null) {
+                for (int i : testItems) {
+                    // double realRate_i = testMatrix.getValue(u, i);
+                    double predictedRate_i = predicted.getValue(u, i);
+                    predictedItems.setValue(i, predictedRate_i);
+
+                }
+            }
+
+            SparseVector observedItems = testMatrix.getRowRef(u);
+            if (observedItems.itemCount() > 0) {
+                int[] observedIndices = observedItems.indexList();
+                double[] observedValues = observedItems.valueList();
+                double[] predictedValues = predictedItems.valueList();
+                int listLength = Math.min(NDCG_THRESHOLD, observedIndices.length);
+
+                double u_dcg = 0.0;
+                Sort.kLargest(predictedValues, observedIndices, 0, observedIndices.length - 1,
+                    listLength);
+                for (int i = 0; i < listLength; i++) {
+                    double observed = testMatrix.getValue(u, observedIndices[i]);
+                    u_dcg += (Math.pow(2.0, observed) - 1.0) / (Math.log(i + 2) / Math.log(2.0));
+                }
+
+                double best_dcg = 0.0;
+                Sort.kLargest(observedValues, observedIndices, 0, observedIndices.length - 1,
+                    listLength);
+                // Now observedIndices were corrupted, but we do not need them.
+                for (int i = 0; i < listLength; i++) {
+                    best_dcg += (Math.pow(2.0, observedValues[i]) - 1.0)
+                                / (Math.log(i + 2) / Math.log(2.0));
+                }
+
+                lNdcg += (u_dcg / best_dcg);
+                activeUserCount++;
+            }
+        }
+
+        lNdcg /= (double) activeUserCount;
+        return lNdcg;
     }
 
     /**

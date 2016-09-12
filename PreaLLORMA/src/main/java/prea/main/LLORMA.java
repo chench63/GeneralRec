@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 
 import prea.data.structure.MatlabFasionSparseMatrix;
 import prea.data.structure.SparseRowMatrix;
-import prea.recommender.llorma.SingletonParallelLLORMA;
+import prea.recommender.llorma.SingletonParallelLLORMA_RANK;
 import prea.recommender.matrix.RegularizedSVD;
 import prea.util.KernelSmoothing;
 import prea.util.LoggerDefineConstant;
@@ -30,7 +30,7 @@ public class LLORMA {
     public static int               itemCount = 17770;
     /** logger */
     protected final static Logger   logger    = Logger
-                                                  .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
+        .getLogger(LoggerDefineConstant.SERVICE_NORMAL);
 
     /**
      * 
@@ -49,12 +49,12 @@ public class LLORMA {
 
     public static void doLLORMA(String rootDir, int[] featureCounts) {
         double maxValue = 5.0;
-        double minValue = 0.5;
+        double minValue = 1.0;
         double learningRate = 0.01;
         double regularized = 0.001;
         int maxIter = 100;
-        int modelCount = 50;
-        int ml = 4;
+        int ml = 16;
+        int modelCount = 50 + ml;
 
         System.out.println("1. load trainingset." + new Date());
         String train = rootDir + "trainingset";
@@ -76,16 +76,18 @@ public class LLORMA {
         String test = rootDir + "testingset";
         MatlabFasionSparseMatrix testSeq = MatrixFileUtil.reads(test, 20 * 1000 * 1000);
 
+        SparseRowMatrix ttMatrix = MatrixFileUtil.reads(test, userCount, itemCount);
+
         for (int featureCount : featureCounts) {
             System.out.println("4. excute LLORMA." + new Date());
-            SingletonParallelLLORMA sgllorma = new SingletonParallelLLORMA(userCount, itemCount,
-                maxValue, minValue, featureCount, learningRate, regularized, maxIter, modelCount,
-                KernelSmoothing.EPANECHNIKOV_KERNEL, 0.8, baseline, null, ml, true);
+            SingletonParallelLLORMA_RANK sgllorma = new SingletonParallelLLORMA_RANK(userCount,
+                itemCount, maxValue, minValue, featureCount, learningRate, regularized, maxIter,
+                modelCount, KernelSmoothing.EPANECHNIKOV_KERNEL, 0.8, baseline, null, ml, true);
             sgllorma.testSeq = testSeq;
             sgllorma.trainSeq = trainSeq;
             sgllorma.anchorItem = anchorItem;
             sgllorma.anchorUser = anchorUser;
-            sgllorma.buildModel((SparseRowMatrix) null);
+            sgllorma.buildModel(ttMatrix);
         }
     }
 
