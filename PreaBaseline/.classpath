@@ -2,10 +2,9 @@
 <classpath>
 	<classpathentry excluding="Backup0701/" kind="src" path="src/main/java"/>
 	<classpathentry kind="src" path="src/main/resources"/>
-	<classpathentry kind="lib" path="F:/Workspace/Dependency/log4j-1.2.15.jar" sourcepath="F:/Maven/.m2/log4j/log4j/1.2.15/log4j-1.2.15-sources.jar"/>
-	<classpathentry kind="lib" path="F:/Workspace/Dependency/commons-math3-3.2.jar"/>
-	<classpathentry kind="lib" path="F:/Workspace/Dependency/commons-io-2.4.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="F:/Workspace/Dependency/ujmp.jar"/>
+	<classpathentry kind="lib" path="ExtLib/commons-io-2.4.jar"/>
+	<classpathentry kind="lib" path="ExtLib/log4j-1.2.17.jar"/>
+	<classpathentry kind="lib" path="ExtLib/ujmp.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
